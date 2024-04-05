@@ -1,4 +1,0 @@
-export const RegisterConstants = {
-    ACTION_REGISTER_CONSTANT: "ACTION_REGISTER_CONSTANT",
-  };
-  
