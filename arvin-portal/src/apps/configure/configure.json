@@ -45,6 +45,84 @@
       "description": "SUNDAY"
     }
   ],
+  "modules": [
+    {
+      "code": "1",
+      "modules_code": "100",
+      "description": "E-Costing",
+      "link": "/Modules/ECosting"
+    },
+    {
+      "code": "2",
+      "modules_code": "200",
+      "description": "Qoutation",
+      "link": "/Modules/Qoutation"
+    },
+    {
+      "code": "3",
+      "modules_code": "300",
+      "description": "Sales Daily Out",
+      "link": "/Modules/SalesDailyOut"
+    },
+    {
+      "code": "4",
+      "modules_code": "400",
+      "description": "Human Resource",
+      "link": "/Modules/HumanResource"
+    },
+    {
+      "code": "5",
+      "modules_code": "500",
+      "description": "Purchasing Request",
+      "link": "/Modules/PurchasingRequest"
+    }
+  ],
+  "component": [
+    {
+      "code": "1",
+      "modules_code": "300",
+      "component_code": "300301",
+      "description": "Component 1",
+      "link": "/Modules/SalesDailyOut/Component1"
+    },
+    {
+      "code": "2",
+      "modules_code": "300",
+      "component_code": "300302",
+      "description": "Component 2",
+      "link": "/Modules/SalesDailyOut/Component2"
+    },
+    {
+      "code": "3",
+      "modules_code": "300",
+      "component_code": "300303",
+      "description": "Component 3",
+      "link": "/Modules/SalesDailyOut/Component3"
+    },
+    {
+      "code": "4",
+      "modules_code": "300",
+      "component_code": "300304",
+      "description": "Component 4",
+      "link": "/Modules/SalesDailyOut/Component4"
+    }
+  ],
+  "subcomponent": [
+    {
+      "code": "1",
+      "component_code": "300301",
+      "subcomponent_code": "300301001",
+      "description": "SubComponent 1",
+      "link": "/Modules/SalesDailyOut/Component1/SubComponent1"
+    },
+    {
+      "code": "2",
+      "component_code": "300301",
+      "subcomponent_code": "300301002",
+      "description": "SubComponent 2",
+      "link": "/Modules/SalesDailyOut/Component1/SubComponent2"
+    }
+  ],
   "system": {
     "api": "http://api.watersystem.gzonetechph.com/api/"
   },
@@ -57,10 +135,11 @@
     "AllowedImportFile": ".csv"
   },
   "currency": "₱",
-  "primary_color": "#ce230a",
-  "primary_bgcolor": "linear-gradient(rgb(192, 57, 43), rgb(231, 76, 60))",
   "gray_color": "#ecf0f1",
-  "_comment_primary_color": "#16a085",
+  "primary_color": "#093a5c",
+  "secondary_color": "#00bae6",
+  "tertiary_color": "#F1FAFF",
+  "primary_bgcolor": "#F1FAFF",
   "bread_crumbs_font_size": 17,
   "pending_color": "#e67e22",
   "denied_color": "#e74c3c",
@@ -78,7 +157,7 @@
     "width": "100%"
   },
   "fullwidth_wish_button": {
-    "color": "#ce230a",
+    "color": "#093a5c",
     "padding": "6px 16px",
     "border": "none",
     "borderRadius": "5px",
