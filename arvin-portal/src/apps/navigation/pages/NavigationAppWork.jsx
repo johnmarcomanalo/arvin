@@ -77,15 +77,28 @@ export default function NavigationAppWork() {
   const [open, setOpen] = React.useState(false);
   const [masterList, setMasterList] = React.useState(false);
   const [clickedModuleIndex, setClickedModuleIndex] = React.useState(null);
+  const [clickedComponentIndex, setClickedComponentIndex] =
+    React.useState(null);
+  const [clickedSubComponentIndex, setClickedSubComponentIndex] =
+    React.useState(null);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-
   const handleDrawerClose = () => {
     setOpen(false);
   };
   const onClickSelectedModule = (index) => {
     setClickedModuleIndex((prevIndex) => (prevIndex === index ? null : index));
+  };
+  const onClickSelectedComponent = (index) => {
+    setClickedComponentIndex((prevIndex) =>
+      prevIndex === index ? null : index
+    );
+  };
+  const onClickSelectedSubComponent = (index) => {
+    setClickedSubComponentIndex((prevIndex) =>
+      prevIndex === index ? null : index
+    );
   };
   const modulesAccordion = (modules) => {
     try {
@@ -108,18 +121,7 @@ export default function NavigationAppWork() {
               unmountOnExit
             >
               <List component="div" disablePadding>
-                <ListItemButton component={Link} to="/">
-                  <ListItemIcon>
-                    <GroupIcon />
-                  </ListItemIcon>
-                  <ListItemTxt primary={"Profiles"} />
-                </ListItemButton>
-                <ListItemButton component={Link} to="/services-masterlist">
-                  <ListItemIcon>
-                    <HandshakeIcon />
-                  </ListItemIcon>
-                  <ListItemTxt primary={"Services"} />
-                </ListItemButton>
+                {componentsAccordion(configure.component, text)}
               </List>
             </Collapse>
           </React.Fragment>
@@ -131,6 +133,64 @@ export default function NavigationAppWork() {
     }
   };
 
+  const componentsAccordion = (components, values) => {
+    try {
+      let component = components.map((text, index) => {
+        if (values.modules_code === text.modules_code) {
+          const isOpen = clickedComponentIndex === index;
+          return (
+            <React.Fragment>
+              <ListItem disablePadding>
+                <ListItemButton onClick={() => onClickSelectedComponent(index)}>
+                  <ListItemText primary={text.description} />
+                </ListItemButton>
+              </ListItem>
+              <Divider />
+
+              <Collapse
+                in={isOpen}
+                timeout="auto"
+                style={{ backgroundColor: "#f2f2f2de" }}
+                unmountOnExit
+              >
+                <List component="div" disablePadding>
+                  {subcomponentsAccordion(configure.subcomponent, text)}
+                </List>
+              </Collapse>
+            </React.Fragment>
+          );
+        }
+      });
+      return component;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const subcomponentsAccordion = (subcomponents, values) => {
+    try {
+      let component = subcomponents.map((text, index) => {
+        if (values.component_code === text.component_code) {
+          const isOpen = clickedSubComponentIndex === index;
+          return (
+            <React.Fragment>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => onClickSelectedSubComponent(index)}
+                >
+                  <ListItemText primary={text.description} />
+                </ListItemButton>
+              </ListItem>
+              <Divider />
+            </React.Fragment>
+          );
+        }
+      });
+      return component;
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
