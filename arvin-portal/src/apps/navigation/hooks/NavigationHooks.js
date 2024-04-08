@@ -1,27 +1,38 @@
 import { useDispatch } from "react-redux";
 import { NavigationContants } from "../constants/Constants";
+import { useSelector } from "react-redux";
 const NavigationHooks = (props) => {
   const dispatch = useDispatch();
-  const onOpenModal = () => {
+  const request_modal = useSelector(
+    (state) => state.NavigationReducer.request_modal
+  );
+  const request_type = useSelector(
+    (state) => state.NavigationReducer.request_type
+  );
+  const onOpenRequestModal = (type) => {
     dispatch({
       type: NavigationContants.ACTION_NAVIGATION,
       payload: {
-        wishlist_modal: true,
+        request_modal: true,
+        request_type: type,
       },
     });
   };
-  const onCloseModal = () => {
+  const onCloseRequestModal = () => {
     dispatch({
       type: NavigationContants.ACTION_NAVIGATION,
       payload: {
-        wishlist_modal: false,
+        request_modal: false,
+        request_type: "",
       },
     });
   };
-  
+
   return {
-    onOpenModal,
-    onCloseModal,
+    request_modal,
+    request_type,
+    onOpenRequestModal,
+    onCloseRequestModal,
   };
 };
 

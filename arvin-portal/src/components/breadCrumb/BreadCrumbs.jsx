@@ -19,7 +19,7 @@ const BreadCrumbs = (props) => {
             return (
               <Link
                 key={val.name}
-                underline="hover"
+                underline="none"
                 sx={{ display: "flex", alignItems: "center", fontSize: 12 }}
                 color="inherit"
                 href={val.href === "" ? "#" : val.href}

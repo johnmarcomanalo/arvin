@@ -1,12 +1,10 @@
-import { NavigationContants } from "../apps/navigation/constants/Constants";
+import { HomeConstants } from "../apps/aim/home/constants/Constants";
 const initialState = {
-  request_modal: false,
   refresh: false,
-  request_type: "",
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
-    case NavigationContants.ACTION_NAVIGATION:
+    case HomeConstants.ACTION_HOME:
       return {
         ...state,
         ...action.payload,

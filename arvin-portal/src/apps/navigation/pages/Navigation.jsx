@@ -1,28 +1,25 @@
-import * as React from "react";
-import { styled, useTheme } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import CssBaseline from "@mui/material/CssBaseline";
-import MuiAppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
-import Typography from "@mui/material/Typography";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import { Outlet, Link, useNavigate } from "react-router-dom";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
-import configure from "../../configure/configure.json";
-import GroupIcon from "@mui/icons-material/Group";
-import HandshakeIcon from "@mui/icons-material/Handshake";
+import MenuIcon from "@mui/icons-material/Menu";
 import { Collapse, List, ListItem } from "@mui/material";
+import MuiAppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
+import Divider from "@mui/material/Divider";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import { styled, useTheme } from "@mui/material/styles";
+import * as React from "react";
+import { Outlet } from "react-router-dom";
+import configure from "../../configure/configure.json";
+import Modal from "../../../components/modal/Modal";
+import RequestsForm from "./components/RequestForm";
+import NavigationHooks from "../hooks/NavigationHooks";
 const drawerWidth = 250;
 const ListItemTxt = styled(ListItemText)(({ theme }) => ({
   color: configure.primary_color,
@@ -72,10 +69,12 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
-export default function NavigationAppWork() {
+export default function Navigation(props) {
+  const { ...navigation_param } = NavigationHooks(props);
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [masterList, setMasterList] = React.useState(false);
+  const [expanded, setExpanded] = React.useState(false);
+  const [requestlist, setRequestList] = React.useState(false);
   const [clickedModuleIndex, setClickedModuleIndex] = React.useState(null);
   const [clickedComponentIndex, setClickedComponentIndex] =
     React.useState(null);
@@ -89,6 +88,7 @@ export default function NavigationAppWork() {
   };
   const onClickSelectedModule = (index) => {
     setClickedModuleIndex((prevIndex) => (prevIndex === index ? null : index));
+    setRequestList(false);
   };
   const onClickSelectedComponent = (index) => {
     setClickedComponentIndex((prevIndex) =>
@@ -99,6 +99,9 @@ export default function NavigationAppWork() {
     setClickedSubComponentIndex((prevIndex) =>
       prevIndex === index ? null : index
     );
+  };
+  const onClickSelectRequest = () => {
+    setRequestList(!requestlist);
   };
   const modulesAccordion = (modules) => {
     try {
@@ -171,7 +174,6 @@ export default function NavigationAppWork() {
     try {
       let component = subcomponents.map((text, index) => {
         if (values.component_code === text.component_code) {
-          const isOpen = clickedSubComponentIndex === index;
           return (
             <React.Fragment>
               <ListItem disablePadding>
@@ -193,8 +195,22 @@ export default function NavigationAppWork() {
   };
   return (
     <Box sx={{ display: "flex" }}>
+      <Modal
+        open={navigation_param.request_modal}
+        fullScreen={false}
+        title={"Request Form"}
+        size={"xs"}
+        action={undefined}
+        handleClose={navigation_param.onCloseRequestModal}
+      >
+        <RequestsForm />
+      </Modal>
       <CssBaseline />
-      <AppBar position="fixed" open={open}>
+      <AppBar
+        position="fixed"
+        open={open}
+        sx={{ backgroundColor: configure.primary_color }}
+      >
         <Toolbar>
           <IconButton
             color="inherit"
@@ -206,7 +222,7 @@ export default function NavigationAppWork() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            AIM PORTAL
+            {configure.systemName}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -233,17 +249,79 @@ export default function NavigationAppWork() {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <List>{modulesAccordion(configure.modules)}</List>
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton>
+              <ListItemText primary={"Home"} />
+            </ListItemButton>
+          </ListItem>
+          <Divider />
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => onClickSelectRequest()}>
+              <ListItemText primary={"Request"} />
+              {requestlist ? <ExpandLess /> : <ExpandMore />}{" "}
+            </ListItemButton>
+          </ListItem>
+          <Divider />
+
+          <Collapse
+            in={requestlist}
+            timeout="auto"
+            style={{ backgroundColor: "#f2f2f2de" }}
+            unmountOnExit
+          >
+            <List component="div" disablePadding>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => navigation_param.onOpenRequestModal("Leave")}
+                >
+                  <ListItemText primary={"Leave"} />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() =>
+                    navigation_param.onOpenRequestModal("Leave Premises")
+                  }
+                >
+                  <ListItemText primary={"Leave Premises"} />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() =>
+                    navigation_param.onOpenRequestModal("Official Business")
+                  }
+                >
+                  <ListItemText primary={"Official Business"} />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() =>
+                    navigation_param.onOpenRequestModal("Overtime")
+                  }
+                >
+                  <ListItemText primary={"Overtime"} />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() =>
+                    navigation_param.onOpenRequestModal("Undertime")
+                  }
+                >
+                  <ListItemText primary={"Undertime"} />
+                </ListItemButton>
+              </ListItem>
+            </List>
+          </Collapse>
+          {modulesAccordion(configure.modules)}
+        </List>
       </Drawer>
       <Main open={open}>
         <DrawerHeader />
-        <div
-          style={{
-            marginLeft: "240px",
-          }}
-        >
-          <Outlet />
-        </div>
+        <Outlet />
       </Main>
     </Box>
   );
