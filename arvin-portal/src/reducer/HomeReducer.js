@@ -1,6 +1,14 @@
 import { HomeConstants } from "../apps/aim/home/constants/Constants";
 const initialState = {
   refresh: false,
+  search: "",
+  page: 0,
+  rowsPerPage: 10,
+  dataList: [],
+  dataListCount: 0,
+  dateFilterStart: "",
+  dateFilterEnd: "",
+  selectedDataList: [],
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

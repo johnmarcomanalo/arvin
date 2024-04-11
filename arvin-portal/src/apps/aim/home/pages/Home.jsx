@@ -121,19 +121,17 @@ export default function Home() {
                 </Stack>
               </Stack>
             </CardContent>
-            <CardActions>
-              <Box sx={{ width: "100%" }}>
-                <Tabs
-                  value={value}
-                  onChange={handleChange}
-                  aria-label="basic tabs example"
-                >
-                  <Tab label="Information" {...a11yProps(0)} />
-                  <Tab label="Attendance" {...a11yProps(1)} />
-                  <Tab label="Requests" {...a11yProps(2)} />
-                </Tabs>
-              </Box>
-            </CardActions>
+            <Box sx={{ width: "100%" }}>
+              <Tabs
+                value={value}
+                onChange={handleChange}
+                aria-label="basic tabs example"
+              >
+                <Tab label="Information" {...a11yProps(0)} />
+                <Tab label="Attendance" {...a11yProps(1)} />
+                <Tab label="Requests" {...a11yProps(2)} />
+              </Tabs>
+            </Box>
           </Card>
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
