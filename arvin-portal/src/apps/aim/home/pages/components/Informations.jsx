@@ -40,19 +40,12 @@ export default function Information() {
                       </TableCell>
                     </TableRow>
 
-                    <TableRow>
-                      <TableCell align="left">
-                        <Typography>Email:</Typography>
-                      </TableCell>
-                      <TableCell align="left"></TableCell>
-                    </TableRow>
-
-                    <TableRow>
+                    <TableRow>add table row information
                       <TableCell align="left">
                         <Typography>Email:</Typography>
                       </TableCell>
                       <TableCell align="left">
-                        <Typography>johndoe@example.com</Typography>
+                        <Typography>michael@example.com</Typography>
                       </TableCell>
                     </TableRow>
 
