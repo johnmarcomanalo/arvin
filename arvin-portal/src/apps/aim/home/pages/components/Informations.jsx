@@ -49,6 +49,15 @@ export default function Information() {
                       </TableCell>
                     </TableRow>
 
+                    <TableRow>add table row information
+                      <TableCell align="left">
+                        <Typography>Email:</Typography>
+                      </TableCell>
+                      <TableCell align="left">
+                        <Typography>joshua@example.com</Typography>
+                      </TableCell>
+                    </TableRow>
+
                     <TableRow>
                       <TableCell align="left">
                         <Typography>Phone:</Typography>
