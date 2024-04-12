@@ -105,6 +105,27 @@
       "component_code": "300304",
       "description": "Component 4",
       "link": "/Modules/SalesDailyOut/Component4"
+    },
+    {
+      "code": "5",
+      "modules_code": "100",
+      "component_code": "100101",
+      "description": "Trucking Matrix",
+      "link": "/Modules/SalesDailyOut/Component4"
+    },
+    {
+      "code": "6",
+      "modules_code": "100",
+      "component_code": "100102",
+      "description": "Item List",
+      "link": "/Modules/SalesDailyOut/Component4"
+    },
+    {
+      "code": "7",
+      "modules_code": "100",
+      "component_code": "100103",
+      "description": "Trucking Matrix",
+      "link": "/Modules/SalesDailyOut/Component4"
     }
   ],
   "subcomponent": [
