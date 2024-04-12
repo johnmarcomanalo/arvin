@@ -5,6 +5,7 @@ import "./App.css";
 import IndexHome from "./apps/aim/home/pages/IndexHome";
 import Navigation from "./apps/navigation/pages/Navigation";
 import Loader from "./components/loading/Loading";
+import CostingItemList from "./apps/aim/costing/itemList/pages/indexItemList";
 const theme = createTheme({
   typography: {
     fontFamily: "Lexend Deca, Helvetica, Arial, sans-serif",
@@ -20,6 +21,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Navigation />}>
               <Route path="/" element={<IndexHome />} />
+              <Route path="/costing/itemlist" element={<CostingItemList />} />
             </Route>
           </Routes>
         </Suspense>
