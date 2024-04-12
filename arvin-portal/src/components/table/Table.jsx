@@ -26,7 +26,7 @@ const Tables = (props) => {
     action,
   } = props;
   return (
-    <Paper sx={{ width: "100%", boxShadow: configure.card_shadow }}>
+    <Paper sx={{ width: "100%", boxShadow: configure.box_shadow }}>
       <TableContainer
         sx={{ maxHeight: 400 }}
         onScroll={() => {

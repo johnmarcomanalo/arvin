@@ -32,7 +32,7 @@ function CustomTabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 0 }}>
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -68,7 +68,7 @@ export default function Home() {
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Card
             sx={{
-              boxShadow: configure.card_shadow,
+              boxShadow: configure.box_shadow,
             }}
           >
             <CardContent>

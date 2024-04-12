@@ -6,6 +6,7 @@ const initialState = {
   rowsPerPage: 10,
   dataList: [],
   dataListCount: 0,
+  filter: "",
   dateFilterStart: "",
   dateFilterEnd: "",
   selectedDataList: [],
