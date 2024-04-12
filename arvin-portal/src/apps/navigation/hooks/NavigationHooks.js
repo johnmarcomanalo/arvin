@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { NavigationContants } from "../constants/Constants";
+import { Constants } from "../../../reducer/Contants";
 import { useSelector } from "react-redux";
 const NavigationHooks = (props) => {
   const dispatch = useDispatch();
@@ -11,7 +11,7 @@ const NavigationHooks = (props) => {
   );
   const onOpenRequestModal = (type) => {
     dispatch({
-      type: NavigationContants.ACTION_NAVIGATION,
+      type: Constants.ACTION_NAVIGATION,
       payload: {
         request_modal: true,
         request_type: type,
@@ -20,7 +20,7 @@ const NavigationHooks = (props) => {
   };
   const onCloseRequestModal = () => {
     dispatch({
-      type: NavigationContants.ACTION_NAVIGATION,
+      type: Constants.ACTION_NAVIGATION,
       payload: {
         request_modal: false,
         request_type: "",

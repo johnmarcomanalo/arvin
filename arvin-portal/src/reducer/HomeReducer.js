@@ -1,4 +1,5 @@
-import { HomeConstants } from "../apps/aim/home/constants/Constants";
+import { Constants } from "./Contants";
+import moment from "moment";
 const initialState = {
   refresh: false,
   search: "",
@@ -7,13 +8,13 @@ const initialState = {
   dataList: [],
   dataListCount: 0,
   filter: "",
-  dateFilterStart: "",
-  dateFilterEnd: "",
+  dateFilterStart: new Date(),
+  dateFilterEnd: new Date(),
   selectedDataList: [],
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
-    case HomeConstants.ACTION_HOME:
+    case Constants.ACTION_HOME:
       return {
         ...state,
         ...action.payload,

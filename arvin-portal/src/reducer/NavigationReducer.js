@@ -1,4 +1,4 @@
-import { NavigationContants } from "../apps/navigation/constants/Constants";
+import { Constants } from "./Contants";
 const initialState = {
   request_modal: false,
   refresh: false,
@@ -6,7 +6,7 @@ const initialState = {
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
-    case NavigationContants.ACTION_NAVIGATION:
+    case Constants.ACTION_NAVIGATION:
       return {
         ...state,
         ...action.payload,

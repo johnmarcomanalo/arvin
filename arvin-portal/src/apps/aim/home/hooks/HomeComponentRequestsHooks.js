@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { HomeConstants } from "../constants/Constants";
+import { Constants } from "../../../../reducer/Contants";
 const HomeComponentRequestsHooks = (props) => {
   const dispatch = useDispatch();
   const search = useSelector((state) => state.HomeReducer.search);
@@ -24,7 +24,7 @@ const HomeComponentRequestsHooks = (props) => {
 
   const handleChangePage = (event, newPage) => {
     dispatch({
-      type: HomeConstants.ACTION_HOME,
+      type: Constants.ACTION_HOME,
       data: {
         page: newPage,
       },
@@ -32,7 +32,7 @@ const HomeComponentRequestsHooks = (props) => {
   };
   const handleChangeRowsPerPage = (event) => {
     dispatch({
-      type: HomeConstants.ACTION_HOME,
+      type: Constants.ACTION_HOME,
       data: {
         rowsPerPage: event.target.value,
       },
