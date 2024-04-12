@@ -12,7 +12,6 @@ import {
 import Grid from "@mui/material/Unstable_Grid2";
 import * as React from "react";
 import configure from "../../../../configure/configure.json";
-import FormTitle from "../../../../../components/formTItle/FormTitle";
 
 export default function Information() {
   return (
