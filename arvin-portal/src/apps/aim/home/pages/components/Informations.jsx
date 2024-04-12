@@ -45,7 +45,7 @@ export default function Information() {
                         <Typography>Email:</Typography>
                       </TableCell>
                       <TableCell align="left">
-                        <Typography>johndoe@example.com</Typography>
+                        <Typography>johndoe12312312321@example.com</Typography>
                       </TableCell>
                     </TableRow>
 
