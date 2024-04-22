@@ -4,7 +4,7 @@ import cancelRequest from "../../../../../api/api";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { encryptLocal } from "../../../../../utils/Encryption";
 import { useDebounce } from "../../../../../utils/HelperUtils";
-const QuotationComponentAnnualQoutaHooks = (props) => {
+const QuotationComponentAnnualQuotaHooks = (props) => {
   const refresh = useSelector((state) => state.QuotationReducer.refresh);
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("p") != null ? searchParams.get("p") : 1;
@@ -49,10 +49,10 @@ const QuotationComponentAnnualQoutaHooks = (props) => {
 
   const columns = [
     { id: "code", label: "Code", align: "right" },
-    { id: "target_year_qouta", label: "Year", align: "right" },
-    { id: "target_annual_qouta", label: "Annual Qouta", align: "right" },
-    { id: "target_monthly_qouta", label: "Monthly Qouta", align: "right" },
-    { id: "target_daily_qouta", label: "Daily Qouta", align: "right" },
+    { id: "target_year_quota", label: "Year", align: "right" },
+    { id: "target_annual_quota", label: "Annual Quota", align: "right" },
+    { id: "target_monthly_quota", label: "Monthly Quota", align: "right" },
+    { id: "target_daily_quota", label: "Daily Quota", align: "right" },
     { id: "status", label: "Status", align: "right" },
   ];
   const onClickOpenAddModal = () => {
@@ -137,4 +137,4 @@ const QuotationComponentAnnualQoutaHooks = (props) => {
   };
 };
 
-export default QuotationComponentAnnualQoutaHooks;
+export default QuotationComponentAnnualQuotaHooks;

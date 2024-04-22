@@ -4,7 +4,7 @@ import cancelRequest from "../../../../../api/api";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { encryptLocal } from "../../../../../utils/Encryption";
 import { useDebounce } from "../../../../../utils/HelperUtils";
-const QuotationComponentAnnualQoutaHooks = (props) => {
+const QuotationComponentAnnualQuotaHooks = (props) => {
   const refresh = useSelector((state) => state.QuotationReducer.refresh);
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("p") != null ? searchParams.get("p") : 1;
@@ -49,9 +49,9 @@ const QuotationComponentAnnualQoutaHooks = (props) => {
 
   const columns = [
     { id: "code", label: "Code", align: "right" },
-    { id: "target_date_qouta", label: "Date", align: "right" },
-    { id: "target_daily_qouta", label: "Daily Qouta", align: "right" },
-    { id: "daily_out_qouta", label: "Daily Out", align: "right" },
+    { id: "target_date_quota", label: "Date", align: "right" },
+    { id: "target_daily_quota", label: "Daily Quota", align: "right" },
+    { id: "daily_out_quota", label: "Daily Out", align: "right" },
     {
       id: "target_status_daily",
       label: "Status Daily Target",
@@ -146,4 +146,4 @@ const QuotationComponentAnnualQoutaHooks = (props) => {
   };
 };
 
-export default QuotationComponentAnnualQoutaHooks;
+export default QuotationComponentAnnualQuotaHooks;
