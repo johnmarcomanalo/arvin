@@ -3,19 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\RefCompanies;
 use Illuminate\Support\Facades\Crypt;
 
-class RefCompaniesController extends Controller
+class LightSecurityController extends Controller
 {
- /**
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        return Crypt::encryptString(RefCompanies::all());
+        //
     }
 
     /**
@@ -32,23 +31,22 @@ class RefCompaniesController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\RefCompanies  $refCompanies
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(RefCompanies $refCompanies)
+    public function show($id)
     {
-        return Crypt::encryptString(RefGender::all());
-
+        //
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\RefCompanies  $refCompanies
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, RefCompanies $refCompanies)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -56,11 +54,35 @@ class RefCompaniesController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\RefCompanies  $refCompanies
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(RefCompanies $refCompanies)
+    public function destroy($id)
     {
         //
+    }
+
+
+    public static function DecryptionAES(Request $request){
+      
+        $decrypted = Crypt::decryptString(json_encode($request->all()));
+        
+        $decrypted = json_decode($decrypted);
+    
+        foreach($decrypted as $key => $value){
+            $request->merge([$key => $value]);
+        }
+
+        return $request;
+    }
+
+    public static function DecryptionAESbyData(Request $request){
+        $decrypted = Crypt::decryptString(json_encode($request->data));
+        $decrypted = json_decode($decrypted);
+
+        foreach($decrypted as $key => $value){
+            $request->merge([$key => $value]);
+        }
+        return $request;
     }
 }

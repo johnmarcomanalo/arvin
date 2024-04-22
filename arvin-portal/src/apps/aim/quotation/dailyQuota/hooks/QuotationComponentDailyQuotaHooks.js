@@ -66,7 +66,7 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
   ];
   const onClickOpenAddModal = () => {
     dispatch({
-      type: Constants.ACTION_Quotation,
+      type: Constants.ACTION_QUOTATION,
       payload: {
         addModal: true,
       },
@@ -74,7 +74,7 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
   };
   const onClickCloseAddModal = () => {
     dispatch({
-      type: Constants.ACTION_Quotation,
+      type: Constants.ACTION_QUOTATION,
       payload: {
         addModal: false,
       },
@@ -82,7 +82,7 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
   };
   const handleChangePage = (event, newPage) => {
     dispatch({
-      type: Constants.ACTION_Quotation,
+      type: Constants.ACTION_QUOTATION,
       payload: {
         page: newPage,
       },
@@ -90,7 +90,7 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
   };
   const handleChangeRowsPerPage = (event) => {
     dispatch({
-      type: Constants.ACTION_Quotation,
+      type: Constants.ACTION_QUOTATION,
       payload: {
         rowsPerPage: event.target.value,
       },

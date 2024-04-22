@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import jwt from "jwt-decode";
 import swal from "sweetalert";
@@ -6,8 +5,8 @@ import Cookies from "universal-cookie";
 import { LoginConstants } from "../apps/auth/login/constants/Constants";
 import { CryptoJSAesDecrypt, CryptoJSAesEncrypt } from "../utils/Encryption";
 const cookies = new Cookies();
-let serverurl = "http://localhost:8000/api/";
-let imagerurl = "http://localhost:8000/api";
+let serverurl = "http://127.0.0.1:8000/api/";
+let imagerurl = "http://127.0.0.1:8000/api";
 
 const CancelToken = axios.CancelToken;
 let source = CancelToken.source();
@@ -136,12 +135,12 @@ export function get(method, dispatch) {
         //     }, 500);
         //   });
         // }
-        dispatch({
-          type: LoginConstants.ACTION_LOGIN_CONSTANT,
-          payload: {
-            isLoading: false,
-          },
-        });
+        // dispatch({
+        //   type: LoginConstants.ACTION_LOGIN_CONSTANT,
+        //   payload: {
+        //     isLoading: false,
+        //   },
+        // });
         console.log(error);
       });
   });
@@ -316,12 +315,7 @@ export function put(method, id, param2, dispatch) {
   });
 }
 
-export function putNoToken(
-  method,
-  id,
-  param2,
-  dispatch
-) {
+export function putNoToken(method, id, param2, dispatch) {
   let param = CryptoJSAesEncrypt(JSON.stringify(param2));
   return new Promise((resolve, reject) => {
     axios
@@ -398,7 +392,7 @@ export function postNoToken(method, param2) {
     axios
       .post(
         serverurl + method,
-        { 
+        {
           param,
         },
         { cancelToken: source.token, headers: headers_no_token }

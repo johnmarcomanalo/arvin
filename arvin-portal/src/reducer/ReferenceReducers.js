@@ -1,21 +1,10 @@
 import { Constants } from "./Contants";
-import moment from "moment";
 const initialState = {
-  refresh: false,
-  search: "",
-  page: 0,
-  rowsPerPage: 10,
-  dataList: [],
-  dataListCount: 0,
-  filter: "",
-  dateFilterStart: new Date(),
-  dateFilterEnd: new Date(),
-  selectedDataList: [],
-  addModal: false,
+  companies: null,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
-    case Constants.ACTION_QUOTATION:
+    case Constants.ACTION_REFERENCE:
       return {
         ...state,
         ...action.payload,
