@@ -20,6 +20,7 @@ import configure from "../../configure/configure.json";
 import Modal from "../../../components/modal/Modal";
 import RequestsForm from "./components/RequestForm";
 import NavigationHooks from "../hooks/NavigationHooks";
+import Link from "@mui/material/Link";
 const drawerWidth = 250;
 const ListItemTxt = styled(ListItemText)(({ theme }) => ({
   color: configure.primary_color,
@@ -141,25 +142,39 @@ export default function Navigation(props) {
       let component = components.map((text, index) => {
         if (values.modules_code === text.modules_code) {
           const isOpen = clickedComponentIndex === index;
+          const hasSubcomponents = configure.subcomponent.some(
+            (subcomponent) =>
+              subcomponent.component_code === text.component_code
+          );
           return (
             <React.Fragment>
               <ListItem disablePadding>
-                <ListItemButton onClick={() => onClickSelectedComponent(index)}>
-                  <ListItemText primary={text.description} />
-                </ListItemButton>
+                {hasSubcomponents ? (
+                  <ListItemButton
+                    onClick={() => onClickSelectedComponent(index)}
+                  >
+                    <ListItemText primary={text.description} />
+                  </ListItemButton>
+                ) : (
+                  <ListItemButton href={text.link} underline="none">
+                    <ListItemText primary={text.description} />
+                  </ListItemButton>
+                )}
               </ListItem>
               <Divider />
 
-              <Collapse
-                in={isOpen}
-                timeout="auto"
-                style={{ backgroundColor: "#f2f2f2de" }}
-                unmountOnExit
-              >
-                <List component="div" disablePadding>
-                  {subcomponentsAccordion(configure.subcomponent, text)}
-                </List>
-              </Collapse>
+              {hasSubcomponents && (
+                <Collapse
+                  in={isOpen}
+                  timeout="auto"
+                  style={{ backgroundColor: "#f2f2f2de" }}
+                  unmountOnExit
+                >
+                  <List component="div" disablePadding>
+                    {subcomponentsAccordion(configure.subcomponent, text)}
+                  </List>
+                </Collapse>
+              )}
             </React.Fragment>
           );
         }

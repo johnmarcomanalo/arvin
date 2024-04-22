@@ -5,11 +5,11 @@
   "color": ["danger", "primary", "danger", "warning", "light", "dark"],
   "card_body": {
     "height": "420px",
-    "white-space": "nowrap"
+    "#F1FAFF-space": "nowrap"
   },
   "table_header_design": {
     "background-color": "#ff7700",
-    "color": "white",
+    "color": "#F1FAFF",
     "border-top": "#ff7700"
   },
   "table_green_arrow": {
@@ -45,6 +45,68 @@
       "description": "SUNDAY"
     }
   ],
+  "months": [
+    {
+      "id": "1",
+      "code": 1,
+      "description": "JANUARY"
+    },
+    {
+      "id": "2",
+      "code": 2,
+      "description": "FEBRUARY"
+    },
+    {
+      "id": "3",
+      "code": 3,
+      "description": "MARCH"
+    },
+    {
+      "id": "4",
+      "code": 4,
+      "description": "APRIL"
+    },
+    {
+      "id": "5",
+      "code": 5,
+      "description": "MAY"
+    },
+    {
+      "id": "6",
+      "code": 6,
+      "description": "JUNE"
+    },
+    {
+      "id": "7",
+      "code": 7,
+      "description": "JULY"
+    },
+    {
+      "id": "8",
+      "code": 8,
+      "description": "AUGUST"
+    },
+    {
+      "id": "9",
+      "code": 9,
+      "description": "SEPTEMBER"
+    },
+    {
+      "id": "10",
+      "code": 10,
+      "description": "OCTOBER"
+    },
+    {
+      "id": "11",
+      "code": 11,
+      "description": "NOVEMBER"
+    },
+    {
+      "id": "12",
+      "code": 12,
+      "description": "DECEMBER"
+    }
+  ],
   "modules": [
     {
       "code": "1",
@@ -55,8 +117,8 @@
     {
       "code": "2",
       "modules_code": "200",
-      "description": "Qoutation",
-      "link": "/Modules/Qoutation"
+      "description": "Quotation",
+      "link": "/Modules/Quotation"
     },
     {
       "code": "3",
@@ -80,24 +142,24 @@
   "component": [
     {
       "code": "1",
-      "modules_code": "300",
-      "component_code": "300301",
-      "description": "Component 1",
-      "link": "/Modules/SalesDailyOut/Component1"
+      "modules_code": "200",
+      "component_code": "200201",
+      "description": "Daily Quota",
+      "link": "/Modules/Quotation/DailyQuota"
     },
     {
       "code": "2",
-      "modules_code": "300",
-      "component_code": "300302",
-      "description": "Component 2",
-      "link": "/Modules/SalesDailyOut/Component2"
+      "modules_code": "200",
+      "component_code": "200202",
+      "description": "Annual Quotation",
+      "link": "/Modules/Quotation/AnnualQuotation"
     },
     {
       "code": "3",
-      "modules_code": "300",
-      "component_code": "300303",
-      "description": "Component 3",
-      "link": "/Modules/SalesDailyOut/Component3"
+      "modules_code": "200",
+      "component_code": "200203",
+      "description": "Reports",
+      "link": ""
     },
     {
       "code": "4",
@@ -159,7 +221,7 @@
   "currency": "₱",
   "gray_color": "#ecf0f1",
   "primary_color": "#093a5c",
-  "secondary_color": "#00bae6",
+  "secondary_color": "#00acd8",
   "tertiary_color": "#F1FAFF",
   "primary_bgcolor": "#F1FAFF",
   "bread_crumbs_font_size": 17,
@@ -168,7 +230,7 @@
   "fullwidth_cart_button": {
     "backgroundImage": "linear-gradient(to right, #c4280c, #f50404)",
     "_comment_backgroundImage": "linear-gradient(to right, #c4280c, #f50404)",
-    "color": "white",
+    "color": "#F1FAFF",
     "padding": "6px 16px",
     "border": "none",
     "borderRadius": "5px",
@@ -188,22 +250,19 @@
     "margin": "2px",
     "width": "100%"
   },
+
   "default_button": {
-    "backgroundImage": "linear-gradient(rgb(192, 57, 43), rgb(231, 76, 60))",
-    "_comment_backgroundImage": "linear-gradient(to right, #c4280c, #f50404)",
-    "color": "white",
-    "padding": "6px 16px",
-    "border": "none",
-    "borderRadius": "5px",
-    "cursor": "pointer",
-    "fontSize": "0.875rem",
-    "transition": "background-color 0.3s",
-    "margin": "2px"
+    "&:hover": {
+      "backgroundColor": "#00bae6"
+    },
+    "color": "#F1FAFF",
+    "backgroundColor": "#00bae6",
+    "boxShadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;"
   },
   "approve_button": {
-    "backgroundImage": "linear-gradient(to right, #00b894, #00b894)",
+    "backgroundImage": "linear-gradient(to right, #00acd8, #00acd8)",
     "_comment_backgroundImage": "linear-gradient(to right, #c4280c, #f50404)",
-    "color": "white",
+    "color": "#F1FAFF",
     "padding": "6px 16px",
     "border": "none",
     "borderRadius": "5px",
@@ -215,7 +274,7 @@
   "disapprove_button": {
     "backgroundImage": "linear-gradient(to right, #d63031, #d63031)",
     "_comment_backgroundImage": "linear-gradient(to right, #c4280c, #f50404)",
-    "color": "white",
+    "color": "#F1FAFF",
     "padding": "6px 16px",
     "border": "none",
     "borderRadius": "5px",
@@ -227,11 +286,11 @@
   "cancel_button": {
     "backgroundImage": "linear-gradient(to right, #95a5a6, #95a5a6)",
     "_comment_backgroundImage": "linear-gradient(to right, #95a5a6, #95a5a6)",
-    "color": "white",
+    "color": "#F1FAFF",
     "padding": "6px 16px",
     "border": "none",
     "borderRadius": "5px",
-    "borderColor": "white",
+    "borderColor": "#F1FAFF",
     "cursor": "pointer",
     "fontSize": "0.875rem",
     "transition": "background-color 0.3s",
@@ -239,5 +298,5 @@
   },
   "box_shadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;",
   "primary_table_color": "#093a5c",
-  "primary_table_text_color": "white"
+  "primary_table_text_color": "#F1FAFF"
 }

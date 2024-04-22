@@ -29,7 +29,7 @@ export const capitalize = (word: string) => {
   });
   return complete;
 };
-export const useDebounce = (value: any, delay: any) => {
+export const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = React.useState(value);
   React.useEffect(() => {
     const handler = setTimeout(() => {

@@ -28,7 +28,6 @@ const Tables = (props) => {
   return (
     <Paper sx={{ width: "100%", boxShadow: configure.box_shadow }}>
       <TableContainer
-        sx={{ maxHeight: 400 }}
         onScroll={() => {
           if (localStorage != "") {
             var elmnt = document.getElementById(id);
@@ -57,6 +56,7 @@ const Tables = (props) => {
                     backgroundColor: configure.primary_table_color,
                     color: configure.primary_table_text_color,
                     textAlign: "left",
+                    whiteSpace: "nowrap",
                   }}
                 >
                   {column.label}
