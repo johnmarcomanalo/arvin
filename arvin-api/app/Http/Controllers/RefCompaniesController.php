@@ -15,7 +15,9 @@ class RefCompaniesController extends Controller
      */
     public function index()
     {
-        return Crypt::encryptString(RefCompanies::all());
+        $data = array();
+        $data = RefCompanies::all();
+        return Crypt::encryptString(json_encode($data));
     }
 
     /**
@@ -35,10 +37,11 @@ class RefCompaniesController extends Controller
      * @param  \App\Models\RefCompanies  $refCompanies
      * @return \Illuminate\Http\Response
      */
-    public function show(RefCompanies $refCompanies)
+    public function show($id)
     {
-        return Crypt::encryptString(RefGender::all());
-
+        $data = array();
+        $data = RefCompanies::all();
+        return Crypt::encryptString(json_encode($data));
     }
 
     /**

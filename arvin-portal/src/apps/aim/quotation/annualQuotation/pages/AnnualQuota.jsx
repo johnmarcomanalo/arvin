@@ -12,8 +12,7 @@ import AddAnnualQuota from "./components/AddAnnualQuota";
 export default function AnnualQuota(props) {
   const { ...quotationComponentAnnualQuota } =
     QuotationComponentAnnualQuotaHooks(props);
-  console.log(quotationComponentAnnualQuota);
-  const theme = useTheme();
+    const theme = useTheme();
   const matches = useMediaQuery("(min-width:600px)");
   return (
     <React.Fragment>

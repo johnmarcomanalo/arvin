@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class RefCompanies extends Model
 {
     use HasFactory;
-
+    protected $guarded = ['id'];
      protected $fillable = [
         'code',
         'description',

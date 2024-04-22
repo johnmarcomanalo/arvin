@@ -15,10 +15,11 @@ export const getCompanies = () => async (dispatch) => {
       loading: false,
     },
   });
-  await dispatch({
-    type: Constants.ACTION_REFERENCE,
-    payload: {
-      companies: res,
-    },
-  });
+  console.log(res);
+  // await dispatch({
+  //   type: Constants.ACTION_REFERENCE,
+  //   payload: {
+  //     companies: res,
+  //   },
+  // });
 };

@@ -2,11 +2,13 @@ import axios from "axios";
 import jwt from "jwt-decode";
 import swal from "sweetalert";
 import Cookies from "universal-cookie";
-import { LoginConstants } from "../apps/auth/login/constants/Constants";
+import { Constant } from "../apps/auth/login/constants/Constants";
 import { CryptoJSAesDecrypt, CryptoJSAesEncrypt } from "../utils/Encryption";
+import { Constants } from "../reducer/Contants";
+import { decryptaes } from "../utils/LightSecurity";
 const cookies = new Cookies();
-let serverurl = "http://127.0.0.1:8000/api/";
-let imagerurl = "http://127.0.0.1:8000/api";
+let serverurl = "http://192.168.3.33:8000/api/";
+let imagerurl = "http://192.168.3.33:8000/api";
 
 const CancelToken = axios.CancelToken;
 let source = CancelToken.source();
@@ -65,9 +67,9 @@ export function loginApi(method, dispatch) {
           swal("Error", response, "error");
         }
         dispatch({
-          type: LoginConstants.ACTION_LOGIN_CONSTANT,
+          type: Constants.ACTION_LOADING,
           payload: {
-            isLoading: false,
+            loading: false,
           },
         });
         reject(error);
@@ -100,21 +102,15 @@ export function fetch(method, dispatch) {
             }, 500);
           });
         }
-        dispatch({
-          type: LoginConstants.ACTION_LOGIN_CONSTANT,
-          payload: {
-            isLoading: false,
-          },
-        });
       });
   });
 }
 export function get(method, dispatch) {
   return new Promise((resolve, reject) => {
     axios
-      .get(serverurl + method, { headers })
+      .get(serverurl + method, { headers_no_token })
       .then((res) => {
-        let decrypt = CryptoJSAesDecrypt(res.data.data);
+        let decrypt = CryptoJSAesDecrypt(res.data);
         resolve(decrypt);
       })
       .catch((error) => {
@@ -135,12 +131,6 @@ export function get(method, dispatch) {
         //     }, 500);
         //   });
         // }
-        // dispatch({
-        //   type: LoginConstants.ACTION_LOGIN_CONSTANT,
-        //   payload: {
-        //     isLoading: false,
-        //   },
-        // });
         console.log(error);
       });
   });
@@ -182,9 +172,9 @@ export function register(method, param2, dispatch) {
           });
         }
         dispatch({
-          type: LoginConstants.ACTION_LOGIN_CONSTANT,
+          type: Constants.ACTION_LOADING,
           payload: {
-            isLoading: false,
+            loading: false,
           },
         });
         reject(error);
@@ -227,9 +217,9 @@ export function post(method, param2, dispatch) {
           //   });
           // }
           // dispatch({
-          //   type: LoginConstants.ACTION_LOGIN_CONSTANT,
+          //   type: Constants.ACTION_LOADING,
           //   payload: {
-          //     isLoading: false,
+          //     loading: false,
           //   },
           // });
           // reject(error);
@@ -305,9 +295,9 @@ export function put(method, id, param2, dispatch) {
           });
         }
         dispatch({
-          type: LoginConstants.ACTION_LOGIN_CONSTANT,
+          type: Constants.ACTION_LOADING,
           payload: {
-            isLoading: false,
+            loading: false,
           },
         });
         reject(error);
@@ -344,9 +334,9 @@ export function putNoToken(method, id, param2, dispatch) {
           });
         }
         dispatch({
-          type: LoginConstants.ACTION_LOGIN_CONSTANT,
+          type: Constants.ACTION_LOADING,
           payload: {
-            isLoading: false,
+            loading: false,
           },
         });
         reject(error);

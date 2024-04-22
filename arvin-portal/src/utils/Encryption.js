@@ -2,6 +2,7 @@ var CryptoJS = require("crypto-js");
 
 let appkey = "0123456789123456";
 let ivKey = "eThWmZq4t7w!z%C*";
+let keys = "+/qS2MCwXdqI+tUuY3oxWDfiwl/n4cm73OlD9ywVnpE=";
 export function CryptoJSAesEncrypt(plain_text) {
   try {
     var salt = CryptoJS.lib.WordArray.random(256);
@@ -26,23 +27,29 @@ export function CryptoJSAesEncrypt(plain_text) {
 
 export function CryptoJSAesDecrypt(encryption) {
   try {
-    let param = atob(encryption);
-    param = JSON.parse(param);
-    let salt = CryptoJS.enc.Base64.parse(param.salt);
-    let iv = CryptoJS.enc.Base64.parse(param.iv);
-    let ciphertext = param.ciphertext;
-    //for more random entropy can use : https://github.com/wwwtyro/cryptico/blob/master/random.js instead CryptoJS random() or another js PRNG
-    var key = CryptoJS.PBKDF2(appkey, salt, {
-      hasher: CryptoJS.algo.SHA512,
-      keySize: 64 / 8,
-      iterations: 999,
+    var key = ivKey;
+    var data = encryption;
+    let encrypted = window.atob(data);
+    encrypted = JSON.parse(encrypted);
+    let iv = CryptoJS.enc.Base64.parse(encrypted.iv);
+    const value = encrypted.value;
+    key = CryptoJS.enc.Base64.parse(key);
+    var decrypted = CryptoJS.AES.decrypt(value, key, {
+      iv: iv,
     });
-    var decrypt = CryptoJS.AES.decrypt(ciphertext, key, { iv: iv });
-    let decryptParse = decrypt.toString(CryptoJS.enc.Utf8);
-    return JSON.parse(decryptParse);
+    console.log({
+      value: value,
+      key: key,
+      data: data,
+      encrypted: encrypted,
+      iv: iv,
+      value: value,
+      decrypted: decrypted,
+    });
+    decrypted = decrypted.toString(CryptoJS.enc.Utf8);
+    return JSON.parse(decrypted);
   } catch (error) {}
 }
-
 export const encryptLocal = (param) => {
   param = JSON.stringify(param);
 

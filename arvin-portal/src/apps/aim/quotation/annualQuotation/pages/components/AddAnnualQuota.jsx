@@ -7,6 +7,7 @@ import InputField from "../../../../../../components/inputFIeld/InputField";
 import InputYearPicker from "../../../../../../components/inputFIeld/InputYearPicker";
 import ButtonComponent from "../../../../../../components/button/Button";
 import configure from "../../../../../configure/configure.json";
+import RefCompaniesHooks from "../../../../reference/hooks/RefCompaniesHooks";
 const formName = "AddAnnualQuota";
 const submit = async (values, dispatch, props) => {
   try {
@@ -17,6 +18,7 @@ const submit = async (values, dispatch, props) => {
 };
 
 let AddAnnualQuota = (props) => {
+  const { ...refCompanies } = RefCompaniesHooks();
   return (
     <React.Fragment>
       <form onSubmit={props.handleSubmit}>

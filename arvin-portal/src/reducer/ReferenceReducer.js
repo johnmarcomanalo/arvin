@@ -1,6 +1,8 @@
 import { Constants } from "./Contants";
 const initialState = {
+  refresh: false,
   companies: null,
+
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
