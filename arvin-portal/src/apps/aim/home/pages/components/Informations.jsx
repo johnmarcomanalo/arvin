@@ -19,9 +19,6 @@ export default function Information() {
     <React.Fragment>
       <Grid container spacing={2} columns={24}>
         <Grid item xs={24} sm={24} md={8} lg={8}>
-          <Stack direction="row" justifyContent="flex-start" spacing={2}>
-            <FormTitle title="Personal Information" />
-          </Stack>
           <Card
             sx={{
               boxShadow: configure.box_shadow,
@@ -29,58 +26,54 @@ export default function Information() {
           >
             <CardContent>
               <TableContainer>
+                <Stack direction="row" justifyContent="flex-start" spacing={2}>
+                  <FormTitle title="Personal Information" />
+                </Stack>
                 <Table size="small" aria-label="simple table">
                   <TableBody>
                     <TableRow>
                       <TableCell align="left">
-                        <Typography>Name:</Typography>
+                        <Typography variant="body1">Name:</Typography>
                       </TableCell>
                       <TableCell align="left">
-                        <Typography>John Doe</Typography>
-                      </TableCell>
-                    </TableRow>
-
-                    <TableRow>add table row information
-                      <TableCell align="left">
-                        <Typography>Email:</Typography>
-                      </TableCell>
-                      <TableCell align="left">
-                        <Typography>michael@example.com</Typography>
-                      </TableCell>
-                    </TableRow>
-
-                    <TableRow>add table row information
-                      <TableCell align="left">
-                        <Typography>Email:</Typography>
-                      </TableCell>
-                      <TableCell align="left">
-                        <Typography>joshua@example.com</Typography>
+                        <Typography variant="body1">John Doe</Typography>
                       </TableCell>
                     </TableRow>
 
                     <TableRow>
                       <TableCell align="left">
-                        <Typography>Phone:</Typography>
+                        <Typography variant="body1">Email:</Typography>
                       </TableCell>
                       <TableCell align="left">
-                        <Typography>09123456789</Typography>
+                        <Typography variant="body1">
+                          joshua@example.com
+                        </Typography>
                       </TableCell>
                     </TableRow>
 
                     <TableRow>
                       <TableCell align="left">
-                        <Typography>Birthday:</Typography>
+                        <Typography variant="body1">Phone:</Typography>
                       </TableCell>
                       <TableCell align="left">
-                        <Typography>26th Oct</Typography>
+                        <Typography variant="body1">09123456789</Typography>
+                      </TableCell>
+                    </TableRow>
+
+                    <TableRow>
+                      <TableCell align="left">
+                        <Typography variant="body1">Birthday:</Typography>
+                      </TableCell>
+                      <TableCell align="left">
+                        <Typography variant="body1">26th Oct</Typography>
                       </TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell align="left">
-                        <Typography>Gender:</Typography>
+                        <Typography variant="body1">Gender:</Typography>
                       </TableCell>
                       <TableCell align="left">
-                        <Typography>Male</Typography>
+                        <Typography variant="body1">Male</Typography>
                       </TableCell>
                     </TableRow>
                   </TableBody>

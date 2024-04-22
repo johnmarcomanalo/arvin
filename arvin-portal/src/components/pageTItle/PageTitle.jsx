@@ -1,18 +1,20 @@
 import { Typography } from "@mui/material";
 import React from "react";
-// interface PageTitleProps {
-//   title: string;
-// }
-
+import configure from "../../apps/configure/configure.json";
 const renderEqualProps = (prevProps, nextProps) => {
   return JSON.stringify(prevProps) === JSON.stringify(nextProps);
 };
 
 const PageTitle = (props) => {
   return (
-    <div>
-      <Typography variant="h6">{props.title}</Typography>
-    </div>
+    <Typography
+      fornt
+      variant="h6"
+      align="left"
+      sx={{ fontWeight: 600, color: configure.primary_color }}
+    >
+      {props.title}
+    </Typography>
   );
 };
 

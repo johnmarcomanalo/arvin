@@ -41,19 +41,15 @@ let Attendance = (props) => {
                   <Field
                     id="dateFilterStart"
                     name="dateFilterStart"
-                    label="Date Start"
+                    label="Filter Date Start"
                     type="date"
-                    component={InputDatePicker}
-                    slotProps={{
-                      textField: {
-                        helperText: "MM/DD/YYYY",
-                      },
-                    }}
+                    component={InputField}
+                    required={false}
                   />
                   <Field
                     id="dateFilterEnd"
                     name="dateFilterEnd"
-                    label="Date End"
+                    label="Filter Date End"
                     type="date"
                     component={InputField}
                     required={false}
