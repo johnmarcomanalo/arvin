@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class QuotationAnnualQuotas extends Model
 {
     use HasFactory;
+    protected $guarded = ['id'];
 }

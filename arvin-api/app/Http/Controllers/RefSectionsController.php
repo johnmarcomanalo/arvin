@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\RefSections;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class RefSectionsController extends Controller
 {
@@ -34,9 +35,9 @@ class RefSectionsController extends Controller
      * @param  \App\Models\RefSections  $refSections
      * @return \Illuminate\Http\Response
      */
-    public function show(RefSections $refSections)
+    public function show($id)
     {
-        //
+        return Crypt::encryptString($this->do_show($id));
     }
 
     /**
@@ -60,5 +61,12 @@ class RefSectionsController extends Controller
     public function destroy(RefSections $refSections)
     {
         //
+    }
+       public function do_show($id){
+        $data = RefSections::where('department_code','=',$id)->get();
+        if(empty($data)){
+         $data = array();
+        }
+        return $data;
     }
 }

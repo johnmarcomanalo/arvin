@@ -19,6 +19,7 @@ class CreateQuotationAnnualQuotasTable extends Migration
             $table->string('company_code')->nullable();
             $table->string('business_unit_code')->nullable();
             $table->string('team_code')->nullable();
+            $table->string('department_code')->nullable();
             $table->string('section_code')->nullable();
             $table->string('subsection_code')->nullable();
             $table->string('target_year_quota');

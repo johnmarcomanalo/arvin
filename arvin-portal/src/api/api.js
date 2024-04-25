@@ -5,14 +5,15 @@ import Cookies from "universal-cookie";
 import { Constant } from "../apps/auth/login/constants/Constants";
 import { CryptoJSAesDecrypt, CryptoJSAesEncrypt } from "../utils/Encryption";
 import { Constants } from "../reducer/Contants";
-import { decryptaes } from "../utils/LightSecurity";
+import { decryptaes, encryptaes } from "../utils/LightSecurity";
+import configure from "../apps/configure/configure.json";
 const cookies = new Cookies();
 let serverurl = "http://192.168.3.33:8000/api/";
 let imagerurl = "http://192.168.3.33:8000/api";
-
 const CancelToken = axios.CancelToken;
 let source = CancelToken.source();
 let token = "";
+// let token = "K8gwPfRm/Q1QIULV2kQUVOcD21VPDYnWws2jBJ2Anmc=";
 token = cookies.get("jwt_authorization");
 
 let headers = {
@@ -46,16 +47,17 @@ export function loginApi(method, dispatch) {
       .get(serverurl + method, { cancelToken: source.token })
       .then((res) => {
         //Decrypt the response data.
-        let decrypt = CryptoJSAesDecrypt(res.data.data);
-        localStorage.setItem("u", res.data.data);
-        //Save the access token in cookies
-        const decode = jwt(res.data.access_token);
-        cookies.set("jwt_authorization", res.data.access_token, {
-          expires: new Date(decode.exp * 1000),
-        });
+        console.log(res);
+        // let decrypt = CryptoJSAesDecrypt(res.data.data);
+        // localStorage.setItem("u", res.data.data);
+        // //Save the access token in cookies
+        // const decode = jwt(res.data.access_token);
+        // cookies.set("jwt_authorization", res.data.access_token, {
+        //   expires: new Date(decode.exp * 1000),
+        // });
 
         // swal(res.data.title, res.data.message, res.data.status);
-        resolve(decrypt);
+        // resolve(decrypt);
       })
       .catch((error) => {
         //Handle the error request
@@ -79,59 +81,30 @@ export function loginApi(method, dispatch) {
 export function fetch(method, dispatch) {
   return new Promise((resolve, reject) => {
     axios
-      .get(serverurl + method)
-      .then((res) => {
-        let decrypt = CryptoJSAesDecrypt(res.data.data);
-        resolve(decrypt);
+      .get(serverurl + method, { headers })
+      .then((response) => {
+        let encryptedData = response.data;
+        let decryptedData = CryptoJSAesDecrypt(encryptedData);
+        resolve(decryptedData); // Resolve the promise with the decrypted data
       })
       .catch((error) => {
-        //Handle the error request
-        const response = error.response.data;
-        if (response.title) {
-          swal(response.title, response.message, response.status);
-        } else if (error.response.status != 403) {
-          swal("Error", response, "error");
-        }
-        if (error.response.status == "403") {
-          cookies.remove("jwt_authorization");
-          swal("Error", "Token is not valid", "error").then(() => {
-            localStorage.clear();
-            window.location.href = "/";
-            setTimeout(() => {
-              window.location.reload();
-            }, 500);
-          });
-        }
+        console.log(error);
+        reject(error);
       });
   });
 }
-export function get(method, dispatch) {
+export function get(method) {
   return new Promise((resolve, reject) => {
     axios
-      .get(serverurl + method, { headers_no_token })
-      .then((res) => {
-        let decrypt = CryptoJSAesDecrypt(res.data);
-        resolve(decrypt);
+      .get(serverurl + method, { headers })
+      .then((response) => {
+        let encryptedData = response.data;
+        let decryptedData = CryptoJSAesDecrypt(encryptedData);
+        resolve(decryptedData); // Resolve the promise with the decrypted data
       })
       .catch((error) => {
-        //Handle the error request
-        // const response = error.response.data;
-        // if (response.title) {
-        //   swal(response.title, response.message, response.status);
-        // } else if (error.response.status != 403) {
-        //   swal("Error", response, "error");
-        // }
-        // if (error.response.status == "403") {
-        //   cookies.remove("jwt_authorization");
-        //   swal("Error", "Token is not valid", "error").then(() => {
-        //     localStorage.clear();
-        //     window.location.href = "/";
-        //     setTimeout(() => {
-        //       window.location.reload();
-        //     }, 500);
-        //   });
-        // }
         console.log(error);
+        reject(error);
       });
   });
 }
@@ -182,9 +155,13 @@ export function register(method, param2, dispatch) {
   });
 }
 export function post(method, param2, dispatch) {
-  let param = CryptoJSAesEncrypt(JSON.stringify(param2));
+  let param = encryptaes(JSON.stringify(param2));
   return new Promise((resolve, reject) => {
     try {
+      console.log(serverurl);
+      console.log(method);
+      console.log(param2);
+      console.log(headers);
       axios
         .post(
           serverurl + method,
@@ -194,9 +171,10 @@ export function post(method, param2, dispatch) {
           { headers }
         )
         .then((res) => {
-          let decrypt = CryptoJSAesDecrypt(res.data.data);
-          res.data.data = decrypt;
-          resolve(res.data);
+          console.log(res);
+          // let decrypt = CryptoJSAesDecrypt(res.data.data);
+          // res.data.data = decrypt;
+          // resolve(res.data);
         })
         .catch((error) => {
           //Handle the error request
@@ -388,9 +366,10 @@ export function postNoToken(method, param2) {
         { cancelToken: source.token, headers: headers_no_token }
       )
       .then((res) => {
-        let decrypt = CryptoJSAesDecrypt(res.data.data);
-        res.data.data = decrypt;
-        resolve(res.data);
+        console.log(res);
+        // let decrypt = CryptoJSAesDecrypt(res.data.data);
+        // res.data.data = decrypt;
+        // resolve(res.data);
       })
       .catch((error) => {
         //Handle the error request

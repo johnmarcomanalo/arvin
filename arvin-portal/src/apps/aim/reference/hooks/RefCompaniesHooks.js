@@ -14,7 +14,7 @@ const RefCompaniesHooks = () => {
     try {
       await dispatch(getRefCompanies());
     } catch (error) {
-      console.error(error);
+      await console.error(error);
     }
   };
   useEffect(() => {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\RefDepartments;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class RefDepartmentsController extends Controller
 {
@@ -34,9 +35,9 @@ class RefDepartmentsController extends Controller
      * @param  \App\Models\RefDepartments  $refDepartments
      * @return \Illuminate\Http\Response
      */
-    public function show(RefDepartments $refDepartments)
+    public function show($id)
     {
-        //
+        return Crypt::encryptString($this->do_show($id));
     }
 
     /**
@@ -60,5 +61,13 @@ class RefDepartmentsController extends Controller
     public function destroy(RefDepartments $refDepartments)
     {
         //
+    }
+
+    public function do_show($id){
+        $data = RefDepartments::where('team_code','=',$id)->get();
+        if(empty($data)){
+         $data = array();
+        }
+        return $data;
     }
 }

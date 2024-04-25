@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\RefBusinessUnits;
+use Illuminate\Support\Facades\Crypt;
+
 
 class RefBusinessUnitsController extends Controller
 {
@@ -33,9 +36,10 @@ class RefBusinessUnitsController extends Controller
      * @param  \App\Models\RefBusinessUnitsController  $RefBusinessUnitsController
      * @return \Illuminate\Http\Response
      */
-    public function show(RefBusinessUnitsController $RefBusinessUnitsController)
+       
+    public function show($id)
     {
-        //
+        return Crypt::encryptString($this->do_show($id));
     }
 
     /**
@@ -59,5 +63,13 @@ class RefBusinessUnitsController extends Controller
     public function destroy(RefBusinessUnitsController $RefBusinessUnitsController)
     {
         //
+    }
+
+
+    public function do_show($id){
+        $data = RefBusinessUnits::where('company_code','=',$id)->get();
+        if(!empty($data)){
+            return $data;
+        }
     }
 }

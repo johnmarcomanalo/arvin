@@ -6,6 +6,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SyncIcon from "@mui/icons-material/Sync";
 import HelpIcon from "@mui/icons-material/Help";
+import LoginIcon from "@mui/icons-material/Login";
 const ButtonComponent = (props) => {
   const { ...params } = props;
   let icon = null;
@@ -21,6 +22,9 @@ const ButtonComponent = (props) => {
       break;
     case "update":
       icon = <SyncIcon />;
+      break;
+    case "login":
+      icon = <LoginIcon />;
       break;
     default:
       icon = <HelpIcon />;

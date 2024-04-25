@@ -17,7 +17,9 @@ class RefCompaniesController extends Controller
     {
         $data = array();
         $data = RefCompanies::all();
-        return Crypt::encryptString(json_encode($data));
+        if(!empty($data)){
+          return Crypt::encryptString(json_encode($data));
+        }
     }
 
     /**
@@ -39,9 +41,8 @@ class RefCompaniesController extends Controller
      */
     public function show($id)
     {
-        $data = array();
-        $data = RefCompanies::all();
-        return Crypt::encryptString(json_encode($data));
+
+
     }
 
     /**

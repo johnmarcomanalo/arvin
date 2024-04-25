@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\RefSections;
+use Illuminate\Support\Facades\DB;
 
 class RefSectionsSeeder extends Seeder
 {
@@ -14,6 +15,7 @@ class RefSectionsSeeder extends Seeder
      */
     public function run()
     {
+        DB::table('ref_sections')->delete();
         RefSections::insert([
             [
             'code'=> '1',
@@ -251,7 +253,7 @@ class RefSectionsSeeder extends Seeder
             'business_unit_code'=> '1',
             'team_code'=> '2',
             'department_code'=> '10',
-            'description' => '  ',
+            'description' => 'Luzon',
             'added_by' => env('DEFAULT_USER'),
             'modified_by' => env('DEFAULT_USER')],
 

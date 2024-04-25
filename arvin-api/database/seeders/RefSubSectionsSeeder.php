@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\RefSubSections;
+use Illuminate\Support\Facades\DB;
 
 class RefSubSectionsSeeder extends Seeder
 {
@@ -14,6 +15,7 @@ class RefSubSectionsSeeder extends Seeder
      */
     public function run()
     {
+        DB::table('ref_sub_sections')->delete();
         RefSubSections::insert([
         [
             'code'=> '1',

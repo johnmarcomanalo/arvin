@@ -20,7 +20,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 const styleSheet = {
   label: { fontSize: 13 },
 };
-const InputField = (props) => {
+const PasswordField = (props) => {
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -60,4 +60,4 @@ const InputField = (props) => {
   );
 };
 
-export default InputField;
+export default PasswordField;

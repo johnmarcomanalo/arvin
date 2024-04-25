@@ -1,97 +1,208 @@
 import { Grid, Stack } from "@mui/material";
 import * as React from "react";
 import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ComboBox from "../../../../../../components/autoComplete/AutoComplete";
-import { Field, formValueSelector, reduxForm } from "redux-form";
+import { Field, change, formValueSelector, reduxForm } from "redux-form";
 import InputField from "../../../../../../components/inputFIeld/InputField";
 import InputYearPicker from "../../../../../../components/inputFIeld/InputYearPicker";
 import ButtonComponent from "../../../../../../components/button/Button";
 import configure from "../../../../../configure/configure.json";
 import RefCompaniesHooks from "../../../../reference/hooks/RefCompaniesHooks";
+import RefBusinessUnitsHooks from "../../../../reference/hooks/RefBusinessUnitsHooks";
+import RefTeamsHooks from "../../../../reference/hooks/RefTeamsHooks";
+import RefDepartmentsHooks from "../../../../reference/hooks/RefDepartmentsHooks";
+import RefSectionsHooks from "../../../../reference/hooks/RefSectionsHooks";
+import RefSubSectionsHooks from "../../../../reference/hooks/RefSubSectionsHooks";
+import { Constants } from "../../../../../../reducer/Contants";
+import QuotationComponentAnnualQuotaHooks from "../../hooks/QuotationComponentAnnualQuotaHooks";
+import { postAnnualQouta } from "../../actions/QuotationComponentAnnualQuotaActions";
+import moment from "moment";
 const formName = "AddAnnualQuota";
 const submit = async (values, dispatch, props) => {
   try {
-    await console.log(values);
+    values.target_year_quota = moment(values.target_year_quota).format("YYYY");
+    const res = await dispatch(postAnnualQouta(values));
+    await console.log({ values: values, res: res });
   } catch (error) {
     console.log(error);
   }
 };
 
 let AddAnnualQuota = (props) => {
+  const dispatch = useDispatch();
   const { ...refCompanies } = RefCompaniesHooks();
+  const { ...refBusinessUnits } = RefBusinessUnitsHooks();
+  const { ...refTeams } = RefTeamsHooks();
+  const { ...refDepartments } = RefDepartmentsHooks();
+  const { ...refSections } = RefSectionsHooks();
+  const { ...refSubSections } = RefSubSectionsHooks();
+  const { ...quotationComponentAnnualQuota } =
+    QuotationComponentAnnualQuotaHooks(props);
+
+  const target_annual_quota = useSelector(
+    (state) => state.QuotationReducer.target_annual_quota
+  );
+  const target_month_quota = useSelector(
+    (state) => state.QuotationReducer.target_month_quota
+  );
+  const target_day_quota = useSelector(
+    (state) => state.QuotationReducer.target_day_quota
+  );
+
+  props.dispatch(change(formName, "target_annual_quota", target_annual_quota));
+  props.dispatch(change(formName, "target_month_quota", target_month_quota));
+  props.dispatch(change(formName, "target_day_quota", target_day_quota));
+  props.dispatch(change(formName, "added_by", 1));
+  props.dispatch(change(formName, "modified_by", 1));
   return (
     <React.Fragment>
       <form onSubmit={props.handleSubmit}>
+        {/* <CSRFToken /> */}
         <Grid container spacing={2}>
           <Grid container item xs={12} sm={12} md={12} lg={12}>
             <Grid item xs={12} md={12}>
               <Field
-                id="company_code"
-                name="company_code"
+                id="company"
+                name="company"
                 label="Company"
-                options={[]}
+                options={refCompanies?.companies}
                 getOptionLabel={(option) =>
-                  option.description ? option.description : ""
+                  option?.description ? option?.description : ""
                 }
                 required={true}
                 component={ComboBox}
+                onChangeHandle={(e, newValue) => {
+                  if (newValue?.description) {
+                    dispatch({
+                      type: Constants.ACTION_REFERENCE,
+                      payload: {
+                        teams: [],
+                        departments: [],
+                        sections: [],
+                        subsections: [],
+                      },
+                    });
+                    refBusinessUnits.GetReferenceBusinessUnits(newValue.code);
+                    props.change("company_code", newValue.code);
+                    props.change("business_unit", "");
+                    props.change("business_unit_code", "");
+                    props.change("team", "");
+                    props.change("team_code", "");
+                    props.change("department", "");
+                    props.change("department_code", "");
+                    props.change("section", "");
+                    props.change("section_code", "");
+                    props.change("subsection_code", "");
+                    props.change("subsection", "");
+                  }
+                }}
               />
             </Grid>
             <Grid item xs={12} md={12}>
               <Field
-                id="business_unit_code"
-                name="business_unist_code"
+                id="business_unit"
+                name="business_unit"
                 label="Business Unit"
-                options={[]}
+                options={refBusinessUnits?.business_units}
                 getOptionLabel={(option) =>
                   option.description ? option.description : ""
                 }
                 required={true}
                 component={ComboBox}
+                onChangeHandle={(e, newValue) => {
+                  if (newValue?.description) {
+                    refTeams.GetReferenceTeams(newValue.code);
+                    props.change("business_unit_code", newValue.code);
+                    props.change("team", "");
+                    props.change("team_code", "");
+                  }
+                }}
               />
             </Grid>
             <Grid item xs={12} md={12}>
               <Field
-                id="team_code"
-                name="team_code"
+                id="team"
+                name="team"
                 label="Team"
-                options={[]}
+                options={refTeams?.teams}
                 getOptionLabel={(option) =>
                   option.description ? option.description : ""
                 }
                 required={true}
                 component={ComboBox}
+                onChangeHandle={(e, newValue) => {
+                  if (newValue?.description) {
+                    refDepartments.GetReferenceDepartments(newValue.code);
+                    props.change("team_code", newValue.code);
+                    props.change("department", "");
+                    props.change("department_code", "");
+                  }
+                }}
               />
             </Grid>
             <Grid item xs={12} md={12}>
               <Field
-                id="section_code"
-                name="section_code"
+                id="department"
+                name="department"
+                label="Department"
+                options={refDepartments?.departments}
+                getOptionLabel={(option) =>
+                  option.description ? option.description : ""
+                }
+                required={true}
+                component={ComboBox}
+                onChangeHandle={(e, newValue) => {
+                  if (newValue?.description) {
+                    refSections.GetReferenceSections(newValue.code);
+                    props.change("department_code", newValue.code);
+                    props.change("section", "");
+                    props.change("section_code", "");
+                  }
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} md={12}>
+              <Field
+                id="section"
+                name="section"
                 label="Section"
-                options={[]}
+                options={refSections?.sections}
                 getOptionLabel={(option) =>
                   option.description ? option.description : ""
                 }
                 required={true}
                 component={ComboBox}
+                onChangeHandle={(e, newValue) => {
+                  if (newValue?.description) {
+                    refSubSections.GetReferenceSubSections(newValue.code);
+                    props.change("section_code", newValue.code);
+                    props.change("subsection_code", "");
+                    props.change("subsection", "");
+                  }
+                }}
               />
             </Grid>
+            {refSubSections?.subsections.length > 0 ? (
+              <Grid item xs={12} md={12}>
+                <Field
+                  id="subsection_code"
+                  name="subsection_code"
+                  label="Sub-section"
+                  options={refSubSections?.subsections}
+                  getOptionLabel={(option) =>
+                    option.description ? option.description : ""
+                  }
+                  required={true}
+                  component={ComboBox}
+                />
+              </Grid>
+            ) : null}
+
             <Grid item xs={12} md={12}>
               <Field
-                id="subsection_code"
-                name="subsection_code"
-                label="Sub-section"
-                options={[]}
-                getOptionLabel={(option) =>
-                  option.description ? option.description : ""
-                }
-                required={true}
-                component={ComboBox}
-              />
-            </Grid>
-            <Grid item xs={12} md={12}>
-              <Field
-                name="selectedYear"
+                id="target_year_quota"
+                name="target_year_quota"
                 label="Select Year"
                 required={true}
                 component={InputYearPicker}
@@ -100,18 +211,21 @@ let AddAnnualQuota = (props) => {
             </Grid>
             <Grid item xs={12} md={12}>
               <Field
-                id="target_year_Quota"
-                name="target_year_Quota"
-                label="Target Year Quota"
+                id="target_annual_quota"
+                name="target_annual_quota"
+                label="Target Annual Quota"
                 type="number"
                 required={true}
                 component={InputField}
+                onChange={
+                  quotationComponentAnnualQuota.GetMonthlyAndDailyQoutaByAnnualQouta
+                }
               />
             </Grid>
             <Grid item xs={12} md={12}>
               <Field
-                id="target_month_Quota"
-                name="target_month_Quota"
+                id="target_month_quota"
+                name="target_month_quota"
                 label="Target Month Quota"
                 type="number"
                 required={true}
@@ -121,8 +235,8 @@ let AddAnnualQuota = (props) => {
             </Grid>
             <Grid item xs={12} md={12}>
               <Field
-                id="target_day_Quota"
-                name="target_day_Quota"
+                id="target_day_quota"
+                name="target_day_quota"
                 label="Target Day Quota"
                 type="number"
                 required={true}

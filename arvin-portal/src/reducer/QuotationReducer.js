@@ -12,6 +12,9 @@ const initialState = {
   dateFilterEnd: new Date(),
   selectedDataList: [],
   addModal: false,
+  target_annual_quota: null,
+  target_month_quota: null,
+  target_day_quota: null,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

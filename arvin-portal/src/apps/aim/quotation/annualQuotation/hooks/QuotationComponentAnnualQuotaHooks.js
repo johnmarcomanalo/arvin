@@ -4,8 +4,14 @@ import cancelRequest from "../../../../../api/api";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { encryptLocal } from "../../../../../utils/Encryption";
 import { useDebounce } from "../../../../../utils/HelperUtils";
+import { monthlyAndDailyQoutaByAnnualQouta } from "../actions/QuotationComponentAnnualQuotaActions";
+import React from "react";
 const QuotationComponentAnnualQuotaHooks = (props) => {
   const refresh = useSelector((state) => state.QuotationReducer.refresh);
+  const [state, setState] = React.useState({
+    debounceTimer: null,
+    debounceDelay: 1000,
+  });
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("p") != null ? searchParams.get("p") : 1;
   const rowsPerPage =
@@ -37,6 +43,8 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
   const dataListCount = useSelector(
     (state) => state.QuotationReducer.dataListCount
   );
+
+
   const dateFilterStart = useSelector(
     (state) => state.QuotationReducer.dateFilterStart
   );
@@ -103,6 +111,22 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
       f: filterQuery,
     });
   };
+  const debounce = (func, delay) => {
+    clearTimeout(state.debounceTimer);
+    state.debounceTimer = setTimeout(func, delay);
+  };
+  const GetMonthlyAndDailyQoutaByAnnualQouta = async (e) => {
+    try {
+      let { value } = e.target;
+      if (value > 0) {
+        await debounce(() => {
+          dispatch(monthlyAndDailyQoutaByAnnualQouta(value));
+        }, state.debounceDelay);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   //  const GetHomeServicesList = async () => {
   //   const values = getListParam();
   //   try {
@@ -134,6 +158,7 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
     onChangeSearch,
     onClickOpenAddModal,
     onClickCloseAddModal,
+    GetMonthlyAndDailyQoutaByAnnualQouta,
   };
 };
 

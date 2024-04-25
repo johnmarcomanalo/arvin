@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\RefTeams;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Crypt;
 class RefTeamsController extends Controller
 {
     /**
@@ -25,7 +25,7 @@ class RefTeamsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
     }
 
     /**
@@ -34,11 +34,10 @@ class RefTeamsController extends Controller
      * @param  \App\Models\RefTeams  $refTeams
      * @return \Illuminate\Http\Response
      */
-    public function show(RefTeams $refTeams)
+    public function show( $id)
     {
-        //
+        return Crypt::encryptString($this->do_show($id));
     }
-
     /**
      * Update the specified resource in storage.
      *
@@ -60,5 +59,13 @@ class RefTeamsController extends Controller
     public function destroy(RefTeams $refTeams)
     {
         //
+    }
+
+    public function do_show($id){
+        $data = RefTeams::where('business_unit_code','=',$id)->get();
+        if(empty($data)){
+         $data = array();
+        }
+        return $data;
     }
 }

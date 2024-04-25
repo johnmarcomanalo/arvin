@@ -5,7 +5,7 @@ export function decryptaes(data) {
   if (data == "" || data == null) {
     return [];
   }
-  var key = config.key;
+  var key = config.ckey;
   var data = data;
 
   let encrypted = atob(data);
@@ -21,26 +21,27 @@ export function decryptaes(data) {
 }
 
 export function decryptaesString(data) {
-  if (data == "" || data == null) {
-    return [];
-  }
-  var key = config.key;
-  var data = data;
-  let encrypted = atob(data);
-  encrypted = JSON.parse(encrypted);
-  const iv = CryptoJS.enc.Base64.parse(encrypted.iv);
-  const value = encrypted.value;
-  key = CryptoJS.enc.Base64.parse(key);
-  var decrypted = CryptoJS.AES.decrypt(value, key, {
-    iv: iv,
-  });
-  decrypted = decrypted.toString(CryptoJS.enc.Utf8);
-  return decrypted;
+  // if (data == "" || data == null) {
+  //   return [];
+  // }
+  // console.log("data", data);
+  // var key = config.key;
+  // var data = data;
+  // let encrypted = window.atob(data);
+  // encrypted = JSON.parse(encrypted);
+  // const iv = CryptoJS.enc.Base64.parse(encrypted.iv);
+  // const value = encrypted.value;
+  // key = CryptoJS.enc.Base64.parse(key);
+  // var decrypted = CryptoJS.AES.decrypt(value, key, {
+  //   iv: iv,
+  // });
+  // decrypted = decrypted.toString(CryptoJS.enc.Utf8);
+  // return decrypted;
 }
 
 export function encryptaes(data) {
   let iv = CryptoJS.lib.WordArray.random(16),
-    key = CryptoJS.enc.Base64.parse(config.key);
+    key = CryptoJS.enc.Base64.parse(config.ckey);
   let options = {
     iv: iv,
     mode: CryptoJS.mode.CBC,

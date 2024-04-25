@@ -1,19 +1,15 @@
 import { loginApi, post, postNoToken } from "../../../../api/api";
 import { encryptLocal } from "../../../../utils/Encryption";
-export const onLogin = (value) => async (dispatch) => {
+export const onLogin = (values) => async (dispatch) => {
   const username = encryptLocal(values.username);
   const password = encryptLocal(values.password);
-  const userType = encryptLocal(values.user_type);
   const res = await loginApi(
     "login/?u=" +
       username +
       "&p=" +
       password +
-      "&uType=" +
-      userType +
       "&device_id=" +
-      values.device_id,
-    dispatch
+      values.device_id
   );
   return res;
 };

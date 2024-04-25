@@ -1,16 +1,12 @@
 import { Constants } from "./Contants";
+const storedUserData = localStorage.getItem("userData");
 const initialState = {
-  refresh: false,
-  companies: [],
-  business_units: [],
-  teams: [],
-  departments: [],
-  sections: [],
-  subsections: [],
+  token: "",
+  user: storedUserData ? JSON.parse(storedUserData) : null,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
-    case Constants.ACTION_REFERENCE:
+    case Constants.ACTION_AUTHENTICATION:
       return {
         ...state,
         ...action.payload,

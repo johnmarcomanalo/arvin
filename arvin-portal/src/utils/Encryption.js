@@ -1,10 +1,10 @@
+import configure from "../apps/configure/configure.json";
 var CryptoJS = require("crypto-js");
-
-let appkey = "0123456789123456";
-let ivKey = "eThWmZq4t7w!z%C*";
-let keys = "+/qS2MCwXdqI+tUuY3oxWDfiwl/n4cm73OlD9ywVnpE=";
+let appkey = configure.ckey;
+let ivKey = configure.ckey;
 export function CryptoJSAesEncrypt(plain_text) {
   try {
+    console.log(plain_text);
     var salt = CryptoJS.lib.WordArray.random(256);
     var iv = CryptoJS.lib.WordArray.random(16);
     var key = CryptoJS.PBKDF2(appkey, salt, {
@@ -18,36 +18,29 @@ export function CryptoJSAesEncrypt(plain_text) {
       salt: CryptoJS.enc.Base64.stringify(salt),
       iv: CryptoJS.enc.Base64.stringify(iv),
     };
-
     data = JSON.stringify(data);
     data = CryptoJS.enc.Utf8.parse(data);
+    console.log(CryptoJS.enc.Base64.stringify(data));
     return CryptoJS.enc.Base64.stringify(data);
   } catch (error) {}
 }
 
 export function CryptoJSAesDecrypt(encryption) {
   try {
-    var key = ivKey;
-    var data = encryption;
-    let encrypted = window.atob(data);
+    var key = configure.ckey;
+    let encrypted = window.atob(encryption);
     encrypted = JSON.parse(encrypted);
     let iv = CryptoJS.enc.Base64.parse(encrypted.iv);
     const value = encrypted.value;
     key = CryptoJS.enc.Base64.parse(key);
+
     var decrypted = CryptoJS.AES.decrypt(value, key, {
       iv: iv,
     });
-    console.log({
-      value: value,
-      key: key,
-      data: data,
-      encrypted: encrypted,
-      iv: iv,
-      value: value,
-      decrypted: decrypted,
-    });
+
     decrypted = decrypted.toString(CryptoJS.enc.Utf8);
-    return JSON.parse(decrypted);
+    decrypted = JSON.parse(decrypted);
+    return decrypted;
   } catch (error) {}
 }
 export const encryptLocal = (param) => {

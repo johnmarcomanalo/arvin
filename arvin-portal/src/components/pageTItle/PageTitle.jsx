@@ -8,7 +8,6 @@ const renderEqualProps = (prevProps, nextProps) => {
 const PageTitle = (props) => {
   return (
     <Typography
-      fornt
       variant="h6"
       align="left"
       sx={{ fontWeight: 600, color: configure.primary_color }}
