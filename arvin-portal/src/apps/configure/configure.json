@@ -142,22 +142,22 @@
   "component": [
     {
       "code": "1",
-      "modules_code": "200",
-      "component_code": "200201",
-      "description": "Daily Quota",
-      "link": "/Modules/Quotation/DailyQuota"
+      "modules_code": "300",
+      "component_code": "300201",
+      "description": "Daily Sales",
+      "link": "/Modules/SalesDailyOut/DailySales"
     },
     {
       "code": "2",
-      "modules_code": "200",
-      "component_code": "200202",
-      "description": "Annual Quotation",
-      "link": "/Modules/Quotation/AnnualQuotation"
+      "modules_code": "300",
+      "component_code": "300202",
+      "description": "Annual Settings Sale",
+      "link": "/Modules/SalesDailyOut/AnnualSettingSale"
     },
     {
       "code": "3",
-      "modules_code": "200",
-      "component_code": "200203",
+      "modules_code": "300",
+      "component_code": "300203",
       "description": "Reports",
       "link": ""
     },
@@ -208,7 +208,15 @@
   ],
 
   "system": {
-    "api": "http://api.watersystem.gzonetechph.com/api/"
+    "port": "8000",
+    "front_end_port": "3000",
+    "apiUrl": "localhost",
+    "apiDomain": "meralcoecozoneapi.ums-ph.com",
+    "apiFrontDomain": "meralcoecozone.ums-ph.com",
+    "testApiDomain": "test-meralco-api.ums-ph.com",
+    "testDomain": "test-meralco.ums-ph.com",
+    "devApiDomain": "dev-meralco-api.ums-ph.com",
+    "devDomain": "dev-meralco.ums-ph.com"
   },
   "error_message": {
     "default": "Something went wrong!"
@@ -299,6 +307,5 @@
   "box_shadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;",
   "primary_table_color": "#093a5c",
   "primary_table_text_color": "#F1FAFF",
-  "key": "pBEQezr7jLLOU3efiipRrBB8QFJwlYmIt5PPqr9cbbypyUTw6g0Uqd81mZH62wIs",
-  "ckey": "K8gwPfRm/Q1QIULV2kQUVOcD21VPDYnWws2jBJ2Anmc="
+  "key": "K8gwPfRm/Q1QIULV2kQUVOcD21VPDYnWws2jBJ2Anmc="
 }

@@ -4,7 +4,6 @@ let appkey = configure.ckey;
 let ivKey = configure.ckey;
 export function CryptoJSAesEncrypt(plain_text) {
   try {
-    console.log(plain_text);
     var salt = CryptoJS.lib.WordArray.random(256);
     var iv = CryptoJS.lib.WordArray.random(16);
     var key = CryptoJS.PBKDF2(appkey, salt, {
@@ -20,7 +19,6 @@ export function CryptoJSAesEncrypt(plain_text) {
     };
     data = JSON.stringify(data);
     data = CryptoJS.enc.Utf8.parse(data);
-    console.log(CryptoJS.enc.Base64.stringify(data));
     return CryptoJS.enc.Base64.stringify(data);
   } catch (error) {}
 }

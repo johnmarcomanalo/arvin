@@ -6,25 +6,27 @@ import ButtonComponent from "../../../../../components/button/Button";
 import SearchField from "../../../../../components/inputFIeld/SearchField";
 import Table from "../../../../../components/table/Table";
 import configure from "../../../../configure/configure.json";
-import QuotationComponentDailyQuotaHooks from "../hooks/QuotationComponentDailyQuotaHooks";
+import SalesDailyOutComponentAnnualSettingSaleHooks from "../hooks/SalesDailyOutComponentAnnualSettingSaleHooks";
 import Modal from "../../../../../components/modal/Modal";
-import AddDailyQuota from "./components/AddDailyQuota";
-export default function DailyQuota(props) {
-  const { ...quotationComponentDailyQuota } =
-    QuotationComponentDailyQuotaHooks(props);
+import AddAnnualSettingSale from "./components/AddAnnualSettingSale";
+export default function AnnualQuota(props) {
+  const { ...salesDailyOutComponentAnnualSettingSale } =
+    SalesDailyOutComponentAnnualSettingSaleHooks(props);
   const theme = useTheme();
   const matches = useMediaQuery("(min-width:600px)");
   return (
     <React.Fragment>
       <Modal
-        open={quotationComponentDailyQuota?.addModal}
+        open={salesDailyOutComponentAnnualSettingSale?.addModal}
         fullScreen={matches ? false : true}
-        title={"Daily Quota"}
-        size={"sm"}
+        title={"Annual Quota"}
+        size={"xs"}
         action={undefined}
-        handleClose={quotationComponentDailyQuota.onClickCloseAddModal}
+        handleClose={
+          salesDailyOutComponentAnnualSettingSale.onClickCloseAddModal
+        }
       >
-        <AddDailyQuota />
+        <AddAnnualSettingSale />
       </Modal>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -41,7 +43,9 @@ export default function DailyQuota(props) {
               type="button"
               fullWidth={true}
               children={"Add Quota"}
-              click={quotationComponentDailyQuota.onClickOpenAddModal}
+              click={
+                salesDailyOutComponentAnnualSettingSale.onClickOpenAddModal
+              }
             />
           </Stack>
         </Grid>
@@ -54,31 +58,36 @@ export default function DailyQuota(props) {
             spacing={2}
           >
             <SearchField
-              value={quotationComponentDailyQuota.search}
-              onChange={quotationComponentDailyQuota.onChangeSearch}
+              value={salesDailyOutComponentAnnualSettingSale.search}
+              onChange={salesDailyOutComponentAnnualSettingSale.onChangeSearch}
             />
           </Stack>
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Table
-            columns={quotationComponentDailyQuota.columns}
-            dataList={quotationComponentDailyQuota.dataList}
-            page={quotationComponentDailyQuota.page}
-            rowsPerPage={quotationComponentDailyQuota.rowsPerPage}
-            handleChangePage={quotationComponentDailyQuota.handleChangePage}
-            handleChangeRowsPerPage={
-              quotationComponentDailyQuota.handleChangeRowsPerPage
+            columns={salesDailyOutComponentAnnualSettingSale.columns}
+            dataList={salesDailyOutComponentAnnualSettingSale.dataList}
+            page={salesDailyOutComponentAnnualSettingSale.page}
+            rowsPerPage={salesDailyOutComponentAnnualSettingSale.rowsPerPage}
+            handleChangePage={
+              salesDailyOutComponentAnnualSettingSale.handleChangePage
             }
-            onSelectItem={quotationComponentDailyQuota.onSelectItem}
+            handleChangeRowsPerPage={
+              salesDailyOutComponentAnnualSettingSale.handleChangeRowsPerPage
+            }
+            onSelectItem={salesDailyOutComponentAnnualSettingSale.onSelectItem}
             id={"home_attendance"}
             localStorage={""}
-            rowCount={quotationComponentDailyQuota.dataListCount}
+            rowCount={salesDailyOutComponentAnnualSettingSale.dataListCount}
+            actionShow={false}
             action={(row) => {
               return (
                 <Tooltip title="Delete">
                   <DeleteOutlineIcon
                     onClick={() =>
-                      quotationComponentDailyQuota.onDeleteDeduction(row)
+                      salesDailyOutComponentAnnualSettingSale.onDeleteDeduction(
+                        row
+                      )
                     }
                     style={{
                       color: "#009197",

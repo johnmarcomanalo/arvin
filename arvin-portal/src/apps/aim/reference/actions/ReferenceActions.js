@@ -1,5 +1,10 @@
 import { Constants } from "../../../../reducer/Contants";
 import { get } from "../../../../api/api";
+import {
+  AuthGetReferences,
+  AuthGetReferencesChild,
+} from "../services/referenceServices";
+import { decryptaes } from "../../../../utils/LightSecurity";
 export const getRefCompanies = () => async (dispatch) => {
   try {
     await dispatch({
@@ -8,18 +13,20 @@ export const getRefCompanies = () => async (dispatch) => {
         loading: true,
       },
     });
-    const res = await get("reference/companies");
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
-    await dispatch({
-      type: Constants.ACTION_REFERENCE,
-      payload: {
-        companies: res,
-      },
+    const response = AuthGetReferences("api/reference/companies");
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          companies: decryptaes(res.data),
+        },
+      });
     });
   } catch (error) {
     console.log(error);
@@ -34,18 +41,20 @@ export const getRefBusinessUnits = (id) => async (dispatch) => {
         loading: true,
       },
     });
-    const res = await get("reference/business_units/" + id);
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
-    await dispatch({
-      type: Constants.ACTION_REFERENCE,
-      payload: {
-        business_units: res,
-      },
+    const response = AuthGetReferencesChild("api/reference/business_units", id);
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          business_units: decryptaes(res.data),
+        },
+      });
     });
   } catch (error) {
     console.log(error);
@@ -60,18 +69,20 @@ export const getRefTeams = (id) => async (dispatch) => {
         loading: true,
       },
     });
-    const res = await get("reference/teams/" + id);
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
-    await dispatch({
-      type: Constants.ACTION_REFERENCE,
-      payload: {
-        teams: res,
-      },
+    const response = AuthGetReferencesChild("api/reference/teams", id);
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          teams: decryptaes(res.data),
+        },
+      });
     });
   } catch (error) {
     console.log(error);
@@ -86,18 +97,20 @@ export const getRefDepartments = (id) => async (dispatch) => {
         loading: true,
       },
     });
-    const res = await get("reference/departments/" + id);
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
-    await dispatch({
-      type: Constants.ACTION_REFERENCE,
-      payload: {
-        departments: res,
-      },
+    const response = AuthGetReferencesChild("api/reference/departments", id);
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          departments: decryptaes(res.data),
+        },
+      });
     });
   } catch (error) {
     console.log(error);
@@ -112,18 +125,20 @@ export const getRefSections = (id) => async (dispatch) => {
         loading: true,
       },
     });
-    const res = await get("reference/sections/" + id);
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
-    await dispatch({
-      type: Constants.ACTION_REFERENCE,
-      payload: {
-        sections: res,
-      },
+    const response = AuthGetReferencesChild("api/reference/sections", id);
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          sections: decryptaes(res.data),
+        },
+      });
     });
   } catch (error) {
     console.log(error);
@@ -138,18 +153,20 @@ export const getRefSubSections = (id) => async (dispatch) => {
         loading: true,
       },
     });
-    const res = await get("reference/subsections/" + id);
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
-    await dispatch({
-      type: Constants.ACTION_REFERENCE,
-      payload: {
-        subsections: res,
-      },
+    const response = AuthGetReferencesChild("api/reference/subsections", id);
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          subsections: decryptaes(res.data),
+        },
+      });
     });
   } catch (error) {
     console.log(error);

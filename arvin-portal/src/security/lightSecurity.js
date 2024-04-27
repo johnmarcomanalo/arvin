@@ -1,4 +1,5 @@
 import CryptoJS from "crypto-js";
+import config from "../config.json";
 import configure from "../apps/configure/configure.json";
 export function decryptaes(data) {
   if (data == "" || data == null) {
@@ -20,22 +21,21 @@ export function decryptaes(data) {
 }
 
 export function decryptaesString(data) {
-  // if (data == "" || data == null) {
-  //   return [];
-  // }
-  // console.log("data", data);
-  // var key = config.key;
-  // var data = data;
-  // let encrypted = window.atob(data);
-  // encrypted = JSON.parse(encrypted);
-  // const iv = CryptoJS.enc.Base64.parse(encrypted.iv);
-  // const value = encrypted.value;
-  // key = CryptoJS.enc.Base64.parse(key);
-  // var decrypted = CryptoJS.AES.decrypt(value, key, {
-  //   iv: iv,
-  // });
-  // decrypted = decrypted.toString(CryptoJS.enc.Utf8);
-  // return decrypted;
+  if (data == "" || data == null) {
+    return [];
+  }
+  var key = configure.key;
+  var data = data;
+  let encrypted = atob(data);
+  encrypted = JSON.parse(encrypted);
+  const iv = CryptoJS.enc.Base64.parse(encrypted.iv);
+  const value = encrypted.value;
+  key = CryptoJS.enc.Base64.parse(key);
+  var decrypted = CryptoJS.AES.decrypt(value, key, {
+    iv: iv,
+  });
+  decrypted = decrypted.toString(CryptoJS.enc.Utf8);
+  return decrypted;
 }
 
 export function encryptaes(data) {

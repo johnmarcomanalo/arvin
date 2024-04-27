@@ -2,7 +2,7 @@ import { Constants } from "./Contants";
 const storedUserData = localStorage.getItem("userData");
 const initialState = {
   token: "",
-  user: storedUserData ? JSON.parse(storedUserData) : null,
+  account_details: storedUserData ? JSON.parse(storedUserData) : null,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

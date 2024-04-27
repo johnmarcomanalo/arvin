@@ -5,7 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use App\Http\Controllers\LightSecurityController;
-
+use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Support\Facades\Crypt;
 class LightDecryption
 {
     /**
@@ -22,7 +23,7 @@ class LightDecryption
             if(count($request->all()) != 0)
                 $request = LightSecurityController::DecryptionAES($request);
             return $next($request);
-        } catch (Illuminate\Contracts\Encryption\DecryptException $e) {
+        } catch (DecryptException $e) {
             throw $e;
         }
         

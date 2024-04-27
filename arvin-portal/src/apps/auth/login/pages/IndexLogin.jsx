@@ -1,6 +1,6 @@
 import { Grid } from "@mui/material";
 import { connect } from "react-redux";
-import { Field, formValueSelector, reduxForm } from "redux-form";
+import { Field, change, formValueSelector, reduxForm } from "redux-form";
 import ButtonComponent from "../../../../components/button/Button";
 import InputField from "../../../../components/inputFIeld/InputField";
 import PasswordField from "../../../../components/inputFIeld/PasswordField";
@@ -8,7 +8,8 @@ import { required } from "../../../../utils/ErrorUtils";
 import configure from "../../../configure/configure.json";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Constants } from "../../../../reducer/Contants";
-import { onLogin } from "../actions/LoginActions";
+import { loginUser, onLogin } from "../actions/LoginActions";
+import CSRFToken from "../../../../security/csrftoken";
 const formName = "Login";
 const submit = async (values, dispatch, props, navigate) => {
   dispatch({
@@ -17,9 +18,7 @@ const submit = async (values, dispatch, props, navigate) => {
       loading: true,
     },
   });
-  values["device_id"] = props.token;
   const response = await dispatch(onLogin(values));
-
   dispatch({
     type: Constants.ACTION_LOADING,
     payload: {
@@ -29,9 +28,12 @@ const submit = async (values, dispatch, props, navigate) => {
 };
 let IndexLogin = (props) => {
   const navigate = useNavigate();
-  const onSubmit = (values) => submit(values, props.dispatch, props, navigate);
+  props.dispatch(change(formName, "username", "admin"));
+  props.dispatch(change(formName, "password", "welcome123"));
+
   return (
-    <form onSubmit={props.handleSubmit(onSubmit)}>
+    <form onSubmit={props.handleSubmit}>
+      <CSRFToken />
       <Grid container spacing={2}>
         <Grid item xs={12} md={12}>
           <Field
@@ -69,7 +71,7 @@ let IndexLogin = (props) => {
 
 const ReduxFormComponent = reduxForm({
   form: formName,
-  onSubmit: "",
+  onSubmit: loginUser,
 })(IndexLogin);
 export default connect((state) => {
   const token = state.AuthenticationReducer.token;

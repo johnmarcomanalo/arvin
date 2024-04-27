@@ -5,7 +5,6 @@ import Table from "../../../../../components/table/Table";
 import HomeComponentRequestsHooks from "../../hooks/HomeComponentRequestsHooks";
 export default function Requests(props) {
   const { ...homeComponentRequests } = HomeComponentRequestsHooks(props);
-  console.log(homeComponentRequests);
   return (
     <React.Fragment>
       <Grid container spacing={2}>

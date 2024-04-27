@@ -1,16 +1,9 @@
 import { loginApi, post, postNoToken } from "../../../../api/api";
-import { encryptLocal } from "../../../../utils/Encryption";
+import { Constants } from "../../../../reducer/Contants";
+import { decryptLocal, encryptLocal } from "../../../../utils/Encryption";
+import { login } from "../services/loginService";
 export const onLogin = (values) => async (dispatch) => {
-  const username = encryptLocal(values.username);
-  const password = encryptLocal(values.password);
-  const res = await loginApi(
-    "login/?u=" +
-      username +
-      "&p=" +
-      password +
-      "&device_id=" +
-      values.device_id
-  );
+  const res = await loginApi("login", values);
   return res;
 };
 
@@ -19,3 +12,26 @@ export const forgotPassword = (values) => async (dispatch) => {
 
   return res;
 };
+
+export function loginUser(formValues, dispatch, props) {
+  if (formValues.username == null || formValues.password == null) return false;
+  const response = login(formValues);
+  // Loading();
+  return response
+    .then((response) => {
+      const token = response.data.token;
+      localStorage.setItem("token", token);
+      localStorage.setItem("account_details", encryptLocal(response.data.user));
+
+      dispatch({
+        type: Constants.ACTION_AUTHENTICATION,
+        payload: {
+          token: response.data.token,
+          account_details: response.data.user,
+        },
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}

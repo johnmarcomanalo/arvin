@@ -8,12 +8,11 @@ import { Constants } from "../reducer/Contants";
 import { decryptaes, encryptaes } from "../utils/LightSecurity";
 import configure from "../apps/configure/configure.json";
 const cookies = new Cookies();
-let serverurl = "http://192.168.3.33:8000/api/";
-let imagerurl = "http://192.168.3.33:8000/api";
+let serverurl = "http://127.0.0.1:8000/api/";
+let imagerurl = "http://127.0.0.1:8000/api";
 const CancelToken = axios.CancelToken;
 let source = CancelToken.source();
 let token = "";
-// let token = "K8gwPfRm/Q1QIULV2kQUVOcD21VPDYnWws2jBJ2Anmc=";
 token = cookies.get("jwt_authorization");
 
 let headers = {
@@ -33,51 +32,66 @@ const form_headers = {
 const headers_no_token = {
   "Content-Type": "application/json",
 };
-
+const headersLogin = {
+  Accept: "application/json",
+  "Content-Type": "application/json",
+};
 export function cancelRequest() {
   source.cancel("Operation canceled by the user.");
   source = CancelToken.source();
 }
 
-export function loginApi(method, dispatch) {
-  //   const res = jwtAuth();
-  //   if (res != undefined)
+export function loginApi(method, param2, dispatch) {
+  let param = encryptaes(JSON.stringify(param2));
   return new Promise((resolve, reject) => {
-    axios
-      .get(serverurl + method, { cancelToken: source.token })
-      .then((res) => {
-        //Decrypt the response data.
-        console.log(res);
-        // let decrypt = CryptoJSAesDecrypt(res.data.data);
-        // localStorage.setItem("u", res.data.data);
-        // //Save the access token in cookies
-        // const decode = jwt(res.data.access_token);
-        // cookies.set("jwt_authorization", res.data.access_token, {
-        //   expires: new Date(decode.exp * 1000),
-        // });
+    try {
+      axios
+        .post(
+          serverurl + method,
 
-        // swal(res.data.title, res.data.message, res.data.status);
-        // resolve(decrypt);
-      })
-      .catch((error) => {
-        //Handle the error request
+          { param },
 
-        const response = error.response?.data;
-        if (response?.title) {
-          swal(response?.title, response?.message, response?.status);
-        } else {
-          swal("Error", response, "error");
-        }
-        dispatch({
-          type: Constants.ACTION_LOADING,
-          payload: {
-            loading: false,
-          },
+          { headersLogin }
+        )
+        .then((res) => {
+          // let decrypt = CryptoJSAesDecrypt(res.data.data);
+          // res.data.data = decrypt;
+          // resolve(res.data);
+        })
+        .catch((error) => {
+          //Handle the error request
+          // const response = error.response.data;
+          // if (response.title) {
+          //   swal(response.title, response.message, response.status);
+          // } else if (error.response.status != 403) {
+          //   swal("Error", response, "error");
+          // }
+          // if (error.response.status == "403") {
+          //   cookies.remove("jwt_authorization");
+          //   swal("Error", "Token is not valid", "error").then(() => {
+          //     localStorage.clear();
+          //     window.location.href = "/";
+          //     setTimeout(() => {
+          //       window.location.reload();
+          //     }, 500);
+          //   });
+          // }
+          // dispatch({
+          //   type: Constants.ACTION_LOADING,
+          //   payload: {
+          //     loading: false,
+          //   },
+          // });
+          // reject(error);
+          console.log(error);
         });
-        reject(error);
-      });
+    } catch (error) {
+      console.error("An unexpected error occurred:", error);
+      reject(error);
+    }
   });
 }
+
 export function fetch(method, dispatch) {
   return new Promise((resolve, reject) => {
     axios
@@ -158,10 +172,6 @@ export function post(method, param2, dispatch) {
   let param = encryptaes(JSON.stringify(param2));
   return new Promise((resolve, reject) => {
     try {
-      console.log(serverurl);
-      console.log(method);
-      console.log(param2);
-      console.log(headers);
       axios
         .post(
           serverurl + method,
@@ -171,7 +181,6 @@ export function post(method, param2, dispatch) {
           { headers }
         )
         .then((res) => {
-          console.log(res);
           // let decrypt = CryptoJSAesDecrypt(res.data.data);
           // res.data.data = decrypt;
           // resolve(res.data);
@@ -366,7 +375,6 @@ export function postNoToken(method, param2) {
         { cancelToken: source.token, headers: headers_no_token }
       )
       .then((res) => {
-        console.log(res);
         // let decrypt = CryptoJSAesDecrypt(res.data.data);
         // res.data.data = decrypt;
         // resolve(res.data);

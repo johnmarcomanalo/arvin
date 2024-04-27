@@ -6,6 +6,8 @@ import QuotationReducer from "./QuotationReducer";
 import LoadingReducer from "./LoadingReducer";
 import ReferenceReducer from "./ReferenceReducer";
 import AuthenticationReducer from "./AuthenticationReducer";
+import SalesDailyOutReducer from "./SalesDailyOutReducer";
+
 export default combineReducers({
   NavigationReducer: NavigationReducer,
   HomeReducer: HomeReducer,
@@ -13,5 +15,6 @@ export default combineReducers({
   ReferenceReducer: ReferenceReducer,
   LoadingReducer: LoadingReducer,
   AuthenticationReducer: AuthenticationReducer,
+  SalesDailyOutReducer: SalesDailyOutReducer,
   form: formReducer,
 });

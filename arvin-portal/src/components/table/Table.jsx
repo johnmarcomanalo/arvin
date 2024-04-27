@@ -24,6 +24,7 @@ const Tables = (props) => {
     localStorage,
     rowCount = 0,
     action,
+    actionshow,
   } = props;
   return (
     <Paper sx={{ width: "100%", boxShadow: configure.box_shadow }}>
@@ -39,15 +40,18 @@ const Tables = (props) => {
         <Table size="small" stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              <TableCell
-                style={{
-                  backgroundColor: configure.primary_table_color,
-                  color: configure.primary_table_text_color,
-                  textAlign: "left",
-                }}
-              >
-                Action
-              </TableCell>
+              {actionshow ? (
+                <TableCell
+                  style={{
+                    backgroundColor: configure.primary_table_color,
+                    color: configure.primary_table_text_color,
+                    textAlign: "left",
+                  }}
+                >
+                  Action
+                </TableCell>
+              ) : null}
+
               {columns.map((column) => (
                 <TableCell
                   key={column.id}
@@ -69,18 +73,21 @@ const Tables = (props) => {
               try {
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    <TableCell>
-                      <Tooltip title="View">
-                        <LaunchIcon
-                          onClick={() => onSelectItem(row)}
-                          style={{
-                            color: "#009197",
-                            cursor: "pointer",
-                          }}
-                        />
-                      </Tooltip>
-                      {action(row)}
-                    </TableCell>
+                    {actionshow ? (
+                      <TableCell>
+                        <Tooltip title="View">
+                          <LaunchIcon
+                            onClick={() => onSelectItem(row)}
+                            style={{
+                              color: "#009197",
+                              cursor: "pointer",
+                            }}
+                          />
+                        </Tooltip>
+                        {action(row)}
+                      </TableCell>
+                    ) : null}
+
                     {columns.map((column) => {
                       const value = row[column.id];
                       return (
@@ -103,11 +110,12 @@ const Tables = (props) => {
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
-        count={rowCount == 0 ? dataList?.length : rowCount}
-        rowsPerPage={rowsPerPage}
-        page={page}
+        z={3}
+        rowsPerPage={3}
+        page={1}
         onChangePage={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}
+        sx={{ backgroundColor: "none" }}
       />
     </Paper>
   );

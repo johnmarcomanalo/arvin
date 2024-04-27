@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-
+use Illuminate\Contracts\Encryption\DecryptException;
 class LightSecurityController extends Controller
 {
     /**
@@ -62,7 +62,7 @@ class LightSecurityController extends Controller
         //
     }
 
-
+    
     public static function DecryptionAES(Request $request){
       
         $decrypted = Crypt::decryptString(json_encode($request->all()));

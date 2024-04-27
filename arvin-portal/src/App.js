@@ -11,7 +11,9 @@ const CostingItemList = lazy(() =>
   import("./apps/aim/costing/itemList/pages/indexItemList")
 );
 const IndexAnnualQuotation = lazy(() =>
-  import("./apps/aim/quotation/annualQuotation/pages/IndexAnnualQuota")
+  import(
+    "./apps/aim/salesdailyout/annualSettingSale/pages/IndexAnnualSettingSale"
+  )
 );
 const IndexDailyQuota = lazy(() =>
   import("./apps/aim/quotation/dailyQuota/pages/IndexDailyQuota")
@@ -39,11 +41,11 @@ function App() {
                 element={<CostingItemList />}
               />
               <Route
-                path="/Modules/Quotation/AnnualQuotation"
+                path="/Modules/SalesDailyOut/AnnualSettingSale"
                 element={<IndexAnnualQuotation />}
               />
               <Route
-                path="/Modules/Quotation/DailyQuota"
+                path="/Modules/SalesDailyOut/DailySales"
                 element={<IndexDailyQuota />}
               />
             </Route>
