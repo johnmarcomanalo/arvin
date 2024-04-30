@@ -66,8 +66,7 @@ class AuthController extends Controller
         
 
         $response = [
-            // 'user' => Crypt::encryptString($user),
-            'user' =>$user,
+            'user' => Crypt::encryptString(json_encode($user)),
             'token' => $token,
             'result' => true,
             'message' => 'Successfully Logged In!',

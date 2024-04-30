@@ -15,8 +15,8 @@ const IndexAnnualQuotation = lazy(() =>
     "./apps/aim/salesdailyout/annualSettingSale/pages/IndexAnnualSettingSale"
   )
 );
-const IndexDailyQuota = lazy(() =>
-  import("./apps/aim/quotation/dailyQuota/pages/IndexDailyQuota")
+const IndexSalesDailyOut = lazy(() =>
+  import("./apps/aim/salesdailyout/salesDailyOut/pages/IndexSalesDailyOut")
 );
 const IndexLogin = lazy(() => import("./apps/auth/login/pages/IndexLogin"));
 const theme = createTheme({
@@ -46,7 +46,7 @@ function App() {
               />
               <Route
                 path="/Modules/SalesDailyOut/DailySales"
-                element={<IndexDailyQuota />}
+                element={<IndexSalesDailyOut />}
               />
             </Route>
           </Routes>

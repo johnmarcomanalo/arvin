@@ -7,6 +7,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SyncIcon from "@mui/icons-material/Sync";
 import HelpIcon from "@mui/icons-material/Help";
 import LoginIcon from "@mui/icons-material/Login";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
 const ButtonComponent = (props) => {
   const { ...params } = props;
   let icon = null;
@@ -25,6 +26,9 @@ const ButtonComponent = (props) => {
       break;
     case "login":
       icon = <LoginIcon />;
+      break;
+    case "filter":
+      icon = <FilterAltIcon />;
       break;
     default:
       icon = <HelpIcon />;

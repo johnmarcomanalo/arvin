@@ -110,9 +110,9 @@ const Tables = (props) => {
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
-        z={3}
-        rowsPerPage={3}
-        page={1}
+        count={rowCount == 0 ? dataList?.length : rowCount}
+        rowsPerPage={rowsPerPage}
+        page={page}
         onChangePage={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}
         sx={{ backgroundColor: "none" }}

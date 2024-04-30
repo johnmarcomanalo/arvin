@@ -8,8 +8,8 @@ import {
 } from "../../../../../services/apiService";
 import { decryptaes } from "../../../../../utils/LightSecurity";
 
-export const getMonthlyAndDailyQoutaByTargetAnnualSales =
-  (amount) => async (dispatch) => {
+export const getSalesDailyOut =
+  (date, section, subsection) => async (dispatch) => {
     try {
       await dispatch({
         type: Constants.ACTION_LOADING,
@@ -17,21 +17,22 @@ export const getMonthlyAndDailyQoutaByTargetAnnualSales =
           loading: true,
         },
       });
-      const response = GetSpecificDefaultServices(
-        "api/salesdailyout/annual_settings_sales/annual_target_sales_computation/",
-        amount
+      const response = GetMultiSpecificDefaultServices(
+        "api/salesdailyout/daily_out/get_sales_daily_out/",
+        [date, section, subsection]
       );
       response.then((res) => {
         try {
-          let decypted = decryptaes(res.data);
-          dispatch({
-            type: Constants.ACTION_SALES_DAILY_OUT,
-            payload: {
-              annual_sales_target: decypted.annual_sales_target,
-              monthly_sales_target: decypted.monthly_sales_target,
-              daily_sales_target: decypted.daily_sales_target,
-            },
-          });
+          console.log(res);
+          // let decypted = decryptaes(res.data);
+          // dispatch({
+          //   type: Constants.ACTION_SALES_DAILY_OUT,
+          //   payload: {
+          //     annual_sales_target: decypted.annual_sales_target,
+          //     monthly_sales_target: decypted.monthly_sales_target,
+          //     daily_sales_target: decypted.daily_sales_target,
+          //   },
+          // });
         } catch (error) {
           console.log(error);
         }
@@ -47,7 +48,7 @@ export const getMonthlyAndDailyQoutaByTargetAnnualSales =
     }
   };
 
-export const postAnnualTargetSales = (formValues) => async (dispatch) => {
+export const postSalesDailyOut = (formValues) => async (dispatch) => {
   try {
     await dispatch({
       type: Constants.ACTION_LOADING,
@@ -56,7 +57,7 @@ export const postAnnualTargetSales = (formValues) => async (dispatch) => {
       },
     });
     const res = await PostDefaultServices(
-      "api/salesdailyout/annual_settings_sales",
+      "api/salesdailyout/daily_out",
       formValues
     );
     await dispatch({
@@ -117,21 +118,56 @@ export const getAnnualMonthlyDailyTargetSalesBySectionSubsection =
           loading: true,
         },
       });
-      const response = GetMultiSpecificDefaultServices(
-        "api/salesdailyout/annual_settings_sales/get_annual_monthly_daily_target_sales_by_section_subsection",
+      const response = await GetMultiSpecificDefaultServices(
+        "api/salesdailyout/annual_settings_sales/get_annual_monthly_daily_target_sales_by_section_subsection/",
         [type, id, year]
+      );
+      response.then((res) => {
+        try {
+          // let decypted = decryptaes(res.data);
+          // dispatch({
+          //   type: Constants.ACTION_SALES_DAILY_OUT,
+          //   payload: {
+          //     annual_sales_target: decypted.annual_sales_target,
+          //     monthly_sales_target: decypted.monthly_sales_target,
+          //     daily_sales_target: decypted.daily_sales_target,
+          //   },
+          // });
+        } catch (error) {
+          console.log(error);
+        }
+        dispatch({
+          type: Constants.ACTION_LOADING,
+          payload: {
+            loading: false,
+          },
+        });
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+export const getStatusDailyTargetAndPercentageDailyTargetByDailyOut =
+  (daily_out, daily_quota) => async (dispatch) => {
+    try {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: true,
+        },
+      });
+      const response = GetMultiSpecificDefaultServices(
+        "api/salesdailyout/daily_out/get_status_daily_target_and_percentage_daily_target_by_daily_out",
+        [daily_out, daily_quota]
       );
       response.then((res) => {
         let decypted = decryptaes(res.data);
         dispatch({
           type: Constants.ACTION_SALES_DAILY_OUT,
           payload: {
-            annual_sales_target: decypted.annual_sales_target,
-            monthly_sales_target: decypted.monthly_sales_target,
-            daily_sales_target: decypted.daily_sales_target,
-            year_sales_target: decypted.year_sales_target,
-            sales_daily_out_annual_settings_sales_code:
-              decypted.sales_daily_out_annual_settings_sales_code,
+            status_daily_target: decypted.status_daily_target,
+            percentage_daily_target: decypted.percentage_daily_target,
           },
         });
 

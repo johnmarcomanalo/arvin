@@ -39,21 +39,19 @@ const theme = createTheme({
     },
   },
 });
-const InputDatePicker = ({
+const InputMonthYearPicker = ({
   input,
   label,
   meta: { touched, error },
   required,
   placeholder,
-  value,
-  disableFuture,
-  disablePast,
-  disableSunday,
   showText = true,
+  disableFuture,
+  disablePast
 }) => {
   // Convert input value to a valid Date object using moment.js
-  const initialValue = value || new Date(); // Use value if provided, otherwise use input.value
-  const dateValue = initialValue ? moment(initialValue).toDate() : null;
+  const dateValue = input.value ? moment(input.value).toDate() : null;
+
   // Handle change event to convert the selected date to a string before passing it to Redux Form
   const handleChange = (date) => {
     const dateString = date ? moment(date).format("YYYY-MM-DD") : null;
@@ -77,23 +75,26 @@ const InputDatePicker = ({
 
       <LocalizationProvider fullWidth dateAdapter={AdapterMoment}>
         <DatePicker
-          shouldDisableDate={
-            disableSunday ? (date) => moment(date).day() === 0 : null
-          } // Disable Sundays
-          disableFuture={disableFuture}
-          disablePast={disablePast}
-          dateFormat={"YYYY-MM-dd"}
+          dateFormat={"YYYY-MM"}
           theme={theme}
           onChange={(date) => input.onChange(date)}
-          selected={dateValue}
+          selected={
+            input.value
+              ? moment(input.value, "YYYY-MM").format("YYYY-MM")
+              : null
+          }
+          views={["year", "month"]}
+          openTo="year"
           disabledKeyboardNavigation
           placeholderText={placeholder}
           slotProps={{ field: { size: "small" } }}
           sx={{ width: "100%" }}
+          disableFuture={disableFuture}
+          disablePast={disablePast}
         />
       </LocalizationProvider>
     </div>
   );
 };
 
-export default InputDatePicker;
+export default InputMonthYearPicker;

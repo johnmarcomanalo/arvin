@@ -9,6 +9,7 @@ use App\Http\Controllers\RefSubSectionsController;
 use App\Http\Controllers\QuotationAnnualQuotasController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SalesDailyOutAnnualSettingsSalesController;
+use App\Http\Controllers\SalesDailyOutsController;
 
 
 
@@ -51,16 +52,16 @@ use Illuminate\Support\Facades\Route;
    
     // SALES DAILY OUT START
     Route::apiResource('salesdailyout/annual_settings_sales',SalesDailyOutAnnualSettingsSalesController::class)->middleware(['light_decryption']);
-    Route::get('salesdailyout/annual_qouta/annual_qouta_computation/{amount}',[SalesDailyOutAnnualSettingsSalesController::class, 'annual_target_sales_computation'])->middleware(['light_decryption']);
-    // Route::apiResource('qoutation/annual_qouta', ExampleConQuotationAnnualQuotasControllerroller::class)->middleware('cors');
+    Route::get('salesdailyout/annual_settings_sales/annual_target_sales_computation/{amount}',[SalesDailyOutAnnualSettingsSalesController::class, 'annual_target_sales_computation'])->middleware(['light_decryption']);
+    Route::get('salesdailyout/annual_settings_sales/get_annual_monthly_daily_target_sales_by_section_subsection/{type}/{id}/{year}',[SalesDailyOutAnnualSettingsSalesController::class, 'get_annual_monthly_daily_target_sales_by_section_subsection'])->middleware(['light_decryption']);
+    Route::get('salesdailyout/daily_out/get_status_daily_target_and_percentage_daily_target_by_daily_out/{daily_out}/{daily_quota}',[SalesDailyOutsController::class, 'get_status_daily_target_and_percentage_daily_target_by_daily_out'])->middleware(['light_decryption']);
+    Route::apiResource('salesdailyout/daily_out',SalesDailyOutsController::class)->middleware(['light_decryption']);
+    Route::get('salesdailyout/daily_out/get_sales_daily_out/{date}/{section}/{subsection}',[SalesDailyOutsController::class,'get_sales_daily_out'])->middleware(['light_decryption']);
     // SALES DAILY OUT END 
-
-
        
     // QUOTATION START
     Route::apiResource('qoutation/annual_qouta',QuotationAnnualQuotasController::class)->middleware(['light_decryption']);
     Route::get('qoutation/annual_qouta/annual_qouta_computation/{amount}',[QuotationAnnualQuotasController::class, 'annual_qouta_computation'])->middleware(['light_decryption']);
-    // Route::apiResource('qoutation/annual_qouta', ExampleConQuotationAnnualQuotasControllerroller::class)->middleware('cors');
     // QUOTATION END
 
 

@@ -1,8 +1,10 @@
+import { decryptLocal } from "../utils/Encryption";
+import { decryptaes } from "../utils/LightSecurity";
 import { Constants } from "./Contants";
-const storedUserData = localStorage.getItem("userData");
+const storedUserData = localStorage.getItem("account_details");
 const initialState = {
   token: "",
-  account_details: storedUserData ? JSON.parse(storedUserData) : null,
+  account_details: storedUserData ? decryptaes(storedUserData) : null,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

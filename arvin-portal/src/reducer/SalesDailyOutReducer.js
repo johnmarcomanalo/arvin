@@ -14,6 +14,10 @@ const initialState = {
   annual_sales_target: null,
   monthly_sales_target: null,
   daily_sales_target: null,
+  status_daily_target: null,
+  percentage_daily_target: null,
+  year_sales_target: null,
+  sales_daily_out_annual_settings_sales_code: null,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

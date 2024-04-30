@@ -48,4 +48,27 @@ class MainController extends Controller
     public static function amountFormatFourDigit($data){
         return number_format($data, 4, '.', '');
     }
+
+    public static function formatDateOnly($data){
+        return date('Y-m-d',strtotime($data)) ;
+    }
+
+    public static function formatTimeOnly($data){
+        return date('H:i:s',strtotime($data)) ;
+    }
+    
+    public static function formatDateTimeOnly($data){
+        return date('Y-m-d H:i:s',strtotime($data)) ;
+    }
+
+    public static function generate_code($modelClassName,$column){
+        $code = 1;
+        $current_date = date('Y-m-d');
+        $model = new $modelClassName;
+        $latest_code = $model::latest($column)->first($column)->code ?? NULL;
+        if(!empty($latest_code)){
+            $code = $latest_code + 1;
+        }
+        return $code;
+    }
 }

@@ -58,7 +58,6 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
         ]);
 
         $qouta = SalesDailyOutAnnualSettingsSales::where('year_sales_target',$fields['year_sales_target'])
-            ->where('year_sales_target',$fields['year_sales_target'])
             ->where('company_code',$fields['company_code'])
             ->where('business_unit_code',$fields['business_unit_code'])
             ->where('team_code',$fields['team_code'])
@@ -69,7 +68,7 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
 
         $subsection_code = "N/A";
         $subsection = "N/A";
-        if($request->section == null){
+        if($request->section !== null){
             $subsection_code = $request->subsection_code;
             $subsection = $request->subsection;
         }
@@ -84,6 +83,7 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
             return response($response,400);
         }
         $code = $this->generate_code();
+
       
         $data = SalesDailyOutAnnualSettingsSales::create([
                     'code' => $code,
@@ -173,12 +173,38 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
       public function generate_code(){
         $code = 1;
         $current_date = date('Y-m-d');
-         $latest_code = SalesDailyOutAnnualSettingsSales::whereDate('created_at', $current_date)
-        ->max('code');
-
+         $latest_code = SalesDailyOutAnnualSettingsSales::latest('code')->first('code')->code ?? NULL;
         if(!empty($latest_code)){
             $code = $latest_code + 1;
         }
         return $code;
+    }
+
+    public function get_annual_monthly_daily_target_sales_by_section_subsection($type,$id,$year){
+
+        $count = SalesDailyOutAnnualSettingsSales::where((string)$type,$id)->where("year_sales_target",$year)->count();
+        if($count == 0){
+            $response = [
+                    'message' => "There's no target sales applied to this section/subsection in this current year",
+                    'result' => false,
+                    'icon' => 'error',
+                    'title' => 'Oppss!',
+                    "annual_sales_target"=>0,
+                    "monthly_sales_target"=>0,
+                    "daily_sales_target"=>0
+                ];
+            return response($response,404);
+        }
+        $annual_monthly_daily_target_sales_data = SalesDailyOutAnnualSettingsSales::where((string)$type,$id)->where("year_sales_target",$year)->first();
+       
+        $response = [
+            "year_sales_target"=>$annual_monthly_daily_target_sales_data->year_sales_target,
+            "annual_sales_target"=>$annual_monthly_daily_target_sales_data->annual_sales_target,
+            "monthly_sales_target"=>$annual_monthly_daily_target_sales_data->monthly_sales_target,
+            "daily_sales_target"=>$annual_monthly_daily_target_sales_data->daily_sales_target,
+            "sales_daily_out_annual_settings_sales_code"=>$annual_monthly_daily_target_sales_data->code
+        ];
+
+        return Crypt::encryptString(json_encode($response));
     }
 }

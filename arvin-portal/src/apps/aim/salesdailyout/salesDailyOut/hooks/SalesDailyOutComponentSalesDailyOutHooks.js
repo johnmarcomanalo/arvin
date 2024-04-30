@@ -1,16 +1,17 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
 import { Constants } from "../../../../../reducer/Contants";
+import cancelRequest from "../../../../../api/api";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { encryptLocal } from "../../../../../utils/Encryption";
 import { useDebounce } from "../../../../../utils/HelperUtils";
+import { getAnnualMonthlyDailyTargetSalesBySectionSubsection } from "../../annualSettingSale/actions/SalesDailyOutComponentAnnualSettingSaleActions";
 import {
-  getAnnualSettingSale,
-  getMonthlyAndDailyQoutaByTargetAnnualSales,
-} from "../actions/SalesDailyOutComponentAnnualSettingSaleActions";
-import { cancelRequest } from "../../../../../api/api";
-const QuotationComponentAnnualQuotaHooks = (props) => {
-  const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
+  getSalesDailyOut,
+  getStatusDailyTargetAndPercentageDailyTargetByDailyOut,
+} from "../actions/SalesDailyOutComponentSalesDailyOutActions";
+const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
+  const refresh = useSelector((state) => state.QuotationReducer.refresh);
   const [state, setState] = React.useState({
     debounceTimer: null,
     debounceDelay: 1000,
@@ -41,34 +42,41 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
   };
 
   const dispatch = useDispatch();
-  const addModal = useSelector((state) => state.SalesDailyOutReducer.addModal);
-  const dataList = useSelector((state) => state.SalesDailyOutReducer.dataList);
+  const addModal = useSelector((state) => state.QuotationReducer.addModal);
+  const dataList = useSelector((state) => state.QuotationReducer.dataList);
   const dataListCount = useSelector(
-    (state) => state.SalesDailyOutReducer.dataListCount
+    (state) => state.QuotationReducer.dataListCount
   );
-
   const dateFilterStart = useSelector(
-    (state) => state.SalesDailyOutReducer.dateFilterStart
+    (state) => state.QuotationReducer.dateFilterStart
   );
   const dateFilterEnd = useSelector(
-    (state) => state.SalesDailyOutReducer.dateFilterEnd
+    (state) => state.QuotationReducer.dateFilterEnd
   );
   const selectedDataList = useSelector(
-    (state) => state.SalesDailyOutReducer.selectedDataList
+    (state) => state.QuotationReducer.selectedDataList
   );
 
   const columns = [
-    { id: "code", label: "Code", align: "left" },
-    { id: "year_sales_target", label: "Year", align: "left" },
-    { id: "section", label: "Section", align: "left" },
-    { id: "subsection", label: "Subsection", align: "left" },
-    { id: "annual_sales_target", label: "Annual Quota", align: "left" },
-    { id: "monthly_sales_target", label: "Monthly Quota", align: "left" },
-    { id: "daily_sales_target", label: "Daily Quota", align: "left" },
+    { id: "code", label: "Code", align: "right" },
+    { id: "target_date_quota", label: "Date", align: "right" },
+    { id: "target_daily_quota", label: "Daily Quota", align: "right" },
+    { id: "daily_out_quota", label: "Daily Out", align: "right" },
+    {
+      id: "target_status_daily",
+      label: "Status Daily Target",
+      align: "right",
+    },
+    {
+      id: "target_percent_daily",
+      label: "Percent Daily Target",
+      align: "right",
+    },
+    { id: "status", label: "Status", align: "right" },
   ];
   const onClickOpenAddModal = () => {
     dispatch({
-      type: Constants.ACTION_SALES_DAILY_OUT,
+      type: Constants.ACTION_QUOTATION,
       payload: {
         addModal: true,
       },
@@ -76,7 +84,7 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
   };
   const onClickCloseAddModal = () => {
     dispatch({
-      type: Constants.ACTION_SALES_DAILY_OUT,
+      type: Constants.ACTION_QUOTATION,
       payload: {
         addModal: false,
       },
@@ -84,7 +92,7 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
   };
   const handleChangePage = (event, newPage) => {
     dispatch({
-      type: Constants.ACTION_SALES_DAILY_OUT,
+      type: Constants.ACTION_QUOTATION,
       payload: {
         page: newPage,
       },
@@ -92,7 +100,7 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
   };
   const handleChangeRowsPerPage = (event) => {
     dispatch({
-      type: Constants.ACTION_SALES_DAILY_OUT,
+      type: Constants.ACTION_QUOTATION,
       payload: {
         rowsPerPage: event.target.value,
       },
@@ -118,29 +126,48 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
     clearTimeout(state.debounceTimer);
     state.debounceTimer = setTimeout(func, delay);
   };
-  const GetMonthlyAndDailyQoutaByAnnualQouta = async (e) => {
+  const GetAnnualMonthlyDailyTargetSalesBySectionSubsection = async (
+    type,
+    value,
+    year
+  ) => {
     try {
-      let { value } = e.target;
-      if (value > 0) {
-        await debounce(() => {
-          dispatch(getMonthlyAndDailyQoutaByTargetAnnualSales(value));
-        }, state.debounceDelay);
-      }
+      console.log(type, value, year);
+      await debounce(() => {
+        dispatch(
+          getAnnualMonthlyDailyTargetSalesBySectionSubsection(type, value, year)
+        );
+      }, state.debounceDelay);
     } catch (error) {
       console.error(error);
     }
   };
-  const GetAnnualSettingSaleList = async () => {
+  const GetStatusDailyTargetAndPercentageDailyTargetByDailyOut = async (
+    daily_out,
+    daily_quota
+  ) => {
     try {
-      await dispatch(getAnnualSettingSale());
+      await debounce(() => {
+        dispatch(
+          getStatusDailyTargetAndPercentageDailyTargetByDailyOut(
+            daily_out,
+            daily_quota
+          )
+        );
+      }, state.debounceDelay);
     } catch (error) {
       console.error(error);
     }
   };
-  React.useEffect(() => {
-    GetAnnualSettingSaleList();
-    return () => cancelRequest();
-  }, [refresh]);
+  const GetSalesDailyOut = async (date, section, subsection) => {
+    try {
+      await debounce(() => {
+        dispatch(GetSalesDailyOut(date, section, subsection));
+      }, state.debounceDelay);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return {
     search,
     page,
@@ -160,8 +187,9 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
     onChangeSearch,
     onClickOpenAddModal,
     onClickCloseAddModal,
-    GetMonthlyAndDailyQoutaByAnnualQouta,
+    GetAnnualMonthlyDailyTargetSalesBySectionSubsection,
+    GetStatusDailyTargetAndPercentageDailyTargetByDailyOut,
   };
 };
 
-export default QuotationComponentAnnualQuotaHooks;
+export default SalesDailyOutComponentSalesDailyOutHooks;
