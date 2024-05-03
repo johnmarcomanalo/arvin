@@ -87,7 +87,7 @@ let AddSalesDailyOut = (props) => {
               disableSunday={true}
             />
           </Grid>
-          <Grid item xs={12} md={12}>
+          {/* <Grid item xs={12} md={12}>
             <Field
               id="company"
               name="company"
@@ -213,7 +213,7 @@ let AddSalesDailyOut = (props) => {
               component={ComboBox}
               onChangeHandle={(e, newValue) => {
                 if (newValue?.description) {
-                  refSubSections.GetReferenceSubSections(newValue.code);
+                  refSubSections.GetReferenceSubSections(account_details.section_code);
                   props.change("section_code", newValue.code);
                   props.change("subsection_code", "");
                   props.change("subsection", "");
@@ -252,7 +252,7 @@ let AddSalesDailyOut = (props) => {
                 }}
               />
             </Grid>
-          ) : null}
+          ) : null} */}
           <Grid item xs={12} md={12}>
             <Field
               id="sales_daily_qouta"
@@ -336,6 +336,7 @@ export default connect((state) => {
   const sales_date = selector(state, "sales_date");
   const daily_sales_target = state.SalesDailyOutReducer.daily_sales_target;
   const status_daily_target = state.SalesDailyOutReducer.status_daily_target;
+  const account_details = state.AuthenticationReducer.account_details;
   const percentage_daily_target =
     state.SalesDailyOutReducer.percentage_daily_target;
   const sales_daily_out_annual_settings_sales_code =
@@ -349,5 +350,6 @@ export default connect((state) => {
     status_daily_target,
     percentage_daily_target,
     sales_daily_out_annual_settings_sales_code,
+    account_details,
   };
 }, {})(ReduxFormComponent);

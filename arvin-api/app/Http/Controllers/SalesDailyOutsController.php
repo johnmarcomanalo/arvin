@@ -214,7 +214,8 @@ class SalesDailyOutsController extends Controller
                 ->where('subsection_code',$user_data["subsection_code"])
                 ->where('year_sales_target',$date_year)
                 ->whereYear('sales_date', $date_year)
-                ->whereMonth('sales_date', $date_month);
+                ->whereMonth('sales_date', $date_month)
+                ->get();
                 // ->paginate($limit);
 
             
@@ -239,20 +240,15 @@ class SalesDailyOutsController extends Controller
             }
             // Convert the associative array to indexed array
             $datalist = array_values($datalist);
-            $datalistCollection = collect($datalist);
-
-            $paginator = $datalistCollection->forPage($page, $limit);
-
-            $paginatedData = $paginator;
             $response = [
-                "dataList"=>$datalistCollection,
+                "dataList"=>$datalist,
                 "dataListCount"=>$data_count,
                 'result'=>True,
                 'title'=>'Success',
                 'message'=> 'Authentication successful.',
                 'status'=>'success',
             ];
-            return $response;
+        return Crypt::encryptString(json_encode($response));
         }
 
 
@@ -287,7 +283,7 @@ class SalesDailyOutsController extends Controller
                     $mtd[] = [
                         'sales_date' =>  $value,
                         'sales_daily_qouta' => $sales_daily_out_annual_set_sales->daily_sales_target,
-                        'daily_sales_target' => $sales_daily_out_annual_set_sales->daily_sales_target,
+                        'sales_daily_target' => $sales_daily_out_annual_set_sales->daily_sales_target,
                         'sales_daily_out' => 0,
                         'daily_sales_target_percentage' =>  -100
 

@@ -6,7 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { encryptLocal, decryptLocal } from "../../../../utils/Encryption";
 import { useDebounce } from "../../../../utils/HelperUtils";
 import { getRefSections } from "../actions/ReferenceActions";
-const RefSectionsHooks = () => {
+const RefSectionsHooks = (props) => {
   const dispatch = useDispatch();
   const sections = useSelector((state) => state.ReferenceReducer.sections);
   const GetReferenceSections = (id) => {
@@ -16,6 +16,13 @@ const RefSectionsHooks = () => {
       console.error(error);
     }
   };
+    const GetReferenceSectionsbyUser = () => {
+      try {
+        dispatch(getRefSections(props.id));
+      } catch (error) {
+        console.error(error);
+      }
+    };
   return {
     sections,
     GetReferenceSections,

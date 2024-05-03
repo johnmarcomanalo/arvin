@@ -36,8 +36,8 @@ export const getSalesDailyOut = (values) => async (dispatch) => {
         dispatch({
           type: Constants.ACTION_SALES_DAILY_OUT,
           payload: {
-            dataList: decrypted.dataList.data,
-            dataListCount: decrypted.dataList.total,
+            dataList: decrypted.dataList,
+            // dataListCount: decrypted.dataList.total,
           },
         });
       } catch (error) {
