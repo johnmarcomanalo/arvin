@@ -84,7 +84,9 @@ let DailyQuota = (props) => {
                 disableFuture={true}
                 disableSunday={true}
                 showText={false}
-                // onChange={(e)=>{GetSalesDailyOut}}
+                onChange={(date) => {
+                  salesDailyOutComponentSalesDailyOut.filterMonthAndYear(date);
+                }}
               />
             </form>
           </Stack>
@@ -95,9 +97,7 @@ let DailyQuota = (props) => {
             dataList={salesDailyOutComponentSalesDailyOut.dataList}
             page={salesDailyOutComponentSalesDailyOut.page}
             rowsPerPage={salesDailyOutComponentSalesDailyOut.rowsPerPage}
-            handleChangePage={
-              salesDailyOutComponentSalesDailyOut.handleChangePage
-            }
+            handleChangePage={salesDailyOutComponentSalesDailyOut.handleChangePage()}
             handleChangeRowsPerPage={
               salesDailyOutComponentSalesDailyOut.handleChangeRowsPerPage
             }

@@ -181,7 +181,7 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
     }
 
     public function get_annual_monthly_daily_target_sales_by_section_subsection($type,$id,$year){
-
+        
         $count = SalesDailyOutAnnualSettingsSales::where((string)$type,$id)->where("year_sales_target",$year)->count();
         if($count == 0){
             $response = [

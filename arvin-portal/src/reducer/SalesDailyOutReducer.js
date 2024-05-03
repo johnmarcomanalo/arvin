@@ -2,7 +2,7 @@ import { Constants } from "./Contants";
 const initialState = {
   refresh: false,
   search: "",
-  page: 0,
+  page: 1,
   rowsPerPage: 10,
   dataList: [],
   dataListCount: 0,

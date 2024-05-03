@@ -27,24 +27,19 @@ class CreateUsersTable extends Migration
             $table->string('sss')->nullable();
             $table->string('phic')->nullable();
             $table->string('hdmf')->nullable();
-            $table->string('company')->nullable();
-            $table->string('business_unit')->nullable();
-            $table->string('team')->nullable();
-            $table->string('division')->nullable();
-            $table->string('department')->nullable();
-            $table->string('section')->nullable();
-            $table->string('subsection_1')->nullable();
-            $table->string('subsection_2')->nullable();
-            $table->string('location')->nullable();
+            $table->string('company_code')->nullable();
+            $table->string('business_unit_code')->nullable();
+            $table->string('team_code')->nullable();
+            $table->string('department_code')->nullable();
+            $table->string('section_code')->nullable();
+            $table->string('subsection_code')->nullable();
             $table->string('position')->nullable();
             $table->string('position_level')->nullable();
             $table->string('employment_type')->nullable();
             $table->timestamp('date_hired')->nullable();
             $table->timestamp('date_regularized')->nullable();
-            //$table->decimal('tenured')->nullable(); to verify
             $table->timestamp('contract_start')->nullable();
             $table->timestamp('contract_end')->nullable();
-            //$table->timestamp('contract_duration'); to follow up
             $table->timestamp('date_separated')->nullable();
             $table->longText('reason_for_separation')->nullable();
             $table->string('clearance_status')->nullable();

@@ -10,8 +10,9 @@ import {
   getSalesDailyOut,
   getStatusDailyTargetAndPercentageDailyTargetByDailyOut,
 } from "../actions/SalesDailyOutComponentSalesDailyOutActions";
+import moment from "moment";
 const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
-  const refresh = useSelector((state) => state.QuotationReducer.refresh);
+  const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
   const [state, setState] = React.useState({
     debounceTimer: null,
     debounceDelay: 1000,
@@ -23,9 +24,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   const search =
     searchParams.get("q") != null ? String(searchParams.get("q")) : "";
   const filterQuery =
-    searchParams.get("f") != null
-      ? String(searchParams.get("f"))
-      : encryptLocal([]);
+    searchParams.get("f") != null ? String(searchParams.get("f")) : "";
   const debounceSearch = useDebounce(searchParams, 500);
   //filtering,search,page,limit end
   const getListParam = () => {
@@ -42,41 +41,44 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   };
 
   const dispatch = useDispatch();
-  const addModal = useSelector((state) => state.QuotationReducer.addModal);
-  const dataList = useSelector((state) => state.QuotationReducer.dataList);
+  const addModal = useSelector((state) => state.SalesDailyOutReducer.addModal);
+  const dataList = useSelector((state) => state.SalesDailyOutReducer.dataList);
+  const account_details = useSelector(
+    (state) => state.AuthenticationReducer.account_details
+  );
   const dataListCount = useSelector(
-    (state) => state.QuotationReducer.dataListCount
+    (state) => state.SalesDailyOutReducer.dataListCount
   );
   const dateFilterStart = useSelector(
-    (state) => state.QuotationReducer.dateFilterStart
+    (state) => state.SalesDailyOutReducer.dateFilterStart
   );
   const dateFilterEnd = useSelector(
-    (state) => state.QuotationReducer.dateFilterEnd
+    (state) => state.SalesDailyOutReducer.dateFilterEnd
   );
   const selectedDataList = useSelector(
-    (state) => state.QuotationReducer.selectedDataList
+    (state) => state.SalesDailyOutReducer.selectedDataList
   );
 
   const columns = [
-    { id: "code", label: "Code", align: "right" },
-    { id: "target_date_quota", label: "Date", align: "right" },
-    { id: "target_daily_quota", label: "Daily Quota", align: "right" },
-    { id: "daily_out_quota", label: "Daily Out", align: "right" },
+    { id: "code", label: "Code", align: "left" },
+    { id: "sales_date", label: "Date", align: "left" },
+    { id: "sales_daily_qouta", label: "Daily Quota", align: "left" },
+    { id: "sales_daily_out", label: "Daily Out", align: "left" },
     {
-      id: "target_status_daily",
+      id: "sales_daily_target",
       label: "Status Daily Target",
-      align: "right",
+      align: "left",
     },
     {
-      id: "target_percent_daily",
+      id: "daily_sales_target_percentage",
       label: "Percent Daily Target",
-      align: "right",
+      align: "left",
     },
-    { id: "status", label: "Status", align: "right" },
+    { id: "status", label: "Status", align: "left" },
   ];
   const onClickOpenAddModal = () => {
     dispatch({
-      type: Constants.ACTION_QUOTATION,
+      type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {
         addModal: true,
       },
@@ -84,7 +86,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   };
   const onClickCloseAddModal = () => {
     dispatch({
-      type: Constants.ACTION_QUOTATION,
+      type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {
         addModal: false,
       },
@@ -92,7 +94,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   };
   const handleChangePage = (event, newPage) => {
     dispatch({
-      type: Constants.ACTION_QUOTATION,
+      type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {
         page: newPage,
       },
@@ -100,9 +102,10 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   };
   const handleChangeRowsPerPage = (event) => {
     dispatch({
-      type: Constants.ACTION_QUOTATION,
+      type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {
         rowsPerPage: event.target.value,
+        page: 0,
       },
     });
   };
@@ -132,7 +135,6 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     year
   ) => {
     try {
-      console.log(type, value, year);
       await debounce(() => {
         dispatch(
           getAnnualMonthlyDailyTargetSalesBySectionSubsection(type, value, year)
@@ -159,15 +161,33 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       console.error(error);
     }
   };
-  const GetSalesDailyOut = async (date, section, subsection) => {
+  const filterMonthAndYear = (date) => {
+    let selected_date = moment(date).format("YYYY-MM");
+    setSearchParams({
+      q: search,
+      p: "1",
+      l: String(rowsPerPage),
+      f: selected_date,
+    });
+  };
+  const GetSalesDailyOut = () => {
     try {
-      await debounce(() => {
-        dispatch(GetSalesDailyOut(date, section, subsection));
-      }, state.debounceDelay);
+      const data = {
+        p: page,
+        l: rowsPerPage,
+        q: search,
+        f: filterQuery,
+        u: account_details?.id,
+      };
+      dispatch(getSalesDailyOut(data));
     } catch (error) {
       console.error(error);
     }
   };
+
+  React.useEffect(() => {
+    GetSalesDailyOut();
+  }, [refresh, debounceSearch, filterQuery]);
   return {
     search,
     page,
@@ -189,6 +209,8 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     onClickCloseAddModal,
     GetAnnualMonthlyDailyTargetSalesBySectionSubsection,
     GetStatusDailyTargetAndPercentageDailyTargetByDailyOut,
+    GetSalesDailyOut,
+    filterMonthAndYear,
   };
 };
 

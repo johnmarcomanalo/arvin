@@ -53,6 +53,21 @@ class MainController extends Controller
         return date('Y-m-d',strtotime($data)) ;
     }
 
+   public static function formatMonthOnly($data){
+        return date('m',strtotime($data)) ;
+    }
+    public static function formatSingleDigitMonthOnly($data){
+        return date('n',strtotime($data)) ;
+    }
+
+    public static function formatYearMonthOnly($data){
+        return date('Y-m',strtotime($data)) ;
+    }
+
+    public static function formatYearOnly($data){
+        return date('Y',strtotime($data)) ;
+    }
+
     public static function formatTimeOnly($data){
         return date('H:i:s',strtotime($data)) ;
     }
