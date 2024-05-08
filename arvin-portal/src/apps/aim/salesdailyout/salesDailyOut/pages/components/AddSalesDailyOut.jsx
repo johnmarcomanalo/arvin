@@ -2,7 +2,7 @@ import { Grid, Stack } from "@mui/material";
 import moment from "moment";
 import * as React from "react";
 import { connect, useDispatch } from "react-redux";
-import { Field, change, formValueSelector, reduxForm } from "redux-form";
+import { Field, change, formValueSelector, reduxForm, reset } from "redux-form";
 import ComboBox from "../../../../../../components/autoComplete/AutoComplete";
 import ButtonComponent from "../../../../../../components/button/Button";
 import InputDatePicker from "../../../../../../components/inputFIeld/InputDatePicker";
@@ -16,36 +16,38 @@ import RefSectionsHooks from "../../../../reference/hooks/RefSectionsHooks";
 import RefSubSectionsHooks from "../../../../reference/hooks/RefSubSectionsHooks";
 import RefTeamsHooks from "../../../../reference/hooks/RefTeamsHooks";
 import { postSalesDailyOut } from "../../actions/SalesDailyOutComponentSalesDailyOutActions";
-import SalesDailyOutComponentSalesDailyOutHooks from "../../hooks/SalesDailyOutComponentSalesDailyOutHooks";
+import SalesDailyOutComponentAddSalesDailyOutHooks from "../../hooks/SalesDailyOutComponentAddSalesDailyOutHooks";
+import swal from "sweetalert";
 const formName = "AddSalesDailyOut";
 const submit = async (values, dispatch, props) => {
   try {
     values.year_sales_target = moment(values.sales_date).format("YYYY");
-    values.sales_date = moment(values.sales_date).format("YYYY-MM");
+    values.subsection_code = props.account_details.subsection_code;
+    values.added_by = props.account_details.code;
+    values.modified_by = props.account_details.code;
     const res = await dispatch(postSalesDailyOut(values));
     await dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {
         refresh: !props.refresh,
+        status_daily_target: null,
+        percentage_daily_target: null,
+        year_sales_target: null,
+        sales_daily_out_annual_settings_sales_code: null,
+        addModal: false,
       },
     });
-
-    await console.log(values);
+    await swal(res.data.title, res.data.message, res.data.status);
+    reset();
   } catch (error) {
-    console.log(error);
+    swal("Oppss!", "Something went wrong, please try again!", "error");
   }
 };
 
 let AddSalesDailyOut = (props) => {
   const dispatch = useDispatch();
-  const { ...refCompanies } = RefCompaniesHooks();
-  const { ...refBusinessUnits } = RefBusinessUnitsHooks();
-  const { ...refTeams } = RefTeamsHooks();
-  const { ...refDepartments } = RefDepartmentsHooks();
-  const { ...refSections } = RefSectionsHooks();
-  const { ...refSubSections } = RefSubSectionsHooks();
-  const { ...salesDailyOutComponentSalesDailyOut } =
-    SalesDailyOutComponentSalesDailyOutHooks(props);
+  const { ...salesDailyOutComponentAddSalesDailyOut } =
+    SalesDailyOutComponentAddSalesDailyOutHooks(props);
 
   props.dispatch(
     change(formName, "sales_daily_qouta", props.daily_sales_target)
@@ -60,8 +62,9 @@ let AddSalesDailyOut = (props) => {
       props.percentage_daily_target
     )
   );
-  props.dispatch(change(formName, "added_by", 1));
-  props.dispatch(change(formName, "modified_by", 1));
+  // props.dispatch(
+  //   change(formName, "sales_date", moment(new Date()).format("YYYY-MM-DD"))
+  // );
   props.dispatch(
     change(
       formName,
@@ -72,187 +75,18 @@ let AddSalesDailyOut = (props) => {
   return (
     <React.Fragment>
       <form onSubmit={props.handleSubmit}>
-        <Grid container>
+        <Grid container spacing={2}>
           <Grid item xs={12} md={12}>
             <Field
+              id="sales_date"
               name="sales_date"
-              label="Date"
+              label="Sales Date"
               required={true}
-              component={InputDatePicker}
-              placeholder="Date"
-              value={moment(new Date()).format("MM-DD-YYYY")}
-              disabled
-              disablePast={true}
-              disableFuture={true}
-              disableSunday={true}
+              type="date"
+              component={InputField}
+              // disabled
             />
           </Grid>
-          {/* <Grid item xs={12} md={12}>
-            <Field
-              id="company"
-              name="company"
-              label="Company"
-              options={refCompanies?.companies}
-              getOptionLabel={(option) =>
-                option?.description ? option?.description : ""
-              }
-              required={true}
-              component={ComboBox}
-              onChangeHandle={(e, newValue) => {
-                if (newValue?.description) {
-                  dispatch({
-                    type: Constants.ACTION_REFERENCE,
-                    payload: {
-                      teams: [],
-                      departments: [],
-                      sections: [],
-                      subsections: [],
-                    },
-                  });
-                  refBusinessUnits.GetReferenceBusinessUnits(newValue.code);
-                  props.change("company_code", newValue.code);
-                  props.change("business_unit", "");
-                  props.change("business_unit_code", "");
-                  props.change("team", "");
-                  props.change("team_code", "");
-                  props.change("department", "");
-                  props.change("department_code", "");
-                  props.change("section", "");
-                  props.change("section_code", "");
-                  props.change("subsection_code", "");
-                  props.change("subsection", "");
-                }
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} md={12}>
-            <Field
-              id="business_unit"
-              name="business_unit"
-              label="Business Unit"
-              options={refBusinessUnits?.business_units}
-              getOptionLabel={(option) =>
-                option.description ? option.description : ""
-              }
-              required={true}
-              component={ComboBox}
-              onChangeHandle={(e, newValue) => {
-                if (newValue?.description) {
-                  refTeams.GetReferenceTeams(newValue.code);
-                  props.change("business_unit_code", newValue.code);
-                  props.change("team", "");
-                  props.change("team_code", "");
-                  props.change("department", "");
-                  props.change("department_code", "");
-                  props.change("section", "");
-                  props.change("section_code", "");
-                  props.change("subsection_code", "");
-                  props.change("subsection", "");
-                }
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} md={12}>
-            <Field
-              id="team"
-              name="team"
-              label="Team"
-              options={refTeams?.teams}
-              getOptionLabel={(option) =>
-                option.description ? option.description : ""
-              }
-              required={true}
-              component={ComboBox}
-              onChangeHandle={(e, newValue) => {
-                if (newValue?.description) {
-                  refDepartments.GetReferenceDepartments(newValue.code);
-                  props.change("team_code", newValue.code);
-                  props.change("department", "");
-                  props.change("department_code", "");
-                  props.change("section", "");
-                  props.change("section_code", "");
-                  props.change("subsection_code", "");
-                  props.change("subsection", "");
-                }
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} md={12}>
-            <Field
-              id="department"
-              name="department"
-              label="Department"
-              options={refDepartments?.departments}
-              getOptionLabel={(option) =>
-                option.description ? option.description : ""
-              }
-              required={true}
-              component={ComboBox}
-              onChangeHandle={(e, newValue) => {
-                if (newValue?.description) {
-                  refSections.GetReferenceSections(newValue.code);
-                  props.change("department_code", newValue.code);
-                  props.change("section", "");
-                  props.change("section_code", "");
-                  props.change("subsection_code", "");
-                  props.change("subsection", "");
-                }
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} md={12}>
-            <Field
-              id="section"
-              name="section"
-              label="Section"
-              options={refSections?.sections}
-              getOptionLabel={(option) =>
-                option.description ? option.description : ""
-              }
-              required={true}
-              component={ComboBox}
-              onChangeHandle={(e, newValue) => {
-                if (newValue?.description) {
-                  refSubSections.GetReferenceSubSections(account_details.section_code);
-                  props.change("section_code", newValue.code);
-                  props.change("subsection_code", "");
-                  props.change("subsection", "");
-                  if (props.department_code == "9") {
-                    salesDailyOutComponentSalesDailyOut.GetAnnualMonthlyDailyTargetSalesBySectionSubsection(
-                      "section_code",
-                      newValue.code,
-                      moment(props.sales_date).format("YYYY")
-                    );
-                  }
-                }
-              }}
-            />
-          </Grid>
-          {refSubSections?.subsections.length > 0 ? (
-            <Grid item xs={12} md={12}>
-              <Field
-                id="subsection"
-                name="subsection"
-                label="Sub-sections"
-                options={refSubSections?.subsections}
-                getOptionLabel={(option) =>
-                  option.description ? option.description : ""
-                }
-                required={true}
-                component={ComboBox}
-                onChangeHandle={(e, newValue) => {
-                  if (newValue?.description) {
-                    props.change("subsection_code", newValue.code);
-                    salesDailyOutComponentSalesDailyOut.GetAnnualMonthlyDailyTargetSalesBySectionSubsection(
-                      "subsection_code",
-                      newValue.code,
-                      moment(props.sales_date).format("YYYY")
-                    );
-                  }
-                }}
-              />
-            </Grid>
-          ) : null} */}
           <Grid item xs={12} md={12}>
             <Field
               id="sales_daily_qouta"
@@ -273,7 +107,7 @@ let AddSalesDailyOut = (props) => {
               required={true}
               component={InputField}
               onChange={(e) => {
-                salesDailyOutComponentSalesDailyOut.GetStatusDailyTargetAndPercentageDailyTargetByDailyOut(
+                salesDailyOutComponentAddSalesDailyOut.GetStatusDailyTargetAndPercentageDailyTargetByDailyOut(
                   e.target.value,
                   props.daily_sales_target
                 );
@@ -307,7 +141,6 @@ let AddSalesDailyOut = (props) => {
               direction="row"
               justifyContent="flex-end"
               alignItems="flex-end"
-              spacing={2}
             >
               <ButtonComponent
                 stx={configure.default_button}

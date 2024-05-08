@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Loader from "./components/loading/Loading";
 import Cookies from "universal-cookie";
-
+import configure from "./apps/configure/configure.json";
 const IndexHome = lazy(() => import("./apps/aim/home/pages/IndexHome"));
 const Navigation = lazy(() => import("./apps/navigation/pages/Navigation"));
 const CostingItemList = lazy(() =>
@@ -21,7 +21,15 @@ const IndexSalesDailyOut = lazy(() =>
 const IndexLogin = lazy(() => import("./apps/auth/login/pages/IndexLogin"));
 const theme = createTheme({
   typography: {
-    fontFamily: "Lexend Deca, Helvetica, Arial, sans-serif",
+    fontFamily: "Poppins, sans-serif",
+  },
+  palette: {
+    primary: {
+      main: configure.primary_color, // Your desired primary color
+    },
+    secondary: {
+      main: configure.secondary_color, // Your desired secondary color
+    },
   },
 });
 const cookies = new Cookies();

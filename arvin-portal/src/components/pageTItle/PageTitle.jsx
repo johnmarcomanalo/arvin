@@ -13,6 +13,7 @@ const PageTitle = (props) => {
       sx={{ fontWeight: 600, color: configure.primary_color }}
     >
       {props.title}
+      {props.subtitle ? " - " + props.subtitle : null}
     </Typography>
   );
 };

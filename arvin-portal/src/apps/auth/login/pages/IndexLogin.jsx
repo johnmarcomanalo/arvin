@@ -28,7 +28,7 @@ const submit = async (values, dispatch, props, navigate) => {
 };
 let IndexLogin = (props) => {
   const navigate = useNavigate();
-  props.dispatch(change(formName, "username", "admin"));
+  // props.dispatch(change(formName, "username", "admin"));
   props.dispatch(change(formName, "password", "welcome123"));
 
   return (

@@ -17,18 +17,7 @@ class CreateSalesDailyOutsTable extends Migration
             $table->increments('id');
             $table->integer('code')->unique();
             $table->integer('sales_daily_out_annual_settings_sales_code');
-            $table->string('company_code')->nullable();
-            $table->string('company')->nullable();
-            $table->string('business_unit_code')->nullable();
-            $table->string('business_unit')->nullable();
-            $table->string('team_code')->nullable();
-            $table->string('team')->nullable();
-            $table->string('department_code')->nullable();
-            $table->string('department')->nullable();
-            $table->string('section_code')->nullable();
-            $table->string('section')->nullable();
             $table->string('subsection_code')->nullable();
-            $table->string('subsection')->nullable();
             $table->string('year_sales_target');
             $table->timestamp('sales_date')->useCurrent();
             $table->decimal('sales_daily_qouta',15,2); 

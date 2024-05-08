@@ -20,7 +20,6 @@ export function loginUser(formValues, dispatch, props) {
   // Loading();
   return response
     .then((response) => {
-      console.log(response);
       const token = response.data.token;
       localStorage.setItem("token", token);
       localStorage.setItem("account_details", response.data.user);

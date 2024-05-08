@@ -76,7 +76,7 @@ export const postAnnualTargetSales = (formValues) => async (dispatch) => {
   }
 };
 
-export const getAnnualSettingSale = () => async (dispatch) => {
+export const getAnnualSettingSale = (values) => async (dispatch) => {
   try {
     await dispatch({
       type: Constants.ACTION_LOADING,
@@ -84,8 +84,17 @@ export const getAnnualSettingSale = () => async (dispatch) => {
         loading: true,
       },
     });
-    const response = GetDefaultServices(
-      "api/salesdailyout/annual_settings_sales"
+    const response = GetSpecificDefaultServices(
+      "api/salesdailyout/annual_settings_sales/get_sales_annual_settings?page=" +
+        values.p +
+        "&limit=" +
+        values.l +
+        "&q=" +
+        values.q +
+        "&f=" +
+        values.f +
+        "&uid=" +
+        values.u
     );
     response.then((res) => {
       dispatch({
@@ -98,8 +107,8 @@ export const getAnnualSettingSale = () => async (dispatch) => {
       dispatch({
         type: Constants.ACTION_SALES_DAILY_OUT,
         payload: {
-          dataList: decrypted.dataList,
-          dataListCount: decrypted.dataListCount,
+          dataList: decrypted.dataList.data,
+          dataListCount: decrypted.dataList.total,
         },
       });
     });
@@ -109,7 +118,7 @@ export const getAnnualSettingSale = () => async (dispatch) => {
 };
 
 export const getAnnualMonthlyDailyTargetSalesBySectionSubsection =
-  (type, id, year) => async (dispatch) => {
+  (id, year) => async (dispatch) => {
     try {
       await dispatch({
         type: Constants.ACTION_LOADING,
@@ -119,7 +128,7 @@ export const getAnnualMonthlyDailyTargetSalesBySectionSubsection =
       });
       const response = GetMultiSpecificDefaultServices(
         "api/salesdailyout/annual_settings_sales/get_annual_monthly_daily_target_sales_by_section_subsection",
-        [type, id, year]
+        [id, year]
       );
       response.then((res) => {
         let decypted = decryptaes(res.data);

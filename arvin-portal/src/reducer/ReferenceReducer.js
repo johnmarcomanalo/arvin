@@ -7,6 +7,7 @@ const initialState = {
   departments: [],
   sections: [],
   subsections: [],
+  selected_subsection: [],
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

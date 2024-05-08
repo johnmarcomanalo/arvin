@@ -9,6 +9,7 @@ import configure from "../../../../configure/configure.json";
 import SalesDailyOutComponentAnnualSettingSaleHooks from "../hooks/SalesDailyOutComponentAnnualSettingSaleHooks";
 import Modal from "../../../../../components/modal/Modal";
 import AddAnnualSettingSale from "./components/AddAnnualSettingSale";
+import Page from "../../../../../components/pagination/Pagination";
 export default function AnnualQuota(props) {
   const { ...salesDailyOutComponentAnnualSettingSale } =
     SalesDailyOutComponentAnnualSettingSaleHooks(props);
@@ -49,7 +50,7 @@ export default function AnnualQuota(props) {
             />
           </Stack>
         </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={12}>
+        <Grid item xs={6} sm={6} md={6} lg={6}>
           <Stack
             direction="row"
             justifyContent={matches ? "flex-start" : "center"}
@@ -60,6 +61,24 @@ export default function AnnualQuota(props) {
             <SearchField
               value={salesDailyOutComponentAnnualSettingSale.search}
               onChange={salesDailyOutComponentAnnualSettingSale.onChangeSearch}
+            />
+          </Stack>
+        </Grid>
+        <Grid item xs={6} sm={6} md={6} lg={6}>
+          <Stack
+            direction="row"
+            justifyContent={"flex-end"}
+            alignItems={"flex-end"}
+            flexDirection={matches ? "row" : "column"}
+            spacing={2}
+          >
+            <Page
+              page={salesDailyOutComponentAnnualSettingSale?.page}
+              limit={salesDailyOutComponentAnnualSettingSale?.dataListCount}
+              status={""}
+              onHandleChange={
+                salesDailyOutComponentAnnualSettingSale.handleChangePage
+              }
             />
           </Stack>
         </Grid>
@@ -80,6 +99,7 @@ export default function AnnualQuota(props) {
             localStorage={""}
             rowCount={salesDailyOutComponentAnnualSettingSale.dataListCount}
             actionShow={false}
+            paginationShow={false}
             action={(row) => {
               return (
                 <Tooltip title="Delete">

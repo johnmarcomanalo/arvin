@@ -6,6 +6,8 @@ use App\Models\SalesDailyOutAnnualSettingsSales;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
+use Carbon\Carbon;
+use App\Models\SalesDailyOuts;
 
 class SalesDailyOutAnnualSettingsSalesController extends Controller
 {
@@ -16,18 +18,7 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
      */
     public function index()
     {
-        $salesData = SalesDailyOutAnnualSettingsSales::whereNull('deleted_at')->get();
-        $dataList = $salesData->toArray();
-        $dataListCount = $salesData->count();
-
-        $response = [
-            'dataList' => $dataList,
-            'dataListCount' => $dataListCount,
-            'result' => true,
-            'icon' => 'success',
-            'title' => '',
-        ];
-        return response(Crypt::encryptString(json_encode($response)), 200);
+        
     }
 
     /**
@@ -49,6 +40,8 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
             'department' => 'required',
             'section_code' => 'required',
             'section' => 'required',
+            'subsection_code' => 'required',
+            'subsection' => 'required',
             'year_sales_target' => 'required',
             'annual_sales_target' => 'required',
             'monthly_sales_target' => 'required',
@@ -77,14 +70,16 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
                     'message' => 'There is already a target sale for : 
                         '.$fields["section"].' - : '.$subsection.' Year : '.$fields['year_sales_target'],
                     'result' => false,
-                    'icon' => 'error',
+                    'status' => 'warning',
                     'title' => 'Oppss!',
                 ];
-            return response($response,400);
+            return response($response,200);
         }
         $code = $this->generate_code();
 
-      
+        $dates_to_get = $this->get_dates_in_selected_year_without_sundays($fields["year_sales_target"]);
+
+
         $data = SalesDailyOutAnnualSettingsSales::create([
                     'code' => $code,
                     'company_code' => $fields["company_code"],
@@ -107,12 +102,29 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
                     'modified_by' => $fields["modified_by"],
             ]);
 
+
+        foreach ($dates_to_get as $value) {
+            $code = MainController::generate_code('App\Models\SalesDailyOuts',"code");
+            SalesDailyOuts::create([
+                    'code' => $code,
+                    'subsection_code' =>$fields["subsection_code"],
+                    'sales_daily_out_annual_settings_sales_code' => $data["code"],
+                    'daily_sales_target_percentage' => -100,
+                    'sales_date' => $value,
+                    'sales_daily_out' => 0,
+                    'sales_daily_qouta' =>  $fields["daily_sales_target"],
+                    'sales_daily_target' =>  '-'.$fields["daily_sales_target"],
+                    'year_sales_target' => $fields["year_sales_target"],
+                    'added_by' => $fields["added_by"],
+                    'modified_by' => $fields["modified_by"],
+            ]);
+        }
+
         return response([
-            'message' => '',
+            'message' => 'Target sales added successfully',
             'result' => true,
-            'icon' => 'success',
-            'title' => 'Successfully Added!',
-            'result' => true,
+            'status' => 'success',
+            'title' => 'Success',
         ], 200); 
     }
 
@@ -122,9 +134,9 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
      * @param  \App\Models\SalesDailyOutAnnualSettingsSales  $salesDailyOutAnnualSettingsSales
      * @return \Illuminate\Http\Response
      */
-    public function show(SalesDailyOutAnnualSettingsSales $salesDailyOutAnnualSettingsSales)
+    public function show(Request $request)
     {
- 
+       
     }
 
     /**
@@ -180,22 +192,20 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
         return $code;
     }
 
-    public function get_annual_monthly_daily_target_sales_by_section_subsection($type,$id,$year){
+    public function get_annual_monthly_daily_target_sales_by_section_subsection($id,$year){
         
-        $count = SalesDailyOutAnnualSettingsSales::where((string)$type,$id)->where("year_sales_target",$year)->count();
+        $count = SalesDailyOutAnnualSettingsSales::where('subsection_code',$id)->where("year_sales_target",$year)->count();
         if($count == 0){
+
             $response = [
-                    'message' => "There's no target sales applied to this section/subsection in this current year",
+                    'message' => "No target sale found. Please try other date.",
                     'result' => false,
-                    'icon' => 'error',
+                    'status' => 'warning',
                     'title' => 'Oppss!',
-                    "annual_sales_target"=>0,
-                    "monthly_sales_target"=>0,
-                    "daily_sales_target"=>0
                 ];
-            return response($response,404);
+        return Crypt::encryptString(json_encode($response));
         }
-        $annual_monthly_daily_target_sales_data = SalesDailyOutAnnualSettingsSales::where((string)$type,$id)->where("year_sales_target",$year)->first();
+        $annual_monthly_daily_target_sales_data = SalesDailyOutAnnualSettingsSales::where('subsection_code',$id)->where("year_sales_target",$year)->first();
        
         $response = [
             "year_sales_target"=>$annual_monthly_daily_target_sales_data->year_sales_target,
@@ -205,6 +215,75 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
             "sales_daily_out_annual_settings_sales_code"=>$annual_monthly_daily_target_sales_data->code
         ];
 
+        return Crypt::encryptString(json_encode($response));
+    }
+
+    public function get_dates_in_selected_year_without_sundays($year) {
+            $datesWithoutSundays = [];
+            // Loop through each month of the year
+            for ($month = 1; $month <= 12; $month++) {
+                // Create a Carbon instance for the first day of the month
+                $date = Carbon::create($year, $month, 1);
+
+                // Get the number of days in the month
+                $daysInMonth = $date->daysInMonth;
+
+                // Loop through each day of the month
+                for ($day = 1; $day <= $daysInMonth; $day++) {
+                    // Create a Carbon instance for the current day
+                    $currentDate = $date->copy()->setDay($day);
+                    
+                    // Check if the current day is not a Sunday
+                    if ($currentDate->dayOfWeek !== Carbon::SUNDAY) {
+                        // Add the current date to the array
+                        $datesWithoutSundays[] = $currentDate->format('Y-m-d');
+                    }
+                }
+            }
+        return $datesWithoutSundays;
+    }
+
+    public function get_sales_annual_settings(Request $request)
+    {
+            //select query from the url parameter
+            $page = $request->query('page');
+            $limit = $request->query('limit');
+            $query = $request->query('q');
+            $filter = $request->query('f');
+            $user_id = $request->query('uid');
+
+            if(empty($user_id)){
+                $response = [
+                    'result' => false,
+                    'status' => 'warning',
+                    'title' => 'Oppss!',
+                    'message' => "Invalid request. Please login." ,
+                ];
+                return response($response,200);
+            }
+
+            $queryBuilder = SalesDailyOutAnnualSettingsSales::whereNull('deleted_at')
+                ->where('year_sales_target', $filter);
+
+            if (!empty($query)) {
+                $salesData = $queryBuilder->where(function ($queryBuilder) use ($query) {
+                     $queryBuilder->where('section', 'like', '%' . $query . '%')
+            ->orWhere('subsection', 'like', '%' . $query . '%');
+                })->paginate($limit);
+            } else {
+                $salesData = $queryBuilder->paginate($limit);
+            }
+
+            $dataList = $salesData->toArray();
+            $dataListCount = $salesData->count();
+
+            $response = [
+                'dataList' => $dataList,
+                'result' => true,
+                'title'=>'Success',
+                'status'=>'success',
+                'message'=> 'Authentication successful.',
+            ];
         return Crypt::encryptString(json_encode($response));
     }
 }

@@ -69,6 +69,12 @@ class RefSubSectionsController extends Controller
         }
         return $data;
     }
-
+    public function get_subsection($id){
+        $data = RefSubSections::where('code',$id)->first();
+        if(empty($data)){
+         $data = array();
+        }
+        return Crypt::encryptString($data);
+    }
 
 }

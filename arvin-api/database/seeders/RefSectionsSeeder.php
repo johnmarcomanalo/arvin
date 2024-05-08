@@ -227,28 +227,8 @@ class RefSectionsSeeder extends Seeder
             'description' => 'WH Bataan',
             'added_by' => env('DEFAULT_USER'),
             'modified_by' => env('DEFAULT_USER')],
-
             [
-             'code'=> '23',
-            'company_code'=> '1',
-            'business_unit_code'=> '1',
-            'team_code'=> '2',
-            'department_code'=> '9',
-            'description' => 'WH Bataan',
-            'added_by' => env('DEFAULT_USER'),
-            'modified_by' => env('DEFAULT_USER')],
-
-            [
-             'code'=> '24',
-            'company_code'=> '1',
-            'business_unit_code'=> '1',
-            'team_code'=> '2',
-            'department_code'=> '9',
-            'description' => 'WH Bataan',
-            'added_by' => env('DEFAULT_USER'),
-            'modified_by' => env('DEFAULT_USER')],
-            [
-            'code'=> '25',
+            'code'=> '23',
             'company_code'=> '1',
             'business_unit_code'=> '1',
             'team_code'=> '2',
@@ -258,7 +238,7 @@ class RefSectionsSeeder extends Seeder
             'modified_by' => env('DEFAULT_USER')],
 
              [
-             'code'=> '26',
+             'code'=> '24',
             'company_code'=> '1',
             'business_unit_code'=> '1',
             'team_code'=> '2',
@@ -268,7 +248,7 @@ class RefSectionsSeeder extends Seeder
             'modified_by' => env('DEFAULT_USER')],
 
             [
-             'code'=> '27',
+             'code'=> '25',
             'company_code'=> '1',
             'business_unit_code'=> '1',
             'team_code'=> '2',

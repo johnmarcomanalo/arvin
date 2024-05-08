@@ -1,6 +1,5 @@
-import NumberFormat from "react-number-format";
-import config from "../config.json";
-import { RenderTotalAmountDisplay } from "./renderUtils";
+import { NumericFormat } from "react-number-format";
+import config from "../apps/configure/configure.json";
 
 export const CheckDataNumber = (data) => {
   return data == null || data == "" ? 0 : data;
@@ -12,7 +11,7 @@ export const ViewAmountFormat = (data) => {
   }
 
   return (
-    <NumberFormat
+    <NumericFormat
       thousandsGroupStyle="thousand"
       value={value}
       prefix={config.currency}
@@ -27,13 +26,13 @@ export const ViewAmountFormat = (data) => {
   );
 };
 
-export const ViewNumberFormat = (data, decimal = 2) => {
+export const ViewNumericFormat = (data, decimal = 2) => {
   var value = 0;
   if (typeof data !== "undefined") {
     value = data;
   }
   return (
-    <NumberFormat
+    <NumericFormat
       thousandsGroupStyle="thousand"
       value={value}
       decimalSeparator="."
@@ -166,7 +165,7 @@ export const SumArray = (nums) => {
 };
 
 export const DecimalToPercentage = (data) => {
-  return ViewNumberFormat(data * 100);
+  return ViewNumericFormat(data * 100);
 };
 
 export const DecimalToPercentageComplete = (data) => {
@@ -253,7 +252,7 @@ export const ViewAmountFormating = (data) => {
   }
 
   return (
-    <NumberFormat
+    <NumericFormat
       thousandsGroupStyle="thousand"
       value={value}
       // prefix={config.currency}

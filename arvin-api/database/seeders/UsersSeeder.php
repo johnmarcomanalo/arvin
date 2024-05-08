@@ -15,9 +15,18 @@ class UsersSeeder extends Seeder
     public function run()
     {
         User::insert([
+            // [
+            // 'code'=> '1',
+            // 'username'=> 'admin',
+            // 'first_name' => 'John Marco',
+            // 'last_name' => 'Manalo',
+            // 'device_password' => '',
+            // 'password' => bcrypt("welcome123"),
+            // 'added_by' => env('DEFAULT_USER'),
+            // 'modified_by' => env('DEFAULT_USER')],
             [
-            'code'=> '1',
-            'username'=> 'admin',
+            'code'=> '2',
+            'username'=> 'test_bacolod',
             'first_name' => 'John Marco',
             'last_name' => 'Manalo',
             'device_password' => '',

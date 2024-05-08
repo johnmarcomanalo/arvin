@@ -23,7 +23,6 @@ export function decryptaesString(data) {
   // if (data == "" || data == null) {
   //   return [];
   // }
-  // console.log("data", data);
   // var key = config.key;
   // var data = data;
   // let encrypted = window.atob(data);

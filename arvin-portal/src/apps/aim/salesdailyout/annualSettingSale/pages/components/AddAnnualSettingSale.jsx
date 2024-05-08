@@ -3,7 +3,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { useDispatch, useSelector } from "react-redux";
 import ComboBox from "../../../../../../components/autoComplete/AutoComplete";
-import { Field, change, formValueSelector, reduxForm } from "redux-form";
+import { Field, change, formValueSelector, reduxForm, reset } from "redux-form";
 import InputField from "../../../../../../components/inputFIeld/InputField";
 import InputYearPicker from "../../../../../../components/inputFIeld/InputYearPicker";
 import ButtonComponent from "../../../../../../components/button/Button";
@@ -18,15 +18,19 @@ import { Constants } from "../../../../../../reducer/Contants";
 import SalesDailyOutComponentAnnualSettingSaleHooks from "../../hooks/SalesDailyOutComponentAnnualSettingSaleHooks";
 import { postAnnualTargetSales } from "../../actions/SalesDailyOutComponentAnnualSettingSaleActions";
 import moment from "moment";
+import swal from "sweetalert";
 const formName = "AddAnnualQuota";
 const submit = async (values, dispatch, props) => {
   try {
     values.year_sales_target = moment(values.year_sales_target).format("YYYY");
     const res = await dispatch(postAnnualTargetSales(values));
+    swal(res.data.title, res.data.message, res.data.status);
+    reset();
     await dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {
         refresh: !props.refresh,
+        addModal: false,
       },
     });
   } catch (error) {

@@ -7,6 +7,7 @@ const initialState = {
   dataList: [],
   dataListCount: 0,
   filter: "",
+  dateFilter: new Date(),
   dateFilterStart: new Date(),
   dateFilterEnd: new Date(),
   selectedDataList: [],
@@ -18,6 +19,9 @@ const initialState = {
   percentage_daily_target: null,
   year_sales_target: null,
   sales_daily_out_annual_settings_sales_code: null,
+  report_data: [],
+  present_mtd_data: [],
+  previous_mtd_data: [],
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

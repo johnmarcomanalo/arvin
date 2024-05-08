@@ -48,14 +48,15 @@ use Illuminate\Support\Facades\Route;
     Route::apiResource('reference/departments',RefDepartmentsController::class)->middleware(['light_decryption']);
     Route::apiResource('reference/sections',RefSectionsController::class)->middleware(['light_decryption']);
     Route::apiResource('reference/subsections',RefSubSectionsController::class)->middleware(['light_decryption']);
+    Route::get('reference/subsections/specific/{id}',[RefSubSectionsController::class,'get_subsection'])->middleware(['light_decryption']);
     // REFERENCE END
    
     // SALES DAILY OUT START
-    Route::get('salesdailyout/daily_out/get_sales_daily_out',[SalesDailyOutsController::class,'get_sales_daily_out']);
-    Route::get('salesdailyout/daily_out/get_dates_in_selected_month_and_year',[SalesDailyOutsController::class,'get_dates_in_selected_month_and_year']);
+    Route::get('salesdailyout/daily_out/get_sales_daily_out',[SalesDailyOutsController::class,'get_sales_daily_out']);//for pagination
+    Route::get('salesdailyout/annual_settings_sales/get_sales_annual_settings',[SalesDailyOutAnnualSettingsSalesController::class,'get_sales_annual_settings']);//for pagination
     Route::apiResource('salesdailyout/annual_settings_sales',SalesDailyOutAnnualSettingsSalesController::class)->middleware(['light_decryption']);
     Route::get('salesdailyout/annual_settings_sales/annual_target_sales_computation/{amount}',[SalesDailyOutAnnualSettingsSalesController::class, 'annual_target_sales_computation'])->middleware(['light_decryption']);
-    Route::get('salesdailyout/annual_settings_sales/get_annual_monthly_daily_target_sales_by_section_subsection/{type}/{id}/{year}',[SalesDailyOutAnnualSettingsSalesController::class, 'get_annual_monthly_daily_target_sales_by_section_subsection'])->middleware(['light_decryption']);
+    Route::get('salesdailyout/annual_settings_sales/get_annual_monthly_daily_target_sales_by_section_subsection/{id}/{year}',[SalesDailyOutAnnualSettingsSalesController::class, 'get_annual_monthly_daily_target_sales_by_section_subsection'])->middleware(['light_decryption']);
     Route::get('salesdailyout/daily_out/get_status_daily_target_and_percentage_daily_target_by_daily_out/{daily_out}/{daily_quota}',[SalesDailyOutsController::class, 'get_status_daily_target_and_percentage_daily_target_by_daily_out'])->middleware(['light_decryption']);
     Route::apiResource('salesdailyout/daily_out',SalesDailyOutsController::class)->middleware(['light_decryption']);
     // SALES DAILY OUT END 

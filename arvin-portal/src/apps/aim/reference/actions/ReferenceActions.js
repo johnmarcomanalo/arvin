@@ -5,6 +5,7 @@ import {
   AuthGetReferencesChild,
 } from "../services/referenceServices";
 import { decryptaes } from "../../../../utils/LightSecurity";
+import { GetSpecificDefaultServices } from "../../../../services/apiService";
 export const getRefCompanies = () => async (dispatch) => {
   try {
     await dispatch({
@@ -165,6 +166,37 @@ export const getRefSubSections = (id) => async (dispatch) => {
         type: Constants.ACTION_REFERENCE,
         payload: {
           subsections: decryptaes(res.data),
+        },
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getSpecificRefSubSection = (id) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = GetSpecificDefaultServices(
+      "api/reference/subsections/specific/",
+      id
+    );
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          selected_subsection: decryptaes(res.data),
         },
       });
     });

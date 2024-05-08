@@ -30,8 +30,8 @@ class DatabaseSeeder extends Seeder
         // $this->call(RefLocationsSeeder::class);
         // $this->call(RefPositionsSeeder::class);
         // $this->call(RefSalutationsSeeder::class); 
-        // $this->call(UsersSeeder::class);
+        $this->call(UsersSeeder::class);
 
-        $this->call(SalesDailyOutsSeeder::class); 
+        // $this->call(SalesDailyOutsSeeder::class); 
     }
 }

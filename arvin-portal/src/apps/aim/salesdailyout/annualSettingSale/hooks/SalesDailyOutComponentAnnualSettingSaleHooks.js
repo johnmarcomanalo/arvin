@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { Constants } from "../../../../../reducer/Contants";
 import { encryptLocal } from "../../../../../utils/Encryption";
 import { useDebounce } from "../../../../../utils/HelperUtils";
+import moment from "moment";
 import {
   getAnnualSettingSale,
   getMonthlyAndDailyQoutaByTargetAnnualSales,
@@ -13,7 +14,7 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
   const [state, setState] = React.useState({
     debounceTimer: null,
-    debounceDelay: 1000,
+    debounceDelay: 2000,
   });
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("p") != null ? searchParams.get("p") : 1;
@@ -24,21 +25,9 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
   const filterQuery =
     searchParams.get("f") != null
       ? String(searchParams.get("f"))
-      : encryptLocal([]);
+      : moment(new Date()).format("YYYY");
   const debounceSearch = useDebounce(searchParams, 500);
   //filtering,search,page,limit end
-  const getListParam = () => {
-    // const page = page;
-    const search = search;
-    const filter = filterQuery;
-    const data = {
-      page: page == null ? 1 : page,
-      search: search == null ? "" : search,
-      limit: rowsPerPage,
-      filter: filter,
-    };
-    return data;
-  };
 
   const dispatch = useDispatch();
   const addModal = useSelector((state) => state.SalesDailyOutReducer.addModal);
@@ -46,7 +35,9 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
   const dataListCount = useSelector(
     (state) => state.SalesDailyOutReducer.dataListCount
   );
-
+  const account_details = useSelector(
+    (state) => state.AuthenticationReducer.account_details
+  );
   const dateFilterStart = useSelector(
     (state) => state.SalesDailyOutReducer.dateFilterStart
   );
@@ -82,12 +73,12 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
       },
     });
   };
-  const handleChangePage = (event, newPage) => {
-    dispatch({
-      type: Constants.ACTION_SALES_DAILY_OUT,
-      payload: {
-        page: newPage,
-      },
+  const handleChangePage = (event, page) => {
+    setSearchParams({
+      q: search,
+      p: page,
+      l: String(rowsPerPage),
+      f: filterQuery,
     });
   };
   const handleChangeRowsPerPage = (event) => {
@@ -130,17 +121,30 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
       console.error(error);
     }
   };
+  const getListParam = () => {
+    const data = {
+      p: page == null ? 1 : page,
+      q: search,
+      l: rowsPerPage,
+      f: filterQuery,
+      u: account_details?.id,
+    };
+    return data;
+  };
+
   const GetAnnualSettingSaleList = async () => {
     try {
-      await dispatch(getAnnualSettingSale());
+      const data = getListParam();
+      await dispatch(getAnnualSettingSale(data));
     } catch (error) {
       console.error(error);
     }
   };
+
   React.useEffect(() => {
     GetAnnualSettingSaleList();
     return () => cancelRequest();
-  }, [refresh]);
+  }, [refresh, filterQuery, search]);
   return {
     search,
     page,

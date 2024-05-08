@@ -22,18 +22,38 @@ const Tables = (props) => {
     onSelectItem,
     id,
     localStorage,
-    rowCount = 0,
+    rowCount,
     action,
     actionshow,
+    paginationShow = true,
   } = props;
+
+  const [screenHeight, setScreenHeight] = React.useState(window.innerHeight);
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setScreenHeight(window.innerHeight);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
   return (
-    <Paper sx={{ width: "100%", boxShadow: configure.box_shadow }}>
+    <Paper sx={{ boxShadow: configure.box_shadow }}>
       <TableContainer
         onScroll={() => {
           if (localStorage != "") {
             var elmnt = document.getElementById(id);
             sessionStorage.setItem(localStorage, elmnt.scrollTop);
           }
+        }}
+        sx={{
+          maxHeight: screenHeight - 300,
+          whiteSpace: "nowrap",
+          overflowX: "auto",
         }}
         id={"tableScroll2"}
       >
@@ -107,16 +127,18 @@ const Tables = (props) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={100}
-        rowsPerPage={10}
-        page={0}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-        sx={{ backgroundColor: "none" }}
-      />
+      {paginationShow ? (
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 100]}
+          component="div"
+          count={rowCount}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+          sx={{ backgroundColor: "none" }}
+        />
+      ) : null}
     </Paper>
   );
 };

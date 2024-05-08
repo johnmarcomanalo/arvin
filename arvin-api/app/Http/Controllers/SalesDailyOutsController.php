@@ -32,16 +32,7 @@ class SalesDailyOutsController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
-            'company_code' => 'required',
-            'company' => 'required',
-            'business_unit_code' => 'required',
-            'business_unit' => 'required',
-            'team_code' => 'required',
-            'team' => 'required',
-            'department_code' => 'required',
-            'department' => 'required',
-            'section_code' => 'required',
-            'section' => 'required',
+            'subsection_code' => 'required',
             'sales_daily_out_annual_settings_sales_code' => 'required',
             'daily_sales_target_percentage' => 'required',
             'sales_daily_out' => 'required',
@@ -55,66 +46,42 @@ class SalesDailyOutsController extends Controller
 
         
         $currentDateTime = date('Y-m-d');
-        $sales_date = MainController::formatDateOnly($fields['sales_date']);
+        $currentYear = date('Y');
+        $checker = 0;
+        $check_sale = SalesDailyOuts::where('sales_daily_out_annual_settings_sales_code', $fields['sales_daily_out_annual_settings_sales_code'])
+            ->where('subsection_code', $fields["subsection_code"])
+            ->where('year_sales_target', $fields["year_sales_target"])
+            ->where('sales_daily_out', '<=', 0)
+            // ->whereDate('sales_date', $currentDateTime) //uncomment after testing
+            ->whereDate('sales_date', $fields["sales_date"])
+            ->first();
 
-        $check_sale = SalesDailyOuts::where('sales_daily_out_annual_settings_sales_code',$fields['sales_daily_out_annual_settings_sales_code'])
-            ->where('company_code',$fields['company_code'])
-            ->where('business_unit_code',$fields['business_unit_code'])
-            ->where('team_code',$fields['team_code'])
-            ->where('department_code',$fields['department_code'])
-            ->where('section_code',$fields['section_code'])
-            ->where('subsection_code',$request->subsection_code)
-            ->where('year_sales_target',$fields['year_sales_target'])
-            ->whereDate('sales_date',$currentDateTime)
-            ->count();
-        if($check_sale > 0){
-              $response = [
-                    'message' => "There is already a record for today's sale." ,
-                    'result' => false,
-                    'icon' => 'error',
-                    'title' => 'Oppss!',
-                ];
-            return response($response,409);
-        }
-        $subsection_code = "N/A";
-        $subsection = "N/A";
-        if($request->section !== null){
-            $subsection_code = $request->subsection_code;
-            $subsection = $request->subsection;
-        }
-        $code = MainController::generate_code('App\Models\SalesDailyOuts',"code");
-
-        $data = SalesDailyOuts::create([
-                    'code' => $code,
-                    'company_code' => $fields["company_code"],
-                    'company' => $fields["company"],
-                    'business_unit_code' => $fields["business_unit_code"],
-                    'business_unit' => $fields["business_unit"],
-                    'team_code' => $fields["team_code"],
-                    'team' => $fields["team"],
-                    'department_code' => $fields["department_code"],
-                    'department' => $fields["department"],
-                    'section_code' => $fields["section_code"],
-                    'section' => $fields["section"],
-                    'subsection_code' =>$subsection_code,
-                    'subsection' =>$subsection,
-                    'sales_daily_out_annual_settings_sales_code' => $fields["sales_daily_out_annual_settings_sales_code"],
-                    'daily_sales_target_percentage' => $fields["daily_sales_target_percentage"],
-                    'sales_daily_out' => $fields["sales_daily_out"],
-                    'sales_daily_qouta' => $fields["sales_daily_qouta"],
-                    'sales_daily_target' => $fields["sales_daily_target"],
-                    'year_sales_target' => $fields["year_sales_target"],
-                    'added_by' => $fields["added_by"],
-                    'modified_by' => $fields["modified_by"],
+            // return $check_sale;
+        if (!empty($check_sale)) {
+            // Update the existing record
+            $check_sale->update([
+                'sales_daily_out' => $fields["sales_daily_out"],
+                'sales_daily_target' => $fields["sales_daily_target"],
+                'daily_sales_target_percentage' => $fields["daily_sales_target_percentage"],
+                'modified_by' => $fields["modified_by"],
             ]);
-
-        return response([
-            'message' => '',
-            'result' => true,
-            'icon' => 'success',
-            'title' => 'Successfully Added!',
-            'result' => true,
-        ], 200);  
+            
+            return response([
+                'result' => true,
+                'status' => 'success',
+                'title' => 'Success',
+                'message' => "Today's sales updated successfully",
+            ], 200);
+        } else {
+            // Record does not exist, return a response indicating that no record was found
+            $response = [
+                'result' => false,
+                'status' => 'warning',
+                'title' => 'Oppss!',
+                'message' => "There is already a record for today's sale.",
+            ];
+            return response($response, 200);
+        }
     }
 
     /**
@@ -135,9 +102,9 @@ class SalesDailyOutsController extends Controller
      * @param  \App\Models\SalesDailyOuts  $salesDailyOuts
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, SalesDailyOuts $salesDailyOuts)
+    public function update(Request $request, $id)
     {
-        //
+       
     }
 
     /**
@@ -165,154 +132,231 @@ class SalesDailyOutsController extends Controller
 
     public function get_sales_daily_out(Request $request){
             //select query from the url parameter
-            $page = $request->query('p');
-            $limit = $request->query('l');
+            $page = $request->query('page');
+            $limit = $request->query('limit');
             $query = $request->query('q');
             $filter = $request->query('f');
             $user_id = $request->query('uid');
 
-            //check if the user is valid and currently login
-            if(empty($user_id)){
-                 $response = [
-                        'message' => "Invalid request. Please login." ,
-                        'result' => false,
-                        'icon' => 'error',
-                        'title' => 'Oppss!',
-                    ];
-                return response($response,401);
-            }
 
-
+            $totalTargetDailyQuotaAmount = 0;
+            $totalDailyOutAmount = 0;
+            $totalStatusDailyTargetAmount = 0;
+            $totalPercentageDailyTarget = 0;
+            
+            
 
             $date_month = MainController::formatSingleDigitMonthOnly($filter); //format date to single digit month without the zero (0)
             $date_year = MainController::formatYearOnly($filter); //format date to year
+           
+            //check if the user is valid and currently login
+            if(empty($user_id)){
+                $response = [
+                    'result' => false,
+                    'status' => 'warning',
+                    'title' => 'Oppss!',
+                    'message' => "Invalid request. Please login." ,
+                ];
+                return response($response,200);
+            }
 
             $user_data = User::where('code',$user_id)->first(); // fetch data from users table
 
             //check if the is record for the selected date
-            $data_count = SalesDailyOuts::where('section_code',$user_data["section_code"])
-                ->where('subsection_code',$user_data["subsection_code"])
+            $data_count = SalesDailyOuts::where('subsection_code',$user_data["subsection_code"])
                 ->where('year_sales_target',$date_year)
                 ->whereYear('sales_date', $date_year)
                 ->whereMonth('sales_date', $date_month)
                 ->count();
-            
+
+
             //validate data count
             if($data_count == 0){
                 $response = [
-                        'message' => "There is no record for the selected month sale." ,
-                        'result' => false,
-                        'icon' => 'error',
-                        'title' => 'Oppss!',
-                    ];
-                return $response;
+                    "dataList"=>[],
+                    "dataListCount"=>0,
+                    'result' => false,
+                    'status' => 'warning',
+                    'title' => 'Oppss!',
+                    'message' => "There is no record for the selected month sale." ,
+                ];
+                return Crypt::encryptString(json_encode($response));
             }
 
             //get daily outs for pagination with limit
-            $sales_daily_outs_data = SalesDailyOuts::select('sales_date','sales_daily_qouta','sales_daily_target','sales_daily_out','daily_sales_target_percentage')
-                ->where('section_code',$user_data["section_code"])
-                ->where('subsection_code',$user_data["subsection_code"])
+            $data_list = SalesDailyOuts::where('subsection_code',$user_data["subsection_code"])
+                ->where('year_sales_target',$date_year)
+                ->whereYear('sales_date', $date_year)
+                ->whereMonth('sales_date', $date_month)
+                ->paginate($limit);
+
+
+            // Loop through each item in the collection
+            $data_list->getCollection()->transform(function ($item) {
+                // Format numeric values in the item
+                $item->sales_daily_qouta = number_format($item->sales_daily_qouta, 2);
+                $item->sales_daily_out = number_format($item->sales_daily_out, 2);
+                $item->sales_daily_target = number_format($item->sales_daily_target, 2) ;
+                $item->daily_sales_target_percentage = number_format($item->daily_sales_target_percentage, 2);
+                return $item;
+            });
+
+            //get all data for dashboard cards for display
+            $dashboard_data_list = SalesDailyOuts::where('subsection_code',$user_data["subsection_code"])
                 ->where('year_sales_target',$date_year)
                 ->whereYear('sales_date', $date_year)
                 ->whereMonth('sales_date', $date_month)
                 ->get();
-                // ->paginate($limit);
 
-            
-            $mtd = $this->get_mtd_in_selected_month_year_section_substion($date_month,$date_year,$user_data);
-            $datalist = [];
+       
+          
+            //computation for the dashboard
+            foreach ($dashboard_data_list as  $value) {
+                $salesDailyQuota = (float)$value["sales_daily_qouta"];
+                $salesDailyOut = (float)$value["sales_daily_out"];
+                $salesDailyTarget = (float)$value["sales_daily_target"];
+                $dailySalesTargetPercentage = (float)$value["daily_sales_target_percentage"];
 
-            // Initialize the $datalist array
-            $datalist = [];
-
-            // Iterate over $mtbArray and add objects to $datalist
-            foreach ($mtd as $mtbItem) {
-                $datalist[$mtbItem['sales_date']] = $mtbItem;
-            }
-
-            // Iterate over $dataArray and add objects to $datalist
-            foreach ($sales_daily_outs_data as $dataItem) {
-                // Check if sales_date already exists in $datalist
-                if (array_key_exists($dataItem['sales_date'],$datalist) ) {
-                    // If not, add the object to $datalist
-                    $datalist[$dataItem['sales_date']] = $dataItem;
+                // Check for NaN values and handle them
+                if (!is_nan($salesDailyQuota)) {
+                $totalTargetDailyQuotaAmount += $salesDailyQuota;
+                }
+                if (!is_nan($salesDailyOut)) {
+                $totalDailyOutAmount += $salesDailyOut;
+                }
+                if (!is_nan($salesDailyTarget)) {
+                $totalStatusDailyTargetAmount += $salesDailyTarget;
+                }
+                if (!is_nan($dailySalesTargetPercentage)) {
+                $totalPercentageDailyTarget += $dailySalesTargetPercentage;
                 }
             }
-            // Convert the associative array to indexed array
-            $datalist = array_values($datalist);
+            $averagePercentageDailyTarget = $totalPercentageDailyTarget /  $data_count;
+
+          
+            //format data into 000,000.00
+            $totalTargetDailyQuotaAmount = $totalTargetDailyQuotaAmount;
+            $totalDailyOutAmount = $totalDailyOutAmount;
+            $totalStatusDailyTargetAmount = $totalStatusDailyTargetAmount;
+            $averagePercentageDailyTarget = $averagePercentageDailyTarget;
+
+
+            $mtd_date_selected_month = $this->get_mtd($date_year,$date_month,$user_data,$date_month);
+          
+            
+            $mtd_date_previous_month = $this->get_previous_mtd($date_year,$date_month,$user_data);
+            
+            $report_data = [
+                "total_target_daily_quota_amount"=>$totalTargetDailyQuotaAmount,
+                "total_daily_out_amount"=>$totalDailyOutAmount,
+                "total_status_daily_target_amount"=>$totalStatusDailyTargetAmount,
+                "total_percentage_daily_target"=>$averagePercentageDailyTarget,
+            ];
+
             $response = [
-                "dataList"=>$datalist,
-                "dataListCount"=>$data_count,
+                "dataList"=>$data_list,
+                "report_data"=>$report_data,
+                "present_mtd_data"=>$mtd_date_selected_month,
+                "previous_mtd_data"=>$mtd_date_previous_month,
                 'result'=>True,
                 'title'=>'Success',
-                'message'=> 'Authentication successful.',
                 'status'=>'success',
+                'message'=> 'Authentication successful.',
             ];
         return Crypt::encryptString(json_encode($response));
         }
 
 
+        public function get_mtd($date_year, $date_month,$user_data,$sales_date_start){
+            $mtdTotalDailyQoutaAmount = 0;
+            $mtdTotalDailyOutAmount = 0;
+            $mtdTotalStatusDailyTarget = 0;
+            $mtdFinal = 0;
 
-    public function get_mtd_in_selected_month_year_section_substion ($date_month,$date_year,$user_data){
-            $section_code = 'N/A';
-            $subsection_code = 'N/A';
+            $firstDayOfMonth = Carbon::createFromDate($date_year, $sales_date_start)->startOfMonth();
+            $lastDayOfMonth = Carbon::createFromDate($date_year, $date_month)->endOfMonth();
 
-            //check if user section is not null and replace value
-            if($user_data["section_code"] !== null){
-                $section_code = $user_data["section_code"];
-            }
-            //check if user subsection is not null and replace value
-            if($user_data["subsection_code"] !== null){
-                $subsection_code = $user_data["subsection_code"];
-            }
-
-            //get the dates list of the month
-            $dates_of_selected_month_and_year = $this->get_dates_in_selected_month_and_year($date_month,$date_year);
-            
-            //get the set sales
-            $sales_daily_out_annual_set_sales = SalesDailyOutAnnualSettingsSales::where('section_code',$section_code)
-                ->where('subsection_code',$subsection_code)
+            $mtd_data_list = SalesDailyOuts::where('subsection_code',$user_data["subsection_code"])
                 ->where('year_sales_target',$date_year)
-                ->whereNull('deleted_at')
-                ->first();
+                ->whereDate('sales_date','>=', $firstDayOfMonth)
+                ->whereDate('sales_date','<=',$lastDayOfMonth)
+                ->get();
 
-            $mtd = [];
-            //validate if the variable is an array
-            if (is_array($dates_of_selected_month_and_year)) {     
-                foreach ($dates_of_selected_month_and_year as $value) {
-                    $mtd[] = [
-                        'sales_date' =>  $value,
-                        'sales_daily_qouta' => $sales_daily_out_annual_set_sales->daily_sales_target,
-                        'sales_daily_target' => $sales_daily_out_annual_set_sales->daily_sales_target,
-                        'sales_daily_out' => 0,
-                        'daily_sales_target_percentage' =>  -100
+            foreach ($mtd_data_list as $value) {
+                $salesDailyQuota = (float)$value["sales_daily_qouta"];
+                $salesDailyOut = (float)$value["sales_daily_out"];
+                $salesDailyTarget = (float)$value["sales_daily_target"];
 
-                    ];
+                if (!is_nan($salesDailyQuota)) {
+                $mtdTotalDailyQoutaAmount += $salesDailyQuota;
                 }
-            }
-
-            return $mtd;
-        }
-
-
-    public function get_dates_in_selected_month_and_year ($month,$year){
-            $date = Carbon::create($year, $month, 1);
-
-            $daysInMonth = $date->daysInMonth;
-
-            $datesInMonth = [];
-
-            for ($day = 1; $day <= $daysInMonth; $day++) {
-                // Create a Carbon instance for the current day
-                $currentDate = $date->copy()->setDay($day);
                 
-                // Check if the current day is not a Sunday
-                if ($currentDate->dayOfWeek !== Carbon::SUNDAY) {
-                    // Add the current date to the array
-                    $datesInMonth[] = $currentDate->format('Y-m-d');
+                if (!is_nan($salesDailyOut)) {
+                $mtdTotalDailyOutAmount += $salesDailyOut;
+                }
+
+                 if (!is_nan($salesDailyOut)) {
+                $mtdTotalStatusDailyTarget += $salesDailyTarget;
                 }
             }
-
-            return $datesInMonth;
+            if($mtdTotalDailyQoutaAmount > 0){
+                $mtdFinal = (($mtdTotalDailyOutAmount / $mtdTotalDailyQoutaAmount) - 1) * 100; 
+            }
+            return $reponse = [
+               'mtdTotalDailyQoutaAmount' => $mtdTotalDailyQoutaAmount,
+               'mtdTotalDailyOutAmount' => $mtdTotalDailyOutAmount,
+               'mtdTotalStatusDailyTarget' => $mtdTotalStatusDailyTarget,
+               'mtdFinal' => $mtdFinal,
+               'mtd_data_list' => $mtd_data_list
+            ];
         }
-    }
+        public function get_previous_mtd($date_year, $date_month,$user_data){
+            $mtdTotalDailyQoutaAmount = 0;
+            $mtdTotalDailyOutAmount = 0;
+            $mtdTotalStatusDailyTarget = 0;
+            $mtd_previous_final = 0;
+            $previous_date_month = 1;
+
+            if($date_month >= 2){
+                $previous_date_month = $date_month - 1;
+            }
+            $first_day_of_previous_month = Carbon::createFromDate($date_year, $previous_date_month)->startOfMonth();
+            $last_day_Of_previous_month = Carbon::createFromDate($date_year, $previous_date_month)->endOfMonth();
+
+
+            $mtd_data_previous_list = SalesDailyOuts::where('subsection_code',$user_data["subsection_code"])
+                ->where('year_sales_target',$date_year)
+                ->whereDate('sales_date','>=', $first_day_of_previous_month)
+                ->whereDate('sales_date','<=',$last_day_Of_previous_month)
+                ->get();
+            if($date_month != 1){
+                foreach ($mtd_data_previous_list as $value) {
+                    $salesDailyQuota = (float)$value["sales_daily_qouta"];
+                    $salesDailyOut = (float)$value["sales_daily_out"];
+                    $salesDailyTarget = (float)$value["sales_daily_target"];
+
+                    if (!is_nan($salesDailyQuota)) {
+                    $mtdTotalDailyQoutaAmount += $salesDailyQuota;
+                    }
+                    
+                    if (!is_nan($salesDailyOut)) {
+                    $mtdTotalDailyOutAmount += $salesDailyOut;
+                    }
+
+                    if (!is_nan($salesDailyOut)) {
+                    $mtdTotalStatusDailyTarget += $salesDailyTarget;
+                    }
+                    $mtd_previous_final = (($mtdTotalDailyOutAmount / $mtdTotalDailyQoutaAmount) - 1) * 100; 
+                } 
+            }    
+            
+            
+            return $reponse = [
+               'mtdTotalDailyQoutaAmount' => $mtdTotalDailyQoutaAmount,
+               'mtdTotalDailyOutAmount' => $mtdTotalDailyOutAmount,
+               'mtdTotalStatusDailyTarget' => $mtdTotalStatusDailyTarget,
+               'mtdFinal' => $mtd_previous_final,
+               'mtd_data_list' => $mtd_data_previous_list
+            ];
+        }
+}
