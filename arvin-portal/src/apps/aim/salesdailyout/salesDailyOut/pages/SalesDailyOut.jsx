@@ -58,7 +58,7 @@ let DailyQuota = (props) => {
       </Modal>
 
       <Grid container spacing={2}>
-        <Grid item sm={12} md={4}>
+        <Grid item sm={12} md={3}>
           <CardComponent
             icon={
               <FlagCircleOutlinedIcon
@@ -76,7 +76,7 @@ let DailyQuota = (props) => {
             subvalue={"this is sub value"}
           />
         </Grid>
-        <Grid item sm={12} md={4}>
+        <Grid item sm={12} md={3}>
           <CardComponent
             icon={
               <FlagCircleOutlinedIcon
@@ -94,7 +94,7 @@ let DailyQuota = (props) => {
             subvalue={"this is sub value"}
           />
         </Grid>
-        <Grid item sm={12} md={4}>
+        <Grid item sm={12} md={3}>
           <CardComponent
             icon={
               <FlagCircleOutlinedIcon
@@ -109,6 +109,53 @@ let DailyQuota = (props) => {
             icon_bg_color={"white"}
             subtitle={"DAY TARGET SALE"}
             value={salesDailyOutComponentSalesDailyOut.daily_sales_target}
+            subvalue={"this is sub value"}
+          />
+        </Grid>
+        <Grid item sm={12} md={3}>
+          <CardComponent
+            icon={
+              <PercentIcon
+                sx={{
+                  backgroundColor: "white",
+                  color: configure.primary_color,
+                }}
+              />
+            }
+            title={"Day"}
+            icon_color={configure.primary_color}
+            icon_bg_color={"white"}
+            subtitle={"FINAL MTD"}
+            value={
+              typeof present_mtd_data?.mtdFinal !== "undefined"
+                ? parseFloat(present_mtd_data?.mtdFinal).toFixed(2)
+                : 0
+            }
+            fontSizeValue={18}
+            subvalue={"this is sub value"}
+            changeColorValue={true}
+          />
+        </Grid>
+        <Grid item sm={12} md={2}>
+          <CardComponent
+            icon={
+              <AttachMoneyIcon
+                sx={{
+                  backgroundColor: "white",
+                  color: configure.primary_color,
+                }}
+              />
+            }
+            title={"Day"}
+            icon_color={configure.primary_color}
+            icon_bg_color={"white"}
+            subtitle={"TOTAL DAILY QOUTA"}
+            value={
+              typeof report_data?.total_target_daily_quota_amount !==
+              "undefined"
+                ? report_data?.total_target_daily_quota_amount
+                : 0
+            }
             subvalue={"this is sub value"}
           />
         </Grid>
@@ -132,6 +179,7 @@ let DailyQuota = (props) => {
                 : 0
             }
             subvalue={"this is sub value"}
+            changeColorValue={true}
           />
         </Grid>
         <Grid item sm={12} md={2}>
@@ -155,6 +203,7 @@ let DailyQuota = (props) => {
                 : 0
             }
             subvalue={"this is sub value"}
+            changeColorValue={true}
           />
         </Grid>
         <Grid item sm={12} md={2}>
@@ -177,6 +226,7 @@ let DailyQuota = (props) => {
                 : 0
             }
             subvalue={"this is sub value"}
+            changeColorValue={true}
           />
         </Grid>
 
@@ -200,6 +250,7 @@ let DailyQuota = (props) => {
                 : 0
             }
             subvalue={"this is sub value"}
+            changeColorValue={true}
           />
         </Grid>
 
@@ -226,29 +277,7 @@ let DailyQuota = (props) => {
                 : 0
             }
             subvalue={"this is sub value"}
-          />
-        </Grid>
-
-        <Grid item sm={12} md={2}>
-          <CardComponent
-            icon={
-              <PercentIcon
-                sx={{
-                  backgroundColor: "white",
-                  color: configure.primary_color,
-                }}
-              />
-            }
-            title={"Day"}
-            icon_color={configure.primary_color}
-            icon_bg_color={"white"}
-            subtitle={"FINAL MTD"}
-            value={
-              typeof present_mtd_data?.mtdFinal !== "undefined"
-                ? parseFloat(present_mtd_data?.mtdFinal).toFixed(2)
-                : 0
-            }
-            subvalue={"this is sub value"}
+            changeColorValue={true}
           />
         </Grid>
       </Grid>
@@ -267,7 +296,7 @@ let DailyQuota = (props) => {
               iconType="add"
               type="button"
               fullWidth={true}
-              children={"Add Quota"}
+              children={"Add Today's Sale"}
               click={salesDailyOutComponentSalesDailyOut.onClickOpenAddModal}
             />
           </Stack>

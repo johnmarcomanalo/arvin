@@ -119,6 +119,9 @@ class SalesDailyOutsController extends Controller
     }
 
     public function get_status_daily_target_and_percentage_daily_target_by_daily_out($daily_out,$daily_quota){
+        if (!is_numeric($daily_out)) {
+            $daily_out = 0; // Set $daily_out to zero if it's not a number
+        }
         $percentage_daily_target = 100;
         $status_daily_target = $daily_out - $daily_quota;
         $percentage_daily_target *=  $status_daily_target / $daily_quota;

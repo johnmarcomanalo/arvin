@@ -19,14 +19,23 @@ const ExpandMore = styled((props) => {
   }),
 }));
 const CardComponent = (props) => {
-  const { icon, icon_color, icon_bgcolor, title, subtitle, value, subvalue } =
-    props;
+  const {
+    icon,
+    icon_color,
+    icon_bgcolor,
+    title,
+    subtitle,
+    value,
+    subvalue,
+    fontSizeValue = "0.875rem",
+    changeColorValue = false,
+  } = props;
   const [expanded, setExpanded] = React.useState(false);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-  let default_color = "";
+  let default_color = configure.primary_color;
   if (
     typeof value !== "undefined" &&
     value !== null &&
@@ -37,12 +46,11 @@ const CardComponent = (props) => {
     if (!isNaN(value_number)) {
       const isNegative = value < 0;
       // Format the absolute value of the number with 4 decimal places and commas as thousands separator
-
       // Add parentheses for negative numbers
-      if (isNegative) {
+      if (isNegative && changeColorValue) {
         default_color = "#C83232";
-      } else {
-        default_color = configure.primary_color;
+      } else if (!isNegative && changeColorValue) {
+        default_color = "#a5dc86";
       }
     }
   }
@@ -51,7 +59,7 @@ const CardComponent = (props) => {
     <Card
       // onClick={props.handleClick}
       className="cursor-pointer"
-      sx={{ boxShadow: configure.box_shadow }}
+      sx={{ boxShadow: configure.box_shadow, maxHeight: 100 }}
     >
       <CardContent>
         <CardHeader
@@ -72,6 +80,7 @@ const CardComponent = (props) => {
               style={{
                 fontWeight: 900,
                 color: default_color,
+                fontSize: fontSizeValue,
               }}
             >
               {ViewAmountFormatingDecimals(value, 2)}
@@ -80,7 +89,7 @@ const CardComponent = (props) => {
           subheader={
             <Typography
               variant="caption"
-              style={{ fontWeight: 900, color: configure.secondary_color }}
+              style={{ fontWeight: 600, color: configure.secondary_color }}
             >
               {subtitle}
             </Typography>

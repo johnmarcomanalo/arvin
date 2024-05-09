@@ -18,6 +18,19 @@ const IndexAnnualQuotation = lazy(() =>
 const IndexSalesDailyOut = lazy(() =>
   import("./apps/aim/salesdailyout/salesDailyOut/pages/IndexSalesDailyOut")
 );
+
+const IndexAnnualSalesRanking = lazy(() =>
+  import(
+    "./apps/aim/salesdailyout/annualSalesRanking/pages/IndexAnnualSalesRanking"
+  )
+);
+
+const IndexAnnualSettingSalesRanking = lazy(() =>
+  import(
+    "./apps/aim/salesdailyout/annualSettingSalesRanking/pages/IndexAnnualSettingSalesRanking"
+  )
+);
+
 const IndexLogin = lazy(() => import("./apps/auth/login/pages/IndexLogin"));
 const theme = createTheme({
   typography: {
@@ -55,6 +68,14 @@ function App() {
               <Route
                 path="/Modules/SalesDailyOut/DailySales"
                 element={<IndexSalesDailyOut />}
+              />
+              <Route
+                path="/Modules/SalesDailyOut/AnnualSalesRanking"
+                element={<IndexAnnualSalesRanking />}
+              />
+              <Route
+                path="/Modules/SalesDailyOut/AnnualSettingSalesRanking"
+                element={<IndexAnnualSettingSalesRanking />}
               />
             </Route>
           </Routes>
