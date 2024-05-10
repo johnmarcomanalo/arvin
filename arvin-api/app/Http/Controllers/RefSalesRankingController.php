@@ -6,6 +6,7 @@ use App\Http\Requests\SalesRankingRequest;
 use Illuminate\Http\Request;
 use App\Models\RefSalesRanking;
 use App\Models\RefSalesRankingPlacements;
+use Illuminate\Support\Facades\Crypt;
 
 class RefSalesRankingController extends Controller
 {
@@ -27,6 +28,14 @@ class RefSalesRankingController extends Controller
      */
     public function store(SalesRankingRequest $request)
     {
+        $request->validate([
+            'description'      => 'required|unique:ref_sales_rankings,description',
+            'value'            => 'required',
+            'type'             => 'required',
+            'added_by'         => 'required',
+            'modified_by'      => 'required',
+            'ranking_placement'=> 'required',
+        ]);
         $requestReponse         = $request->except(['ranking_placement']);
         $requestReponse['code'] = MainController::generate_code('App\Models\RefSalesRanking',"code");
         $refSalesRanking        =  RefSalesRanking::create($requestReponse);
@@ -94,4 +103,43 @@ class RefSalesRankingController extends Controller
     {
         //
     }
+
+    public function get_ref_sales_ranking(Request $request){
+    
+        $page = $request->query('page');
+        $limit = $request->query('limit');
+        $query = $request->query('q');
+        $filter = $request->query('f');
+        $user_id = $request->query('uid');
+
+        $queryBuilder = RefSalesRanking::whereNull('deleted_at');
+
+        if ($limit) {
+            if (!empty($query)) {
+                $data_list = $queryBuilder->where(function ($queryBuilder) use ($query) {
+                                $queryBuilder
+                                    ->where('description', 'like', '%' . $query . '%')
+                                    ->orWhere('value', 'like', '%' . $query . '%')
+                                    ->orWhere('type', 'like', '%' . $query . '%');
+                            })->paginate($limit);
+            } else {
+                $data_list = $queryBuilder->paginate($limit);
+            }
+        }else{
+            $data_list = $queryBuilder->get();
+        }
+        
+       
+         $response = [
+            "dataList"=>$data_list,
+            'result'=>True,
+            'title'=>'Success',
+            'status'=>'success',
+            'message'=> 'Authentication successful.',
+        ];
+
+        return $response;
+        return Crypt::encryptString(json_encode($response));
+    } 
+
 }
