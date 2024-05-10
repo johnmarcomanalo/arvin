@@ -47,7 +47,7 @@ export const getMonthlyAndDailyQoutaByTargetAnnualSales =
     }
   };
 
-export const postAnnualTargetSales = (formValues) => async (dispatch) => {
+export const postAnnualSettingSalesRanking = (formValues) => async (dispatch) => {
   try {
     await dispatch({
       type: Constants.ACTION_LOADING,
@@ -56,7 +56,7 @@ export const postAnnualTargetSales = (formValues) => async (dispatch) => {
       },
     });
     const res = await PostDefaultServices(
-      "api/salesdailyout/annual_settings_sales",
+      "api/reference/sales_ranking",
       formValues
     );
     await dispatch({

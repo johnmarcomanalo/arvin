@@ -51,12 +51,9 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
 
   const columns = [
     { id: "code", label: "Code", align: "left" },
-    { id: "year_sales_target", label: "Year", align: "left" },
-    { id: "section", label: "Section", align: "left" },
-    { id: "subsection", label: "Subsection", align: "left" },
-    { id: "annual_sales_target", label: "Annual Quota", align: "left" },
-    { id: "monthly_sales_target", label: "Monthly Quota", align: "left" },
-    { id: "daily_sales_target", label: "Daily Quota", align: "left" },
+    { id: "description", label: "Description", align: "left" },
+    { id: "value", label: "Points", align: "left" },
+    { id: "type", label: "Type", align: "left" },
   ];
   const onClickOpenAddModal = () => {
     dispatch({
