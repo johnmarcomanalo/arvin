@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\RefSalesRankingPlacements;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class RefSalesRankingPlacementsController extends Controller
 {
@@ -36,7 +37,7 @@ class RefSalesRankingPlacementsController extends Controller
      */
     public function show($id)
     {
-        return RefSalesRankingPlacements::whereRefSalesRankingsCode($id)->get();
+        return Crypt::encryptString(json_encode(RefSalesRankingPlacements::whereRefSalesRankingsCode($id)->get()));
     }
 
     /**

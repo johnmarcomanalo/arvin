@@ -138,7 +138,6 @@ class RefSalesRankingController extends Controller
             'message'=> 'Authentication successful.',
         ];
 
-        return $response;
         return Crypt::encryptString(json_encode($response));
     } 
 
