@@ -26,7 +26,7 @@ class RefSalesRankingController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(SalesRankingRequest $request)
+    public function store(Request $request)
     {
         $request->validate([
             'description'      => 'required|unique:ref_sales_rankings,description',
