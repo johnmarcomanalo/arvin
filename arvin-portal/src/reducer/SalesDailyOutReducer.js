@@ -22,6 +22,7 @@ const initialState = {
   report_data: [],
   present_mtd_data: [],
   previous_mtd_data: [],
+  addModal2: false,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

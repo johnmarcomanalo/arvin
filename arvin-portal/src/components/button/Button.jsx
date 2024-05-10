@@ -8,6 +8,7 @@ import SyncIcon from "@mui/icons-material/Sync";
 import HelpIcon from "@mui/icons-material/Help";
 import LoginIcon from "@mui/icons-material/Login";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import TableRowsIcon from "@mui/icons-material/TableRows";
 const ButtonComponent = (props) => {
   const { ...params } = props;
   let icon = null;
@@ -29,6 +30,9 @@ const ButtonComponent = (props) => {
       break;
     case "filter":
       icon = <FilterAltIcon />;
+      break;
+    case "generate":
+      icon = <TableRowsIcon />;
       break;
     default:
       icon = <HelpIcon />;

@@ -31,6 +31,9 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
 
   const dispatch = useDispatch();
   const addModal = useSelector((state) => state.SalesDailyOutReducer.addModal);
+  const addModal2 = useSelector(
+    (state) => state.SalesDailyOutReducer.addModal2
+  );
   const dataList = useSelector((state) => state.SalesDailyOutReducer.dataList);
   const dataListCount = useSelector(
     (state) => state.SalesDailyOutReducer.dataListCount
@@ -49,13 +52,9 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
   );
 
   const columns = [
-    { id: "code", label: "Code", align: "left" },
-    { id: "year_sales_target", label: "Year", align: "left" },
-    { id: "section", label: "Section", align: "left" },
-    { id: "subsection", label: "Subsection", align: "left" },
-    { id: "annual_sales_target", label: "Annual Quota", align: "left" },
-    { id: "monthly_sales_target", label: "Monthly Quota", align: "left" },
-    { id: "daily_sales_target", label: "Daily Quota", align: "left" },
+    { id: "section", label: "Ranking", align: "left" },
+    { id: "year_sales_target", label: "Ranker", align: "left" },
+    { id: "year_sales_target", label: "Point", align: "left" },
   ];
   const onClickOpenAddModal = () => {
     dispatch({
@@ -70,6 +69,23 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
       type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {
         addModal: false,
+      },
+    });
+  };
+
+  const onClickOpenAddModal2 = () => {
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        addModal2: true,
+      },
+    });
+  };
+  const onClickCloseAddModal2 = () => {
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        addModal2: false,
       },
     });
   };
@@ -156,6 +172,7 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
     selectedDataList,
     columns,
     addModal,
+    addModal2,
 
     handleChangeRowsPerPage,
     handleChangePage,
@@ -165,6 +182,8 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
     onClickOpenAddModal,
     onClickCloseAddModal,
     GetMonthlyAndDailyQoutaByAnnualQouta,
+    onClickOpenAddModal2,
+    onClickCloseAddModal2,
   };
 };
 

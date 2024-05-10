@@ -8,8 +8,9 @@ import Table from "../../../../../components/table/Table";
 import configure from "../../../../configure/configure.json";
 import SalesDailyOutComponentAnnualSalesRankingHooks from "../hooks/SalesDailyOutComponentAnnualSalesRankingHooks";
 import Modal from "../../../../../components/modal/Modal";
-import AddAnnualSettingSale from "./components/AddAnnualSettingSale";
+import AddAnnualSettingSale from "./components/GenerateAnnualSalesRanking";
 import Page from "../../../../../components/pagination/Pagination";
+import AddAnnualSalesRanker from "./components/AddAnnualSalesRanker";
 export default function AnnualSalesRanking(props) {
   const { ...salesDailyOutComponentAnnualSettingSale } =
     SalesDailyOutComponentAnnualSalesRankingHooks(props);
@@ -20,7 +21,7 @@ export default function AnnualSalesRanking(props) {
       <Modal
         open={salesDailyOutComponentAnnualSettingSale?.addModal}
         fullScreen={matches ? false : true}
-        title={"Annual Quota"}
+        title={"Annual Sales Ranking"}
         size={"xs"}
         action={undefined}
         handleClose={
@@ -29,23 +30,47 @@ export default function AnnualSalesRanking(props) {
       >
         <AddAnnualSettingSale />
       </Modal>
+      <Modal
+        open={salesDailyOutComponentAnnualSettingSale?.addModal2}
+        fullScreen={matches ? false : true}
+        title={"Annual Sales Ranking"}
+        size={"xs"}
+        action={undefined}
+        handleClose={
+          salesDailyOutComponentAnnualSettingSale.onClickCloseAddModal2
+        }
+      >
+        <AddAnnualSalesRanker />
+      </Modal>
+
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Stack
             direction="row"
-            justifyContent={matches ? "flex-end" : "center"}
-            alignItems={matches ? "flex-end" : "center"}
-            flexDirection={matches ? "row" : "column"}
+            justifyContent={"flex-end"}
+            alignItems={"flex-end"}
+            flexDirection={"row"}
             spacing={2}
           >
+            <ButtonComponent
+              stx={configure.default_button}
+              iconType="generate"
+              type="button"
+              fullWidth={true}
+              children={"Generate Ranking"}
+              click={
+                salesDailyOutComponentAnnualSettingSale.onClickOpenAddModal
+              }
+            />
+
             <ButtonComponent
               stx={configure.default_button}
               iconType="add"
               type="button"
               fullWidth={true}
-              children={"Add Quota"}
+              children={"Add Ranker"}
               click={
-                salesDailyOutComponentAnnualSettingSale.onClickOpenAddModal
+                salesDailyOutComponentAnnualSettingSale.onClickOpenAddModal2
               }
             />
           </Stack>
@@ -53,9 +78,9 @@ export default function AnnualSalesRanking(props) {
         <Grid item xs={6} sm={6} md={6} lg={6}>
           <Stack
             direction="row"
-            justifyContent={matches ? "flex-start" : "center"}
-            alignItems={matches ? "flex-start" : "center"}
-            flexDirection={matches ? "row" : "column"}
+            justifyContent={"flex-start"}
+            alignItems={"flex-start"}
+            flexDirection={"row"}
             spacing={2}
           >
             <SearchField

@@ -16,7 +16,7 @@ import RefSectionsHooks from "../../../../reference/hooks/RefSectionsHooks";
 import RefSubSectionsHooks from "../../../../reference/hooks/RefSubSectionsHooks";
 import { Constants } from "../../../../../../reducer/Contants";
 import SalesDailyOutComponentAnnualSettingSalesRankingHooks from "../../hooks/SalesDailyOutComponentAnnualSettingSalesRankingHooks";
-import { postAnnualTargetSales } from "../../actions/SalesDailyOutComponentAnnualSettingSalesRankingActions";
+import { postAnnualSettingSalesRanking } from "../../actions/SalesDailyOutComponentAnnualSettingSalesRankingActions";
 import moment from "moment";
 import swal from "sweetalert";
 import { Button, ButtonGroup } from "@mui/material";
@@ -44,6 +44,16 @@ const submit = async (values, dispatch, props) => {
       modified_by: values.modified_by,
     };
     console.log(value);
+    const res = await dispatch(postAnnualSettingSalesRanking(value));
+    swal(res.data.title, res.data.message, res.data.status);
+    reset();
+    await dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        refresh: !props.refresh,
+        addModal: false,
+      },
+    });
   } catch (error) {
     console.log(error);
   }
