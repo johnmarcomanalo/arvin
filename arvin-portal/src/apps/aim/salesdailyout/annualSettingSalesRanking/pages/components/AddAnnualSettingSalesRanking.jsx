@@ -19,20 +19,31 @@ import SalesDailyOutComponentAnnualSettingSalesRankingHooks from "../../hooks/Sa
 import { postAnnualTargetSales } from "../../actions/SalesDailyOutComponentAnnualSettingSalesRankingActions";
 import moment from "moment";
 import swal from "sweetalert";
+import { Button, ButtonGroup } from "@mui/material";
 const formName = "AddAnnualSettingSalesRanking";
 const submit = async (values, dispatch, props) => {
   try {
-    values.year_sales_target = moment(values.year_sales_target).format("YYYY");
-    const res = await dispatch(postAnnualTargetSales(values));
-    swal(res.data.title, res.data.message, res.data.status);
-    reset();
-    await dispatch({
-      type: Constants.ACTION_SALES_DAILY_OUT,
-      payload: {
-        refresh: !props.refresh,
-        addModal: false,
-      },
+    let ranking_placement = values.ranking_placement.map((item) => {
+      const newItem = { index: item.index };
+      Object.keys(item).forEach((key) => {
+        if (key.startsWith("description-")) {
+          newItem.desc = item[key];
+        } else if (key.startsWith("value-")) {
+          newItem.val = item[key];
+        }
+      });
+      return newItem;
     });
+
+    let value = {
+      description: values.description,
+      value: values.value,
+      type: values.type,
+      ranking_placement: ranking_placement,
+      added_by: values.added_by,
+      modified_by: values.modified_by,
+    };
+    console.log(value);
   } catch (error) {
     console.log(error);
   }
@@ -44,45 +55,117 @@ let AddAnnualSettingSalesRanking = (props) => {
     SalesDailyOutComponentAnnualSettingSalesRankingHooks(props);
   const account_details =
     salesDailyOutComponentAnnualSettingSalesRanking?.account_details;
-  console.log(salesDailyOutComponentAnnualSettingSalesRanking);
+  const state = salesDailyOutComponentAnnualSettingSalesRanking?.state;
   props.dispatch(change(formName, "type", "Year"));
   props.dispatch(change(formName, "added_by", account_details?.code));
   props.dispatch(change(formName, "modified_by", account_details?.code));
+  props.dispatch(
+    change(formName, "ranking_placement", state?.ranking_placement)
+  );
   return (
     <React.Fragment>
       <form onSubmit={props.handleSubmit}>
         {/* <CSRFToken /> */}
         <Grid container spacing={2}>
-          <Grid container item xs={12} sm={12} md={12} lg={12}>
-            <Grid item xs={12} md={12}>
-              <Field
-                id="description"
-                name="description"
-                label="Description"
-                required={true}
-                component={InputField}
-              />
-            </Grid>
-            <Grid item xs={12} md={12}>
-              <Field
-                id="value"
-                name="value"
-                label="Target"
-                type="number"
-                required={true}
-                component={InputField}
-              />
-            </Grid>
-            <Grid item xs={12} md={12}>
-              <Field
-                id="type"
-                name="type"
-                label="Type"
-                required={true}
-                disabled
-                component={InputField}
-              />
-            </Grid>
+          <Grid item xs={12} md={12}>
+            <Field
+              id="description"
+              name="description"
+              label="Description"
+              required={true}
+              component={InputField}
+            />
+          </Grid>
+          <Grid item xs={12} md={12}>
+            <Field
+              id="value"
+              name="value"
+              label="Target"
+              type="number"
+              required={true}
+              component={InputField}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={12}>
+            <Field
+              id="type"
+              name="type"
+              label="Type"
+              required={true}
+              disabled
+              component={InputField}
+            />
+          </Grid>
+          {state.ranking_placement?.map((value, index) => {
+            return (
+              <Grid container item xs={12} sm={12} md={12} lg={12}>
+                <Grid item xs={12} md={12}>
+                  <Field
+                    id={"description-" + index}
+                    name={"description-" + index}
+                    label="Placement"
+                    required={true}
+                    component={InputField}
+                    value={value.description}
+                    onChange={(e) => {
+                      salesDailyOutComponentAnnualSettingSalesRanking.onChangeRankingPlacement(
+                        e,
+                        index
+                      );
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} md={12}>
+                  <Field
+                    id={"value-" + index}
+                    name={"value-" + index}
+                    label="Value"
+                    type="number"
+                    required={true}
+                    component={InputField}
+                    value={value.value}
+                    onChange={(e) => {
+                      salesDailyOutComponentAnnualSettingSalesRanking.onChangeRankingPlacement(
+                        e,
+                        index
+                      );
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            );
+          })}
+          <Grid item xs={12} md={12}>
+            <Stack
+              direction="row"
+              justifyContent="flex-end"
+              alignItems="flex-end"
+              spacing={2}
+            >
+              <ButtonGroup disableElevation aria-label="Disabled button group">
+                <ButtonComponent
+                  stx={configure.default_button}
+                  iconType="add"
+                  type="button"
+                  fullWidth={true}
+                  children={"Add"}
+                  click={
+                    salesDailyOutComponentAnnualSettingSalesRanking.onClickAddRankingPlacement
+                  }
+                />
+                <ButtonComponent
+                  stx={configure.default_button}
+                  iconType="delete"
+                  type="button"
+                  fullWidth={true}
+                  children={"Remove"}
+                  click={
+                    salesDailyOutComponentAnnualSettingSalesRanking.onClickRemoveRankingPlacement
+                  }
+                />
+              </ButtonGroup>
+            </Stack>
           </Grid>
           <Grid item xs={12} md={12}>
             <Stack

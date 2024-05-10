@@ -15,7 +15,7 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
   const [state, setState] = React.useState({
     debounceTimer: null,
     debounceDelay: 2000,
-    ranking_placement: [{ index: 1, description: "", value: 0 }],
+    ranking_placement: [{ index: 1 }],
   });
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("p") != null ? searchParams.get("p") : 1;
@@ -148,32 +148,30 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
   }, [refresh, filterQuery, search]);
 
   const onChangeRankingPlacement = (event, index) => {
-      let valu = event.target.value;
-      let name = event.target.name;
-      setState((prev) => ({
-        ...prev,
-        ranking_placement: state.ranking_placement.map((val, index2) =>
-          index === index2 ? { ...val, [name]: valu } : val
-        ),
-      }));
-    };
+    let valu = event.target.value;
+    let name = event.target.name;
+    setState((prev) => ({
+      ...prev,
+      ranking_placement: state.ranking_placement.map((val, index2) =>
+        index === index2 ? { ...val, [name]: valu } : val
+      ),
+    }));
+  };
 
   const onClickAddRankingPlacement = () => {
-        let placement = {
-          index: state.ranking_placement.length + 1,
-          description: "",
-          value: 0,
-        };
-        state.ranking_placement.push(placement);
-        setState((prev) => ({
-          ...prev,
-        }));
+    let placement = {
+      index: state.ranking_placement.length + 1,
+    };
+    state.ranking_placement.push(placement);
+    setState((prev) => ({
+      ...prev,
+    }));
   };
   const onClickRemoveRankingPlacement = () => {
-        state.ranking_placement.splice(state.ranking_placement.length - 1, 1);
-        setState((prev) => ({
-          ...prev,
-        }));
+    state.ranking_placement.splice(state.ranking_placement.length - 1, 1);
+    setState((prev) => ({
+      ...prev,
+    }));
   };
   return {
     state,
