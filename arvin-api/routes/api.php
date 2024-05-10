@@ -8,12 +8,9 @@ use App\Http\Controllers\RefSectionsController;
 use App\Http\Controllers\RefSubSectionsController;
 use App\Http\Controllers\QuotationAnnualQuotasController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RefSalesRankingController;
 use App\Http\Controllers\SalesDailyOutAnnualSettingsSalesController;
 use App\Http\Controllers\SalesDailyOutsController;
-
-
-
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -48,6 +45,7 @@ use Illuminate\Support\Facades\Route;
     Route::apiResource('reference/departments',RefDepartmentsController::class)->middleware(['light_decryption']);
     Route::apiResource('reference/sections',RefSectionsController::class)->middleware(['light_decryption']);
     Route::apiResource('reference/subsections',RefSubSectionsController::class)->middleware(['light_decryption']);
+    Route::apiResource('reference/sales_ranking',RefSalesRankingController::class)->middleware(['light_decryption']);
     Route::get('reference/subsections/specific/{id}',[RefSubSectionsController::class,'get_subsection'])->middleware(['light_decryption']);
     // REFERENCE END
    
@@ -60,11 +58,12 @@ use Illuminate\Support\Facades\Route;
     Route::get('salesdailyout/daily_out/get_status_daily_target_and_percentage_daily_target_by_daily_out/{daily_out}/{daily_quota}',[SalesDailyOutsController::class, 'get_status_daily_target_and_percentage_daily_target_by_daily_out'])->middleware(['light_decryption']);
     Route::apiResource('salesdailyout/daily_out',SalesDailyOutsController::class)->middleware(['light_decryption']);
     // SALES DAILY OUT END 
-       
+
     // QUOTATION START
     Route::apiResource('qoutation/annual_qouta',QuotationAnnualQuotasController::class)->middleware(['light_decryption']);
     Route::get('qoutation/annual_qouta/annual_qouta_computation/{amount}',[QuotationAnnualQuotasController::class, 'annual_qouta_computation'])->middleware(['light_decryption']);
     // QUOTATION END
+
 
 
     Route::group(['middleware' => ['auth:sanctum','cors','api']], function () {
