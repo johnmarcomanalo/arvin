@@ -34,9 +34,9 @@ class RefSalesRankingPlacementsController extends Controller
      * @param  \App\Models\RefSalesRankingPlacements  $refSalesRankingPlacements
      * @return \Illuminate\Http\Response
      */
-    public function show(RefSalesRankingPlacements $refSalesRankingPlacements)
+    public function show($id)
     {
-        //
+        return RefSalesRankingPlacements::whereRefSalesRankingsCode($id)->get();
     }
 
     /**

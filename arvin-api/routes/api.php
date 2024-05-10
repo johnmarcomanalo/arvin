@@ -11,6 +11,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RefSalesRankingController;
 use App\Http\Controllers\SalesDailyOutAnnualSettingsSalesController;
 use App\Http\Controllers\SalesDailyOutsController;
+use App\Http\Controllers\RefSalesRankingPlacementsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -46,9 +47,11 @@ use Illuminate\Support\Facades\Route;
     Route::apiResource('reference/sections',RefSectionsController::class)->middleware(['light_decryption']);
     Route::apiResource('reference/subsections',RefSubSectionsController::class)->middleware(['light_decryption']);
     Route::apiResource('reference/sales_ranking',RefSalesRankingController::class)->middleware(['light_decryption']);
+    Route::apiResource('reference/ref_sales_ranking_placements',RefSalesRankingPlacementsController::class)->middleware(['light_decryption']);
+    Route::get('reference/sales_ranking_list',[RefSalesRankingController::class,'get_ref_sales_ranking']);
     Route::get('reference/subsections/specific/{id}',[RefSubSectionsController::class,'get_subsection'])->middleware(['light_decryption']);
     // REFERENCE END
-   
+    
     // SALES DAILY OUT START
     Route::get('salesdailyout/daily_out/get_sales_daily_out',[SalesDailyOutsController::class,'get_sales_daily_out']);//for pagination
     Route::get('salesdailyout/annual_settings_sales/get_sales_annual_settings',[SalesDailyOutAnnualSettingsSalesController::class,'get_sales_annual_settings']);//for pagination
