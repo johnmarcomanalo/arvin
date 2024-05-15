@@ -1,15 +1,14 @@
+import moment from "moment";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { Constants } from "../../../../../reducer/Contants";
-import { encryptLocal } from "../../../../../utils/Encryption";
-import { useDebounce } from "../../../../../utils/HelperUtils";
-import moment from "moment";
-import {
-  getAnnualSettingSale,
-  getMonthlyAndDailyQoutaByTargetAnnualSales,
-} from "../actions/SalesDailyOutComponentAnnualSettingSalesRankingActions";
 import { cancelRequest } from "../../../../../api/api";
+import { Constants } from "../../../../../reducer/Contants";
+import { useDebounce } from "../../../../../utils/HelperUtils";
+import {
+  getAnnualSettingSaleRanking,
+  getReferenceSalesRankingPlacements,
+} from "../actions/SalesDailyOutComponentAnnualSettingSalesRankingActions";
 const QuotationComponentAnnualQuotaHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
   const [state, setState] = React.useState({
@@ -32,7 +31,13 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
 
   const dispatch = useDispatch();
   const addModal = useSelector((state) => state.SalesDailyOutReducer.addModal);
+  const addModal2 = useSelector(
+    (state) => state.SalesDailyOutReducer.addModal2
+  );
   const dataList = useSelector((state) => state.SalesDailyOutReducer.dataList);
+  const dataSubList = useSelector(
+    (state) => state.SalesDailyOutReducer.dataSubList
+  );
   const dataListCount = useSelector(
     (state) => state.SalesDailyOutReducer.dataListCount
   );
@@ -55,6 +60,11 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
     { id: "value", label: "Points", align: "left" },
     { id: "type", label: "Type", align: "left" },
   ];
+
+  const subcolumns = [
+    { id: "description", label: "Description", align: "left" },
+    { id: "value", label: "Points", align: "left" },
+  ];
   const onClickOpenAddModal = () => {
     dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
@@ -68,6 +78,14 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
       type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {
         addModal: false,
+      },
+    });
+  };
+  const onClickCloseAddModal2 = () => {
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        addModal2: false,
       },
     });
   };
@@ -87,13 +105,19 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
       },
     });
   };
-  const onSelectItem = (data) => {
-    console.log(data);
+  const onSelectItem = async (data) => {
+    await dispatch(getReferenceSalesRankingPlacements(data.code));
+    await dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        addModal2: true,
+      },
+    });
   };
   const onDeleteDeduction = (data) => {
     console.log(data);
   };
-  const onChangeSearch = (event) => {
+  const onChangeSearch = async (event) => {
     // SEARCH DATA
     const search = event.target.value;
     setSearchParams({
@@ -107,40 +131,28 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
     clearTimeout(state.debounceTimer);
     state.debounceTimer = setTimeout(func, delay);
   };
-  const GetMonthlyAndDailyQoutaByAnnualQouta = async (e) => {
-    try {
-      let { value } = e.target;
-      if (value > 0) {
-        await debounce(() => {
-          dispatch(getMonthlyAndDailyQoutaByTargetAnnualSales(value));
-        }, state.debounceDelay);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
   const getListParam = () => {
     const data = {
       p: page == null ? 1 : page,
       q: search,
       l: rowsPerPage,
       f: filterQuery,
-      u: account_details?.id,
+      u: account_details?.code,
     };
     return data;
   };
 
-  const GetAnnualSettingSaleList = async () => {
+  const GetAnnualSettingSaleRankingList = async () => {
     try {
       const data = getListParam();
-      await dispatch(getAnnualSettingSale(data));
+      await dispatch(getAnnualSettingSaleRanking(data));
     } catch (error) {
       console.error(error);
     }
   };
 
   React.useEffect(() => {
-    GetAnnualSettingSaleList();
+    GetAnnualSettingSaleRankingList();
     return () => cancelRequest();
   }, [refresh, filterQuery, search]);
 
@@ -183,6 +195,9 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
     columns,
     addModal,
     account_details,
+    addModal2,
+    dataSubList,
+    subcolumns,
 
     handleChangeRowsPerPage,
     handleChangePage,
@@ -191,10 +206,10 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
     onChangeSearch,
     onClickOpenAddModal,
     onClickCloseAddModal,
-    GetMonthlyAndDailyQoutaByAnnualQouta,
     onChangeRankingPlacement,
     onClickAddRankingPlacement,
     onClickRemoveRankingPlacement,
+    onClickCloseAddModal2,
   };
 };
 

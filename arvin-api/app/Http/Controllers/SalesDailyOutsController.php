@@ -242,13 +242,15 @@ class SalesDailyOutsController extends Controller
             $totalDailyOutAmount = $totalDailyOutAmount;
             $totalStatusDailyTargetAmount = $totalStatusDailyTargetAmount;
             $averagePercentageDailyTarget = $averagePercentageDailyTarget;
-
-
+          
             $mtd_date_selected_month = $this->get_mtd($date_year,$date_month,$user_data,$date_month);
           
-            
             $mtd_date_previous_month = $this->get_previous_mtd($date_year,$date_month,$user_data);
             
+
+            $mtd_final_mtd = $this->get_final_mtd($date_year,$date_month,$user_data,$date_month);
+
+
             $report_data = [
                 "total_target_daily_quota_amount"=>$totalTargetDailyQuotaAmount,
                 "total_daily_out_amount"=>$totalDailyOutAmount,
@@ -261,6 +263,7 @@ class SalesDailyOutsController extends Controller
                 "report_data"=>$report_data,
                 "present_mtd_data"=>$mtd_date_selected_month,
                 "previous_mtd_data"=>$mtd_date_previous_month,
+                "final_mtd_data"=>$mtd_final_mtd,
                 'result'=>True,
                 'title'=>'Success',
                 'status'=>'success',
@@ -279,10 +282,16 @@ class SalesDailyOutsController extends Controller
             $firstDayOfMonth = Carbon::createFromDate($date_year, $sales_date_start)->startOfMonth();
             $lastDayOfMonth = Carbon::createFromDate($date_year, $date_month)->endOfMonth();
 
+            $currentDateTime =  MainController::formatSingleDigitMonthOnly(date('Y-m-d'));
+            $LastMonthDate =  MainController::formatSingleDigitMonthOnly($lastDayOfMonth);
+            $LastOrCurrentDateOfTheMonth = $lastDayOfMonth;
+            if($currentDateTime == $LastMonthDate){
+                $LastOrCurrentDateOfTheMonth = Carbon::now();
+            }
             $mtd_data_list = SalesDailyOuts::where('subsection_code',$user_data["subsection_code"])
                 ->where('year_sales_target',$date_year)
                 ->whereDate('sales_date','>=', $firstDayOfMonth)
-                ->whereDate('sales_date','<=',$lastDayOfMonth)
+                ->whereDate('sales_date','<=',$LastOrCurrentDateOfTheMonth)
                 ->get();
 
             foreach ($mtd_data_list as $value) {
@@ -361,5 +370,50 @@ class SalesDailyOutsController extends Controller
                'mtdFinal' => $mtd_previous_final,
                'mtd_data_list' => $mtd_data_previous_list
             ];
+        }
+
+        public function get_final_mtd($date_year, $date_month,$user_data,$sales_date_start){
+            $mtdTotalDailyQoutaAmount = 0;
+            $mtdTotalDailyOutAmount = 0;
+            $mtdTotalStatusDailyTarget = 0;
+            $mtdFinal = 0;
+
+            $januaryFirst = Carbon::create($date_year, 1, 1)->startOfDay();
+            $firstDayOfMonth = Carbon::createFromDate($date_year, $sales_date_start)->startOfMonth();
+            $lastDayOfMonth = Carbon::createFromDate($date_year, $date_month)->endOfMonth();
+            $currentDateTime =  MainController::formatSingleDigitMonthOnly(date('Y-m-d'));
+            $LastMonthDate =  MainController::formatSingleDigitMonthOnly($lastDayOfMonth);
+            $LastOrCurrentDateOfTheMonth = $lastDayOfMonth;
+            if($currentDateTime == $LastMonthDate){
+                $LastOrCurrentDateOfTheMonth = Carbon::now();
+            }
+            $mtd_data_list = SalesDailyOuts::where('subsection_code',$user_data["subsection_code"])
+                ->where('year_sales_target',$date_year)
+                ->whereDate('sales_date','>=', $januaryFirst)
+                ->whereDate('sales_date','<=',$LastOrCurrentDateOfTheMonth)
+                ->get();
+
+            foreach ($mtd_data_list as $value) {
+                $salesDailyQuota = (float)$value["sales_daily_qouta"];
+                $salesDailyOut = (float)$value["sales_daily_out"];
+                $salesDailyTarget = (float)$value["sales_daily_target"];
+
+                if (!is_nan($salesDailyQuota)) {
+                $mtdTotalDailyQoutaAmount += $salesDailyQuota;
+                }
+                
+                if (!is_nan($salesDailyOut)) {
+                $mtdTotalDailyOutAmount += $salesDailyOut;
+                }
+
+                 if (!is_nan($salesDailyOut)) {
+                $mtdTotalStatusDailyTarget += $salesDailyTarget;
+                }
+            }
+            if($mtdTotalDailyQoutaAmount > 0){
+                $mtdFinal = ((round((float)$mtdTotalDailyOutAmount, 2)) / (round((float)$mtdTotalDailyQoutaAmount, 2)) - 1) * 100; 
+            }
+            
+            return $mtdFinal;
         }
 }

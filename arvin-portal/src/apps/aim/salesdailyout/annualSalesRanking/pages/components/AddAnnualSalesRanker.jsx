@@ -16,23 +16,41 @@ import RefSectionsHooks from "../../../../reference/hooks/RefSectionsHooks";
 import RefSubSectionsHooks from "../../../../reference/hooks/RefSubSectionsHooks";
 import { Constants } from "../../../../../../reducer/Contants";
 import SalesDailyOutComponentAnnualSalesRankingHooks from "../../hooks/SalesDailyOutComponentAnnualSalesRankingHooks";
-import { postAnnualTargetSales } from "../../actions/SalesDailyOutComponentAnnualSalesRankingActions";
+import {
+  getAnnualSalesRanking,
+  postCreateRankerAnnualSalesRanking,
+} from "../../actions/SalesDailyOutComponentAnnualSalesRankingActions";
 import moment from "moment";
 import swal from "sweetalert";
+import RefSalesRankingHooks from "../../../../reference/hooks/RefSalesRankingHooks";
+import { decryptaes } from "../../../../../../utils/LightSecurity";
 const formName = "AddAnnualSalesRanker";
 const submit = async (values, dispatch, props) => {
   try {
-    values.year_sales_target = moment(values.year_sales_target).format("YYYY");
-    const res = await dispatch(postAnnualTargetSales(values));
-    swal(res.data.title, res.data.message, res.data.status);
-    reset();
+    let value = {
+      type: "subsection",
+      ranker_code: values.subsection_code,
+      rank_code: props.selected_code,
+      added_by: values.added_by,
+      modified_by: values.modified_by,
+    };
+    const res = await dispatch(postCreateRankerAnnualSalesRanking(value));
+    let decrypted = await decryptaes(res?.data);
+    const res2 = await dispatch(getAnnualSalesRanking(value));
+    let decrypted2 = await decryptaes(res2?.data);
     await dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {
         refresh: !props.refresh,
-        addModal: false,
+        addModal2: false,
+        dataList: decrypted2?.dataList,
+        dataListcount: decrypted2?.dataListCount,
+        selected_code: decrypted2.rank_code,
+        target_point: decrypted2?.target_point,
       },
     });
+    await swal(decrypted.title, decrypted.message, decrypted.status);
+    await reset();
   } catch (error) {
     console.log(error);
   }
@@ -48,24 +66,10 @@ let AddAnnualSalesRanker = (props) => {
   const { ...refSubSections } = RefSubSectionsHooks();
   const { ...salesDailyOutComponentAnnualSalesRanking } =
     SalesDailyOutComponentAnnualSalesRankingHooks(props);
-
-  const annual_sales_target = useSelector(
-    (state) => state.SalesDailyOutReducer.annual_sales_target
-  );
-  const monthly_sales_target = useSelector(
-    (state) => state.SalesDailyOutReducer.monthly_sales_target
-  );
-  const daily_sales_target = useSelector(
-    (state) => state.SalesDailyOutReducer.daily_sales_target
-  );
-
-  props.dispatch(change(formName, "annual_sales_target", annual_sales_target));
-  props.dispatch(
-    change(formName, "monthly_sales_target", monthly_sales_target)
-  );
-  props.dispatch(change(formName, "daily_sales_target", daily_sales_target));
-  props.dispatch(change(formName, "added_by", 1));
-  props.dispatch(change(formName, "modified_by", 1));
+  const account_details =
+    salesDailyOutComponentAnnualSalesRanking.account_details;
+  props.dispatch(change(formName, "added_by", account_details.code));
+  props.dispatch(change(formName, "modified_by", account_details.code));
   return (
     <React.Fragment>
       <form onSubmit={props.handleSubmit}>
@@ -240,5 +244,6 @@ const ReduxFormComponent = reduxForm({
 const selector = formValueSelector(formName);
 export default connect((state) => {
   const refresh = state.SalesDailyOutReducer.refresh;
-  return { refresh };
+  const selected_code = state.SalesDailyOutReducer.selected_code;
+  return { refresh, selected_code };
 }, {})(ReduxFormComponent);

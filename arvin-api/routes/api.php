@@ -12,6 +12,8 @@ use App\Http\Controllers\RefSalesRankingController;
 use App\Http\Controllers\SalesDailyOutAnnualSettingsSalesController;
 use App\Http\Controllers\SalesDailyOutsController;
 use App\Http\Controllers\RefSalesRankingPlacementsController;
+use App\Http\Controllers\SalesDailyOutAnnualSalesRankingController;
+use App\Http\Controllers\SalesDailyOutAnnualSalesRankingDetailsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -46,21 +48,34 @@ use Illuminate\Support\Facades\Route;
     Route::apiResource('reference/departments',RefDepartmentsController::class)->middleware(['light_decryption']);
     Route::apiResource('reference/sections',RefSectionsController::class)->middleware(['light_decryption']);
     Route::apiResource('reference/subsections',RefSubSectionsController::class)->middleware(['light_decryption']);
+    Route::get('reference/sales_ranking/get_ref_sales_ranking',[RefSalesRankingController::class,'get_ref_sales_ranking']);
+    Route::get('reference/sales_ranking_list',[RefSalesRankingController::class,'get_ref_sales_ranking']);
     Route::apiResource('reference/sales_ranking',RefSalesRankingController::class)->middleware(['light_decryption']);
     Route::apiResource('reference/ref_sales_ranking_placements',RefSalesRankingPlacementsController::class)->middleware(['light_decryption']);
-    Route::get('reference/sales_ranking_list',[RefSalesRankingController::class,'get_ref_sales_ranking']);
-    Route::get('reference/subsections/specific/{id}',[RefSubSectionsController::class,'get_subsection'])->middleware(['light_decryption']);
+    Route::get('reference/subsections/get_subsection/{id}',[RefSubSectionsController::class,'get_subsection'])->middleware(['light_decryption']);
     // REFERENCE END
     
+    //MODULE SALES DAILY OUT START
+
     // SALES DAILY OUT START
     Route::get('salesdailyout/daily_out/get_sales_daily_out',[SalesDailyOutsController::class,'get_sales_daily_out']);//for pagination
+    Route::get('salesdailyout/daily_out/get_status_daily_target_and_percentage_daily_target_by_daily_out/{daily_out}/{daily_quota}',[SalesDailyOutsController::class, 'get_status_daily_target_and_percentage_daily_target_by_daily_out'])->middleware(['light_decryption']);
+    Route::apiResource('salesdailyout/daily_out',SalesDailyOutsController::class)->middleware(['light_decryption']);
+     // SALES DAILY OUT END 
+
+    // Sales Daily Out Annual Settings Sales START
     Route::get('salesdailyout/annual_settings_sales/get_sales_annual_settings',[SalesDailyOutAnnualSettingsSalesController::class,'get_sales_annual_settings']);//for pagination
     Route::apiResource('salesdailyout/annual_settings_sales',SalesDailyOutAnnualSettingsSalesController::class)->middleware(['light_decryption']);
     Route::get('salesdailyout/annual_settings_sales/annual_target_sales_computation/{amount}',[SalesDailyOutAnnualSettingsSalesController::class, 'annual_target_sales_computation'])->middleware(['light_decryption']);
     Route::get('salesdailyout/annual_settings_sales/get_annual_monthly_daily_target_sales_by_section_subsection/{id}/{year}',[SalesDailyOutAnnualSettingsSalesController::class, 'get_annual_monthly_daily_target_sales_by_section_subsection'])->middleware(['light_decryption']);
-    Route::get('salesdailyout/daily_out/get_status_daily_target_and_percentage_daily_target_by_daily_out/{daily_out}/{daily_quota}',[SalesDailyOutsController::class, 'get_status_daily_target_and_percentage_daily_target_by_daily_out'])->middleware(['light_decryption']);
-    Route::apiResource('salesdailyout/daily_out',SalesDailyOutsController::class)->middleware(['light_decryption']);
-    // SALES DAILY OUT END 
+    // Sales Daily Out Annual Settings Sales END 
+
+    // Sales Daily Out Annual Sales Ranking START
+    Route::apiResource('salesdailyout/annual_sales_ranking',SalesDailyOutAnnualSalesRankingController::class)->middleware(['light_decryption']);
+    Route::apiResource('salesdailyout/annual_sales_ranking_details',SalesDailyOutAnnualSalesRankingDetailsController::class)->middleware(['light_decryption']);
+    // Sales Daily Out Annual Sales Ranking END
+    
+    //MODULE SALES DAILY OUT END 
 
     // QUOTATION START
     Route::apiResource('qoutation/annual_qouta',QuotationAnnualQuotasController::class)->middleware(['light_decryption']);

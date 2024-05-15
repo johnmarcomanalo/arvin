@@ -43,7 +43,6 @@ const submit = async (values, dispatch, props) => {
       added_by: values.added_by,
       modified_by: values.modified_by,
     };
-    console.log(value);
     const res = await dispatch(postAnnualSettingSalesRanking(value));
     swal(res.data.title, res.data.message, res.data.status);
     reset();

@@ -308,5 +308,19 @@
   "box_shadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;",
   "primary_table_color": "#093a5c",
   "primary_table_text_color": "#F1FAFF",
-  "key": "K8gwPfRm/Q1QIULV2kQUVOcD21VPDYnWws2jBJ2Anmc="
+  "key": "K8gwPfRm/Q1QIULV2kQUVOcD21VPDYnWws2jBJ2Anmc=",
+  "monthly_colors": [
+    { "name": "January", "hex": "#000080" },
+    { "name": "February", "hex": "#FFDB58" },
+    { "name": "March", "hex": "#228B22" },
+    { "name": "April", "hex": "#800020" },
+    { "name": "May", "hex": "#ADD8E6" },
+    { "name": "June", "hex": "#36454F" },
+    { "name": "July", "hex": "#008080" },
+    { "name": "August", "hex": "#FF7F50" },
+    { "name": "September", "hex": "#6A5ACD" },
+    { "name": "October", "hex": "#E2725B" },
+    { "name": "November", "hex": "#9DC183" },
+    { "name": "December", "hex": "#E0B0FF" }
+  ]
 }

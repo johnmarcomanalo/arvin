@@ -183,7 +183,7 @@ export const getSpecificRefSubSection = (id) => async (dispatch) => {
       },
     });
     const response = GetSpecificDefaultServices(
-      "api/reference/subsections/specific/",
+      "api/reference/subsections/get_subsection/",
       id
     );
     response.then((res) => {
@@ -197,6 +197,36 @@ export const getSpecificRefSubSection = (id) => async (dispatch) => {
         type: Constants.ACTION_REFERENCE,
         payload: {
           selected_subsection: decryptaes(res.data),
+        },
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getRefSalesRanking = () => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = AuthGetReferences(
+      "api/reference/sales_ranking/get_ref_sales_ranking"
+    );
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          sales_ranking: decryptaes(res.data),
         },
       });
     });

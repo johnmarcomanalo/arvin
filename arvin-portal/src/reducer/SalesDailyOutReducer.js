@@ -5,7 +5,9 @@ const initialState = {
   page: 1,
   rowsPerPage: 10,
   dataList: [],
+  dataSubList: [],
   dataListCount: 0,
+  dataSubListCount: 0,
   filter: "",
   dateFilter: new Date(),
   dateFilterStart: new Date(),
@@ -23,6 +25,11 @@ const initialState = {
   present_mtd_data: [],
   previous_mtd_data: [],
   addModal2: false,
+  selected_code: null,
+  target_point: 0,
+  addModal3: false,
+  addModal4: false,
+  final_mtd_data: 0,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

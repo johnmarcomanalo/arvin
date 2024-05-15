@@ -127,7 +127,7 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
       q: search,
       l: rowsPerPage,
       f: filterQuery,
-      u: account_details?.id,
+      u: account_details?.code,
     };
     return data;
   };

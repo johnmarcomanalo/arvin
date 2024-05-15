@@ -58,14 +58,15 @@ let AddAnnualSettingSale = (props) => {
   const daily_sales_target = useSelector(
     (state) => state.SalesDailyOutReducer.daily_sales_target
   );
-
+  const account_details =
+    salesDailyOutComponentAnnualSettingSale.account_details;
   props.dispatch(change(formName, "annual_sales_target", annual_sales_target));
   props.dispatch(
     change(formName, "monthly_sales_target", monthly_sales_target)
   );
   props.dispatch(change(formName, "daily_sales_target", daily_sales_target));
-  props.dispatch(change(formName, "added_by", 1));
-  props.dispatch(change(formName, "modified_by", 1));
+  props.dispatch(change(formName, "added_by", account_details?.code));
+  props.dispatch(change(formName, "modified_by", account_details?.code));
   return (
     <React.Fragment>
       <form onSubmit={props.handleSubmit}>

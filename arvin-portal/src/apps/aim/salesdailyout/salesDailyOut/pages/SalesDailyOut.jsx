@@ -42,6 +42,7 @@ let DailyQuota = (props) => {
   const present_mtd_data = salesDailyOutComponentSalesDailyOut.present_mtd_data;
   const previous_mtd_data =
     salesDailyOutComponentSalesDailyOut.previous_mtd_data;
+  const final_mtd_data = salesDailyOutComponentSalesDailyOut.final_mtd_data;
   const theme = useTheme();
   const matches = useMediaQuery("(min-width:600px)");
   return (
@@ -127,8 +128,8 @@ let DailyQuota = (props) => {
             icon_bg_color={"white"}
             subtitle={"FINAL MTD"}
             value={
-              typeof present_mtd_data?.mtdFinal !== "undefined"
-                ? parseFloat(present_mtd_data?.mtdFinal).toFixed(2)
+              typeof final_mtd_data !== "undefined"
+                ? parseFloat(final_mtd_data).toFixed(2)
                 : 0
             }
             fontSizeValue={18}

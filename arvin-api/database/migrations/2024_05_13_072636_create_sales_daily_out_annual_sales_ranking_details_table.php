@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSalesDailyOutAnnualSalesRankingsTable extends Migration
+class CreateSalesDailyOutAnnualSalesRankingDetailsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,14 @@ class CreateSalesDailyOutAnnualSalesRankingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('sales_daily_out_annual_sales_rankings', function (Blueprint $table) {
+        Schema::create('sales_daily_out_annual_sales_ranking_details', function (Blueprint $table) {
             $table->id();
             $table->integer('code')->unique();
-            $table->text('type')->nullable();
-            $table->integer('ranker_code')->nullable();
-            $table->integer('rank_code')->nullable();
-            // $table->text('point_details')->nullable();
-            $table->integer('current_point')->nullable();
+            $table->text('sales_daily_out_annual_sales_rankings_code')->nullable();
+            $table->text('description')->nullable();
+            $table->text('ref_month_code')->nullable();
+            $table->text('placement')->nullable();
+            $table->integer('value')->default(0);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->timestamp('deleted_at')->nullable();
@@ -36,6 +36,6 @@ class CreateSalesDailyOutAnnualSalesRankingsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sales_daily_out_annual_sales_rankings');
+        Schema::dropIfExists('sales_daily_out_annual_sales_ranking_details');
     }
 }

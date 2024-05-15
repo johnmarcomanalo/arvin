@@ -28,7 +28,7 @@ class RefSalesRankingController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $field = $request->validate([
             'description'      => 'required|unique:ref_sales_rankings,description',
             'value'            => 'required',
             'type'             => 'required',
@@ -36,20 +36,25 @@ class RefSalesRankingController extends Controller
             'modified_by'      => 'required',
             'ranking_placement'=> 'required',
         ]);
-        $requestReponse         = $request->except(['ranking_placement']);
-        $requestReponse['code'] = MainController::generate_code('App\Models\RefSalesRanking',"code");
-        $refSalesRanking        =  RefSalesRanking::create($requestReponse);
-
+        $field['code'] = MainController::generate_code('App\Models\RefSalesRanking',"code");
+        $refSalesRanking        =  RefSalesRanking::create([
+            'code'              =>  $field['code'] ,
+            'description'       =>  $field['description'],
+            'value'             =>  $field['value'],
+            'type'             =>  $field['type'],  
+            'added_by'          =>  $field['added_by'],
+            'modified_by'       =>  $field['modified_by'],
+        ]);
         if ($refSalesRanking) {
-            foreach (json_decode($request->input('ranking_placement'),true) as $key => $value) {
+            foreach ($field["ranking_placement"] as $value) {
                 $codeRefSalesRankingPlacements = MainController::generate_code('App\Models\RefSalesRankingPlacements',"code");
                 RefSalesRankingPlacements::create([
                     'code'                     => $codeRefSalesRankingPlacements,
-                    'ref_sales_rankings_code'  => $requestReponse['code'],
-                    'description'              => $value['desc'],
-                    'value'                    => $value['val'],
-                    'added_by'                 => $requestReponse['added_by'],
-                    'modified_by'              => $requestReponse['modified_by'],
+                    'ref_sales_rankings_code'  => $field['code'],
+                    'description'              => $value->desc,
+                    'value'                    => $value->val,
+                    'added_by'                 => $field['added_by'],
+                    'modified_by'              => $field['modified_by'],
                 ]);
             }
         }else{
@@ -105,7 +110,7 @@ class RefSalesRankingController extends Controller
     }
 
     public function get_ref_sales_ranking(Request $request){
-    
+        
         $page = $request->query('page');
         $limit = $request->query('limit');
         $query = $request->query('q');
@@ -114,7 +119,7 @@ class RefSalesRankingController extends Controller
 
         $queryBuilder = RefSalesRanking::whereNull('deleted_at');
 
-        if ($limit) {
+        if (!empty($limit)) {
             if (!empty($query)) {
                 $data_list = $queryBuilder->where(function ($queryBuilder) use ($query) {
                                 $queryBuilder
@@ -125,20 +130,22 @@ class RefSalesRankingController extends Controller
             } else {
                 $data_list = $queryBuilder->paginate($limit);
             }
-        }else{
-            $data_list = $queryBuilder->get();
-        }
-        
-       
-         $response = [
+        $response = [
             "dataList"=>$data_list,
             'result'=>True,
             'title'=>'Success',
             'status'=>'success',
             'message'=> 'Authentication successful.',
         ];
-
         return Crypt::encryptString(json_encode($response));
+
+        }else{
+            $data_list = $queryBuilder->get();
+            return Crypt::encryptString(json_encode($data_list));
+        }
+        
+       
+        
     } 
 
 }

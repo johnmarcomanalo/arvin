@@ -38,7 +38,7 @@ let AddAnnualQuota = (props) => {
   const { ...refSubSections } = RefSubSectionsHooks();
   const { ...quotationComponentAnnualQuota } =
     QuotationComponentAnnualQuotaHooks(props);
-
+  const account_details = quotationComponentAnnualQuota.account_details;
   const target_annual_quota = useSelector(
     (state) => state.QuotationReducer.target_annual_quota
   );
@@ -52,8 +52,8 @@ let AddAnnualQuota = (props) => {
   props.dispatch(change(formName, "target_annual_quota", target_annual_quota));
   props.dispatch(change(formName, "target_month_quota", target_month_quota));
   props.dispatch(change(formName, "target_day_quota", target_day_quota));
-  props.dispatch(change(formName, "added_by", 1));
-  props.dispatch(change(formName, "modified_by", 1));
+  props.dispatch(change(formName, "added_by", account_details?.code));
+  props.dispatch(change(formName, "modified_by", account_details?.code));
   return (
     <React.Fragment>
       <form onSubmit={props.handleSubmit}>

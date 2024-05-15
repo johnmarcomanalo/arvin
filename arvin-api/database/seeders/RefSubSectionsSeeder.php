@@ -191,24 +191,38 @@ class RefSubSectionsSeeder extends Seeder
             // 'description' => 'Zamboanga',
             // 'added_by' => env('DEFAULT_USER'),
             // 'modified_by' => env('DEFAULT_USER')],
+            // [
+            // 'code'=> '30',
+            // 'section_code'=> '25',
+            // 'description' => 'Cagayan',
+            // 'added_by' => env('DEFAULT_USER'),
+            // 'modified_by' => env('DEFAULT_USER')],
+
+            // [
+            // 'code'=> '31',
+            // 'section_code'=> '24',
+            // 'description' => 'Cebu',
+            // 'added_by' => env('DEFAULT_USER'),
+            // 'modified_by' => env('DEFAULT_USER')],
+
+            // [
+            // 'code'=> '32',
+            // 'section_code'=> '25',
+            // 'description' => 'Davao',
+            // 'added_by' => env('DEFAULT_USER'),
+            // 'modified_by' => env('DEFAULT_USER')],
+
             [
-            'code'=> '30',
-            'section_code'=> '25',
-            'description' => 'Cagayan',
+            'code'=> '33',
+            'section_code'=> '23',
+            'description' => 'Tabaco',
             'added_by' => env('DEFAULT_USER'),
             'modified_by' => env('DEFAULT_USER')],
 
             [
-            'code'=> '31',
-            'section_code'=> '24',
-            'description' => 'Cebu',
-            'added_by' => env('DEFAULT_USER'),
-            'modified_by' => env('DEFAULT_USER')],
-
-            [
-            'code'=> '32',
-            'section_code'=> '25',
-            'description' => 'Davao',
+            'code'=> '33',
+            'section_code'=> '23',
+            'description' => 'Tabaco',
             'added_by' => env('DEFAULT_USER'),
             'modified_by' => env('DEFAULT_USER')],
         ]);

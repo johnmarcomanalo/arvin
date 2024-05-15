@@ -9,6 +9,7 @@ import configure from "../../../../configure/configure.json";
 import SalesDailyOutComponentAnnualSettingSalesRankingHooks from "../hooks/SalesDailyOutComponentAnnualSettingSalesRankingHooks";
 import Modal from "../../../../../components/modal/Modal";
 import AddAnnualSettingSalesRanking from "./components/AddAnnualSettingSalesRanking";
+import ViewAnnualSettingSalesRankingPlacement from "./components/ViewAnnualSettingSalesRankingPlacement";
 import Page from "../../../../../components/pagination/Pagination";
 export default function AnnualSettingSalesRanking(props) {
   const { ...salesDailyOutComponentAnnualSettingSalesRanking } =
@@ -28,6 +29,18 @@ export default function AnnualSettingSalesRanking(props) {
         }
       >
         <AddAnnualSettingSalesRanking />
+      </Modal>
+      <Modal
+        open={salesDailyOutComponentAnnualSettingSalesRanking?.addModal2}
+        fullScreen={matches ? false : true}
+        title={"Ranking Placement"}
+        size={"sm"}
+        action={undefined}
+        handleClose={
+          salesDailyOutComponentAnnualSettingSalesRanking.onClickCloseAddModal2
+        }
+      >
+        <ViewAnnualSettingSalesRankingPlacement />
       </Modal>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -108,24 +121,23 @@ export default function AnnualSettingSalesRanking(props) {
             rowCount={
               salesDailyOutComponentAnnualSettingSalesRanking.dataListCount
             }
-            actionShow={false}
+            actionshow={true}
             paginationShow={false}
             action={(row) => {
-              return (
-                <Tooltip title="Delete">
-                  <DeleteOutlineIcon
-                    onClick={() =>
-                      salesDailyOutComponentAnnualSettingSalesRanking.onDeleteDeduction(
-                        row
-                      )
-                    }
-                    style={{
-                      color: "#009197",
-                      cursor: "pointer",
-                    }}
-                  />
-                </Tooltip>
-              );
+              return null;
+              // <Tooltip title="Delete">
+              //   <DeleteOutlineIcon
+              //     onClick={() =>
+              //       salesDailyOutComponentAnnualSettingSalesRanking.onDeleteDeduction(
+              //         row
+              //       )
+              //     }
+              //     style={{
+              //       color: "#009197",
+              //       cursor: "pointer",
+              //     }}
+              //   />
+              // </Tooltip>
             }}
           />
         </Grid>

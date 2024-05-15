@@ -6,48 +6,10 @@ import {
   GetDefaultServices,
   GetMultiSpecificDefaultServices,
 } from "../../../../../services/apiService";
+import { AuthGetReferences } from "../../../reference/services/referenceServices";
 import { decryptaes } from "../../../../../utils/LightSecurity";
 
-export const getMonthlyAndDailyQoutaByTargetAnnualSales =
-  (amount) => async (dispatch) => {
-    try {
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: true,
-        },
-      });
-      const response = GetSpecificDefaultServices(
-        "api/salesdailyout/annual_settings_sales/annual_target_sales_computation/",
-        amount
-      );
-      response.then((res) => {
-        try {
-          let decypted = decryptaes(res.data);
-          dispatch({
-            type: Constants.ACTION_SALES_DAILY_OUT,
-            payload: {
-              annual_sales_target: decypted.annual_sales_target,
-              monthly_sales_target: decypted.monthly_sales_target,
-              daily_sales_target: decypted.daily_sales_target,
-            },
-          });
-        } catch (error) {
-          console.log(error);
-        }
-        dispatch({
-          type: Constants.ACTION_LOADING,
-          payload: {
-            loading: false,
-          },
-        });
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-export const postAnnualTargetSales = (formValues) => async (dispatch) => {
+export const getAnnualSalesRanking = (formValues) => async (dispatch) => {
   try {
     await dispatch({
       type: Constants.ACTION_LOADING,
@@ -55,26 +17,51 @@ export const postAnnualTargetSales = (formValues) => async (dispatch) => {
         loading: true,
       },
     });
-    const res = await PostDefaultServices(
-      "api/salesdailyout/annual_settings_sales",
-      formValues
+    const response = GetSpecificDefaultServices(
+      "api/salesdailyout/annual_sales_ranking/",
+      formValues.rank_code
     );
-    await dispatch({
+    dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
         loading: false,
       },
     });
-    return res;
+    return response;
   } catch (error) {
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
+    console.log(error);
   }
 };
+
+export const postCreateRankerAnnualSalesRanking =
+  (formValues) => async (dispatch) => {
+    try {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: true,
+        },
+      });
+      const res = await PostDefaultServices(
+        "api/salesdailyout/annual_sales_ranking",
+        formValues
+      );
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      return res;
+    } catch (error) {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+    }
+  };
 
 export const getAnnualSettingSale = (values) => async (dispatch) => {
   try {
@@ -155,3 +142,34 @@ export const getAnnualMonthlyDailyTargetSalesBySectionSubsection =
       console.log(error);
     }
   };
+
+
+  export const postPlacementAnnualSalesRanking =
+    (formValues) => async (dispatch) => {
+      try {
+        await dispatch({
+          type: Constants.ACTION_LOADING,
+          payload: {
+            loading: true,
+          },
+        });
+        const res = await PostDefaultServices(
+          "api/salesdailyout/annual_sales_ranking_details",
+          formValues
+        );
+        await dispatch({
+          type: Constants.ACTION_LOADING,
+          payload: {
+            loading: false,
+          },
+        });
+        return res;
+      } catch (error) {
+        await dispatch({
+          type: Constants.ACTION_LOADING,
+          payload: {
+            loading: false,
+          },
+        });
+      }
+    };

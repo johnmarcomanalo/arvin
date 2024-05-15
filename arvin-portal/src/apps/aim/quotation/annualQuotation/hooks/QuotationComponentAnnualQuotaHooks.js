@@ -54,7 +54,9 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
   const selectedDataList = useSelector(
     (state) => state.QuotationReducer.selectedDataList
   );
-
+const account_details = useSelector(
+  (state) => state.AuthenticationReducer.account_details
+);
   const columns = [
     { id: "code", label: "Code", align: "right" },
     { id: "target_year_quota", label: "Year", align: "right" },
@@ -150,7 +152,7 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
     selectedDataList,
     columns,
     addModal,
-
+account_details,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,

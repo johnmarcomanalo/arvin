@@ -68,7 +68,9 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   const daily_sales_target = useSelector(
     (state) => state.SalesDailyOutReducer.daily_sales_target
   );
-
+  const final_mtd_data = useSelector(
+    (state) => state.SalesDailyOutReducer.final_mtd_data
+  );
   const columns = [
     { id: "sales_date", label: "Date", align: "left" },
     { id: "sales_daily_qouta", label: "Daily Quota", align: "left" },
@@ -116,7 +118,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
         page: 0,
       },
     });
-  };                                                                                                                                                                                                                                                                  
+  };
   const onSelectItem = (data) => {
     console.log(data);
   };
@@ -177,7 +179,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       q: search,
       l: rowsPerPage,
       f: filterQuery,
-      u: account_details?.id,
+      u: account_details?.code,
     };
     return data;
   };
@@ -226,7 +228,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     daily_sales_target,
     present_mtd_data,
     previous_mtd_data,
-
+    final_mtd_data,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,

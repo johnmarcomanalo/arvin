@@ -16,35 +16,60 @@ import RefSectionsHooks from "../../../../reference/hooks/RefSectionsHooks";
 import RefSubSectionsHooks from "../../../../reference/hooks/RefSubSectionsHooks";
 import { Constants } from "../../../../../../reducer/Contants";
 import SalesDailyOutComponentAnnualSalesRankingHooks from "../../hooks/SalesDailyOutComponentAnnualSalesRankingHooks";
-import { getAnnualSalesRanking } from "../../actions/SalesDailyOutComponentAnnualSalesRankingActions";
+import {
+  getAnnualSalesRanking,
+  postPlacementAnnualSalesRanking,
+} from "../../actions/SalesDailyOutComponentAnnualSalesRankingActions";
 import moment from "moment";
 import swal from "sweetalert";
 import RefSalesRankingHooks from "../../../../reference/hooks/RefSalesRankingHooks";
 import { decryptaes } from "../../../../../../utils/LightSecurity";
-const formName = "GenerateAnnualSalesRanking";
+import InputMonthPicker from "../../../../../../components/inputFIeld/InputMonthPicker";
+const formName = "UpdateMonthlyRank";
 const submit = async (values, dispatch, props) => {
   try {
-    const res = await dispatch(getAnnualSalesRanking(values));
+    values.rank_code = props.selected_code;
+    values.ref_month_code = moment(values.ref_month_code).format("MM");
+    const res = await dispatch(postPlacementAnnualSalesRanking(values));
     let decrypted = await decryptaes(res?.data);
-    swal(decrypted.title, decrypted.message, decrypted.status);
-    reset();
+    const res2 = await dispatch(getAnnualSalesRanking(values));
+    let decrypted2 = await decryptaes(res2?.data);
     await dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {
-        addModal: false,
-        dataList: decrypted?.dataList,
-        dataListcount: decrypted?.dataListCount,
-        selected_code: decrypted.rank_code,
-        target_point: decrypted?.target_point,
+        refresh: !props.refresh,
+        addModal3: false,
+        dataList: decrypted2?.dataList,
+        dataListcount: decrypted2?.dataListCount,
+        selected_code: decrypted2.rank_code,
+        target_point: decrypted2?.target_point,
       },
     });
+    await swal(decrypted.title, decrypted.message, decrypted.status);
+    await reset();
   } catch (error) {
     console.log(error);
   }
 };
 
-let AddAnnualSettingSale = (props) => {
-  const { ...refSalesRanking } = RefSalesRankingHooks();
+let UpdateMonthlyRank = (props) => {
+  const { ...salesDailyOutComponentAnnualSalesRanking } =
+    SalesDailyOutComponentAnnualSalesRankingHooks(props);
+  const account_details =
+    salesDailyOutComponentAnnualSalesRanking.account_details;
+  const sales_ranking_placements =
+    salesDailyOutComponentAnnualSalesRanking.sales_ranking_placements;
+  const selectedDataList =
+    salesDailyOutComponentAnnualSalesRanking.selectedDataList;
+  props.dispatch(change(formName, "added_by", account_details.code));
+  props.dispatch(change(formName, "modified_by", account_details.code));
+  props.dispatch(
+    change(
+      formName,
+      "sales_daily_out_annual_sales_rankings_code",
+      selectedDataList.code
+    )
+  );
   return (
     <React.Fragment>
       <form onSubmit={props.handleSubmit}>
@@ -52,18 +77,34 @@ let AddAnnualSettingSale = (props) => {
         <Grid container spacing={2}>
           <Grid item xs={12} md={12}>
             <Field
-              id="description"
-              name="description"
-              label="Rank List"
-              options={refSalesRanking?.sales_ranking}
+              id="ref_month_code"
+              name="ref_month_code"
+              label="Month"
+              required={true}
+              component={InputMonthPicker}
+              placeholder="Month"
+              value={moment(new Date()).format("MM")}
+              disabled
+              disablePast={false}
+              disableFuture={true}
+              disableSunday={true}
+              showText={true}
+            />
+          </Grid>
+          <Grid item xs={12} md={12}>
+            <Field
+              id="placement"
+              name="placement"
+              label="Placement"
+              options={sales_ranking_placements}
               getOptionLabel={(option) =>
-                option?.description ? option?.description : ""
+                option.description ? option.description : ""
               }
               required={true}
               component={ComboBox}
               onChangeHandle={(e, newValue) => {
                 if (newValue?.description) {
-                  props.change("rank_code", newValue.code);
+                  props.change("value", parseInt(newValue.value));
                 }
               }}
             />
@@ -77,10 +118,10 @@ let AddAnnualSettingSale = (props) => {
             >
               <ButtonComponent
                 stx={configure.default_button}
-                iconType="generate"
+                iconType="submit"
                 type="submit"
                 fullWidth={true}
-                children={"Generate Table"}
+                children={"Add "}
               />
             </Stack>
           </Grid>
@@ -93,9 +134,10 @@ let AddAnnualSettingSale = (props) => {
 const ReduxFormComponent = reduxForm({
   form: formName,
   onSubmit: submit,
-})(AddAnnualSettingSale);
+})(UpdateMonthlyRank);
 const selector = formValueSelector(formName);
 export default connect((state) => {
   const refresh = state.SalesDailyOutReducer.refresh;
-  return { refresh };
+  const selected_code = state.SalesDailyOutReducer.selected_code;
+  return { refresh, selected_code };
 }, {})(ReduxFormComponent);

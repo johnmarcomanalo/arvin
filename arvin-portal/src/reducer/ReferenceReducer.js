@@ -8,6 +8,8 @@ const initialState = {
   sections: [],
   subsections: [],
   selected_subsection: [],
+  sales_ranking: [],
+  sales_ranking_placements: [],
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

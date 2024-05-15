@@ -8,75 +8,7 @@ import {
 } from "../../../../../services/apiService";
 import { decryptaes } from "../../../../../utils/LightSecurity";
 
-export const getMonthlyAndDailyQoutaByTargetAnnualSales =
-  (amount) => async (dispatch) => {
-    try {
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: true,
-        },
-      });
-      const response = GetSpecificDefaultServices(
-        "api/salesdailyout/annual_settings_sales/annual_target_sales_computation/",
-        amount
-      );
-      response.then((res) => {
-        try {
-          let decypted = decryptaes(res.data);
-          dispatch({
-            type: Constants.ACTION_SALES_DAILY_OUT,
-            payload: {
-              annual_sales_target: decypted.annual_sales_target,
-              monthly_sales_target: decypted.monthly_sales_target,
-              daily_sales_target: decypted.daily_sales_target,
-            },
-          });
-        } catch (error) {
-          console.log(error);
-        }
-        dispatch({
-          type: Constants.ACTION_LOADING,
-          payload: {
-            loading: false,
-          },
-        });
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-export const postAnnualSettingSalesRanking = (formValues) => async (dispatch) => {
-  try {
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: true,
-      },
-    });
-    const res = await PostDefaultServices(
-      "api/reference/sales_ranking",
-      formValues
-    );
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
-    return res;
-  } catch (error) {
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
-  }
-};
-
-export const getAnnualSettingSale = (values) => async (dispatch) => {
+export const getReferenceSalesRankingPlacements = (id) => async (dispatch) => {
   try {
     await dispatch({
       type: Constants.ACTION_LOADING,
@@ -85,7 +17,80 @@ export const getAnnualSettingSale = (values) => async (dispatch) => {
       },
     });
     const response = GetSpecificDefaultServices(
-      "api/salesdailyout/annual_settings_sales/get_sales_annual_settings?page=" +
+      "api/reference/ref_sales_ranking_placements/",
+      id
+    );
+    response.then((res) => {
+      try {
+        let decrypted = decryptaes(res.data);
+        dispatch({
+          type: Constants.ACTION_SALES_DAILY_OUT,
+          payload: {
+            dataSubList: decrypted,
+            dataSubListCount: decrypted?.length,
+          },
+        });
+        dispatch({
+          type: Constants.ACTION_REFERENCE,
+          payload: {
+            sales_ranking_placements: decrypted,
+          },
+        });
+      } catch (error) {
+        console.log(error);
+      }
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const postAnnualSettingSalesRanking =
+  (formValues) => async (dispatch) => {
+    try {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: true,
+        },
+      });
+      const res = await PostDefaultServices(
+        "api/reference/sales_ranking",
+        formValues
+      );
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      return res;
+    } catch (error) {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+    }
+  };
+
+export const getAnnualSettingSaleRanking = (values) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = GetSpecificDefaultServices(
+      "api/reference/sales_ranking_list?page=" +
         values.p +
         "&limit=" +
         values.l +
