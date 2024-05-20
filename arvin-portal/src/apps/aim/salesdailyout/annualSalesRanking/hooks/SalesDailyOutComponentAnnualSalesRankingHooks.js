@@ -6,11 +6,16 @@ import { encryptLocal } from "../../../../../utils/Encryption";
 import { useDebounce } from "../../../../../utils/HelperUtils";
 import moment from "moment";
 import { getRefSalesRanking } from "../../../reference/actions/ReferenceActions";
-import { getMonthlyAndDailyQoutaByTargetAnnualSales } from "../actions/SalesDailyOutComponentAnnualSalesRankingActions";
+import {
+  getAnnualSalesRanking,
+  getMonthlyAndDailyQoutaByTargetAnnualSales,
+} from "../actions/SalesDailyOutComponentAnnualSalesRankingActions";
 import { cancelRequest } from "../../../../../api/api";
 import { getReferenceSalesRankingPlacements } from "../../annualSettingSalesRanking/actions/SalesDailyOutComponentAnnualSettingSalesRankingActions";
+import { decryptaes } from "../../../../../utils/LightSecurity";
 const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
+  const refresh2 = useSelector((state) => state.SalesDailyOutReducer.refresh2);
   const [state, setState] = React.useState({
     debounceTimer: null,
     debounceDelay: 2000,
@@ -126,14 +131,24 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
       },
     });
   };
-    const onClickORefreshRanking = () => {
-      dispatch({
-        type: Constants.ACTION_SALES_DAILY_OUT,
-        payload: {
-          refresh: !refresh,
-        },
-      });
+  const onClickRefreshRanking = async () => {
+    let data = {
+      rank_code: selected_code,
     };
+    console.log(data);
+    const res2 = await dispatch(getAnnualSalesRanking(data));
+    let decrypted2 = await decryptaes(res2?.data);
+    await dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        refresh: !props.refresh,
+        dataList: decrypted2?.dataList,
+        dataListcount: decrypted2?.dataListCount,
+        selected_code: decrypted2.rank_code,
+        target_point: decrypted2?.target_point,
+      },
+    });
+  };
   const handleChangePage = (event, page) => {
     setSearchParams({
       q: search,
@@ -233,7 +248,7 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
     onClickSelectedDataList,
     onClickCloseAddModal3,
     onClickCloseAddModal4,
-    onClickORefreshRanking,
+    onClickRefreshRanking,
   };
 };
 

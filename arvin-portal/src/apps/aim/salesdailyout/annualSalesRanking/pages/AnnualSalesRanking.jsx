@@ -27,12 +27,12 @@ import Road from "../../../../../media/backgrounds/road.jpg";
 import FinishLine from "../../../../../media/icons/finish line.gif";
 import Medal from "../../../../../media/icons/modal.gif";
 export default function AnnualSalesRanking(props) {
-  const { ...salesDailyOutComponentAnnualSettingSale } =
+  const { ...salesDailyOutComponentAnnualSalesRanking } =
     SalesDailyOutComponentAnnualSalesRankingHooks(props);
   const theme = useTheme();
   const matches = useMediaQuery("(min-width:600px)");
   const target_point = parseInt(
-    salesDailyOutComponentAnnualSettingSale?.target_point
+    salesDailyOutComponentAnnualSalesRanking?.target_point
   );
   const [screenHeight, setScreenHeight] = React.useState(window.innerHeight);
 
@@ -46,7 +46,7 @@ export default function AnnualSalesRanking(props) {
     return current_point;
   };
 
-  const sortedDataList = salesDailyOutComponentAnnualSettingSale.dataList
+  const sortedDataList = salesDailyOutComponentAnnualSalesRanking.dataList
     .map((data) => ({
       ...data,
       current_point: calculateCurrentPoint(data.details),
@@ -55,50 +55,50 @@ export default function AnnualSalesRanking(props) {
   return (
     <React.Fragment>
       <Modal
-        open={salesDailyOutComponentAnnualSettingSale?.addModal}
+        open={salesDailyOutComponentAnnualSalesRanking?.addModal}
         fullScreen={matches ? false : true}
         title={"Annual Sales Ranking"}
         size={"xs"}
         action={undefined}
         handleClose={
-          salesDailyOutComponentAnnualSettingSale.onClickCloseAddModal
+          salesDailyOutComponentAnnualSalesRanking.onClickCloseAddModal
         }
       >
         <AddAnnualSettingSale />
       </Modal>
       <Modal
-        open={salesDailyOutComponentAnnualSettingSale?.addModal2}
+        open={salesDailyOutComponentAnnualSalesRanking?.addModal2}
         fullScreen={matches ? false : true}
         title={"Annual Sales Ranking"}
         size={"xs"}
         action={undefined}
         handleClose={
-          salesDailyOutComponentAnnualSettingSale.onClickCloseAddModal2
+          salesDailyOutComponentAnnualSalesRanking.onClickCloseAddModal2
         }
       >
         <AddAnnualSalesRanker />
       </Modal>
       <Modal
-        open={salesDailyOutComponentAnnualSettingSale?.addModal3}
+        open={salesDailyOutComponentAnnualSalesRanking?.addModal3}
         fullScreen={matches ? false : true}
         title={"Update Ranking"}
         size={"xs"}
         action={undefined}
         handleClose={
-          salesDailyOutComponentAnnualSettingSale.onClickCloseAddModal3
+          salesDailyOutComponentAnnualSalesRanking.onClickCloseAddModal3
         }
       >
         <UpdateMonthlyRank />
       </Modal>
 
       <Modal
-        open={salesDailyOutComponentAnnualSettingSale?.addModal4}
+        open={salesDailyOutComponentAnnualSalesRanking?.addModal4}
         fullScreen={matches ? false : true}
         title={"View Ranking Details"}
         size={"sm"}
         action={undefined}
         handleClose={
-          salesDailyOutComponentAnnualSettingSale.onClickCloseAddModal4
+          salesDailyOutComponentAnnualSalesRanking.onClickCloseAddModal4
         }
       >
         <ViewSelectedRanker />
@@ -119,10 +119,10 @@ export default function AnnualSalesRanking(props) {
               fullWidth={true}
               children={"Generate Ranking"}
               click={
-                salesDailyOutComponentAnnualSettingSale.onClickOpenAddModal
+                salesDailyOutComponentAnnualSalesRanking.onClickOpenAddModal
               }
             />
-            {salesDailyOutComponentAnnualSettingSale.selected_code ? (
+            {salesDailyOutComponentAnnualSalesRanking.selected_code ? (
               <ButtonComponent
                 stx={configure.default_button}
                 iconType="add"
@@ -130,19 +130,19 @@ export default function AnnualSalesRanking(props) {
                 fullWidth={true}
                 children={"Add Ranker"}
                 click={
-                  salesDailyOutComponentAnnualSettingSale.onClickOpenAddModal2
+                  salesDailyOutComponentAnnualSalesRanking.onClickOpenAddModal2
                 }
               />
             ) : null}
-            {salesDailyOutComponentAnnualSettingSale.selected_code ? (
+            {salesDailyOutComponentAnnualSalesRanking.selected_code ? (
               <ButtonComponent
                 stx={configure.default_button}
-                iconType="generate"
+                iconType="refresh"
                 type="button"
                 fullWidth={true}
                 children={"Refresh Ranking"}
                 click={
-                  salesDailyOutComponentAnnualSettingSale.onClickORefreshRanking
+                  salesDailyOutComponentAnnualSalesRanking.onClickRefreshRanking
                 }
               />
             ) : null}
@@ -157,8 +157,8 @@ export default function AnnualSalesRanking(props) {
             spacing={2}
           >
             <SearchField
-              value={salesDailyOutComponentAnnualSettingSale.search}
-              onChange={salesDailyOutComponentAnnualSettingSale.onChangeSearch}
+              value={salesDailyOutComponentAnnualSalesRanking.search}
+              onChange={salesDailyOutComponentAnnualSalesRanking.onChangeSearch}
             />
           </Stack>
         </Grid>
@@ -171,11 +171,11 @@ export default function AnnualSalesRanking(props) {
             spacing={2}
           >
             <Page
-              page={salesDailyOutComponentAnnualSettingSale?.page}
-              limit={salesDailyOutComponentAnnualSettingSale?.dataListCount}
+              page={salesDailyOutComponentAnnualSalesRanking?.page}
+              limit={salesDailyOutComponentAnnualSalesRanking?.dataListCount}
               status={""}
               onHandleChange={
-                salesDailyOutComponentAnnualSettingSale.handleChangePage
+                salesDailyOutComponentAnnualSalesRanking.handleChangePage
               }
             />
           </Stack>
@@ -257,7 +257,7 @@ export default function AnnualSalesRanking(props) {
                             <Tooltip title="View">
                               <LaunchIcon
                                 onClick={() =>
-                                  salesDailyOutComponentAnnualSettingSale.onClickSelectedDataList(
+                                  salesDailyOutComponentAnnualSalesRanking.onClickSelectedDataList(
                                     data,
                                     "addModal4"
                                   )
@@ -271,7 +271,7 @@ export default function AnnualSalesRanking(props) {
                             <Tooltip title="Update">
                               <UpgradeIcon
                                 onClick={() =>
-                                  salesDailyOutComponentAnnualSettingSale.onClickSelectedDataList(
+                                  salesDailyOutComponentAnnualSalesRanking.onClickSelectedDataList(
                                     data,
                                     "addModal3"
                                   )
@@ -326,21 +326,6 @@ export default function AnnualSalesRanking(props) {
                                       <p style={{ visibility: "hidden" }}>
                                         Null
                                       </p>
-                                      {/* {index === point_details.length - 1 &&
-                                        (current_point > target_point ? (
-                                          <img
-                                            src={TruckGIF}
-                                            alt="Truck"
-                                            style={{
-                                              width: "auto",
-                                              height: 25,
-                                              position: "absolute",
-                                              top: 8,
-                                              right: -30,
-                                            }}
-                                          />
-                                        ) : null)} */}
-
                                       {index === point_details.length - 1 &&
                                         parseInt(current_point) <
                                           parseInt(target_point) && (
@@ -376,9 +361,7 @@ export default function AnnualSalesRanking(props) {
                               ) : null}
                             </div>
                           </TableCell>
-                          <TableCell align="left">
-                            {data.current_point}
-                          </TableCell>
+                          <TableCell align="left">{current_point}</TableCell>
                         </TableRow>
                       );
                     } catch (error) {

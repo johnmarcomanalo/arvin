@@ -1,35 +1,27 @@
 import { Grid, Stack } from "@mui/material";
+import moment from "moment";
 import * as React from "react";
 import { connect } from "react-redux";
-import { useDispatch, useSelector } from "react-redux";
-import ComboBox from "../../../../../../components/autoComplete/AutoComplete";
 import { Field, change, formValueSelector, reduxForm, reset } from "redux-form";
-import InputField from "../../../../../../components/inputFIeld/InputField";
-import InputYearPicker from "../../../../../../components/inputFIeld/InputYearPicker";
+import swal from "sweetalert";
+import ComboBox from "../../../../../../components/autoComplete/AutoComplete";
 import ButtonComponent from "../../../../../../components/button/Button";
-import configure from "../../../../../configure/configure.json";
-import RefCompaniesHooks from "../../../../reference/hooks/RefCompaniesHooks";
-import RefBusinessUnitsHooks from "../../../../reference/hooks/RefBusinessUnitsHooks";
-import RefTeamsHooks from "../../../../reference/hooks/RefTeamsHooks";
-import RefDepartmentsHooks from "../../../../reference/hooks/RefDepartmentsHooks";
-import RefSectionsHooks from "../../../../reference/hooks/RefSectionsHooks";
-import RefSubSectionsHooks from "../../../../reference/hooks/RefSubSectionsHooks";
+import InputMonthPicker from "../../../../../../components/inputFIeld/InputMonthPicker";
 import { Constants } from "../../../../../../reducer/Contants";
-import SalesDailyOutComponentAnnualSalesRankingHooks from "../../hooks/SalesDailyOutComponentAnnualSalesRankingHooks";
+import InputField from "../../../../../../components/inputFIeld/InputField";
+import { decryptaes } from "../../../../../../utils/LightSecurity";
+import configure from "../../../../../configure/configure.json";
 import {
   getAnnualSalesRanking,
   postPlacementAnnualSalesRanking,
 } from "../../actions/SalesDailyOutComponentAnnualSalesRankingActions";
-import moment from "moment";
-import swal from "sweetalert";
-import RefSalesRankingHooks from "../../../../reference/hooks/RefSalesRankingHooks";
-import { decryptaes } from "../../../../../../utils/LightSecurity";
-import InputMonthPicker from "../../../../../../components/inputFIeld/InputMonthPicker";
+import SalesDailyOutComponentAnnualSalesRankingHooks from "../../hooks/SalesDailyOutComponentAnnualSalesRankingHooks";
 const formName = "UpdateMonthlyRank";
 const submit = async (values, dispatch, props) => {
   try {
     values.rank_code = props.selected_code;
     values.ref_month_code = moment(values.ref_month_code).format("MM");
+    // console.log(values);
     const res = await dispatch(postPlacementAnnualSalesRanking(values));
     let decrypted = await decryptaes(res?.data);
     const res2 = await dispatch(getAnnualSalesRanking(values));
@@ -63,6 +55,8 @@ let UpdateMonthlyRank = (props) => {
     salesDailyOutComponentAnnualSalesRanking.selectedDataList;
   props.dispatch(change(formName, "added_by", account_details.code));
   props.dispatch(change(formName, "modified_by", account_details.code));
+  props.dispatch(change(formName, "ranker_code", selectedDataList.ranker_code));
+  props.dispatch(change(formName, "description", selectedDataList.description));
   props.dispatch(
     change(
       formName,
@@ -75,6 +69,16 @@ let UpdateMonthlyRank = (props) => {
       <form onSubmit={props.handleSubmit}>
         {/* <CSRFToken /> */}
         <Grid container spacing={2}>
+          <Grid item xs={12} md={12}>
+            <Field
+              id={"description"}
+              name={"description"}
+              label="Description"
+              required={true}
+              component={InputField}
+              disabled={true}
+            />
+          </Grid>
           <Grid item xs={12} md={12}>
             <Field
               id="ref_month_code"
