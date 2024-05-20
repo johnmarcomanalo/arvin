@@ -41,7 +41,7 @@ class RefSalesRankingController extends Controller
             'code'              =>  $field['code'] ,
             'description'       =>  $field['description'],
             'value'             =>  $field['value'],
-            'type'             =>  $field['type'],  
+            'type'              =>  $field['type'],  
             'added_by'          =>  $field['added_by'],
             'modified_by'       =>  $field['modified_by'],
         ]);
@@ -95,7 +95,64 @@ class RefSalesRankingController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $field = $request->validate([
+            'code'      => 'required',
+            'description'      => 'required', 
+            'value'            => 'required',
+            'type'             => 'required',
+            'added_by'         => 'required',
+            'modified_by'      => 'required',
+            'ranking_placement'=> 'required',
+        ]);
+        $ranking_placement = $field['ranking_placement'];
+        $ref_sale_ranking_data = RefSalesRanking::where('code',$id)
+            ->first();
+        $ref_sale_ranking_data->update([
+                'description' => $field["description"],
+                'value' => $field["value"],
+        ]); 
+         $get_ref_sales_ranking_placements =  RefSalesRankingPlacements::where('ref_sales_rankings_code',$field['code'])->get()->toArray();
+        // Extract unique identifiers (e.g., 'id') from array2
+        
+        #array_column($get_ref_sales_ranking_placements, 'code');
+        $id_ranking_placement = array_column($ranking_placement, 'code');
+
+        $objectsToRemove = array_filter($get_ref_sales_ranking_placements, function($item) use ($id_ranking_placement) {
+            return !in_array($item['code'], $id_ranking_placement);
+        });
+
+        if ($objectsToRemove) {
+           RefSalesRankingPlacements::whereIn('code',array_column($objectsToRemove, 'code'))->removeat($field['modified_by']);
+        }
+
+        foreach ($ranking_placement as $ranking_placement_value) {
+            if(isset($ranking_placement_value->code)){
+                $value =  RefSalesRankingPlacements::where('code',$ranking_placement_value->code)->first();
+                if ($value) {
+                    $value->update([
+                        'description' => $ranking_placement_value->description,
+                        'value' => $ranking_placement_value->value,
+                        'modified_by' => $field['modified_by']
+                    ]);
+                }
+            }else{
+                $codeRefSalesRankingPlacements = MainController::generate_code('App\Models\RefSalesRankingPlacements',"code");
+                RefSalesRankingPlacements::create([
+                    'code'                     => $codeRefSalesRankingPlacements,
+                    'ref_sales_rankings_code'  => $field['code'],
+                    'description'              => $ranking_placement_value->description,
+                    'value'                    => $ranking_placement_value->value,
+                    'added_by'                 => $field['added_by'],
+                    'modified_by'              => $field['modified_by'],
+                ]); 
+            }
+        }
+        return response([
+            'message' => 'Ranking settings updated successfully',
+            'result'  => true,
+            'status'  => 'success',
+            'title'   => 'Success',
+        ],200);
     }
 
     /**

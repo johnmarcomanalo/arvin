@@ -37,7 +37,7 @@ class RefSalesRankingPlacementsController extends Controller
      */
     public function show($id)
     {
-        return Crypt::encryptString(json_encode(RefSalesRankingPlacements::whereRefSalesRankingsCode($id)->get()));
+        return Crypt::encryptString(json_encode(RefSalesRankingPlacements::whereRefSalesRankingsCode($id)->getActive()));
     }
 
     /**

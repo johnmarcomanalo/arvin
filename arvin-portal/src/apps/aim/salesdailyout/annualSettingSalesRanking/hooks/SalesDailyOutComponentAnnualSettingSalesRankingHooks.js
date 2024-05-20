@@ -9,7 +9,7 @@ import {
   getAnnualSettingSaleRanking,
   getReferenceSalesRankingPlacements,
 } from "../actions/SalesDailyOutComponentAnnualSettingSalesRankingActions";
-const QuotationComponentAnnualQuotaHooks = (props) => {
+const SalesDailyOutComponentAnnualSettingSalesRankingHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
   const [state, setState] = React.useState({
     debounceTimer: null,
@@ -34,6 +34,9 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
   const addModal2 = useSelector(
     (state) => state.SalesDailyOutReducer.addModal2
   );
+  const addModal3 = useSelector(
+    (state) => state.SalesDailyOutReducer.addModal3
+  );
   const dataList = useSelector((state) => state.SalesDailyOutReducer.dataList);
   const dataSubList = useSelector(
     (state) => state.SalesDailyOutReducer.dataSubList
@@ -53,7 +56,9 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
   const selectedDataList = useSelector(
     (state) => state.SalesDailyOutReducer.selectedDataList
   );
-
+  const sales_ranking_placements = useSelector(
+    (state) => state.ReferenceReducer.sales_ranking_placements
+  );
   const columns = [
     { id: "code", label: "Code", align: "left" },
     { id: "description", label: "Description", align: "left" },
@@ -89,6 +94,14 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
       },
     });
   };
+  const onClickCloseAddModal3 = () => {
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        addModal3: false,
+      },
+    });
+  };
   const handleChangePage = (event, page) => {
     setSearchParams({
       q: search,
@@ -113,6 +126,16 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
         addModal2: true,
       },
     });
+  };
+  const onSelectItemtoUpdate = async (data) => {
+    await dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        selectedDataList: data,
+        addModal3: true,
+      },
+    });
+    await dispatch(getReferenceSalesRankingPlacements(data.code));
   };
   const onDeleteDeduction = (data) => {
     console.log(data);
@@ -198,7 +221,8 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
     addModal2,
     dataSubList,
     subcolumns,
-
+    addModal3,
+    sales_ranking_placements,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,
@@ -210,7 +234,9 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
     onClickAddRankingPlacement,
     onClickRemoveRankingPlacement,
     onClickCloseAddModal2,
+    onSelectItemtoUpdate,
+    onClickCloseAddModal3,
   };
 };
 
-export default QuotationComponentAnnualQuotaHooks;
+export default SalesDailyOutComponentAnnualSettingSalesRankingHooks;

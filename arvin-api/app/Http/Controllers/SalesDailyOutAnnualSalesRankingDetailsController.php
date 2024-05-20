@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SalesDailyOutAnnualSalesRankingDetails;
 use App\Models\SalesDailyOutAnnualSalesRanking;
+use App\Models\RefSalesRankingPlacements;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 
@@ -30,7 +31,7 @@ class SalesDailyOutAnnualSalesRankingDetailsController extends Controller
         $fields = $request->validate([
             'sales_daily_out_annual_sales_rankings_code' => 'required',
             'ref_month_code' => 'required',
-            'value' => 'required',
+            'ref_sales_ranking_placement_code' => 'required',
             'placement' => 'required',
             'added_by' => 'required',
             'modified_by' => 'required',
@@ -42,6 +43,7 @@ class SalesDailyOutAnnualSalesRankingDetailsController extends Controller
             // Handle the error, e.g., log it or set a default value
             $ref_month_code = 0; // Default value or appropriate fallback
         }
+
         $details_ranker_month = SalesDailyOutAnnualSalesRankingDetails::where('sales_daily_out_annual_sales_rankings_code',$fields['sales_daily_out_annual_sales_rankings_code'])
             ->where('ref_month_code', $ref_month_code)
             ->first();
@@ -52,34 +54,47 @@ class SalesDailyOutAnnualSalesRankingDetailsController extends Controller
                     'result' => false,
                     'status' => 'warning',
                     'title' => 'Oppss!',
-                ];
+            ];
             return Crypt::encryptString(json_encode($response));
         }
 
-        $details_ranker_month = SalesDailyOutAnnualSalesRankingDetails::where('sales_daily_out_annual_sales_rankings_code',$fields['sales_daily_out_annual_sales_rankings_code'])
-            ->where('ref_month_code', $ref_month_code)
-            ->first()
-            ;
- 
         $details_ranker_month->update([
-                'value' => $fields["value"],
+                'ref_sales_ranking_placement_code' => $fields["ref_sales_ranking_placement_code"],
                 'placement' => $fields["placement"],
         ]);
 
-        $data = SalesDailyOutAnnualSalesRanking::where('code',$fields['sales_daily_out_annual_sales_rankings_code'])
-            ->first();
 
-        $data->update([
-                'current_point' => (int)$data->current_point + $fields["value"]
-        ]);
-             $response = [
-                 'result' => true,
-                'status' => 'success',
-                'title' => 'Success',
-                'message' => "Ranking updated successfully",
-                ];
-            return Crypt::encryptString(json_encode($response));
-        
+        //this is the computation of current point in rank sales
+
+        // $dataListSalesRankingDetails = SalesDailyOutAnnualSalesRankingDetails::where('sales_daily_out_annual_sales_rankings_code',$fields['sales_daily_out_annual_sales_rankings_code'])
+        //     ->whereNotNull('placement')
+        //     ->get();
+
+        // $current_point = 0;        
+
+        // foreach ($dataListSalesRankingDetails as  $value) {
+
+        //     $ref_sales_ranking_placement_data = RefSalesRankingPlacements::where('ref_sales_rankings_code',$fields['sales_daily_out_annual_sales_rankings_code'])
+        //         ->where('code', $value['ref_sales_ranking_placement_code'])
+        //         ->first();
+
+        //     $current_point+= $ref_sales_ranking_placement_data['value'];
+        // }
+
+        // $data = SalesDailyOutAnnualSalesRanking::where('code',$fields['sales_daily_out_annual_sales_rankings_code'])
+        //     ->first();
+
+        // $data->update([
+        //         'current_point' =>  $current_point
+        // ]);
+
+        $response = [
+            'result' => true,
+            'status' => 'success',
+            'title' => 'Success',
+            'message' => "Ranking updated successfully",
+        ];
+        return Crypt::encryptString(json_encode($response));
     }
 
     /**

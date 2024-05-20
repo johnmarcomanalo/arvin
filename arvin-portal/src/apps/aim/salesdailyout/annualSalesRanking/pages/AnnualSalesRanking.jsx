@@ -22,6 +22,10 @@ import AddAnnualSalesRanker from "./components/AddAnnualSalesRanker";
 import UpgradeIcon from "@mui/icons-material/Upgrade";
 import UpdateMonthlyRank from "./components/UpdateMonthlyRank";
 import ViewSelectedRanker from "./components/ViewSelectedRanker";
+import TruckGIF from "../../../../../media/icons/truck.gif";
+import Road from "../../../../../media/backgrounds/road.jpg";
+import FinishLine from "../../../../../media/icons/finish line.gif";
+import Medal from "../../../../../media/icons/modal.gif";
 export default function AnnualSalesRanking(props) {
   const { ...salesDailyOutComponentAnnualSettingSale } =
     SalesDailyOutComponentAnnualSalesRankingHooks(props);
@@ -31,6 +35,23 @@ export default function AnnualSalesRanking(props) {
     salesDailyOutComponentAnnualSettingSale?.target_point
   );
   const [screenHeight, setScreenHeight] = React.useState(window.innerHeight);
+
+  const calculateCurrentPoint = (point_details) => {
+    let current_point = 0;
+    if (Array.isArray(point_details)) {
+      point_details.forEach((point) => {
+        current_point += parseInt(point.value, 10);
+      });
+    }
+    return current_point;
+  };
+
+  const sortedDataList = salesDailyOutComponentAnnualSettingSale.dataList
+    .map((data) => ({
+      ...data,
+      current_point: calculateCurrentPoint(data.details),
+    }))
+    .sort((a, b) => b.current_point - a.current_point);
   return (
     <React.Fragment>
       <Modal
@@ -208,170 +229,153 @@ export default function AnnualSalesRanking(props) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {salesDailyOutComponentAnnualSettingSale.dataList.map(
-                    (data, index) => {
-                      try {
-                        let point_details = data?.details;
-                        return (
-                          <TableRow
-                            key={data.code}
+                  {sortedDataList.map((data, index) => {
+                    let current_point = 0;
+                    try {
+                      let point_details = data?.details;
+                      return (
+                        <TableRow
+                          key={data.code}
+                          sx={{
+                            "&:last-child td, &:last-child th": { border: 0 },
+                            cursor: "pointer",
+                          }}
+                        >
+                          <TableCell>
+                            <Tooltip title="View">
+                              <LaunchIcon
+                                onClick={() =>
+                                  salesDailyOutComponentAnnualSettingSale.onClickSelectedDataList(
+                                    data,
+                                    "addModal4"
+                                  )
+                                }
+                                style={{
+                                  color: "#009197",
+                                  cursor: "pointer",
+                                }}
+                              />
+                            </Tooltip>
+                            <Tooltip title="Update">
+                              <UpgradeIcon
+                                onClick={() =>
+                                  salesDailyOutComponentAnnualSettingSale.onClickSelectedDataList(
+                                    data,
+                                    "addModal3"
+                                  )
+                                }
+                                style={{
+                                  color: "#009197",
+                                  cursor: "pointer",
+                                }}
+                              />
+                            </Tooltip>
+                          </TableCell>
+                          <TableCell component="th" scope="data">
+                            {index + 1}
+                          </TableCell>
+                          <TableCell align="left">{data.description}</TableCell>
+                          <TableCell
+                            align="left"
                             sx={{
-                              "&:last-child td, &:last-child th": { border: 0 },
-                              cursor: "pointer",
+                              display: "flex",
+                              flexDirection: "row",
                             }}
                           >
-                            <TableCell>
-                              <Tooltip title="View">
-                                <LaunchIcon
-                                  onClick={() =>
-                                    salesDailyOutComponentAnnualSettingSale.onClickSelectedDataList(
-                                      data,
-                                      "addModal4"
-                                    )
-                                  }
-                                  style={{
-                                    color: "#009197",
-                                    cursor: "pointer",
-                                  }}
-                                />
-                              </Tooltip>
-                              <Tooltip title="Update">
-                                <UpgradeIcon
-                                  onClick={() =>
-                                    salesDailyOutComponentAnnualSettingSale.onClickSelectedDataList(
-                                      data,
-                                      "addModal3"
-                                    )
-                                  }
-                                  style={{
-                                    color: "#009197",
-                                    cursor: "pointer",
-                                  }}
-                                />
-                              </Tooltip>
-                            </TableCell>
-                            <TableCell component="th" scope="data">
-                              {data.code}
-                            </TableCell>
-                            <TableCell align="left">
-                              {data.ranker_code}
-                            </TableCell>
-                            <TableCell align="left">
-                              <div
-                                style={{
-                                  width: "100%",
-                                  height: 15,
-                                  backgroundColor: "#e2e2e2",
-                                  borderRadius: 12,
-                                  display: "flex",
-                                  justifyContent: "flex-start",
-                                  flexDirection: "row",
-                                }}
-                              >
-                                {Array.isArray(point_details) &&
-                                  point_details.map((point, index) => {
-                                    const percentage =
-                                      (point?.value / target_point) * 100;
-                                    const monthColor =
-                                      configure.monthly_colors.find(
-                                        (color) =>
-                                          color.name === point.description
-                                      );
-                                    const isVisible = percentage > 0;
+                            <div
+                              style={{
+                                width: "100%",
+                                borderRadius: 12,
+                                display: "flex",
+                                justifyContent: "flex-start",
+                                flexDirection: "row",
+                                position: "relative",
+                                backgroundImage: `url(${Road})`, // Corrected line
+                                backgroundSize: "contain", // Ensure the image covers the div
+                                backgroundRepeat: "repeat", // Prevent the image from repeating
+                              }}
+                            >
+                              {Array.isArray(point_details) &&
+                                point_details.map((point, index) => {
+                                  const percentage =
+                                    (point?.value / target_point) * 100;
+                                  const isVisible = percentage > 0;
+                                  current_point += parseInt(point.value);
+                                  return (
+                                    <div
+                                      key={index}
+                                      style={{
+                                        width: percentage + "%",
+                                        display: isVisible ? "block" : "none",
+                                        paddingLeft: 5,
+                                        position: "relative",
+                                      }}
+                                    >
+                                      <p style={{ visibility: "hidden" }}>
+                                        Null
+                                      </p>
+                                      {/* {index === point_details.length - 1 &&
+                                        (current_point > target_point ? (
+                                          <img
+                                            src={TruckGIF}
+                                            alt="Truck"
+                                            style={{
+                                              width: "auto",
+                                              height: 25,
+                                              position: "absolute",
+                                              top: 8,
+                                              right: -30,
+                                            }}
+                                          />
+                                        ) : null)} */}
 
-                                    return (
-                                      <div
-                                        key={index}
-                                        style={{
-                                          width: percentage + "%",
-                                          height: 15,
-                                          display: isVisible ? "block" : "none",
-                                          backgroundColor: isVisible
-                                            ? monthColor
-                                              ? monthColor.hex
-                                              : "#0198ff"
-                                            : "none",
-                                          borderTopLeftRadius:
-                                            index === 0 ? 12 : null,
-                                          borderBottomLeftRadius:
-                                            index === 0 ? 12 : null,
-                                          borderTopRightRadius:
-                                            index === point_details.length - 1
-                                              ? 12
-                                              : null,
-                                          borderBottomRightRadius:
-                                            index === point_details.length - 1
-                                              ? 12
-                                              : null,
-                                          color: "white",
-                                          fontSize: 10,
-                                          paddingLeft: 5,
-                                        }}
-                                      />
-                                    );
-                                  })}
-                                {/* <div
+                                      {index === point_details.length - 1 &&
+                                        parseInt(current_point) <
+                                          parseInt(target_point) && (
+                                          <img
+                                            src={TruckGIF}
+                                            alt="Truck"
+                                            style={{
+                                              width: "auto",
+                                              height: 55,
+                                              position: "absolute",
+                                              top: 0,
+                                              right: -30,
+                                              filter:
+                                                "brightness(0.8) contrast(1.3) saturate(4.5) ",
+                                            }}
+                                          />
+                                        )}
+                                    </div>
+                                  );
+                                })}
+                              {current_point == target_point ? (
+                                <img
+                                  src={Medal}
+                                  alt="Finish Line"
                                   style={{
-                                    width: "100%",
-                                    height: 15,
-                                    backgroundColor: "#e2e2e2",
-                                    borderTopRightRadius: 12,
-                                    borderBottomRightRadius: 12,
-                                    fontSize: 10,
-                                    paddingLeft: 5,
+                                    width: "auto",
+                                    height: "100%",
+                                    position: "absolute",
+                                    top: 0,
+                                    right: 0,
                                   }}
-                                /> */}
-                              </div>
-                            </TableCell>
-                            <TableCell align="left">
-                              {data.current_point}
-                            </TableCell>
-                          </TableRow>
-                        );
-                      } catch (error) {
-                        console.log(error);
-                      }
+                                />
+                              ) : null}
+                            </div>
+                          </TableCell>
+                          <TableCell align="left">
+                            {data.current_point}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    } catch (error) {
+                      console.log(error);
                     }
-                  )}
+                  })}
                 </TableBody>
               </Table>
             </TableContainer>
-
-            {/* <Table
-            columns={salesDailyOutComponentAnnualSettingSale.columns}
-            dataList={salesDailyOutComponentAnnualSettingSale.dataList}
-            page={salesDailyOutComponentAnnualSettingSale.page}
-            rowsPerPage={salesDailyOutComponentAnnualSettingSale.rowsPerPage}
-            handleChangePage={
-              salesDailyOutComponentAnnualSettingSale.handleChangePage
-            }
-            handleChangeRowsPerPage={
-              salesDailyOutComponentAnnualSettingSale.handleChangeRowsPerPage
-            }
-            onSelectItem={salesDailyOutComponentAnnualSettingSale.onSelectItem}
-            id={"home_attendance"}
-            localStorage={""}
-            rowCount={salesDailyOutComponentAnnualSettingSale.dataListCount}
-            actionShow={false}
-            paginationShow={false}
-            action={(row) => {
-              return (
-                <Tooltip title="Delete">
-                  <DeleteOutlineIcon
-                    onClick={() =>
-                      salesDailyOutComponentAnnualSettingSale.onDeleteDeduction(
-                        row
-                      )
-                    }
-                    style={{
-                      color: "#009197",
-                      cursor: "pointer",
-                    }}
-                  />
-                </Tooltip>
-              );
-            }}
-          /> */}
           </Paper>
         </Grid>
       </Grid>

@@ -100,11 +100,14 @@ class SalesDailyOutAnnualSalesRankingController extends Controller
      */
     public function show($id)
     {
-        $dataList =  SalesDailyOutAnnualSalesRanking::whereRankCode($id)->get();
+        $dataList =  SalesDailyOutAnnualSalesRanking::
+        join('ref_sub_sections','sales_daily_out_annual_sales_rankings.ranker_code','ref_sub_sections.code')
+        ->get(['sales_daily_out_annual_sales_rankings.*','ref_sub_sections.description']);
         $reference_sales_ranking_data =  RefSalesRanking::whereCode($id)->first();
         if(count($dataList) > 0){
             foreach ($dataList as $data_value) {
-                $data =  SalesDailyOutAnnualSalesRankingDetails::whereSalesDailyOutAnnualSalesRankingsCode($data_value['code'])->get();
+                $data =  SalesDailyOutAnnualSalesRankingDetails::join('ref_sales_ranking_placements','sales_daily_out_annual_sales_ranking_details.ref_sales_ranking_placement_code','ref_sales_ranking_placements.code')
+                ->where('sales_daily_out_annual_sales_rankings_code',$data_value['code'])->get(['ref_sales_ranking_placements.value','sales_daily_out_annual_sales_ranking_details.*']);
                 $data_value['details'] = $data;
             }   
             $response = [

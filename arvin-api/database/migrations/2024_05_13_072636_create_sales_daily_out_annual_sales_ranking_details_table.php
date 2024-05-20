@@ -20,7 +20,7 @@ class CreateSalesDailyOutAnnualSalesRankingDetailsTable extends Migration
             $table->text('description')->nullable();
             $table->text('ref_month_code')->nullable();
             $table->text('placement')->nullable();
-            $table->integer('value')->default(0);
+            $table->integer('ref_sales_ranking_placement_code')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->timestamp('deleted_at')->nullable();

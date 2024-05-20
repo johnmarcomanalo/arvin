@@ -1,16 +1,17 @@
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import UpgradeIcon from "@mui/icons-material/Upgrade";
 import { Grid, Stack, Tooltip, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import * as React from "react";
 import ButtonComponent from "../../../../../components/button/Button";
 import SearchField from "../../../../../components/inputFIeld/SearchField";
+import Modal from "../../../../../components/modal/Modal";
+import Page from "../../../../../components/pagination/Pagination";
 import Table from "../../../../../components/table/Table";
 import configure from "../../../../configure/configure.json";
 import SalesDailyOutComponentAnnualSettingSalesRankingHooks from "../hooks/SalesDailyOutComponentAnnualSettingSalesRankingHooks";
-import Modal from "../../../../../components/modal/Modal";
 import AddAnnualSettingSalesRanking from "./components/AddAnnualSettingSalesRanking";
 import ViewAnnualSettingSalesRankingPlacement from "./components/ViewAnnualSettingSalesRankingPlacement";
-import Page from "../../../../../components/pagination/Pagination";
+import UpdateAnnualSettingSalesRankingPlacement from "./components/UpdateAnnualSettingSalesRankingPlacement";
 export default function AnnualSettingSalesRanking(props) {
   const { ...salesDailyOutComponentAnnualSettingSalesRanking } =
     SalesDailyOutComponentAnnualSettingSalesRankingHooks(props);
@@ -41,6 +42,18 @@ export default function AnnualSettingSalesRanking(props) {
         }
       >
         <ViewAnnualSettingSalesRankingPlacement />
+      </Modal>
+      <Modal
+        open={salesDailyOutComponentAnnualSettingSalesRanking?.addModal3}
+        fullScreen={matches ? false : true}
+        title={"Update Ranking Placement"}
+        size={"xs"}
+        action={undefined}
+        handleClose={
+          salesDailyOutComponentAnnualSettingSalesRanking.onClickCloseAddModal3
+        }
+      >
+        <UpdateAnnualSettingSalesRankingPlacement />
       </Modal>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -124,20 +137,21 @@ export default function AnnualSettingSalesRanking(props) {
             actionshow={true}
             paginationShow={false}
             action={(row) => {
-              return null;
-              // <Tooltip title="Delete">
-              //   <DeleteOutlineIcon
-              //     onClick={() =>
-              //       salesDailyOutComponentAnnualSettingSalesRanking.onDeleteDeduction(
-              //         row
-              //       )
-              //     }
-              //     style={{
-              //       color: "#009197",
-              //       cursor: "pointer",
-              //     }}
-              //   />
-              // </Tooltip>
+              return (
+                <Tooltip title="Update">
+                  <UpgradeIcon
+                    onClick={() =>
+                      salesDailyOutComponentAnnualSettingSalesRanking.onSelectItemtoUpdate(
+                        row
+                      )
+                    }
+                    style={{
+                      color: "#009197",
+                      cursor: "pointer",
+                    }}
+                  />
+                </Tooltip>
+              );
             }}
           />
         </Grid>

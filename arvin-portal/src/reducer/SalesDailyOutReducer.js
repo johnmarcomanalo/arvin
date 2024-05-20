@@ -1,6 +1,7 @@
 import { Constants } from "./Contants";
 const initialState = {
   refresh: false,
+  refresh2: false,
   search: "",
   page: 1,
   rowsPerPage: 10,

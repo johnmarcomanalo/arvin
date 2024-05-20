@@ -5,6 +5,7 @@ import {
   PostDefaultServices,
   GetDefaultServices,
   GetMultiSpecificDefaultServices,
+  PutDefaultServices,
 } from "../../../../../services/apiService";
 import { decryptaes } from "../../../../../utils/LightSecurity";
 
@@ -158,5 +159,36 @@ export const getAnnualMonthlyDailyTargetSalesBySectionSubsection =
       });
     } catch (error) {
       console.log(error);
+    }
+  };
+
+export const putAnnualSettingSalesRanking =
+  (formValues, id) => async (dispatch) => {
+    try {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: true,
+        },
+      });
+      const res = await PutDefaultServices(
+        "api/reference/sales_ranking/",
+        formValues.code,
+        formValues
+      );
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      return res;
+    } catch (error) {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
     }
   };
