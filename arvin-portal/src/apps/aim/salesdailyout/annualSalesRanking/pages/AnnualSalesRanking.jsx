@@ -134,6 +134,18 @@ export default function AnnualSalesRanking(props) {
                 }
               />
             ) : null}
+            {salesDailyOutComponentAnnualSettingSale.selected_code ? (
+              <ButtonComponent
+                stx={configure.default_button}
+                iconType="generate"
+                type="button"
+                fullWidth={true}
+                children={"Refresh Ranking"}
+                click={
+                  salesDailyOutComponentAnnualSettingSale.onClickORefreshRanking
+                }
+              />
+            ) : null}
           </Stack>
         </Grid>
         <Grid item xs={6} sm={6} md={6} lg={6}>

@@ -126,6 +126,14 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
       },
     });
   };
+    const onClickORefreshRanking = () => {
+      dispatch({
+        type: Constants.ACTION_SALES_DAILY_OUT,
+        payload: {
+          refresh: !refresh,
+        },
+      });
+    };
   const handleChangePage = (event, page) => {
     setSearchParams({
       q: search,
@@ -225,6 +233,7 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
     onClickSelectedDataList,
     onClickCloseAddModal3,
     onClickCloseAddModal4,
+    onClickORefreshRanking,
   };
 };
 
