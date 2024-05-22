@@ -14,25 +14,8 @@ export const forgotPassword = (values) => async (dispatch) => {
   return res;
 };
 
-export function loginUser(formValues, dispatch, props) {
+export const loginUser = (formValues) => async (dispatch) => {
   if (formValues.username == null || formValues.password == null) return false;
   const response = login(formValues);
-  // Loading();
-  return response
-    .then((response) => {
-      const token = response.data.token;
-      localStorage.setItem("token", token);
-      localStorage.setItem("account_details", response.data.user);
-
-      dispatch({
-        type: Constants.ACTION_AUTHENTICATION,
-        payload: {
-          token: response.data.token,
-          account_details: decryptaes(response.data.user),
-        },
-      });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
+  return response;
+};

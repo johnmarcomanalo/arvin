@@ -11,42 +11,39 @@ import { cancelRequest } from "../../../../../api/api";
 import { getReferenceSalesRankingPlacements } from "../../annualSettingSalesRanking/actions/SalesDailyOutComponentAnnualSettingSalesRankingActions";
 const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
-<<<<<<< Updated upstream
-=======
   const refresh2 = useSelector((state) => state.SalesDailyOutReducer.refresh2);
-   const addModal = useSelector((state) => state.SalesDailyOutReducer.addModal);
-   const addModal2 = useSelector(
-     (state) => state.SalesDailyOutReducer.addModal2
-   );
-   const addModal3 = useSelector(
-     (state) => state.SalesDailyOutReducer.addModal3
-   );
-   const addModal4 = useSelector(
-     (state) => state.SalesDailyOutReducer.addModal4
-   );
-   const dataList = useSelector((state) => state.SalesDailyOutReducer.dataList);
-   const dataListCount = useSelector(
-     (state) => state.SalesDailyOutReducer.dataListCount
-   );
-   const account_details = useSelector(
-     (state) => state.AuthenticationReducer.account_details
-   );
-   const dateFilterStart = useSelector(
-     (state) => state.SalesDailyOutReducer.dateFilterStart
-   );
-   const dateFilterEnd = useSelector(
-     (state) => state.SalesDailyOutReducer.dateFilterEnd
-   );
-   const selectedDataList = useSelector(
-     (state) => state.SalesDailyOutReducer.selectedDataList
-   );
-   const target_point = useSelector(
-     (state) => state.SalesDailyOutReducer.target_point
-   );
-   const sales_ranking_placements = useSelector(
-     (state) => state.ReferenceReducer.sales_ranking_placements
-   );
->>>>>>> Stashed changes
+  const addModal = useSelector((state) => state.SalesDailyOutReducer.addModal);
+  const addModal2 = useSelector(
+    (state) => state.SalesDailyOutReducer.addModal2
+  );
+  const addModal3 = useSelector(   
+    (state) => state.SalesDailyOutReducer.addModal3
+  );
+  const addModal4 = useSelector(
+    (state) => state.SalesDailyOutReducer.addModal4
+  );
+  const dataList = useSelector((state) => state.SalesDailyOutReducer.dataList);
+  const dataListCount = useSelector(
+    (state) => state.SalesDailyOutReducer.dataListCount
+  );
+  const account_details = useSelector(
+    (state) => state.AuthenticationReducer.account_details
+  );
+  const dateFilterStart = useSelector(
+    (state) => state.SalesDailyOutReducer.dateFilterStart
+  );
+  const dateFilterEnd = useSelector(
+    (state) => state.SalesDailyOutReducer.dateFilterEnd
+  );
+  const selectedDataList = useSelector(
+    (state) => state.SalesDailyOutReducer.selectedDataList
+  );
+  const target_point = useSelector(
+    (state) => state.SalesDailyOutReducer.target_point
+  );
+  const sales_ranking_placements = useSelector(
+    (state) => state.ReferenceReducer.sales_ranking_placements
+  );
   const [state, setState] = React.useState({
     debounceTimer: null,
     debounceDelay: 2000,
@@ -186,7 +183,6 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
     try {
       const data = getListParam();
       data.rc = id;
-      console.log(data);
       // await dispatch(getRefSalesRanking(data));
     } catch (error) {
       console.error(error);

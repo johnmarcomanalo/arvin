@@ -54,9 +54,9 @@ export function loginApi(method, param2, dispatch) {
           { headersLogin }
         )
         .then((res) => {
-          // let decrypt = CryptoJSAesDecrypt(res.data.data);
-          // res.data.data = decrypt;
-          // resolve(res.data);
+          let decrypt = CryptoJSAesDecrypt(res.data.data);
+          res.data.data = decrypt;
+          resolve(res.data);
         })
         .catch((error) => {
           //Handle the error request

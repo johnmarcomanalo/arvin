@@ -1,4 +1,4 @@
-import { Grid, Stack, Box, Typography } from "@mui/material";
+import { Grid, Stack, Box, Typography, Link } from "@mui/material";
 import * as React from "react";
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +11,10 @@ import configure from "../../../configure/configure.json";
 import { loginUser, onLogin } from "../actions/LoginActions";
 import SaltMountain from "../../../../media/backgrounds/salt_mountain.jpeg";
 import arvin_logo_white_font2 from "../../../../media/logo/arvin_logo_blue_font.png";
+import arvin_logo_white_font from "../../../../media/logo/arvin_logo_white_font.png";
+import arvin_logo_blue_font2 from "../../../../media/logo/arvin_logo_blue_font2.png";
+import { decryptaes } from "../../../../utils/LightSecurity";
+import swal from "sweetalert";
 const formName = "Login";
 const submit = async (values, dispatch, props, navigate) => {
   dispatch({
@@ -19,19 +23,32 @@ const submit = async (values, dispatch, props, navigate) => {
       loading: true,
     },
   });
-  const response = await dispatch(onLogin(values));
+  const response = await dispatch(loginUser(values));
+  let decrypted = decryptaes(response?.data);
   dispatch({
     type: Constants.ACTION_LOADING,
     payload: {
       loading: false,
     },
   });
+  swal(decrypted.title, decrypted.message, decrypted.status);
+  if (decrypted.result === true) {
+    localStorage.setItem("token", decrypted?.token);
+    localStorage.setItem("account_details", decrypted?.user);
+    dispatch({
+      type: Constants.ACTION_AUTHENTICATION,
+      payload: {
+        token: decrypted?.token,
+        account_details: decryptaes(decrypted?.user),
+      },
+    });
+    navigate("/");
+    window.location.reload();
+  }
 };
 let IndexLogin = (props) => {
   const navigate = useNavigate();
-  // props.dispatch(change(formName, "username", "admin"));
-  props.dispatch(change(formName, "password", "welcome123"));
-
+  const onSubmit = (values) => submit(values, props.dispatch, props, navigate);
   return (
     <React.Fragment>
       <Grid
@@ -46,12 +63,12 @@ let IndexLogin = (props) => {
             style={{
               height: "100vh",
               backgroundColor: configure.primary_color,
-            }} // Ensure the container takes the full viewport height
+            }}
             justifyContent="center"
             alignItems="center"
           >
             <Grid item xs={12} md={12}>
-              <form onSubmit={props.handleSubmit}>
+              <form onSubmit={props.handleSubmit(onSubmit)}>
                 <CSRFToken />
 
                 <Stack
@@ -71,8 +88,11 @@ let IndexLogin = (props) => {
                   <Stack>
                     <Typography
                       align="left"
-                      variant="h6"
-                      style={{ color: configure.primary_color }}
+                      variant="h5"
+                      style={{
+                        color: configure.primary_color,
+                        fontWeight: 900,
+                      }}
                     >
                       SIGN IN
                     </Typography>
@@ -100,9 +120,14 @@ let IndexLogin = (props) => {
                     />
                   </Box>
                   <Stack>
-                    <Typography align="left" variant="overline">
+                    <Link
+                      align="left"
+                      variant="overline"
+                      href="/"
+                      sx={{ cursor: "pointer" }}
+                    >
                       Forgot Password?
-                    </Typography>
+                    </Link>
                   </Stack>
                   <Box sx={{ width: "100%" }}>
                     <ButtonComponent
@@ -128,12 +153,12 @@ let IndexLogin = (props) => {
             backgroundRepeat: "no-repeat",
             height: "100vh", // Ensures full height
             width: "100vw", // Ensures full width
-            display: { xs: "none", sm: "none", md: "block" },
+            display: { xs: "none", sm: "none", md: "flex" },
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          {/* <Box>
-            <img src={arvin_logo_white_font2} />
-          </Box> */}
+          <img src={arvin_logo_blue_font2} />
         </Grid>
       </Grid>
     </React.Fragment>
@@ -142,7 +167,6 @@ let IndexLogin = (props) => {
 
 const ReduxFormComponent = reduxForm({
   form: formName,
-  onSubmit: loginUser,
 })(IndexLogin);
 export default connect((state) => {
   const token = state.AuthenticationReducer.token;

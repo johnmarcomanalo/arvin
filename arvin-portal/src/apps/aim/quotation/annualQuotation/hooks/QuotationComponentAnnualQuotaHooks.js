@@ -1,11 +1,10 @@
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 import { Constants } from "../../../../../reducer/Contants";
-import cancelRequest from "../../../../../api/api";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { encryptLocal } from "../../../../../utils/Encryption";
 import { useDebounce } from "../../../../../utils/HelperUtils";
 import { monthlyAndDailyQoutaByAnnualQouta } from "../actions/QuotationComponentAnnualQuotaActions";
-import React from "react";
 const QuotationComponentAnnualQuotaHooks = (props) => {
   const refresh = useSelector((state) => state.QuotationReducer.refresh);
   const [state, setState] = React.useState({
@@ -44,7 +43,6 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
     (state) => state.QuotationReducer.dataListCount
   );
 
-
   const dateFilterStart = useSelector(
     (state) => state.QuotationReducer.dateFilterStart
   );
@@ -54,9 +52,9 @@ const QuotationComponentAnnualQuotaHooks = (props) => {
   const selectedDataList = useSelector(
     (state) => state.QuotationReducer.selectedDataList
   );
-const account_details = useSelector(
-  (state) => state.AuthenticationReducer.account_details
-);
+  const account_details = useSelector(
+    (state) => state.AuthenticationReducer.account_details
+  );
   const columns = [
     { id: "code", label: "Code", align: "right" },
     { id: "target_year_quota", label: "Year", align: "right" },
@@ -152,7 +150,7 @@ const account_details = useSelector(
     selectedDataList,
     columns,
     addModal,
-account_details,
+    account_details,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,

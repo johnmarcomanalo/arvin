@@ -104,7 +104,6 @@ let UpdateMonthlyRank = (props) => {
               component={ComboBox}
               onChangeHandle={(e, newValue) => {
                 if (newValue?.description) {
-                  console.log(newValue);
                   props.change(
                     "ref_sales_ranking_placement_code",
                     newValue.code

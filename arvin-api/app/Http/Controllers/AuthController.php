@@ -30,23 +30,30 @@ class AuthController extends Controller
         $user = User::where('username',$fields['username'])->first();
         
         if(empty($user)){
-            // AuditTrailController::do_audit_trail("Login",null,null,"Not Verified",$fields['username']);
-            return response([
+            $response = [
+                'user' => Crypt::encryptString(json_encode([])),
+                'token' => '',
+                'result' => false,
+                'status' => 'warning',
+                'title' => 'Oppss!',
                 'message' => 'Invalid Username/Password!',
-                'result' => false
-            ], 401); 
+            ];
+            return Crypt::encryptString(json_encode($response));
+
         }
         //check password
         // if(!$user || !Hash::check($fields['password'], $user->password)){
 
         if(!Auth::attempt($fields)){    
-            
-            // AuditTrailController::do_audit_trail("Login",null,null,"Invalid Username/Password",$fields['username']);
-            
-            return response([
-                 'message' => 'Invalid Username/Password!',
-                 'result' => false
-             ], 401); 
+             $response = [
+                'user' => Crypt::encryptString(json_encode([])),
+                'token' => '',
+                'result' => false,
+                'status' => 'warning',
+                'title' => 'Oppss!',
+                'message' => 'Invalid Username/Password!',
+            ];
+            return Crypt::encryptString(json_encode($response));
         }
 
         // if($user->is_verified == 0){
@@ -69,11 +76,14 @@ class AuthController extends Controller
             'user' => Crypt::encryptString(json_encode($user)),
             'token' => $token,
             'result' => true,
+            'title'=>'Success',
+            'status'=>'success',
             'message' => 'Successfully Logged In!',
         ];
 
         // AuditTrailController::do_audit_trail("Login",null,null,"Succesfully Logged In",$fields['username']);
         
-        return response($response, 201);
+        return Crypt::encryptString(json_encode($response));
+        // return response($response, 201);
     }
 }

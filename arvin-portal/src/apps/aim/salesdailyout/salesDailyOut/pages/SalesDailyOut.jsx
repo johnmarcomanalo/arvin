@@ -45,7 +45,6 @@ let DailyQuota = (props) => {
   const final_mtd_data = salesDailyOutComponentSalesDailyOut.final_mtd_data;
   const theme = useTheme();
   const matches = useMediaQuery("(min-width:600px)");
-  console.log(present_mtd_data);
   return (
     <React.Fragment>
       <Modal

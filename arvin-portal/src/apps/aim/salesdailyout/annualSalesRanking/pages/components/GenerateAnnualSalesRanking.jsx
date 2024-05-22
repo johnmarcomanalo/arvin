@@ -42,10 +42,6 @@ let AddAnnualSettingSale = (props) => {
         rc: values?.rank_code,
       };
       const res = await dispatch(getAnnualSalesRanking(data));
-      console.log({
-        data: data,
-        res: res,
-      });
       // swal(decrypted.title, decrypted.message, decrypted.status);
       // reset();
       // await dispatch({

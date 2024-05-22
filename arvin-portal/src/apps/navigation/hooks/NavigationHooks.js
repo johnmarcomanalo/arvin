@@ -1,13 +1,20 @@
-import { useDispatch } from "react-redux";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { cancelRequest } from "../../../api/api";
 import { Constants } from "../../../reducer/Contants";
-import { useSelector } from "react-redux";
 const NavigationHooks = (props) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const request_modal = useSelector(
     (state) => state.NavigationReducer.request_modal
   );
   const request_type = useSelector(
     (state) => state.NavigationReducer.request_type
+  );
+  const token = useSelector((state) => state.AuthenticationReducer.token);
+  const account_details = useSelector(
+    (state) => state.AuthenticationReducer.account_details
   );
   const onOpenRequestModal = (type) => {
     dispatch({
@@ -27,7 +34,16 @@ const NavigationHooks = (props) => {
       },
     });
   };
-
+  React.useEffect(() => {
+    if (
+      typeof token === "undefined" &&
+      typeof account_details === "undefined"
+    ) {
+      localStorage.clear();
+      navigate("/login");
+    }
+    return () => cancelRequest();
+  }, []);
   return {
     request_modal,
     request_type,
