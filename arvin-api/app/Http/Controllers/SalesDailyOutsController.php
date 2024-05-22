@@ -269,6 +269,7 @@ class SalesDailyOutsController extends Controller
                 'status'=>'success',
                 'message'=> 'Authentication successful.',
             ];
+            
         return Crypt::encryptString(json_encode($response));
         }
 
@@ -293,7 +294,6 @@ class SalesDailyOutsController extends Controller
                 ->whereDate('sales_date','>=', $firstDayOfMonth)
                 ->whereDate('sales_date','<=',$LastOrCurrentDateOfTheMonth)
                 ->get();
-
             foreach ($mtd_data_list as $value) {
                 $salesDailyQuota = (float)$value["sales_daily_qouta"];
                 $salesDailyOut = (float)$value["sales_daily_out"];

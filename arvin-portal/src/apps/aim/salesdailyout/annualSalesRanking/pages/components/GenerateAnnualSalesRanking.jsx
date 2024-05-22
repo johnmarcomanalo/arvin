@@ -22,32 +22,46 @@ import swal from "sweetalert";
 import RefSalesRankingHooks from "../../../../reference/hooks/RefSalesRankingHooks";
 import { decryptaes } from "../../../../../../utils/LightSecurity";
 const formName = "GenerateAnnualSalesRanking";
-const submit = async (values, dispatch, props) => {
-  try {
-    const res = await dispatch(getAnnualSalesRanking(values));
-    let decrypted = await decryptaes(res?.data);
-    swal(decrypted.title, decrypted.message, decrypted.status);
-    reset();
-    await dispatch({
-      type: Constants.ACTION_SALES_DAILY_OUT,
-      payload: {
-        addModal: false,
-        dataList: decrypted?.dataList,
-        dataListcount: decrypted?.dataListCount,
-        selected_code: decrypted.rank_code,
-        target_point: decrypted?.target_point,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 let AddAnnualSettingSale = (props) => {
   const { ...refSalesRanking } = RefSalesRankingHooks();
+  const { ...salesDailyOutComponentAnnualSalesRanking } =
+    SalesDailyOutComponentAnnualSalesRankingHooks();
+  const account_details =
+    salesDailyOutComponentAnnualSalesRanking.account_details;
+  const submit = async (values, dispatch, props) => {
+    try {
+      let data = {
+        p:
+          salesDailyOutComponentAnnualSalesRanking.page == null
+            ? 1
+            : salesDailyOutComponentAnnualSalesRanking.page,
+        q: salesDailyOutComponentAnnualSalesRanking.search,
+        l: salesDailyOutComponentAnnualSalesRanking.rowsPerPage,
+        f: salesDailyOutComponentAnnualSalesRanking.filterQuery,
+        u: account_details.code,
+        rc: values?.rank_code,
+      };
+      const res = await dispatch(getAnnualSalesRanking(data));
+      console.log({
+        data: data,
+        res: res,
+      });
+      // swal(decrypted.title, decrypted.message, decrypted.status);
+      // reset();
+      // await dispatch({
+      //   type: Constants.ACTION_SALES_DAILY_OUT,
+      //   payload: {
+      //     addModal: false,
+      //   },
+      // });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <React.Fragment>
-      <form onSubmit={props.handleSubmit}>
+      <form onSubmit={props.handleSubmit(submit)}>
         {/* <CSRFToken /> */}
         <Grid container spacing={2}>
           <Grid item xs={12} md={12}>
@@ -92,7 +106,6 @@ let AddAnnualSettingSale = (props) => {
 
 const ReduxFormComponent = reduxForm({
   form: formName,
-  onSubmit: submit,
 })(AddAnnualSettingSale);
 const selector = formValueSelector(formName);
 export default connect((state) => {

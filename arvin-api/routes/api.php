@@ -71,6 +71,7 @@ use Illuminate\Support\Facades\Route;
     // Sales Daily Out Annual Settings Sales END 
 
     // Sales Daily Out Annual Sales Ranking START
+    Route::get('salesdailyout/annual_sales_ranking/get_sales_ranking_by_id',[SalesDailyOutAnnualSalesRankingController::class,'get_sales_ranking_by_id']);
     Route::apiResource('salesdailyout/annual_sales_ranking',SalesDailyOutAnnualSalesRankingController::class)->middleware(['light_decryption']);
     Route::apiResource('salesdailyout/annual_sales_ranking_details',SalesDailyOutAnnualSalesRankingDetailsController::class)->middleware(['light_decryption']);
     // Sales Daily Out Annual Sales Ranking END

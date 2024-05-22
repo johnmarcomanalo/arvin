@@ -18,15 +18,37 @@ export const getAnnualSalesRanking = (formValues) => async (dispatch) => {
       },
     });
     const response = GetSpecificDefaultServices(
-      "api/salesdailyout/annual_sales_ranking/",
-      formValues.rank_code
+      "api/salesdailyout/annual_sales_ranking/get_sales_ranking_by_id?page=" +
+        formValues.p +
+        "&limit=" +
+        formValues.l +
+        "&q=" +
+        formValues.q +
+        "&f=" +
+        formValues.f +
+        "&uid=" +
+        formValues.u +
+        "&rc" +
+        formValues.rc
     );
-    dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
+    // response.then((res) => {
+    //   dispatch({
+    //     type: Constants.ACTION_LOADING,
+    //     payload: {
+    //       loading: false,
+    //     },
+    //   });
+    //   let decrypted = decryptaes(res.data);
+    //   dispatch({
+    //     type: Constants.ACTION_SALES_DAILY_OUT,
+    //     payload: {
+    //       dataList: decrypted.dataList.data,
+    //       dataListCount: decrypted.dataList.total,
+    //       selected_code: decrypted.rank_code,
+    //       target_point: decrypted?.target_point,
+    //     },
+    //   });
+    // });
     return response;
   } catch (error) {
     console.log(error);
@@ -143,33 +165,32 @@ export const getAnnualMonthlyDailyTargetSalesBySectionSubsection =
     }
   };
 
-
-  export const postPlacementAnnualSalesRanking =
-    (formValues) => async (dispatch) => {
-      try {
-        await dispatch({
-          type: Constants.ACTION_LOADING,
-          payload: {
-            loading: true,
-          },
-        });
-        const res = await PostDefaultServices(
-          "api/salesdailyout/annual_sales_ranking_details",
-          formValues
-        );
-        await dispatch({
-          type: Constants.ACTION_LOADING,
-          payload: {
-            loading: false,
-          },
-        });
-        return res;
-      } catch (error) {
-        await dispatch({
-          type: Constants.ACTION_LOADING,
-          payload: {
-            loading: false,
-          },
-        });
-      }
-    };
+export const postPlacementAnnualSalesRanking =
+  (formValues) => async (dispatch) => {
+    try {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: true,
+        },
+      });
+      const res = await PostDefaultServices(
+        "api/salesdailyout/annual_sales_ranking_details",
+        formValues
+      );
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      return res;
+    } catch (error) {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+    }
+  };

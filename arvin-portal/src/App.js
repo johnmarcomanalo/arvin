@@ -32,6 +32,7 @@ const IndexAnnualSettingSalesRanking = lazy(() =>
 );
 
 const IndexLogin = lazy(() => import("./apps/auth/login/pages/IndexLogin"));
+const NoMatch = lazy(() => import("./apps/aim/home/pages/NoMatch"));
 const theme = createTheme({
   typography: {
     fontFamily: "Poppins, sans-serif",
@@ -54,9 +55,9 @@ function App() {
       <ThemeProvider theme={theme}>
         <Suspense fallback={<div>Loading</div>}>
           <Routes>
+            <Route path="/login" element={<IndexLogin />} />
             <Route path="/" element={<Navigation />}>
               <Route path="/" element={<IndexHome />} />
-              <Route path="/login" element={<IndexLogin />} />
               <Route
                 path="/Modules/Costing/itemlist"
                 element={<CostingItemList />}
@@ -78,6 +79,7 @@ function App() {
                 element={<IndexAnnualSettingSalesRanking />}
               />
             </Route>
+            <Route element={<NoMatch />} path="*" />
           </Routes>
         </Suspense>
       </ThemeProvider>
