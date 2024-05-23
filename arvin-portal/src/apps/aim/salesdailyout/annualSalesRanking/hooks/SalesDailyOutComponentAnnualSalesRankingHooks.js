@@ -16,24 +16,6 @@ import { decryptaes } from "../../../../../utils/LightSecurity";
 const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
   const refresh2 = useSelector((state) => state.SalesDailyOutReducer.refresh2);
-  const [state, setState] = React.useState({
-    debounceTimer: null,
-    debounceDelay: 2000,
-  });
-  const [searchParams, setSearchParams] = useSearchParams();
-  const page = searchParams.get("p") != null ? searchParams.get("p") : 1;
-  const rowsPerPage =
-    searchParams.get("l") != null ? searchParams.get("l") : 10;
-  const search =
-    searchParams.get("q") != null ? String(searchParams.get("q")) : "";
-  const filterQuery =
-    searchParams.get("f") != null
-      ? String(searchParams.get("f"))
-      : moment(new Date()).format("YYYY");
-  const debounceSearch = useDebounce(searchParams, 500);
-  //filtering,search,page,limit end
-
-  const dispatch = useDispatch();
   const addModal = useSelector((state) => state.SalesDailyOutReducer.addModal);
   const addModal2 = useSelector(
     (state) => state.SalesDailyOutReducer.addModal2
@@ -66,6 +48,27 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
   const sales_ranking_placements = useSelector(
     (state) => state.ReferenceReducer.sales_ranking_placements
   );
+  const [state, setState] = React.useState({
+    debounceTimer: null,
+    debounceDelay: 2000,
+  });
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = searchParams.get("p") != null ? searchParams.get("p") : 1;
+  const rowsPerPage =
+    searchParams.get("l") != null ? searchParams.get("l") : 10;
+  const search =
+    searchParams.get("q") != null ? String(searchParams.get("q")) : "";
+  const filterQuery =
+    searchParams.get("f") != null
+      ? String(searchParams.get("f"))
+      : moment(new Date()).format("MM");
+  const uid = searchParams.get("uid") != null ? account_details.code : null;
+
+  const debounceSearch = useDebounce(searchParams, 500);
+  //filtering,search,page,limit end
+
+  const dispatch = useDispatch();
+
   const columns = [
     { id: "code", label: "Ranking", align: "left" },
     { id: "ranker_code", label: "Ranker", align: "left" },
@@ -155,6 +158,8 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
       p: page,
       l: String(rowsPerPage),
       f: filterQuery,
+      u: account_details?.code,
+      rc: selected_code,
     });
   };
   const handleChangeRowsPerPage = (event) => {
@@ -179,6 +184,8 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
       p: "1",
       l: String(rowsPerPage),
       f: filterQuery,
+      u: account_details?.code,
+      rc: selected_code,
     });
   };
 
@@ -189,14 +196,16 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
       l: rowsPerPage,
       f: filterQuery,
       u: account_details?.code,
+      rc: selected_code,
     };
     return data;
   };
 
-  const GetAnnualSettingSalesRankingList = async () => {
+  const GenerateAnnualSalesRanking = async (id) => {
     try {
       const data = getListParam();
-      await dispatch(getRefSalesRanking(data));
+      data.rc = id;
+      // await dispatch(getRefSalesRanking(data));
     } catch (error) {
       console.error(error);
     }
@@ -236,6 +245,8 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
     sales_ranking_placements,
     addModal4,
     columns2,
+    filterQuery,
+    filterQuery,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,

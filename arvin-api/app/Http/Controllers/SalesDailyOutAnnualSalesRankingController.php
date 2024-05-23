@@ -158,4 +158,34 @@ class SalesDailyOutAnnualSalesRankingController extends Controller
     {
         //
     }
+
+    public function get_sales_ranking_by_id(Request $request){
+            $page = $request->query('p');
+            $limit = $request->query('l');
+            $query = $request->query('q');
+            $filter = $request->query('f');
+            $user_id = $request->query('u');
+            $rank_code = $request->query('rc');
+            return $user_id;
+
+            if(empty($user_id)){
+                $response = [
+                    'result' => false,
+                    'status' => 'warning',
+                    'title' => 'Oppss!',
+                    'message' => "Invalid request. Please login." ,
+                ];
+                return response($response,200);
+            }
+
+            $user_data = User::where('code',$user_id)->first(); // fetch data from users table
+
+            $dataList =  SalesDailyOutAnnualSalesRanking::
+            join('ref_sub_sections','sales_daily_out_annual_sales_rankings.ranker_code','ref_sub_sections.code')
+            ->get(['sales_daily_out_annual_sales_rankings.*','ref_sub_sections.description'])
+            ->paginate($limit);
+
+            return $dataList;
+    }
+
 }

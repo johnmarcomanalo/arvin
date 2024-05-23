@@ -20,9 +20,10 @@ const styleSheet = {
 };
 
 const InputField = (props) => {
+  const { alignment = "left", ...param } = props;
   return (
     <div>
-      <Typography sx={styleSheet.label}>
+      <Typography sx={styleSheet.label} align={alignment}>
         {props.label}
         {props.required ? (
           <span style={{ color: configure.denied_color, fontSize: 15 }}>*</span>

@@ -15,12 +15,11 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { styled, useTheme } from "@mui/material/styles";
 import * as React from "react";
-import { Outlet } from "react-router-dom";
-import configure from "../../configure/configure.json";
+import { Outlet, useNavigate } from "react-router-dom";
 import Modal from "../../../components/modal/Modal";
-import RequestsForm from "./components/RequestForm";
+import configure from "../../configure/configure.json";
 import NavigationHooks from "../hooks/NavigationHooks";
-import Link from "@mui/material/Link";
+import RequestsForm from "./components/RequestForm";
 const drawerWidth = 250;
 const ListItemTxt = styled(ListItemText)(({ theme }) => ({
   color: configure.primary_color,
@@ -72,6 +71,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 export default function Navigation(props) {
   const { ...navigation_param } = NavigationHooks(props);
+  const navigate = useNavigate();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [expanded, setExpanded] = React.useState(false);
@@ -103,6 +103,13 @@ export default function Navigation(props) {
   };
   const onClickSelectRequest = () => {
     setRequestList(!requestlist);
+  };
+  const onClickLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
   };
   const modulesAccordion = (modules) => {
     try {
@@ -208,6 +215,7 @@ export default function Navigation(props) {
       console.log(error);
     }
   };
+
   return (
     <Box sx={{ display: "flex" }}>
       <Modal
@@ -332,6 +340,16 @@ export default function Navigation(props) {
             </List>
           </Collapse>
           {modulesAccordion(configure.modules)}
+          <Divider />
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => {
+                onClickLogout();
+              }}
+            >
+              <ListItemText primary={"Logout"} />
+            </ListItemButton>
+          </ListItem>
         </List>
       </Drawer>
       <Main open={open}>

@@ -13,7 +13,6 @@ import { Constants } from "../../../../../../reducer/Contants";
 const formName = "UpdateAnnualSettingSalesRankingPlacement";
 const submit = async (values, dispatch, props) => {
   try {
-    console.log(values);
     const res = await dispatch(putAnnualSettingSalesRanking(values));
     swal(res.data.title, res.data.message, res.data.status);
     reset();

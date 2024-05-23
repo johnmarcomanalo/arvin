@@ -1,10 +1,10 @@
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import React, { lazy, Suspense } from "react";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import "./App.css";
-import Loader from "./components/loading/Loading";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Cookies from "universal-cookie";
+import "./App.css";
 import configure from "./apps/configure/configure.json";
+import Loader from "./components/loading/Loading";
 const IndexHome = lazy(() => import("./apps/aim/home/pages/IndexHome"));
 const Navigation = lazy(() => import("./apps/navigation/pages/Navigation"));
 const CostingItemList = lazy(() =>
@@ -32,6 +32,7 @@ const IndexAnnualSettingSalesRanking = lazy(() =>
 );
 
 const IndexLogin = lazy(() => import("./apps/auth/login/pages/IndexLogin"));
+const NoMatch = lazy(() => import("./apps/aim/home/pages/NoMatch"));
 const theme = createTheme({
   typography: {
     fontFamily: "Poppins, sans-serif",
@@ -46,7 +47,14 @@ const theme = createTheme({
   },
 });
 const cookies = new Cookies();
-const token = cookies.get("jwt_authorization");
+const token = localStorage.getItem("token");
+const account_details = localStorage.getItem("account_details");
+const RequireAuth = ({ children }) => {
+  if (!token || !account_details) {
+    return <Navigate to="/login" />;
+  }
+  return children;
+};
 function App() {
   return (
     <div className="App">
@@ -54,30 +62,42 @@ function App() {
       <ThemeProvider theme={theme}>
         <Suspense fallback={<div>Loading</div>}>
           <Routes>
-            <Route path="/" element={<Navigation />}>
-              <Route path="/" element={<IndexHome />} />
-              <Route path="/login" element={<IndexLogin />} />
-              <Route
-                path="/Modules/Costing/itemlist"
-                element={<CostingItemList />}
-              />
-              <Route
-                path="/Modules/SalesDailyOut/AnnualSettingSale"
-                element={<IndexAnnualQuotation />}
-              />
-              <Route
-                path="/Modules/SalesDailyOut/DailySales"
-                element={<IndexSalesDailyOut />}
-              />
-              <Route
-                path="/Modules/SalesDailyOut/AnnualSalesRanking"
-                element={<IndexAnnualSalesRanking />}
-              />
-              <Route
-                path="/Modules/SalesDailyOut/AnnualSettingSalesRanking"
-                element={<IndexAnnualSettingSalesRanking />}
-              />
-            </Route>
+            <Route path="/login" element={<IndexLogin />} />
+            {typeof token !== "undefined" &&
+              typeof account_details !== "undefined" && (
+                <Route
+                  path="/"
+                  element={
+                    <RequireAuth>
+                      <Navigation />
+                    </RequireAuth>
+                  }
+                >
+                  <Route path="/" element={<IndexHome />} />
+                  <Route
+                    path="/Modules/Costing/itemlist"
+                    element={<CostingItemList />}
+                  />
+                  <Route
+                    path="/Modules/SalesDailyOut/AnnualSettingSale"
+                    element={<IndexAnnualQuotation />}
+                  />
+                  <Route
+                    exact
+                    path="/Modules/SalesDailyOut/DailySales"
+                    element={<IndexSalesDailyOut />}
+                  />
+                  <Route
+                    path="/Modules/SalesDailyOut/AnnualSalesRanking"
+                    element={<IndexAnnualSalesRanking />}
+                  />
+                  <Route
+                    path="/Modules/SalesDailyOut/AnnualSettingSalesRanking"
+                    element={<IndexAnnualSettingSalesRanking />}
+                  />
+                </Route>
+              )}
+            <Route element={<NoMatch />} path="*" />
           </Routes>
         </Suspense>
       </ThemeProvider>

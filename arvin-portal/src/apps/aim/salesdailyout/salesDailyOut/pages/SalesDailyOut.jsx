@@ -126,7 +126,7 @@ let DailyQuota = (props) => {
             title={"Day"}
             icon_color={configure.primary_color}
             icon_bg_color={"white"}
-            subtitle={"FINAL MTD"}
+            subtitle={"FINAL YTD"}
             value={
               typeof final_mtd_data !== "undefined"
                 ? parseFloat(final_mtd_data).toFixed(2)
@@ -222,8 +222,8 @@ let DailyQuota = (props) => {
             icon_bg_color={"white"}
             subtitle={"TOTAL PERCENT TARGET"}
             value={
-              typeof report_data?.total_percentage_daily_target !== "undefined"
-                ? report_data?.total_percentage_daily_target
+              typeof present_mtd_data?.mtdFinal !== "undefined"
+                ? present_mtd_data?.mtdFinal
                 : 0
             }
             subvalue={"this is sub value"}
