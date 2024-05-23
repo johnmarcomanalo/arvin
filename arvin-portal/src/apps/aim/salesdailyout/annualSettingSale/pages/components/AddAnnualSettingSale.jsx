@@ -65,8 +65,8 @@ let AddAnnualSettingSale = (props) => {
     change(formName, "monthly_sales_target", monthly_sales_target)
   );
   props.dispatch(change(formName, "daily_sales_target", daily_sales_target));
-  props.dispatch(change(formName, "added_by", account_details?.code));
-  props.dispatch(change(formName, "modified_by", account_details?.code));
+  props.dispatch(change(formName, "added_by", 1));
+  props.dispatch(change(formName, "modified_by", 1));
   return (
     <React.Fragment>
       <form onSubmit={props.handleSubmit}>

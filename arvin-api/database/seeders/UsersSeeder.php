@@ -34,35 +34,47 @@ class UsersSeeder extends Seeder
             // 'added_by' => env('DEFAULT_USER'),
             // 'modified_by' => env('DEFAULT_USER')]
 
-            [
-            'code'=> '3',
-            'username'=> 'test_cagayan',
-            'first_name' => 'John',
-            'last_name' => 'Cagayan',
-            'device_password' => '',
-            'subsection_code' => '30',
-            'password' => bcrypt("welcome123"),
-            'added_by' => env('DEFAULT_USER'),
-            'modified_by' => env('DEFAULT_USER')],
+            // [
+            // 'code'=> '3',
+            // 'username'=> 'test_cagayan',
+            // 'first_name' => 'John',
+            // 'last_name' => 'Cagayan',
+            // 'device_password' => '',
+            // 'subsection_code' => '30',
+            // 'password' => bcrypt("welcome123"),
+            // 'added_by' => env('DEFAULT_USER'),
+            // 'modified_by' => env('DEFAULT_USER')],
+
+            // [
+            // 'code'=> '4',
+            // 'username'=> 'test_cebu',
+            // 'first_name' => 'John',
+            // 'last_name' => 'Cebu',
+            // 'device_password' => '',
+            // 'subsection_code' => '31',
+            // 'password' => bcrypt("welcome123"),
+            // 'added_by' => env('DEFAULT_USER'),
+            // 'modified_by' => env('DEFAULT_USER')],
+
+            // [
+            // 'code'=> '5',
+            // 'username'=> 'test_davao',
+            // 'first_name' => 'John',
+            // 'last_name' => 'Davao',
+            // 'device_password' => '',
+            // 'subsection_code' => '32',
+            // 'password' => bcrypt("welcome123"),
+            // 'added_by' => env('DEFAULT_USER'),
+            // 'modified_by' => env('DEFAULT_USER')]
+
 
             [
-            'code'=> '4',
-            'username'=> 'test_cebu',
+            'code'=> '6',
+            'username'=> 'test_bataan',
             'first_name' => 'John',
-            'last_name' => 'Cebu',
+            'last_name' => 'Bataan',
             'device_password' => '',
-            'subsection_code' => '31',
-            'password' => bcrypt("welcome123"),
-            'added_by' => env('DEFAULT_USER'),
-            'modified_by' => env('DEFAULT_USER')],
-
-            [
-            'code'=> '5',
-            'username'=> 'test_davao',
-            'first_name' => 'John',
-            'last_name' => 'Davao',
-            'device_password' => '',
-            'subsection_code' => '32',
+            'subsection_code' => '23',
             'password' => bcrypt("welcome123"),
             'added_by' => env('DEFAULT_USER'),
             'modified_by' => env('DEFAULT_USER')]
