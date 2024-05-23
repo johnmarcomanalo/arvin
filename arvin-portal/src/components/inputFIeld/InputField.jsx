@@ -20,7 +20,7 @@ const styleSheet = {
 };
 
 const InputField = (props) => {
-  const { alignment = "center", ...param } = props;
+  const { alignment = "left", ...param } = props;
   return (
     <div>
       <Typography sx={styleSheet.label} align={alignment}>
