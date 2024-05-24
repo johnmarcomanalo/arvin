@@ -167,10 +167,10 @@ export default function AnnualSalesRanking(props) {
               <Select
                 labelId="demo-select-small-label"
                 id="demo-select-small"
-                value={salesDailyOutComponentAnnualSettingSale.filterQuery}
+                value={salesDailyOutComponentAnnualSalesRanking.filterQuery}
                 label="Filter"
                 onChange={
-                  salesDailyOutComponentAnnualSettingSale.onChangeFilter
+                  salesDailyOutComponentAnnualSalesRanking.onChangeFilter
                 }
               >
                 <MenuItem value="">
