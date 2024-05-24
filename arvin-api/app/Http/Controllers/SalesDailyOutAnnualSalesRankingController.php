@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\SalesDailyOutAnnualSalesRanking;
 use App\Models\RefMonths;
+use App\Models\User;
 use App\Models\RefSalesRanking;
+use App\Models\RefSalesRankingPlacements;
 use App\Models\SalesDailyOutAnnualSalesRankingDetails;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
@@ -100,40 +102,40 @@ class SalesDailyOutAnnualSalesRankingController extends Controller
      */
     public function show($id)
     {
-        $dataList =  SalesDailyOutAnnualSalesRanking::
-        join('ref_sub_sections','sales_daily_out_annual_sales_rankings.ranker_code','ref_sub_sections.code')
-        ->get(['sales_daily_out_annual_sales_rankings.*','ref_sub_sections.description']);
-        $reference_sales_ranking_data =  RefSalesRanking::whereCode($id)->first();
-        if(count($dataList) > 0){
-            foreach ($dataList as $data_value) {
-                $data =  SalesDailyOutAnnualSalesRankingDetails::join('ref_sales_ranking_placements','sales_daily_out_annual_sales_ranking_details.ref_sales_ranking_placement_code','ref_sales_ranking_placements.code')
-                ->where('sales_daily_out_annual_sales_rankings_code',$data_value['code'])->get(['ref_sales_ranking_placements.value','sales_daily_out_annual_sales_ranking_details.*']);
-                $data_value['details'] = $data;
-            }   
-            $response = [
-                'rank_code' => $reference_sales_ranking_data['code'],
-                'target_point' => $reference_sales_ranking_data['value'],
-                'dataList' => $dataList,
-                'dataListCount' => count($dataList),
-                'result'=>True,
-                'title'=>'Success',
-                'status'=>'success',
-                'message'=> 'Generated succesfully',
-            ];
-        return Crypt::encryptString(json_encode($response));
-        }else{
-            $response = [
-                'rank_code' => $reference_sales_ranking_data['code'],
-                'target_point' => $reference_sales_ranking_data['value'],
-                'dataList' => [],
-                'dataListCount' => 0,
-                'result'=>True,
-                'title'=>'Info',
-                'status'=>'info',
-                'message'=> 'No rankers found, please add ranker.',
-            ];
-        return Crypt::encryptString(json_encode($response));
-        }
+        // $dataList =  SalesDailyOutAnnualSalesRanking::
+        // join('ref_sub_sections','sales_daily_out_annual_sales_rankings.ranker_code','ref_sub_sections.code')
+        // ->get(['sales_daily_out_annual_sales_rankings.*','ref_sub_sections.description']);
+        // $reference_sales_ranking_data =  RefSalesRanking::whereCode($id)->first();
+        // if(count($dataList) > 0){
+        //     foreach ($dataList as $data_value) {
+        //         $data =  SalesDailyOutAnnualSalesRankingDetails::join('ref_sales_ranking_placements','sales_daily_out_annual_sales_ranking_details.ref_sales_ranking_placement_code','ref_sales_ranking_placements.code')
+        //         ->where('sales_daily_out_annual_sales_rankings_code',$data_value['code'])->get(['ref_sales_ranking_placements.value','sales_daily_out_annual_sales_ranking_details.*']);
+        //         $data_value['details'] = $data;
+        //     }   
+        //     $response = [
+        //         'rank_code' => $reference_sales_ranking_data['code'],
+        //         'target_point' => $reference_sales_ranking_data['value'],
+        //         'dataList' => $dataList,
+        //         'dataListCount' => count($dataList),
+        //         'result'=>True,
+        //         'title'=>'Success',
+        //         'status'=>'success',
+        //         'message'=> 'Generated succesfully',
+        //     ];
+        // return Crypt::encryptString(json_encode($response));
+        // }else{
+        //     $response = [
+        //         'rank_code' => $reference_sales_ranking_data['code'],
+        //         'target_point' => $reference_sales_ranking_data['value'],
+        //         'dataList' => [],
+        //         'dataListCount' => 0,
+        //         'result'=>True,
+        //         'title'=>'Info',
+        //         'status'=>'info',
+        //         'message'=> 'No rankers found, please add ranker.',
+        //     ];
+        // return Crypt::encryptString(json_encode($response));
+        // }
     }
 
     /**
@@ -162,12 +164,10 @@ class SalesDailyOutAnnualSalesRankingController extends Controller
     public function get_sales_ranking_by_id(Request $request){
             $page = $request->query('p');
             $limit = $request->query('l');
-            $query = $request->query('q');
+            $search = $request->query('q');
             $filter = $request->query('f');
-            $user_id = $request->query('u');
+            $user_id = $request->query('uid');
             $rank_code = $request->query('rc');
-            return $user_id;
-
             if(empty($user_id)){
                 $response = [
                     'result' => false,
@@ -180,12 +180,58 @@ class SalesDailyOutAnnualSalesRankingController extends Controller
 
             $user_data = User::where('code',$user_id)->first(); // fetch data from users table
 
-            $dataList =  SalesDailyOutAnnualSalesRanking::
-            join('ref_sub_sections','sales_daily_out_annual_sales_rankings.ranker_code','ref_sub_sections.code')
-            ->get(['sales_daily_out_annual_sales_rankings.*','ref_sub_sections.description'])
-            ->paginate($limit);
 
-            return $dataList;
+
+            $dataListQuery = SalesDailyOutAnnualSalesRanking::join('ref_sub_sections', 'sales_daily_out_annual_sales_rankings.ranker_code', '=', 'ref_sub_sections.code')
+            ->select('sales_daily_out_annual_sales_rankings.*', 'ref_sub_sections.description');
+
+            if (isset($search)) {
+                $dataListQuery->where('ref_sub_sections.description', 'like', '%' . $search . '%');
+            }
+            $dataList = $dataListQuery->paginate($limit);
+
+            $reference_sales_ranking_data =  RefSalesRanking::whereCode($rank_code)->first();
+            $target_point = $reference_sales_ranking_data['value'];
+          
+            $total_data_list = $dataList->total();
+            $data_list = $dataList->items();
+             if($total_data_list > 0){
+                 foreach ($data_list as $data_value) {
+                    $query = SalesDailyOutAnnualSalesRankingDetails::join('ref_sales_ranking_placements', 'sales_daily_out_annual_sales_ranking_details.ref_sales_ranking_placement_code', '=', 'ref_sales_ranking_placements.code')
+                        ->where('sales_daily_out_annual_sales_rankings_code', $data_value['code']);
+                    if (isset($filter)) {
+                        $query->where('ref_month_code', $filter);
+                    }
+                    $data = $query->get(['ref_sales_ranking_placements.value', 'sales_daily_out_annual_sales_ranking_details.*']);
+                    $data_value['details'] = $data;
+                }
+            if (isset($filter)) {
+            $target_point =  $reference_sales_ranking_data['value'] / 12;
+            }
+            $response = [
+                'rank_code' => $reference_sales_ranking_data['code'],
+                'target_point' => $target_point,
+                'dataList' => $data_list,
+                'dataListCount' => $total_data_list,
+                'result'=>True,
+                'title'=>'Success',
+                'status'=>'success',
+                'message'=> 'Generated succesfully',
+            ];
+            return Crypt::encryptString(json_encode($response));
+            }else{
+                $response = [
+                    'rank_code' => $reference_sales_ranking_data['code'],
+                    'target_point' => $target_point,
+                    'dataList' => [],
+                    'dataListCount' => 0,
+                    'result'=>True,
+                    'title'=>'Info',
+                    'status'=>'info',
+                    'message'=> 'No rankers found, please add ranker.',
+                ];
+            return Crypt::encryptString(json_encode($response));
+            }
     }
 
 }

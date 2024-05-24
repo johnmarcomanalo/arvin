@@ -1,4 +1,4 @@
-import { get, post, postNoToken } from "../../../../../api/api";
+import swal from "sweetalert";
 import { Constants } from "../../../../../reducer/Contants";
 import {
   GetSpecificDefaultServices,
@@ -6,7 +6,6 @@ import {
   GetDefaultServices,
   GetMultiSpecificDefaultServices,
 } from "../../../../../services/apiService";
-import { AuthGetReferences } from "../../../reference/services/referenceServices";
 import { decryptaes } from "../../../../../utils/LightSecurity";
 
 export const getAnnualSalesRanking = (formValues) => async (dispatch) => {
@@ -28,27 +27,28 @@ export const getAnnualSalesRanking = (formValues) => async (dispatch) => {
         formValues.f +
         "&uid=" +
         formValues.u +
-        "&rc" +
+        "&rc=" +
         formValues.rc
     );
-    // response.then((res) => {
-    //   dispatch({
-    //     type: Constants.ACTION_LOADING,
-    //     payload: {
-    //       loading: false,
-    //     },
-    //   });
-    //   let decrypted = decryptaes(res.data);
-    //   dispatch({
-    //     type: Constants.ACTION_SALES_DAILY_OUT,
-    //     payload: {
-    //       dataList: decrypted.dataList.data,
-    //       dataListCount: decrypted.dataList.total,
-    //       selected_code: decrypted.rank_code,
-    //       target_point: decrypted?.target_point,
-    //     },
-    //   });
-    // });
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      let decrypted = decryptaes(res.data);
+      dispatch({
+        type: Constants.ACTION_SALES_DAILY_OUT,
+        payload: {
+          dataList: decrypted.dataList,
+          dataListCount: decrypted.dataListCount,
+          selected_code: decrypted.rank_code,
+          target_point: decrypted?.target_point,
+        },
+      });
+      // swal(decrypted.title, decrypted.message, decrypted.status);
+    });
     return response;
   } catch (error) {
     console.log(error);

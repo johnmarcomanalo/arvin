@@ -36,17 +36,11 @@ const submit = async (values, dispatch, props) => {
     };
     const res = await dispatch(postCreateRankerAnnualSalesRanking(value));
     let decrypted = await decryptaes(res?.data);
-    const res2 = await dispatch(getAnnualSalesRanking(value));
-    let decrypted2 = await decryptaes(res2?.data);
     await dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {
         refresh: !props.refresh,
         addModal2: false,
-        dataList: decrypted2?.dataList,
-        dataListcount: decrypted2?.dataListCount,
-        selected_code: decrypted2.rank_code,
-        target_point: decrypted2?.target_point,
       },
     });
     await swal(decrypted.title, decrypted.message, decrypted.status);

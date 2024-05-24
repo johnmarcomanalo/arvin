@@ -22,7 +22,7 @@ import swal from "sweetalert";
 import RefSalesRankingHooks from "../../../../reference/hooks/RefSalesRankingHooks";
 import { decryptaes } from "../../../../../../utils/LightSecurity";
 const formName = "GenerateAnnualSalesRanking";
-let GenerateAnnualSalesRanking = (props) => {
+let FilterAnnualSettingSale = (props) => {
   const { ...refSalesRanking } = RefSalesRankingHooks();
   const { ...salesDailyOutComponentAnnualSalesRanking } =
     SalesDailyOutComponentAnnualSalesRankingHooks();
@@ -30,11 +30,24 @@ let GenerateAnnualSalesRanking = (props) => {
     salesDailyOutComponentAnnualSalesRanking.account_details;
   const submit = async (values, dispatch, props) => {
     try {
+      let data = {
+        p:
+          salesDailyOutComponentAnnualSalesRanking.page == null
+            ? 1
+            : salesDailyOutComponentAnnualSalesRanking.page,
+        q: salesDailyOutComponentAnnualSalesRanking.search,
+        l: salesDailyOutComponentAnnualSalesRanking.rowsPerPage,
+        f: salesDailyOutComponentAnnualSalesRanking.filterQuery,
+        u: account_details.code,
+        rc: values?.rank_code,
+      };
+      const res = await dispatch(getAnnualSalesRanking(data));
+      let decrypted = decryptaes(res.data);
+      swal(decrypted.title, decrypted.message, decrypted.status);
+      reset();
       await dispatch({
         type: Constants.ACTION_SALES_DAILY_OUT,
         payload: {
-          selected_code: values?.rank_code,
-          refresh: !props.refresh,
           addModal: false,
         },
       });
@@ -90,7 +103,7 @@ let GenerateAnnualSalesRanking = (props) => {
 
 const ReduxFormComponent = reduxForm({
   form: formName,
-})(GenerateAnnualSalesRanking);
+})(FilterAnnualSettingSale);
 const selector = formValueSelector(formName);
 export default connect((state) => {
   const refresh = state.SalesDailyOutReducer.refresh;

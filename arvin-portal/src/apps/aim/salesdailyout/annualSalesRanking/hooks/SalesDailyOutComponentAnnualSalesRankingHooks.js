@@ -162,6 +162,7 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
       rc: selected_code,
     });
   };
+
   const handleChangeRowsPerPage = (event) => {
     dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
@@ -188,7 +189,18 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
       rc: selected_code,
     });
   };
-
+  const onChangeFilter = (event) => {
+    // SEARCH DATA
+    const filter = event.target.value;
+    setSearchParams({
+      q: search,
+      p: "1",
+      l: String(rowsPerPage),
+      f: filter,
+      u: account_details?.code,
+      rc: selected_code,
+    });
+  };
   const getListParam = () => {
     const data = {
       p: page == null ? 1 : page,
@@ -201,20 +213,22 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
     return data;
   };
 
-  const GenerateAnnualSalesRanking = async (id) => {
+  const GenerateAnnualSalesRanking = async () => {
     try {
+      console.log("trigger");
       const data = getListParam();
-      data.rc = id;
-      // await dispatch(getRefSalesRanking(data));
+      await dispatch(getAnnualSalesRanking(data));
     } catch (error) {
       console.error(error);
     }
   };
 
   React.useEffect(() => {
-    // GetAnnualSettingSalesRankingList();
+    if (selected_code !== null) {
+      GenerateAnnualSalesRanking();
+    }
     return () => cancelRequest();
-  }, [refresh, filterQuery, search]);
+  }, [refresh, filterQuery, search, selected_code]);
 
   const onClickSelectedDataList = async (data, modal) => {
     await dispatch(getReferenceSalesRankingPlacements(data.rank_code));
@@ -246,7 +260,6 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
     addModal4,
     columns2,
     filterQuery,
-    filterQuery,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,
@@ -260,6 +273,7 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
     onClickCloseAddModal3,
     onClickCloseAddModal4,
     onClickRefreshRanking,
+    onChangeFilter,
   };
 };
 
