@@ -1,31 +1,33 @@
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import LaunchIcon from "@mui/icons-material/Launch";
+import UpgradeIcon from "@mui/icons-material/Upgrade";
 import { Grid, Stack, Tooltip, useMediaQuery } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import * as React from "react";
-import ButtonComponent from "../../../../../components/button/Button";
-import SearchField from "../../../../../components/inputFIeld/SearchField";
-// import Table from "../../../../../components/table/Table";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Paper from "@mui/material/Paper";
+import Select from "@mui/material/Select";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
-import LaunchIcon from "@mui/icons-material/Launch";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import { useTheme } from "@mui/material/styles";
+import * as React from "react";
+import ButtonComponent from "../../../../../components/button/Button";
+import SearchField from "../../../../../components/inputFIeld/SearchField";
+import Modal from "../../../../../components/modal/Modal";
+import Page from "../../../../../components/pagination/Pagination";
+import Road from "../../../../../media/backgrounds/road.jpg";
+import Medal from "../../../../../media/icons/modal.gif";
+import TruckGIF from "../../../../../media/icons/truck.gif";
 import configure from "../../../../configure/configure.json";
 import SalesDailyOutComponentAnnualSalesRankingHooks from "../hooks/SalesDailyOutComponentAnnualSalesRankingHooks";
-import Modal from "../../../../../components/modal/Modal";
-import AddAnnualSettingSale from "./components/GenerateAnnualSalesRanking";
-import Page from "../../../../../components/pagination/Pagination";
 import AddAnnualSalesRanker from "./components/AddAnnualSalesRanker";
-import UpgradeIcon from "@mui/icons-material/Upgrade";
+import AddAnnualSettingSale from "./components/GenerateAnnualSalesRanking";
 import UpdateMonthlyRank from "./components/UpdateMonthlyRank";
 import ViewSelectedRanker from "./components/ViewSelectedRanker";
-import TruckGIF from "../../../../../media/icons/truck.gif";
-import Road from "../../../../../media/backgrounds/road.jpg";
-import FinishLine from "../../../../../media/icons/finish line.gif";
-import Medal from "../../../../../media/icons/modal.gif";
+import moment from "moment";
 export default function AnnualSalesRanking(props) {
   const { ...salesDailyOutComponentAnnualSettingSale } =
     SalesDailyOutComponentAnnualSalesRankingHooks(props);
@@ -148,6 +150,26 @@ export default function AnnualSalesRanking(props) {
               value={salesDailyOutComponentAnnualSettingSale.search}
               onChange={salesDailyOutComponentAnnualSettingSale.onChangeSearch}
             />
+            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+              <InputLabel id="demo-select-small-label">Filter</InputLabel>
+              <Select
+                labelId="demo-select-small-label"
+                id="demo-select-small"
+                value={salesDailyOutComponentAnnualSettingSale.filterQuery}
+                label="Filter"
+                onChange={
+                  salesDailyOutComponentAnnualSettingSale.onChangeFilter
+                }
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {configure.months.map((month) => {
+                  let code = moment(month.description, "MMMM").format("MM");
+                  return <MenuItem value={code}>{month.description}</MenuItem>;
+                })}
+              </Select>
+            </FormControl>
           </Stack>
         </Grid>
         <Grid item xs={6} sm={6} md={6} lg={6}>
@@ -212,7 +234,7 @@ export default function AnnualSalesRanking(props) {
                       style={{
                         backgroundColor: configure.primary_table_color,
                         color: configure.primary_table_text_color,
-                        textAlign: "center",
+                        textAlign: "left",
                       }}
                     >
                       Point Details
@@ -232,13 +254,13 @@ export default function AnnualSalesRanking(props) {
                   {sortedDataList.map((data, index) => {
                     let current_point = 0;
                     try {
+                      console.log(data);
                       let point_details = data?.details;
                       return (
                         <TableRow
                           key={data.code}
                           sx={{
                             "&:last-child td, &:last-child th": { border: 0 },
-                            cursor: "pointer",
                           }}
                         >
                           <TableCell>
@@ -293,6 +315,7 @@ export default function AnnualSalesRanking(props) {
                                 backgroundImage: `url(${Road})`, // Corrected line
                                 backgroundSize: "contain", // Ensure the image covers the div
                                 backgroundRepeat: "repeat", // Prevent the image from repeating
+                                minHeight: 50,
                               }}
                             >
                               {Array.isArray(point_details) &&
@@ -314,21 +337,6 @@ export default function AnnualSalesRanking(props) {
                                       <p style={{ visibility: "hidden" }}>
                                         Null
                                       </p>
-                                      {/* {index === point_details.length - 1 &&
-                                        (current_point > target_point ? (
-                                          <img
-                                            src={TruckGIF}
-                                            alt="Truck"
-                                            style={{
-                                              width: "auto",
-                                              height: 25,
-                                              position: "absolute",
-                                              top: 8,
-                                              right: -30,
-                                            }}
-                                          />
-                                        ) : null)} */}
-
                                       {index === point_details.length - 1 &&
                                         parseInt(current_point) <
                                           parseInt(target_point) && (
@@ -349,7 +357,7 @@ export default function AnnualSalesRanking(props) {
                                     </div>
                                   );
                                 })}
-                              {current_point == target_point ? (
+                              {current_point >= target_point ? (
                                 <img
                                   src={Medal}
                                   alt="Finish Line"

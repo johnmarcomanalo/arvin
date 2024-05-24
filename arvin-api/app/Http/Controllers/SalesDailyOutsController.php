@@ -269,7 +269,6 @@ class SalesDailyOutsController extends Controller
                 'status'=>'success',
                 'message'=> 'Authentication successful.',
             ];
-            
         return Crypt::encryptString(json_encode($response));
         }
 

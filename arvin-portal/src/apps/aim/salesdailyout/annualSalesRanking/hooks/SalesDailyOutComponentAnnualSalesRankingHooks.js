@@ -6,7 +6,10 @@ import { encryptLocal } from "../../../../../utils/Encryption";
 import { useDebounce } from "../../../../../utils/HelperUtils";
 import moment from "moment";
 import { getRefSalesRanking } from "../../../reference/actions/ReferenceActions";
-import { getMonthlyAndDailyQoutaByTargetAnnualSales } from "../actions/SalesDailyOutComponentAnnualSalesRankingActions";
+import {
+  getAnnualSalesRanking,
+  getMonthlyAndDailyQoutaByTargetAnnualSales,
+} from "../actions/SalesDailyOutComponentAnnualSalesRankingActions";
 import { cancelRequest } from "../../../../../api/api";
 import { getReferenceSalesRankingPlacements } from "../../annualSettingSalesRanking/actions/SalesDailyOutComponentAnnualSettingSalesRankingActions";
 const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
@@ -16,7 +19,7 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
   const addModal2 = useSelector(
     (state) => state.SalesDailyOutReducer.addModal2
   );
-  const addModal3 = useSelector(   
+  const addModal3 = useSelector(
     (state) => state.SalesDailyOutReducer.addModal3
   );
   const addModal4 = useSelector(
@@ -140,6 +143,7 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
       rc: selected_code,
     });
   };
+
   const handleChangeRowsPerPage = (event) => {
     dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
@@ -166,7 +170,18 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
       rc: selected_code,
     });
   };
-
+  const onChangeFilter = (event) => {
+    // SEARCH DATA
+    const filter = event.target.value;
+    setSearchParams({
+      q: search,
+      p: "1",
+      l: String(rowsPerPage),
+      f: filter,
+      u: account_details?.code,
+      rc: selected_code,
+    });
+  };
   const getListParam = () => {
     const data = {
       p: page == null ? 1 : page,
@@ -179,20 +194,22 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
     return data;
   };
 
-  const GenerateAnnualSalesRanking = async (id) => {
+  const GenerateAnnualSalesRanking = async () => {
     try {
+      console.log("trigger");
       const data = getListParam();
-      data.rc = id;
-      // await dispatch(getRefSalesRanking(data));
+      await dispatch(getAnnualSalesRanking(data));
     } catch (error) {
       console.error(error);
     }
   };
 
   React.useEffect(() => {
-    // GetAnnualSettingSalesRankingList();
+    if (selected_code !== null) {
+      GenerateAnnualSalesRanking();
+    }
     return () => cancelRequest();
-  }, [refresh, filterQuery, search]);
+  }, [refresh, filterQuery, search, selected_code]);
 
   const onClickSelectedDataList = async (data, modal) => {
     await dispatch(getReferenceSalesRankingPlacements(data.rank_code));
@@ -224,7 +241,6 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
     addModal4,
     columns2,
     filterQuery,
-    filterQuery,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,
@@ -237,6 +253,7 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
     onClickSelectedDataList,
     onClickCloseAddModal3,
     onClickCloseAddModal4,
+    onChangeFilter,
   };
 };
 
