@@ -135,20 +135,10 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
     });
   };
   const onClickRefreshRanking = async () => {
-    let data = {
-      rank_code: selected_code,
-    };
-    console.log(data);
-    const res2 = await dispatch(getAnnualSalesRanking(data));
-    let decrypted2 = await decryptaes(res2?.data);
     await dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {
-        refresh: !props.refresh,
-        dataList: decrypted2?.dataList,
-        dataListcount: decrypted2?.dataListCount,
-        selected_code: decrypted2.rank_code,
-        target_point: decrypted2?.target_point,
+        refresh: !refresh,
       },
     });
   };
@@ -215,7 +205,6 @@ const SalesDailyOutComponentAnnualSalesRankingHooks = (props) => {
 
   const GenerateAnnualSalesRanking = async () => {
     try {
-      console.log("trigger");
       const data = getListParam();
       await dispatch(getAnnualSalesRanking(data));
     } catch (error) {
