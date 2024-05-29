@@ -16,6 +16,7 @@ const NavigationHooks = (props) => {
   const account_details = useSelector(
     (state) => state.AuthenticationReducer.account_details
   );
+  const access = useSelector((state) => state.AuthenticationReducer.access);
   const onOpenRequestModal = (type) => {
     dispatch({
       type: Constants.ACTION_NAVIGATION,
@@ -47,6 +48,7 @@ const NavigationHooks = (props) => {
   return {
     request_modal,
     request_type,
+    access,
     onOpenRequestModal,
     onCloseRequestModal,
   };

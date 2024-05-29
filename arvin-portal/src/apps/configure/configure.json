@@ -110,31 +110,31 @@
   "modules": [
     {
       "code": "1",
-      "modules_code": "100",
+      "module_code": "100",
       "description": "E-Costing",
       "link": "/Modules/ECosting"
     },
     {
       "code": "2",
-      "modules_code": "200",
+      "module_code": "200",
       "description": "Quotation",
       "link": "/Modules/Quotation"
     },
     {
       "code": "3",
-      "modules_code": "300",
+      "module_code": "300",
       "description": "Sales Daily Out",
       "link": "/Modules/SalesDailyOut"
     },
     {
       "code": "4",
-      "modules_code": "400",
+      "module_code": "400",
       "description": "Human Resource",
       "link": "/Modules/HumanResource"
     },
     {
       "code": "5",
-      "modules_code": "500",
+      "module_code": "500",
       "description": "Purchasing Request",
       "link": "/Modules/PurchasingRequest"
     }
@@ -142,28 +142,28 @@
   "component": [
     {
       "code": "1",
-      "modules_code": "300",
+      "module_code": "300",
       "component_code": "300201",
       "description": "Daily Sales",
       "link": "/Modules/SalesDailyOut/DailySales"
     },
     {
       "code": "2",
-      "modules_code": "300",
+      "module_code": "300",
       "component_code": "300202",
       "description": "Annual Settings Sale",
       "link": "/Modules/SalesDailyOut/AnnualSettingSale"
     },
     {
       "code": "3",
-      "modules_code": "300",
+      "module_code": "300",
       "component_code": "300203",
       "description": "Annual Sales Ranking",
       "link": "/Modules/SalesDailyOut/AnnualSalesRanking"
     },
     {
       "code": "4",
-      "modules_code": "300",
+      "module_code": "300",
       "component_code": "300204",
       "description": "Annual Settings Sales Ranking",
       "link": "/Modules/SalesDailyOut/AnnualSettingSalesRanking"
@@ -171,38 +171,38 @@
 
     {
       "code": "5",
-      "modules_code": "100",
+      "module_code": "100",
       "component_code": "100101",
       "description": "Costing",
       "link": "/Modules/SalesDailyOut/Component4"
     },
     {
       "code": "6",
-      "modules_code": "100",
+      "module_code": "100",
       "component_code": "100102",
       "description": "Item List",
       "link": "/Modules/SalesDailyOut/Component4"
     },
     {
       "code": "7",
-      "modules_code": "100",
+      "module_code": "100",
       "component_code": "100103",
       "description": "Trucking Matrix",
       "link": "/Modules/SalesDailyOut/Component4"
     }
   ],
-  "subcomponent": [
+  "sub_component": [
     {
       "code": "1",
       "component_code": "300301",
-      "subcomponent_code": "300301001",
+      "sub_component_code": "300301001",
       "description": "SubComponent 1",
       "link": "/Modules/SalesDailyOut/Component1/SubComponent1"
     },
     {
       "code": "2",
       "component_code": "300301",
-      "subcomponent_code": "300301002",
+      "sub_component_code": "300301002",
       "description": "SubComponent 2",
       "link": "/Modules/SalesDailyOut/Component1/SubComponent2"
     }

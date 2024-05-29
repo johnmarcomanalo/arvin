@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 use App\Models\User;
+use App\Models\UserAccessModuleRights;
+use App\Models\UserAccessComponentRights;
+use App\Models\UserAccessSubComponentRights;
 
 use Illuminate\Support\Facades\Crypt;
 
@@ -71,19 +74,43 @@ class AuthController extends Controller
         $token = $user->createToken('myapptoken')->plainTextToken;
         // $request->session()->regenerate();
         
+         $access = $this->get_user_access_right_by_id($user['code']);
 
         $response = [
             'user' => Crypt::encryptString(json_encode($user)),
+            'access' => $access,
             'token' => $token,
             'result' => true,
             'title'=>'Success',
             'status'=>'success',
             'message' => 'Successfully Logged In!',
         ];
-
         // AuditTrailController::do_audit_trail("Login",null,null,"Succesfully Logged In",$fields['username']);
-        
         return Crypt::encryptString(json_encode($response));
         // return response($response, 201);
+    }
+
+
+     public function get_user_access_right_by_id($user_id){
+
+        $user_access_module_rights = UserAccessModuleRights::join('ref_modules','user_access_module_rights.module_code','=','ref_modules.code')
+        ->where('user_id',$user_id) 
+        ->get(['user_access_module_rights.*','ref_modules.description','ref_modules.link']);
+        
+        $user_access_component_rights = UserAccessComponentRights::join('ref_components','user_access_component_rights.component_code','=','ref_components.code')
+        ->where('user_id',$user_id)
+        ->get(['user_access_component_rights.*','ref_components.description','ref_components.link']);
+        
+        
+        $user_access_sub_component_rights = UserAccessSubComponentRights::join('ref_sub_components','user_access_sub_component_rights.sub_component_code','=','ref_sub_components.code')
+        ->where('user_id',$user_id)
+        ->get(['user_access_sub_component_rights.*','ref_sub_components.description','ref_sub_components.link']);
+        
+        $response = [
+             'user_access_module_rights' => $user_access_module_rights,
+             'user_access_component_rights' => $user_access_component_rights,
+             'user_access_sub_component_rights' => $user_access_sub_component_rights,
+        ];
+        return Crypt::encryptString(json_encode($response));
     }
 }

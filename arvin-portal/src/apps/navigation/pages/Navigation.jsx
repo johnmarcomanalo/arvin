@@ -71,6 +71,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 export default function Navigation(props) {
   const { ...navigation_param } = NavigationHooks(props);
+  const access = navigation_param.access;
   const navigate = useNavigate();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -132,7 +133,7 @@ export default function Navigation(props) {
               unmountOnExit
             >
               <List component="div" disablePadding>
-                {componentsAccordion(configure.component, text)}
+                {componentsAccordion(access.user_access_component_rights, text)}
               </List>
             </Collapse>
           </React.Fragment>
@@ -147,11 +148,11 @@ export default function Navigation(props) {
   const componentsAccordion = (components, values) => {
     try {
       let component = components.map((text, index) => {
-        if (values.modules_code === text.modules_code) {
+        if (values.module_code === text.module_code) {
           const isOpen = clickedComponentIndex === index;
-          const hasSubcomponents = configure.subcomponent.some(
-            (subcomponent) =>
-              subcomponent.component_code === text.component_code
+          const hasSubcomponents = access.user_access_sub_component_rights.some(
+            (sub_component) =>
+              sub_component.component_code === text.component_code
           );
           return (
             <React.Fragment>
@@ -161,6 +162,7 @@ export default function Navigation(props) {
                     onClick={() => onClickSelectedComponent(index)}
                   >
                     <ListItemText primary={text.description} />
+                    {isOpen ? <ExpandLess /> : <ExpandMore />}{" "}
                   </ListItemButton>
                 ) : (
                   <ListItemButton href={text.link} underline="none">
@@ -178,7 +180,10 @@ export default function Navigation(props) {
                   unmountOnExit
                 >
                   <List component="div" disablePadding>
-                    {subcomponentsAccordion(configure.subcomponent, text)}
+                    {sub_componentsAccordion(
+                      access.user_access_sub_component_rights,
+                      text
+                    )}
                   </List>
                 </Collapse>
               )}
@@ -192,16 +197,14 @@ export default function Navigation(props) {
     }
   };
 
-  const subcomponentsAccordion = (subcomponents, values) => {
+  const sub_componentsAccordion = (sub_components, values) => {
     try {
-      let component = subcomponents.map((text, index) => {
+      let component = sub_components.map((text, index) => {
         if (values.component_code === text.component_code) {
           return (
             <React.Fragment>
               <ListItem disablePadding>
-                <ListItemButton
-                  onClick={() => onClickSelectedSubComponent(index)}
-                >
+                <ListItemButton href={text.link} underline="none">
                   <ListItemText primary={text.description} />
                 </ListItemButton>
               </ListItem>
@@ -274,7 +277,7 @@ export default function Navigation(props) {
         <Divider />
         <List>
           <ListItem disablePadding>
-            <ListItemButton>
+            <ListItemButton href={"/"} underline="none">
               <ListItemText primary={"Home"} />
             </ListItemButton>
           </ListItem>
@@ -339,7 +342,7 @@ export default function Navigation(props) {
               </ListItem>
             </List>
           </Collapse>
-          {modulesAccordion(configure.modules)}
+          {modulesAccordion(access?.user_access_module_rights)}
           <Divider />
           <ListItem disablePadding>
             <ListItemButton

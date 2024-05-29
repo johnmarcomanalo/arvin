@@ -35,11 +35,13 @@ const submit = async (values, dispatch, props, navigate) => {
   if (decrypted.result === true) {
     localStorage.setItem("token", decrypted?.token);
     localStorage.setItem("account_details", decrypted?.user);
+    localStorage.setItem("access", decrypted?.access);
     dispatch({
       type: Constants.ACTION_AUTHENTICATION,
       payload: {
         token: decrypted?.token,
         account_details: decryptaes(decrypted?.user),
+        access: decryptaes(decrypted?.access),
       },
     });
     navigate("/");

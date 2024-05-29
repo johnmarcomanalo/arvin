@@ -1,34 +1,43 @@
 import { Grid, Stack } from "@mui/material";
+import moment from "moment";
 import * as React from "react";
-import { connect } from "react-redux";
-import { useDispatch, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
+import { Field, change, formValueSelector, reduxForm, reset } from "redux-form";
+import swal from "sweetalert";
 import ComboBox from "../../../../../../components/autoComplete/AutoComplete";
-import { Field, change, formValueSelector, reduxForm } from "redux-form";
+import ButtonComponent from "../../../../../../components/button/Button";
 import InputField from "../../../../../../components/inputFIeld/InputField";
 import InputYearPicker from "../../../../../../components/inputFIeld/InputYearPicker";
-import ButtonComponent from "../../../../../../components/button/Button";
+import { Constants } from "../../../../../../reducer/Contants";
 import configure from "../../../../../configure/configure.json";
-import RefCompaniesHooks from "../../../../reference/hooks/RefCompaniesHooks";
 import RefBusinessUnitsHooks from "../../../../reference/hooks/RefBusinessUnitsHooks";
-import RefTeamsHooks from "../../../../reference/hooks/RefTeamsHooks";
+import RefCompaniesHooks from "../../../../reference/hooks/RefCompaniesHooks";
 import RefDepartmentsHooks from "../../../../reference/hooks/RefDepartmentsHooks";
 import RefSectionsHooks from "../../../../reference/hooks/RefSectionsHooks";
 import RefSubSectionsHooks from "../../../../reference/hooks/RefSubSectionsHooks";
-import { Constants } from "../../../../../../reducer/Contants";
-import QuotationComponentAnnualQuotaHooks from "../../hooks/QuotationComponentAnnualQuotaHooks";
-import { postAnnualQouta } from "../../actions/QuotationComponentAnnualQuotaActions";
-import moment from "moment";
-const formName = "AddAnnualQuota";
+import RefTeamsHooks from "../../../../reference/hooks/RefTeamsHooks";
+import { postAnnualTargetSales } from "../../actions/SalesQuotaActions";
+import SalesDailyOutComponentAnnualSettingSaleHooks from "../../hooks/SalesQoutaHooks";
+const formName = "AddSaleQuota";
 const submit = async (values, dispatch, props) => {
   try {
-    values.target_year_quota = moment(values.target_year_quota).format("YYYY");
-    const res = await dispatch(postAnnualQouta(values));
+    values.year_sales_target = moment(values.year_sales_target).format("YYYY");
+    const res = await dispatch(postAnnualTargetSales(values));
+    swal(res.data.title, res.data.message, res.data.status);
+    reset();
+    await dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        refresh: !props.refresh,
+        addModal: false,
+      },
+    });
   } catch (error) {
     console.log(error);
   }
 };
 
-let AddAnnualQuota = (props) => {
+let AddSaleQuota = (props) => {
   const dispatch = useDispatch();
   const { ...refCompanies } = RefCompaniesHooks();
   const { ...refBusinessUnits } = RefBusinessUnitsHooks();
@@ -36,31 +45,34 @@ let AddAnnualQuota = (props) => {
   const { ...refDepartments } = RefDepartmentsHooks();
   const { ...refSections } = RefSectionsHooks();
   const { ...refSubSections } = RefSubSectionsHooks();
-  const { ...quotationComponentAnnualQuota } =
-    QuotationComponentAnnualQuotaHooks(props);
-  const account_details = quotationComponentAnnualQuota.account_details;
-  const target_annual_quota = useSelector(
-    (state) => state.QuotationReducer.target_annual_quota
-  );
-  const target_month_quota = useSelector(
-    (state) => state.QuotationReducer.target_month_quota
-  );
-  const target_day_quota = useSelector(
-    (state) => state.QuotationReducer.target_day_quota
-  );
+  const { ...salesDailyOutComponentAnnualSettingSale } =
+    SalesDailyOutComponentAnnualSettingSaleHooks(props);
 
-  props.dispatch(change(formName, "target_annual_quota", target_annual_quota));
-  props.dispatch(change(formName, "target_month_quota", target_month_quota));
-  props.dispatch(change(formName, "target_day_quota", target_day_quota));
-  props.dispatch(change(formName, "added_by", account_details?.code));
-  props.dispatch(change(formName, "modified_by", account_details?.code));
+  const annual_sales_target = useSelector(
+    (state) => state.SalesDailyOutReducer.annual_sales_target
+  );
+  const monthly_sales_target = useSelector(
+    (state) => state.SalesDailyOutReducer.monthly_sales_target
+  );
+  const daily_sales_target = useSelector(
+    (state) => state.SalesDailyOutReducer.daily_sales_target
+  );
+  const account_details =
+    salesDailyOutComponentAnnualSettingSale.account_details;
+  props.dispatch(change(formName, "annual_sales_target", annual_sales_target));
+  props.dispatch(
+    change(formName, "monthly_sales_target", monthly_sales_target)
+  );
+  props.dispatch(change(formName, "daily_sales_target", daily_sales_target));
+  props.dispatch(change(formName, "added_by", 1));
+  props.dispatch(change(formName, "modified_by", 1));
   return (
     <React.Fragment>
       <form onSubmit={props.handleSubmit}>
         {/* <CSRFToken /> */}
         <Grid container spacing={2}>
           <Grid container item xs={12} sm={12} md={12} lg={12}>
-            {/* <Grid item xs={12} md={12}>
+            <Grid item xs={12} md={12}>
               <Field
                 id="company"
                 name="company"
@@ -139,7 +151,7 @@ let AddAnnualQuota = (props) => {
                   }
                 }}
               />
-            </Grid> */}
+            </Grid>
             <Grid item xs={12} md={12}>
               <Field
                 id="department"
@@ -185,8 +197,8 @@ let AddAnnualQuota = (props) => {
             {refSubSections?.subsections.length > 0 ? (
               <Grid item xs={12} md={12}>
                 <Field
-                  id="subsection_code"
-                  name="subsection_code"
+                  id="subsection"
+                  name="subsection"
                   label="Sub-section"
                   options={refSubSections?.subsections}
                   getOptionLabel={(option) =>
@@ -194,14 +206,19 @@ let AddAnnualQuota = (props) => {
                   }
                   required={true}
                   component={ComboBox}
+                  onChangeHandle={(e, newValue) => {
+                    if (newValue?.description) {
+                      props.change("subsection_code", newValue.code);
+                    }
+                  }}
                 />
               </Grid>
             ) : null}
 
             <Grid item xs={12} md={12}>
               <Field
-                id="target_year_quota"
-                name="target_year_quota"
+                id="year_sales_target"
+                name="year_sales_target"
                 label="Select Year"
                 required={true}
                 component={InputYearPicker}
@@ -210,21 +227,21 @@ let AddAnnualQuota = (props) => {
             </Grid>
             <Grid item xs={12} md={12}>
               <Field
-                id="target_annual_quota"
-                name="target_annual_quota"
+                id="annual_sales_target"
+                name="annual_sales_target"
                 label="Target Annual Quota"
                 type="number"
                 required={true}
                 component={InputField}
                 onChange={
-                  quotationComponentAnnualQuota.GetMonthlyAndDailyQoutaByAnnualQouta
+                  salesDailyOutComponentAnnualSettingSale.GetMonthlyAndDailyQoutaByAnnualQouta
                 }
               />
             </Grid>
             <Grid item xs={12} md={12}>
               <Field
-                id="target_month_quota"
-                name="target_month_quota"
+                id="monthly_sales_target"
+                name="monthly_sales_target"
                 label="Target Month Quota"
                 type="number"
                 required={true}
@@ -234,8 +251,8 @@ let AddAnnualQuota = (props) => {
             </Grid>
             <Grid item xs={12} md={12}>
               <Field
-                id="target_day_quota"
-                name="target_day_quota"
+                id="daily_sales_target"
+                name="daily_sales_target"
                 label="Target Day Quota"
                 type="number"
                 required={true}
@@ -253,7 +270,7 @@ let AddAnnualQuota = (props) => {
             >
               <ButtonComponent
                 stx={configure.default_button}
-                iconType="submit"
+                iconType="submit1"
                 type="submit"
                 fullWidth={true}
                 children={"Add Quota"}
@@ -269,8 +286,9 @@ let AddAnnualQuota = (props) => {
 const ReduxFormComponent = reduxForm({
   form: formName,
   onSubmit: submit,
-})(AddAnnualQuota);
+})(AddSaleQuota);
 const selector = formValueSelector(formName);
 export default connect((state) => {
-  return {};
+  const refresh = state.SalesDailyOutReducer.refresh;
+  return { refresh };
 }, {})(ReduxFormComponent);

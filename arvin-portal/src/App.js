@@ -5,34 +5,31 @@ import Cookies from "universal-cookie";
 import "./App.css";
 import configure from "./apps/configure/configure.json";
 import Loader from "./components/loading/Loading";
-const IndexHome = lazy(() => import("./apps/aim/home/pages/IndexHome"));
+const IndexHome = lazy(() => import("./apps/aim/home/pages/Home"));
 const Navigation = lazy(() => import("./apps/navigation/pages/Navigation"));
 const CostingItemList = lazy(() =>
   import("./apps/aim/costing/itemList/pages/indexItemList")
 );
-const IndexAnnualQuotation = lazy(() =>
-  import(
-    "./apps/aim/salesdailyout/annualSettingSale/pages/IndexAnnualSettingSale"
-  )
+const IndexSalesQouta = lazy(() =>
+  import("./apps/aim/sales/salesQuota/pages/IndexSalesQuota")
 );
-const IndexSalesDailyOut = lazy(() =>
-  import("./apps/aim/salesdailyout/salesDailyOut/pages/IndexSalesDailyOut")
+const SalesTracker = lazy(() =>
+  import("./apps/aim/sales/salesTracker/pages/IndexSalesTracker")
 );
 
-const IndexAnnualSalesRanking = lazy(() =>
-  import(
-    "./apps/aim/salesdailyout/annualSalesRanking/pages/IndexAnnualSalesRanking"
-  )
+const SalesLeaderboard = lazy(() =>
+  import("./apps/aim/sales/leaderboard/pages/IndexSalesLeaderboard")
 );
 
-const IndexAnnualSettingSalesRanking = lazy(() =>
-  import(
-    "./apps/aim/salesdailyout/annualSettingSalesRanking/pages/IndexAnnualSettingSalesRanking"
-  )
+const IndexSalesRankingPoints = lazy(() =>
+  import("./apps/aim/sales/rankingPoints/pages/IndexSalesRankingPoints")
 );
 
 const IndexLogin = lazy(() => import("./apps/auth/login/pages/IndexLogin"));
 const NoMatch = lazy(() => import("./apps/aim/home/pages/NoMatch"));
+const UnderDevelopment = lazy(() =>
+  import("./apps/aim/home/pages/UnderDevelopment")
+);
 const theme = createTheme({
   typography: {
     fontFamily: "Poppins, sans-serif",
@@ -75,25 +72,21 @@ function App() {
                 >
                   <Route path="/" element={<IndexHome />} />
                   <Route
-                    path="/Modules/Costing/itemlist"
-                    element={<CostingItemList />}
-                  />
-                  <Route
-                    path="/Modules/SalesDailyOut/AnnualSettingSale"
-                    element={<IndexAnnualQuotation />}
+                    path="/Modules/Sales/Configuration/SalesQouta"
+                    element={<IndexSalesQouta />}
                   />
                   <Route
                     exact
-                    path="/Modules/SalesDailyOut/DailySales"
-                    element={<IndexSalesDailyOut />}
+                    path="/Modules/Sales/SalesTracker"
+                    element={<SalesTracker />}
                   />
                   <Route
-                    path="/Modules/SalesDailyOut/AnnualSalesRanking"
-                    element={<IndexAnnualSalesRanking />}
+                    path="/Modules/Sales/SalesLeaderboard"
+                    element={<SalesLeaderboard />}
                   />
                   <Route
-                    path="/Modules/SalesDailyOut/AnnualSettingSalesRanking"
-                    element={<IndexAnnualSettingSalesRanking />}
+                    path="/Modules/Sales/Configuration/RankingPoints"
+                    element={<IndexSalesRankingPoints />}
                   />
                 </Route>
               )}
