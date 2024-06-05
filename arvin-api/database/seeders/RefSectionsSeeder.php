@@ -165,7 +165,7 @@ class RefSectionsSeeder extends Seeder
             'business_unit_code'=> '1',
             'team_code'=> '2',
             'department_code'=> '9',
-            'description' => 'WH Harbour',
+            'description' => 'Harbour',
             'added_by' => env('DEFAULT_USER'),
             'modified_by' => env('DEFAULT_USER')],
 
@@ -175,7 +175,7 @@ class RefSectionsSeeder extends Seeder
             'business_unit_code'=> '1',
             'team_code'=> '2',
             'department_code'=> '9',
-            'description' => 'WH Calaca',
+            'description' => 'Calaca',
             'added_by' => env('DEFAULT_USER'),
             'modified_by' => env('DEFAULT_USER')],
 
@@ -185,7 +185,7 @@ class RefSectionsSeeder extends Seeder
             'business_unit_code'=> '1',
             'team_code'=> '2',
             'department_code'=> '9',
-            'description' => 'WH PNOC',
+            'description' => 'PNOC',
             'added_by' => env('DEFAULT_USER'),
             'modified_by' => env('DEFAULT_USER')],
 
@@ -195,7 +195,7 @@ class RefSectionsSeeder extends Seeder
             'business_unit_code'=> '1',
             'team_code'=> '2',
             'department_code'=> '9',
-            'description' => 'WH Bolo',
+            'description' => 'Bolo',
             'added_by' => env('DEFAULT_USER'),
             'modified_by' => env('DEFAULT_USER')],
             [
@@ -204,7 +204,7 @@ class RefSectionsSeeder extends Seeder
             'business_unit_code'=> '1',
             'team_code'=> '2',
             'department_code'=> '9',
-            'description' => 'WH Malabanon',
+            'description' => 'Malabanon',
             'added_by' => env('DEFAULT_USER'),
             'modified_by' => env('DEFAULT_USER')],
 
@@ -214,7 +214,7 @@ class RefSectionsSeeder extends Seeder
             'business_unit_code'=> '1',
             'team_code'=> '2',
             'department_code'=> '9',
-            'description' => 'WH Pampanga',
+            'description' => 'Pampanga',
             'added_by' => env('DEFAULT_USER'),
             'modified_by' => env('DEFAULT_USER')],
 
@@ -224,7 +224,7 @@ class RefSectionsSeeder extends Seeder
             'business_unit_code'=> '1',
             'team_code'=> '2',
             'department_code'=> '9',
-            'description' => 'WH Bataan',
+            'description' => 'Bataan',
             'added_by' => env('DEFAULT_USER'),
             'modified_by' => env('DEFAULT_USER')],
             [

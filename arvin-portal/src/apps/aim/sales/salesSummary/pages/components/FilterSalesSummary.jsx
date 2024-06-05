@@ -16,29 +16,30 @@ import RefDepartmentsHooks from "../../../../reference/hooks/RefDepartmentsHooks
 import RefSectionsHooks from "../../../../reference/hooks/RefSectionsHooks";
 import RefSubSectionsHooks from "../../../../reference/hooks/RefSubSectionsHooks";
 import RefTeamsHooks from "../../../../reference/hooks/RefTeamsHooks";
-import { postAnnualTargetSales } from "../../actions/SalesQuotaActions";
-import SalesDailyOutComponentAnnualSettingSaleHooks from "../../hooks/SalesQoutaHooks";
+import { postAnnualTargetSales } from "../../actions/SalesSummaryActions";
+import SalesSummaryHooks from "../../hooks/SalesSummaryHooks";
 import { cancelRequest } from "../../../../../../api/api";
-const formName = "AddSaleQuota";
+// import InputDateRange from "../../../../../../components/inputFIeld/InputDateRange";
+const formName = "FilterSalesSummary";
 const submit = async (values, dispatch, props) => {
   try {
-    values.year_sales_target = moment(values.year_sales_target).format("YYYY");
-    const res = await dispatch(postAnnualTargetSales(values));
-    swal(res.data.title, res.data.message, res.data.status);
-    reset();
-    await dispatch({
-      type: Constants.ACTION_SALES_DAILY_OUT,
-      payload: {
-        refresh: !props.refresh,
-        addModal: false,
-      },
-    });
+    // values.year_sales_target = moment(values.year_sales_target).format("YYYY");
+    // const res = await dispatch(postAnnualTargetSales(values));
+    // swal(res.data.title, res.data.message, res.data.status);
+    // reset();
+    // await dispatch({
+    //   type: Constants.ACTION_SALES_DAILY_OUT,
+    //   payload: {
+    //     refresh: !props.refresh,
+    //     addModal: false,
+    //   },
+    // });
   } catch (error) {
     console.log(error);
   }
 };
 
-let AddSaleQuota = (props) => {
+let FilterSalesSummary = (props) => {
   const dispatch = useDispatch();
   const { ...refCompanies } = RefCompaniesHooks();
   const { ...refBusinessUnits } = RefBusinessUnitsHooks();
@@ -46,8 +47,7 @@ let AddSaleQuota = (props) => {
   const { ...refDepartments } = RefDepartmentsHooks();
   const { ...refSections } = RefSectionsHooks();
   const { ...refSubSections } = RefSubSectionsHooks();
-  const { ...salesDailyOutComponentAnnualSettingSale } =
-    SalesDailyOutComponentAnnualSettingSaleHooks(props);
+  const { ...salesSummary } = SalesSummaryHooks(props);
 
   const annual_sales_target = useSelector(
     (state) => state.SalesDailyOutReducer.annual_sales_target
@@ -58,8 +58,7 @@ let AddSaleQuota = (props) => {
   const daily_sales_target = useSelector(
     (state) => state.SalesDailyOutReducer.daily_sales_target
   );
-  const account_details =
-    salesDailyOutComponentAnnualSettingSale.account_details;
+  const account_details = salesSummary.account_details;
   props.dispatch(
     change(formName, "company", "Arvin Internation Marketing Inc.")
   );
@@ -88,43 +87,22 @@ let AddSaleQuota = (props) => {
         {/* <CSRFToken /> */}
         <Grid container spacing={2}>
           <Grid container item xs={12} sm={12} md={12} lg={12}>
-            <Grid item xs={12} md={12}>
-              {/* <Field
-                id="company"
-                name="company"
-                label="Company"
-                options={refCompanies?.companies}
-                getOptionLabel={(option) =>
-                  option?.description ? option?.description : ""
-                }
+            {/* <Grid item xs={12} md={12}>
+              <Field
+                id="date_range"
+                name="date_range"
+                label="Date Range"
                 required={true}
-                component={ComboBox}
-                onChangeHandle={(e, newValue) => {
-                  if (newValue?.description) {
-                    dispatch({
-                      type: Constants.ACTION_REFERENCE,
-                      payload: {
-                        teams: [],
-                        departments: [],
-                        sections: [],
-                        subsections: [],
-                      },
-                    });
-                    refBusinessUnits.GetReferenceBusinessUnits(newValue.code);
-                    props.change("company_code", newValue.code);
-                    props.change("business_unit", "");
-                    props.change("business_unit_code", "");
-                    props.change("team", "");
-                    props.change("team_code", "");
-                    props.change("department", "");
-                    props.change("department_code", "");
-                    props.change("section", "");
-                    props.change("section_code", "");
-                    props.change("subsection_code", "");
-                    props.change("subsection", "");
-                  }
-                }}
-              /> */}
+                component={InputDateRange}
+                placeholder="Month"
+                disabled
+                disablePast={false}
+                disableFuture={true}
+                disableSunday={true}
+                showText={true}
+              />
+            </Grid> */}
+            <Grid item xs={12} md={12}>
               <Field
                 id="company"
                 name="company"
@@ -134,25 +112,6 @@ let AddSaleQuota = (props) => {
               />
             </Grid>
             <Grid item xs={12} md={12}>
-              {/* <Field
-                id="business_unit"
-                name="business_unit"
-                label="Business Unit"
-                options={refBusinessUnits?.business_units}
-                getOptionLabel={(option) =>
-                  option.description ? option.description : ""
-                }
-                required={true}
-                component={ComboBox}
-                onChangeHandle={(e, newValue) => {
-                  if (newValue?.description) {
-                    refTeams.GetReferenceTeams(newValue.code);
-                    props.change("business_unit_code", newValue.code);
-                    props.change("team", "");
-                    props.change("team_code", "");
-                  }
-                }}
-              /> */}
               <Field
                 id="business_unit"
                 name="business_unit"
@@ -242,51 +201,6 @@ let AddSaleQuota = (props) => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} md={12}>
-              <Field
-                id="year_sales_target"
-                name="year_sales_target"
-                label="Select Year"
-                required={true}
-                component={InputYearPicker}
-                placeholder="Select Year"
-              />
-            </Grid>
-            <Grid item xs={12} md={12}>
-              <Field
-                id="annual_sales_target"
-                name="annual_sales_target"
-                label="Target Annual Quota"
-                type="number"
-                required={true}
-                component={InputField}
-                onChange={
-                  salesDailyOutComponentAnnualSettingSale.GetMonthlyAndDailyQoutaByAnnualQouta
-                }
-              />
-            </Grid>
-            <Grid item xs={12} md={12}>
-              <Field
-                id="monthly_sales_target"
-                name="monthly_sales_target"
-                label="Target Month Quota"
-                type="number"
-                required={true}
-                disabled
-                component={InputField}
-              />
-            </Grid>
-            <Grid item xs={12} md={12}>
-              <Field
-                id="daily_sales_target"
-                name="daily_sales_target"
-                label="Target Day Quota"
-                type="number"
-                required={true}
-                disabled
-                component={InputField}
-              />
-            </Grid>
           </Grid>
           <Grid item xs={12} md={12}>
             <Stack
@@ -297,7 +211,7 @@ let AddSaleQuota = (props) => {
             >
               <ButtonComponent
                 stx={configure.default_button}
-                iconType="submit"
+                iconType="submit1"
                 type="submit"
                 fullWidth={true}
                 children={"Add Quota"}
@@ -313,7 +227,7 @@ let AddSaleQuota = (props) => {
 const ReduxFormComponent = reduxForm({
   form: formName,
   onSubmit: submit,
-})(AddSaleQuota);
+})(FilterSalesSummary);
 const selector = formValueSelector(formName);
 export default connect((state) => {
   const refresh = state.SalesDailyOutReducer.refresh;

@@ -107,6 +107,9 @@
       "description": "DECEMBER"
     }
   ],
+  "months_names": [
+   "JANUARY","FEBRUARY", "MARCH", "APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"
+  ],
   "modules": [
     {
       "code": "1",

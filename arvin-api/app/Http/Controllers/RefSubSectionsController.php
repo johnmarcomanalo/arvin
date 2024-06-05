@@ -62,13 +62,19 @@ class RefSubSectionsController extends Controller
         //
     }
     public function do_show($id){
+        if (isset($id)) {
+            $data = RefSubSections::where('section_code', '=', $id)->get();
+        } else {
+            $data = RefSubSections::all();
+        }
 
-        $data = RefSubSections::where('section_code','=',$id)->get();
-        if(empty($data)){
-         $data = array();
+        if ($data->isEmpty()) {
+            $data = array();
         }
         return $data;
     }
+
+
     public function get_subsection($id){
         $data = RefSubSections::where('code',$id)->first();
         if(empty($data)){

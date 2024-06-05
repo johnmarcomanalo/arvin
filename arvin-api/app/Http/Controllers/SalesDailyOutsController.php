@@ -129,7 +129,8 @@ class SalesDailyOutsController extends Controller
                     "status_daily_target"=>round($status_daily_target,2),
                     "percentage_daily_target"=>round($percentage_daily_target,2),
                 ];
-        return Crypt::encryptString(json_encode($response));
+        // return Crypt::encryptString(json_encode($response));
+        return $response;
     }
 
 
@@ -415,4 +416,69 @@ class SalesDailyOutsController extends Controller
             
             return $mtdFinal;
         }
+
+    public function getTodaySales($name = null, $date_from = null, $date_to = null) {
+    // Step 1: Retrieve all records
+    $datalist = SalesDailyOuts::where('subsection_code', '27')->get();
+    $records = DB::table('vw_DailySales')
+        ->where('warehouse', 'CAG')
+        ->orderBy('createdate')
+        ->get();
+
+    // Step 2: Process records to add Sunday's QtyInKg to Monday's QtyInKg
+    $recordsByDate = [];
+    $results = [];
+    $final_results = [];
+
+    foreach ($records as $record) {
+        $date = Carbon::parse($record->createdate)->format('Y-m-d');
+        $recordsByDate[$date] = $record;
+    }
+
+    foreach ($recordsByDate as $date => $record) {
+        $carbonDate = Carbon::parse($date);
+
+        if ($carbonDate->isSunday()) {
+            // Find the corresponding Monday
+            $mondayDate = $carbonDate->addDay()->format('Y-m-d');
+
+            if (isset($recordsByDate[$mondayDate])) {
+                // Add Sunday's QtyInKg to Monday's QtyInKg
+                $sundayQty = (float) $record->QtyInKg;
+                $recordsByDate[$mondayDate]->QtyInKg = (float) $recordsByDate[$mondayDate]->QtyInKg + $sundayQty;
+            }
+        }
+    }
+
+    // Step 3: Prepare final results for viewing
+    foreach ($recordsByDate as $date => $record) {
+        $carbonDate = Carbon::parse($date);
+        if (!$carbonDate->isSunday()) {
+            $results[] = [
+                'subsection_code' => '27',
+                'sales_date' => $record->createdate,
+                'sales_daily_out' => $record->QtyInKg
+            ];
+        }
+    }
+    foreach ($datalist as $value) {
+        $sales_daily_qouta = $value['sales_daily_qouta'];
+        $sales_daily_out = $value['sales_daily_out'];
+        $sales_date = $value['sales_date'];
+        if($sales_daily_out <= 0){
+            foreach ($results as $result) {
+                if($sales_date = $result['sales_date']){
+                    $computation = $this->get_status_daily_target_and_percentage_daily_target_by_daily_out($result['sales_daily_out'],$sales_daily_qouta);
+                    $final_results[] = [
+                        'computation' => $computation,
+                    ]; 
+                }
+            }
+        }
+    }
+    // Return both original records and final results
+    return [
+        'final_results' => $final_results,
+    ];
+}
 }

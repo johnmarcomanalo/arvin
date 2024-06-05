@@ -46,7 +46,7 @@ const SalesQoutaHooks = (props) => {
   const selectedDataList = useSelector(
     (state) => state.SalesDailyOutReducer.selectedDataList
   );
-
+  
   const columns = [
     { id: "code", label: "Code", align: "left" },
     { id: "year_sales_target", label: "Year", align: "left" },
@@ -139,7 +139,24 @@ const SalesQoutaHooks = (props) => {
       console.error(error);
     }
   };
-
+   const GetSectionsByDepartmentCode = async () => {
+     try {
+       const data = getListParam();
+       await dispatch(getAnnualSettingSale(data));
+     } catch (error) {
+       console.error(error);
+     }
+   };
+  const onChangeFilter = (date) => {
+    const filter = date;
+    setSearchParams({
+      q: search,
+      p: "1",
+      l: String(rowsPerPage),
+      f: filter,
+      u: account_details?.code,
+    });
+  };
   React.useEffect(() => {
     GetAnnualSettingSaleList();
     return () => cancelRequest();
@@ -155,6 +172,7 @@ const SalesQoutaHooks = (props) => {
     selectedDataList,
     columns,
     addModal,
+    account_details,
 
     handleChangeRowsPerPage,
     handleChangePage,
@@ -164,6 +182,7 @@ const SalesQoutaHooks = (props) => {
     onClickOpenAddModal,
     onClickCloseAddModal,
     GetMonthlyAndDailyQoutaByAnnualQouta,
+    onChangeFilter,
   };
 };
 

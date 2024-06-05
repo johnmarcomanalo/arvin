@@ -261,10 +261,10 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
                 ];
                 return response($response,200);
             }
-
-            $queryBuilder = SalesDailyOutAnnualSettingsSales::whereNull('deleted_at')
-                ->where('year_sales_target', $filter);
-
+            $queryBuilder = SalesDailyOutAnnualSettingsSales::whereNull('deleted_at');
+            if (!empty($filter)) {
+                    $queryBuilder->where('year_sales_target', $filter);
+            }
             if (!empty($query)) {
                 $salesData = $queryBuilder->where(function ($queryBuilder) use ($query) {
                      $queryBuilder->where('section', 'like', '%' . $query . '%')

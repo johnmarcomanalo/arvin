@@ -35,13 +35,13 @@ class DatabaseSeeder extends Seeder
         // $this->call(RefSalesRankingSeeder::class); 
         // $this->call(SalesDailyOutAnnualSalesRankingSeeder::class); 
         // $this->call(RefMonthsSeeder::class);
-        // $this->call(UsersSeeder::class);
+        $this->call(UsersSeeder::class);
         // $this->call(RefModulesSeeder::class);
-        $this->call(RefComponentsSeeder::class);
-        $this->call(RefSubComponentsSeeder::class);
+        // $this->call(RefComponentsSeeder::class);
+        // $this->call(RefSubComponentsSeeder::class);
         // $this->call(UserAccessModuleRightsSeeder::class);
-        $this->call(UserAccessComponentRightsSeeder::class);
-        $this->call(UserAccessSubComponentRightsSeeder::class);
+        // $this->call(UserAccessComponentRightsSeeder::class);
+        // $this->call(UserAccessSubComponentRightsSeeder::class);
 
     }
 }

@@ -10,7 +10,12 @@ import Table from "../../../../../components/table/Table";
 import configure from "../../../../configure/configure.json";
 import SalesQoutaHooks from "../hooks/SalesQoutaHooks";
 import AddSaleQuota from "./components/AddSaleQuota";
-export default function SalesQouta(props) {
+import InputYearPicker from "../../../../../components/inputFIeld/InputYearPicker";
+import { Field, formValueSelector, reduxForm } from "redux-form";
+import { connect } from "react-redux";
+import moment from "moment";
+const formName = "SaleQouta";
+let SalesQouta = (props) => {
   const { ...salesQouta } = SalesQoutaHooks(props);
   const matches = useMediaQuery("(min-width:600px)");
   return (
@@ -45,18 +50,36 @@ export default function SalesQouta(props) {
           </Stack>
         </Grid>
         <Grid item xs={6} sm={6} md={6} lg={6}>
-          <Stack
-            direction="row"
-            justifyContent={matches ? "flex-start" : "center"}
-            alignItems={matches ? "flex-start" : "center"}
-            flexDirection={matches ? "row" : "column"}
-            spacing={2}
-          >
-            <SearchField
-              value={salesQouta.search}
-              onChange={salesQouta.onChangeSearch}
-            />
-          </Stack>
+          <form onSubmit={props.handleSubmit}>
+            <Stack
+              direction="row"
+              justifyContent={matches ? "flex-start" : "center"}
+              alignItems={matches ? "flex-start" : "center"}
+              flexDirection={matches ? "row" : "column"}
+              spacing={2}
+            >
+              <SearchField
+                value={salesQouta.search}
+                onChange={salesQouta.onChangeSearch}
+              />
+              <Field
+                id="year_sales_target"
+                name="year_sales_target"
+                component={InputYearPicker}
+                placeholder="Select Year"
+                showText={false}
+                onChange={(date) => {
+                  let selectedDate = new Date();
+                  if (date !== null) {
+                    selectedDate = date;
+                  }
+                  salesQouta.onChangeFilter(
+                    moment(selectedDate).format("YYYY")
+                  );
+                }}
+              />
+            </Stack>
+          </form>
         </Grid>
         <Grid item xs={6} sm={6} md={6} lg={6}>
           <Stack
@@ -106,4 +129,13 @@ export default function SalesQouta(props) {
       </Grid>
     </React.Fragment>
   );
-}
+};
+
+const ReduxFormComponent = reduxForm({
+  form: formName,
+  onSubmit: "",
+})(SalesQouta);
+const selector = formValueSelector(formName);
+export default connect((state) => {
+  return {};
+}, {})(ReduxFormComponent);

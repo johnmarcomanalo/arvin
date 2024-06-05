@@ -13,8 +13,10 @@ import Grid from "@mui/material/Unstable_Grid2";
 import * as React from "react";
 import configure from "../../../../configure/configure.json";
 import FormTitle from "../../../../../components/formTItle/FormTitle";
-
+import HomeComponentInformationHooks from "../../hooks/HomeComponentInformationHooks";
 export default function Information() {
+  const { ...homeComponentInformation } = HomeComponentInformationHooks();
+  const account_details = homeComponentInformation.account_details;
   return (
     <React.Fragment>
       <Grid container spacing={2} columns={24}>
@@ -36,7 +38,11 @@ export default function Information() {
                         <Typography variant="body1">Name:</Typography>
                       </TableCell>
                       <TableCell align="left">
-                        <Typography variant="body1">John Doe</Typography>
+                        <Typography variant="body1">
+                          {account_details?.first_name +
+                            " " +
+                            account_details?.last_name}
+                        </Typography>
                       </TableCell>
                     </TableRow>
 

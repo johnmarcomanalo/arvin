@@ -62,11 +62,17 @@ class RefSectionsController extends Controller
     {
         //
     }
-       public function do_show($id){
-        $data = RefSections::where('department_code','=',$id)->get();
-        if(empty($data)){
-         $data = array();
+    public function do_show($id = null) {
+        if (isset($id)) {
+            $data = RefSections::where('department_code', '=', $id)->get();
+        } else {
+            $data = RefSections::all();
         }
+
+        if ($data->isEmpty()) {
+            $data = array();
+        }
+
         return $data;
     }
 }

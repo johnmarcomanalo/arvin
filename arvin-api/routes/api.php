@@ -14,6 +14,7 @@ use App\Http\Controllers\SalesDailyOutsController;
 use App\Http\Controllers\RefSalesRankingPlacementsController;
 use App\Http\Controllers\SalesDailyOutAnnualSalesRankingController;
 use App\Http\Controllers\SalesDailyOutAnnualSalesRankingDetailsController;
+use App\Http\Controllers\SalesDailyOutReportSalesSummaryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -58,6 +59,7 @@ use Illuminate\Support\Facades\Route;
     //MODULE SALES DAILY OUT START
 
     // SALES DAILY OUT START
+    Route::get('salesdailyout/report/get_today_sales',[SalesDailyOutsController::class,'getTodaySales']);
     Route::get('salesdailyout/daily_out/get_sales_daily_out',[SalesDailyOutsController::class,'get_sales_daily_out']);//for pagination
     Route::get('salesdailyout/daily_out/get_status_daily_target_and_percentage_daily_target_by_daily_out/{daily_out}/{daily_quota}',[SalesDailyOutsController::class, 'get_status_daily_target_and_percentage_daily_target_by_daily_out'])->middleware(['light_decryption']);
     Route::apiResource('salesdailyout/daily_out',SalesDailyOutsController::class)->middleware(['light_decryption']);
@@ -76,6 +78,9 @@ use Illuminate\Support\Facades\Route;
     Route::apiResource('salesdailyout/annual_sales_ranking_details',SalesDailyOutAnnualSalesRankingDetailsController::class)->middleware(['light_decryption']);
     // Sales Daily Out Annual Sales Ranking END
     
+    // Sales Daily Out Annual Report START
+    // Sales Daily Out Annual Report End
+
     //MODULE SALES DAILY OUT END 
 
     // QUOTATION START

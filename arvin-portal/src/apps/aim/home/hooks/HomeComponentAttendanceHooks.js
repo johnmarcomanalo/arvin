@@ -14,7 +14,9 @@ const HomeComponentAttendanceHooks = (props) => {
   const selectedDataList = useSelector(
     (state) => state.HomeReducer.selectedDataList
   );
-
+  const account_details = useSelector(
+    (state) => state.AuthenticationReducer.account_details
+  );
   const columns = [
     { id: "date_added", label: "Date", align: "right" },
     { id: "date_added", label: "Time", align: "right" },
@@ -57,7 +59,7 @@ const HomeComponentAttendanceHooks = (props) => {
     dateFilterEnd,
     selectedDataList,
     columns,
-
+    account_details,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,

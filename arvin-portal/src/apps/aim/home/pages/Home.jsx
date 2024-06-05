@@ -1,25 +1,25 @@
+import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import MapsHomeWorkOutlinedIcon from "@mui/icons-material/MapsHomeWorkOutlined";
 import {
-  Box,
-  Grid,
-  Card,
-  CardActions,
-  CardContent,
-  Stack,
-  Typography,
   Avatar,
-  useMediaQuery,
-  Tabs,
+  Box,
+  Card,
+  CardContent,
+  Grid,
+  Stack,
   Tab,
+  Tabs,
+  Typography,
+  useMediaQuery,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import * as React from "react";
 import configure from "../../../configure/configure.json";
-import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
-import MapsHomeWorkOutlinedIcon from "@mui/icons-material/MapsHomeWorkOutlined";
-import { useTheme } from "@mui/material/styles";
 import Attendance from "./components/Attendance";
 import Information from "./components/Informations";
 import Requests from "./components/Requests";
+import HomeHooks from "../hooks/HomeHooks";
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -54,6 +54,8 @@ function a11yProps(index) {
 }
 
 export default function Home() {
+  const { ...home } = HomeHooks();
+  const account_details = home.account_details;
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const isSmallScreen2 = useMediaQuery(theme.breakpoints.down("sl"));
@@ -86,7 +88,7 @@ export default function Home() {
                     backgroundColor: configure.secondary_color,
                   }}
                 >
-                  Hi
+                  hi
                 </Avatar>
                 <Stack
                   direction={isSmallScreen2 ? "row" : "column"}
@@ -96,7 +98,9 @@ export default function Home() {
                   flexWrap={isSmallScreen ? "wrap" : "nowrap"}
                 >
                   <Typography variant="h6" component="div">
-                    John Doe
+                    {account_details?.first_name +
+                      " " +
+                      account_details?.last_name}
                   </Typography>
                   <Stack
                     direction={isSmallScreen2 ? "column" : "row"}
@@ -106,7 +110,7 @@ export default function Home() {
                   >
                     <AccountCircleOutlinedIcon color="text.secondary" />
                     <Typography color="text.secondary">
-                      Associate Programmer
+                      {account_details?.position}
                     </Typography>
                   </Stack>
                   <Stack
@@ -116,7 +120,9 @@ export default function Home() {
                     spacing={2}
                   >
                     <MapsHomeWorkOutlinedIcon color="text.secondary" />
-                    <Typography color="text.secondary">Head Office</Typography>
+                    <Typography color="text.secondary">
+                      {account_details?.position}
+                    </Typography>
                   </Stack>
                 </Stack>
               </Stack>

@@ -15,15 +15,21 @@ class UsersSeeder extends Seeder
     public function run()
     {
         User::insert([
-            // [
-            // 'code'=> '1',
-            // 'username'=> 'admin',
-            // 'first_name' => 'John Marco',
-            // 'last_name' => 'Manalo',
-            // 'device_password' => '',
-            // 'password' => bcrypt("welcome123"),
-            // 'added_by' => env('DEFAULT_USER'),
-            // 'modified_by' => env('DEFAULT_USER')],
+            [
+            'code'=> '1',
+            'username'=> 'johnmarcomanalo09',
+            'first_name' => 'John Marco',
+            'last_name' => 'Manalo',
+            'device_password' => '',
+            'company_code' => '1',
+            'business_unit_code' => '1',
+            'team_code' => '1',
+            'department_code' => '4',
+            'section_code' => '12',
+            'subsection_code' => '12',
+            'password' => bcrypt("welcome123"),
+            'added_by' => env('DEFAULT_USER'),
+            'modified_by' => env('DEFAULT_USER')],
             // [
             // 'code'=> '2',
             // 'username'=> 'test_bacolod',
@@ -68,16 +74,16 @@ class UsersSeeder extends Seeder
             // 'modified_by' => env('DEFAULT_USER')]
 
 
-            [
-            'code'=> '6',
-            'username'=> 'test_bataan',
-            'first_name' => 'John',
-            'last_name' => 'Bataan',
-            'device_password' => '',
-            'subsection_code' => '23',
-            'password' => bcrypt("welcome123"),
-            'added_by' => env('DEFAULT_USER'),
-            'modified_by' => env('DEFAULT_USER')]
+            // [
+            // 'code'=> '6',
+            // 'username'=> 'test_bataan',
+            // 'first_name' => 'John',
+            // 'last_name' => 'Bataan',
+            // 'device_password' => '',
+            // 'subsection_code' => '23',
+            // 'password' => bcrypt("welcome123"),
+            // 'added_by' => env('DEFAULT_USER'),
+            // 'modified_by' => env('DEFAULT_USER')]
         ]);
     }
 }

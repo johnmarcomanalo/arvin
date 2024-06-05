@@ -64,7 +64,11 @@ class RefDepartmentsController extends Controller
     }
 
     public function do_show($id){
-        $data = RefDepartments::where('team_code','=',$id)->get();
+        if (isset($id)) {
+            $data = RefDepartments::where('team_code', '=', $id)->get();
+        } else {
+            $data = RefDepartments::all();
+        }
         if(empty($data)){
          $data = array();
         }

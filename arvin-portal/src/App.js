@@ -27,8 +27,11 @@ const IndexSalesRankingPoints = lazy(() =>
 
 const IndexLogin = lazy(() => import("./apps/auth/login/pages/IndexLogin"));
 const NoMatch = lazy(() => import("./apps/aim/home/pages/NoMatch"));
-const UnderDevelopment = lazy(() =>
-  import("./apps/aim/home/pages/UnderDevelopment")
+const IndexSalesSummary = lazy(() =>
+  import("./apps/aim/sales/salesSummary/pages/IndexSalesSummary")
+);
+const IndexSelectedSalesSummary = lazy(() =>
+  import("./apps/aim/sales/salesSummary/pages/IndexSelectedSalesSummary")
 );
 const theme = createTheme({
   typography: {
@@ -87,6 +90,14 @@ function App() {
                   <Route
                     path="/Modules/Sales/Configuration/RankingPoints"
                     element={<IndexSalesRankingPoints />}
+                  />
+                  <Route
+                    path="/Modules/Sales/Reports/SalesSummary"
+                    element={<IndexSalesSummary />}
+                  />
+                  <Route
+                    path="/Modules/Sales/Reports/SalesSummary/:id/:month/:year"
+                    element={<IndexSelectedSalesSummary />}
                   />
                 </Route>
               )}

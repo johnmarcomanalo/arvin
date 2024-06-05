@@ -1,13 +1,13 @@
-import React from "react";
-import TextField from "@mui/material/TextField";
 import { Typography } from "@mui/material";
-import configure from "../../apps/configure/configure.json";
-import moment from "moment";
 import { createTheme } from "@mui/material/styles";
-
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
+import { SingleInputDateRangeField } from "@mui/x-date-pickers-pro/SingleInputDateRangeField";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import moment from "moment";
+import React from "react";
+import configure from "../../apps/configure/configure.json";
 const styleSheet = {
   label: { fontSize: 13 },
 };
@@ -39,21 +39,19 @@ const theme = createTheme({
     },
   },
 });
-const InputDatePicker = ({
+const InputDateRange = ({
   input,
   label,
   meta: { touched, error },
   required,
   placeholder,
-  value,
+  showText = true,
   disableFuture,
   disablePast,
-  disableSunday,
-  showText = true,
 }) => {
   // Convert input value to a valid Date object using moment.js
-  const initialValue = value || new Date(); // Use value if provided, otherwise use input.value
-  const dateValue = initialValue ? moment(initialValue).toDate() : null;
+  const dateValue = input.value ? moment(input.value).toDate() : null;
+
   // Handle change event to convert the selected date to a string before passing it to Redux Form
   const handleChange = (date) => {
     const dateString = date ? moment(date).format("YYYY-MM-DD") : null;
@@ -63,7 +61,7 @@ const InputDatePicker = ({
   return (
     <div>
       {showText ? (
-        <Typography sx={styleSheet.label} align="left">
+        <Typography sx={styleSheet.label}>
           {label}
           {required ? (
             <span style={{ color: configure.denied_color, fontSize: 15 }}>
@@ -76,24 +74,36 @@ const InputDatePicker = ({
       ) : null}
 
       <LocalizationProvider fullWidth dateAdapter={AdapterMoment}>
-        <DatePicker
-          shouldDisableDate={
-            disableSunday ? (date) => moment(date).day() === 0 : null
-          } // Disable Sundays
-          disableFuture={disableFuture}
-          disablePast={disablePast}
-          dateFormat={"YYYY-MM-dd"}
+        {/* <DatePicker
+          dateFormat={"MM"}
           theme={theme}
-          onChange={(date) => input.onChange(date)}
-          selected={dateValue}
+          selected={
+            input.value
+              ? moment(input.value, "MM").format("MM")
+              : null
+          }
+          views={["month"]}
+          openTo="year"
           disabledKeyboardNavigation
           placeholderText={placeholder}
           slotProps={{ field: { size: "small" } }}
           sx={{ width: "100%" }}
-        />
+          disableFuture={disableFuture}
+          disablePast={disablePast}
+        /> */}
+        <DemoContainer components={["SingleInputDateRangeField"]}>
+          <DateRangePicker
+            slots={{ field: SingleInputDateRangeField }}
+            name="allowedRange"
+            disableFuture={disableFuture}
+            slotProps={{ field: { size: "small" } }}
+            onChange={(date) => input.onChange(date)}
+            sx={{ width: "100%" }}
+          />
+        </DemoContainer>
       </LocalizationProvider>
     </div>
   );
 };
 
-export default InputDatePicker;
+export default InputDateRange;

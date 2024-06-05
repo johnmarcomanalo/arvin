@@ -60,11 +60,14 @@ class RefTeamsController extends Controller
     {
         //
     }
-
-    public function do_show($id){
-        $data = RefTeams::where('business_unit_code','=',$id)->get();
-        if(empty($data)){
-         $data = array();
+    public function do_show($id = null) {
+        if (isset($id)) {
+            $data = RefTeams::where('business_unit_code', '=', $id)->get();
+        } else {
+            $data = RefTeams::all();
+        }
+        if ($data->isEmpty()) {
+            $data = array();
         }
         return $data;
     }

@@ -64,12 +64,17 @@ class RefBusinessUnitsController extends Controller
     {
         //
     }
-
-
-    public function do_show($id){
-        $data = RefBusinessUnits::where('company_code','=',$id)->get();
-        if(!empty($data)){
-            return $data;
+    public function do_show($id = null) {
+        if (isset($id)) {
+            $data = RefBusinessUnits::where('company_code', '=', $id)->get();
+        } else {
+            $data = RefBusinessUnits::all();
         }
+
+        if ($data->isEmpty()) {
+            $data = array();
+        }
+
+        return $data;
     }
 }

@@ -47,7 +47,7 @@ const InputMonthPicker = ({
   placeholder,
   showText = true,
   disableFuture,
-  disablePast
+  disablePast,
 }) => {
   // Convert input value to a valid Date object using moment.js
   const dateValue = input.value ? moment(input.value).toDate() : null;
@@ -61,7 +61,7 @@ const InputMonthPicker = ({
   return (
     <div>
       {showText ? (
-        <Typography sx={styleSheet.label}>
+        <Typography sx={styleSheet.label} align="left">
           {label}
           {required ? (
             <span style={{ color: configure.denied_color, fontSize: 15 }}>
@@ -78,11 +78,7 @@ const InputMonthPicker = ({
           dateFormat={"MM"}
           theme={theme}
           onChange={(date) => input.onChange(date)}
-          selected={
-            input.value
-              ? moment(input.value, "MM").format("MM")
-              : null
-          }
+          selected={input.value ? moment(input.value, "MM").format("MM") : null}
           views={["month"]}
           openTo="year"
           disabledKeyboardNavigation

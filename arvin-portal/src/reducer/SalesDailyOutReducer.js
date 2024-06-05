@@ -31,6 +31,7 @@ const initialState = {
   addModal3: false,
   addModal4: false,
   final_mtd_data: 0,
+  showTableCards: false,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
