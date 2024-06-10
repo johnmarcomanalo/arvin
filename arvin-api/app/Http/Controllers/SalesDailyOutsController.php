@@ -256,7 +256,7 @@ class SalesDailyOutsController extends Controller
             $report_data = [
                 "total_target_daily_quota_amount"=>$totalTargetDailyQuotaAmount,
                 "total_daily_out_amount"=>$totalDailyOutAmount,
-                "total_status_daily_target_amount"=>$towtalStatusDailyTargetAmount,
+                "total_status_daily_target_amount"=>$totalStatusDailyTargetAmount,
                 "total_percentage_daily_target"=>$averagePercentageDailyTarget,
             ];
 
