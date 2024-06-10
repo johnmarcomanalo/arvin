@@ -142,13 +142,13 @@ export default function Home() {
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <CustomTabPanel value={value} index={0}>
-            <Information />
+            {/* <Information /> */}
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
-            <Attendance />
+            {/* <Attendance /> */}
           </CustomTabPanel>
           <CustomTabPanel value={value} index={2}>
-            <Requests />
+            {/* <Requests /> */}
           </CustomTabPanel>
         </Grid>
       </Grid>

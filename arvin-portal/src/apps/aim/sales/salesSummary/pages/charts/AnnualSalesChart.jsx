@@ -14,8 +14,8 @@ const chartSetting = {
   height: 230,
 };
 
-const uData = [4000, 3000, 2000, 2780, 1890, 2390, 3490, 0, 0, 0, 0, 0];
-const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300, 0, 0, 0, 0, 0];
+const lastYear = [4000, 3000, 2000, 2780, 1890, 2390, 3490, 0, 0, 0, 0, 0];
+const currentYear = [2400, 1398, 9800, 3908, 4800, 3800, 4300, 0, 0, 0, 0, 0];
 const labels = configure.months_names;
 
 export default function AnnualSalesChart() {
@@ -43,12 +43,12 @@ export default function AnnualSalesChart() {
           <LineChart
             series={[
               ...(showUv
-                ? [{ data: uData, label: moment(new Date()).format("YYYY") }]
+                ? [{ data: lastYear, label: moment(new Date()).format("YYYY") }]
                 : []),
               ...(showPv
                 ? [
                     {
-                      data: pData,
+                      data: currentYear,
                       label: moment().subtract(1, "year").format("YYYY"),
                     },
                   ]

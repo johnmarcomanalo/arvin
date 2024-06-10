@@ -282,13 +282,13 @@ export default function Navigation(props) {
             </ListItemButton>
           </ListItem>
           <Divider />
-          <ListItem disablePadding>
+          {/*  <ListItem disablePadding>
             <ListItemButton onClick={() => onClickSelectRequest()}>
               <ListItemText primary={"Request"} />
               {requestlist ? <ExpandLess /> : <ExpandMore />}{" "}
             </ListItemButton>
           </ListItem>
-          <Divider />
+          <Divider /> */}
 
           <Collapse
             in={requestlist}

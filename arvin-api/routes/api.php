@@ -59,7 +59,7 @@ use Illuminate\Support\Facades\Route;
     //MODULE SALES DAILY OUT START
 
     // SALES DAILY OUT START
-    Route::get('salesdailyout/report/get_today_sales',[SalesDailyOutsController::class,'getTodaySales']);
+    Route::get('salesdailyout/insert_sap_sales_daily_out/{id}',[SalesDailyOutsController::class,'insertSAPSalesDailyOut']);
     Route::get('salesdailyout/daily_out/get_sales_daily_out',[SalesDailyOutsController::class,'get_sales_daily_out']);//for pagination
     Route::get('salesdailyout/daily_out/get_status_daily_target_and_percentage_daily_target_by_daily_out/{daily_out}/{daily_quota}',[SalesDailyOutsController::class, 'get_status_daily_target_and_percentage_daily_target_by_daily_out'])->middleware(['light_decryption']);
     Route::apiResource('salesdailyout/daily_out',SalesDailyOutsController::class)->middleware(['light_decryption']);
@@ -79,6 +79,7 @@ use Illuminate\Support\Facades\Route;
     // Sales Daily Out Annual Sales Ranking END
     
     // Sales Daily Out Annual Report START
+    Route::get('salesdailyout/report/get_report_sales_summary',[SalesDailyOutReportSalesSummaryController::class,'getReportSalesSummary']);
     // Sales Daily Out Annual Report End
 
     //MODULE SALES DAILY OUT END 
