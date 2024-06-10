@@ -177,10 +177,10 @@ class SalesDailyOutAnnualSalesRankingController extends Controller
                 ];
                 return response($response,200);
             }
-
+            if($filter == 'All'){
+                $filter = null;
+            }
             $user_data = User::where('code',$user_id)->first(); // fetch data from users table
-
-
 
             $dataListQuery = SalesDailyOutAnnualSalesRanking::join('ref_sub_sections', 'sales_daily_out_annual_sales_rankings.ranker_code', '=', 'ref_sub_sections.code')
             ->select('sales_daily_out_annual_sales_rankings.*', 'ref_sub_sections.description');

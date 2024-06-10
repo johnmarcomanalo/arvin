@@ -152,9 +152,7 @@ export default function SalesLeaderboard(props) {
                 label="Filter"
                 onChange={salesLeaderboard.onChangeFilter}
               >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
+                <MenuItem value="All">All</MenuItem>
                 {configure.months.map((month) => {
                   let code = moment(month.description, "MMMM").format("MM");
                   return <MenuItem value={code}>{month.description}</MenuItem>;
