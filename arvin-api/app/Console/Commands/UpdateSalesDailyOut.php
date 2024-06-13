@@ -47,12 +47,11 @@ class UpdateSalesDailyOut extends Command
         $this->info('Sales daily out records updated successfully.');
     }
 
-    private function getFiveDaysSalesDailyOutbyCurrentDate()
-    {
+    private function getFiveDaysSalesDailyOutbyCurrentDate(){
         $records = DB::table('vw_daily_sales_latest_five_days')->get();
         $subSections = RefSubSections::whereIn('type', $records->pluck('warehouse'))->get()->keyBy('type');
         $recordsByDate = [];
-
+        
         foreach ($records as $record) {
             $date = Carbon::parse($record->createdate)->format('Y-m-d');
             $recordsByDate[$date] = $record;
@@ -84,7 +83,7 @@ class UpdateSalesDailyOut extends Command
             }
         }
 
-        DB::transaction(function() use ($records, $subSections) {
+       DB::transaction(function() use ($records, $subSections) {
             $currentDate = Carbon::now()->format('Y-m-d');
             foreach ($records as $records_value) {
                 $warehouse = $records_value->warehouse;
@@ -110,8 +109,6 @@ class UpdateSalesDailyOut extends Command
                 }
             }
         });
-
-        return false;
     }
 
     private function get_status_daily_target_and_percentage_daily_target_by_daily_out($daily_out,$daily_quota){

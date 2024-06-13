@@ -425,7 +425,6 @@ class SalesDailyOutsController extends Controller
         $datalist = SalesDailyOuts::where('subsection_code', $sub_section['code'])->whereDate('sales_date', $currentDate)->get();
 
 
-
         $records = DB::table('vw_DailySales')
             ->where('warehouse', $sub_section['type'])
             // ->whereDate('createdate', $currentDate)
@@ -511,7 +510,7 @@ class SalesDailyOutsController extends Controller
         $records = DB::table('vw_daily_sales_latest_five_days')->get();
         $subSections = RefSubSections::whereIn('type', $records->pluck('warehouse'))->get()->keyBy('type');
         $recordsByDate = [];
-
+        
         foreach ($records as $record) {
             $date = Carbon::parse($record->createdate)->format('Y-m-d');
             $recordsByDate[$date] = $record;
