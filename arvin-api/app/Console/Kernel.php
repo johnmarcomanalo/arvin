@@ -13,13 +13,15 @@ class Kernel extends ConsoleKernel
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */
-    protected $commands = [
-        Commands\UpdateSalesDailyOut::class,
-    ];
+    // protected $commands = [
+    //     Commands\UpdateSalesDailyOut::class,
+    // ];
 
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('update:sales-daily-out');
+        $schedule->command('update:sales-daily-out')
+            //  ->everyTenMinutes()
+             ->withoutOverlapping();
     }
     /**
      * Register the commands for the application.
