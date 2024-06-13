@@ -59,6 +59,7 @@ use Illuminate\Support\Facades\Route;
     //MODULE SALES DAILY OUT START
 
     // SALES DAILY OUT START
+    Route::get('salesdailyout/get_five_days_sales_daily_out_by_current_date',[SalesDailyOutsController::class,'getFiveDaysSalesDailyOutbyCurrentDate']);
     Route::get('salesdailyout/insert_sap_sales_daily_out/{id}',[SalesDailyOutsController::class,'insertSAPSalesDailyOut']);
     Route::get('salesdailyout/daily_out/get_sales_daily_out',[SalesDailyOutsController::class,'get_sales_daily_out']);//for pagination
     Route::get('salesdailyout/daily_out/get_status_daily_target_and_percentage_daily_target_by_daily_out/{daily_out}/{daily_quota}',[SalesDailyOutsController::class, 'get_status_daily_target_and_percentage_daily_target_by_daily_out'])->middleware(['light_decryption']);
