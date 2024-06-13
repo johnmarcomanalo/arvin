@@ -19,7 +19,7 @@ class Kernel extends ConsoleKernel
 
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('update:sales-daily-out')->everyTenMinutes();
+        $schedule->command('update:sales-daily-out');
     }
     /**
      * Register the commands for the application.
