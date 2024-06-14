@@ -79,6 +79,12 @@ const SalesSummaryHooks = (props) => {
     { id: "description", label: "Description", align: "left" },
     { id: "value", label: "Points", align: "left" },
   ];
+
+  const current_sales_mtd_ytd_subsections_columns = [
+    { id: "subsection", label: "Subsection", align: "left" },
+    { id: "current_mtd", label: "Current MTD", align: "left" },
+    { id: "current_ytd", label: "Current YTD", align: "left" },
+  ];
   const onClickOpenAddModal = () => {
     dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
@@ -251,6 +257,7 @@ const SalesSummaryHooks = (props) => {
     addModal3,
     sales_ranking_placements,
     showTableCards,
+    current_sales_mtd_ytd_subsections_columns,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,

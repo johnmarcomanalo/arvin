@@ -1,4 +1,4 @@
-import React from "react";
+import LaunchIcon from "@mui/icons-material/Launch";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -9,7 +9,7 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
 import PropTypes from "prop-types"; // ES6
-import LaunchIcon from "@mui/icons-material/Launch";
+import React from "react";
 import configure from "../../apps/configure/configure.json";
 const Tables = (props) => {
   const {

@@ -19,6 +19,7 @@ import InputMonthYearPicker from "../../../../../components/inputFIeld/InputMont
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 import moment from "moment";
+import ComponentTitle from "../../../../../components/componentTitle/componentTitle";
 const formName = "SalesSummary";
 const submit = async (values, dispatch, props) => {
   try {
@@ -215,37 +216,8 @@ let SalesSummary = (props) => {
           <Grid item xs={12} sm={12} md={7} lg={7}>
             <AnnualSalesChart />
           </Grid>
-          <Grid item xs={12} sm={12} md={12} lg={12}>
-            <Stack
-              direction="row"
-              justifyContent={matches ? "flex-end" : "center"}
-              alignItems={matches ? "flex-end" : "center"}
-              flexDirection={matches ? "row" : "column"}
-              spacing={2}
-            >
-              <ButtonComponent
-                stx={configure.default_button}
-                iconType="add"
-                type="button"
-                fullWidth={true}
-                children={"Ranking Setup"}
-                click={salesSummary.onClickOpenAddModal}
-              />
-              <ButtonComponent
-                stx={configure.default_button}
-                iconType={showTableCards === true ? "generate" : "graph"}
-                type="button"
-                fullWidth={true}
-                children={showTableCards === true ? "Table View" : "Card View"}
-                click={
-                  showTableCards === true
-                    ? salesSummary.onClickShowTableSummary
-                    : salesSummary.onClickShowTableCardsSummary
-                }
-              />
-            </Stack>
-          </Grid>
-          <Grid item xs={6} sm={6} md={6} lg={6}>
+
+          {/* <Grid item xs={6} sm={6} md={6} lg={6}>
             <Stack
               direction="row"
               justifyContent={matches ? "flex-start" : "center"}
@@ -272,6 +244,90 @@ let SalesSummary = (props) => {
                 limit={salesSummary?.dataListCount}
                 status={""}
                 onHandleChange={salesSummary.handleChangePage}
+              />
+            </Stack>
+          </Grid> */}
+          <Grid item xs={12} sm={12} md={12} lg={12}>
+            <Stack
+              direction="row"
+              justifyContent={matches ? "flex-start" : "center"}
+              alignItems={matches ? "flex-start" : "center"}
+              flexDirection={matches ? "row" : "column"}
+            >
+              <ComponentTitle
+                title="Current Month Summary"
+                subtitle={moment(new Date()).format("MMMM YYYY")}
+              />
+            </Stack>
+          </Grid>
+          <Grid item xs={12} sm={12} md={12} lg={12}>
+            <Table
+              columns={salesSummary.current_sales_mtd_ytd_subsections_columns}
+              dataList={salesSummary.dataList}
+              page={salesSummary.page}
+              rowsPerPage={salesSummary.rowsPerPage}
+              handleChangePage={salesSummary.handleChangePage}
+              handleChangeRowsPerPage={salesSummary.handleChangeRowsPerPage}
+              onSelectItem={salesSummary.onSelectItem}
+              id={"home_attendance"}
+              localStorage={""}
+              rowCount={salesSummary.dataListCount}
+              actionshow={false}
+              paginationShow={false}
+              action={(row) => {
+                return (
+                  <Tooltip title="Update">
+                    <UpgradeIcon
+                      onClick={() => salesSummary.onSelectItemtoUpdate(row)}
+                      style={{
+                        color: "#009197",
+                        cursor: "pointer",
+                      }}
+                    />
+                  </Tooltip>
+                );
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12} md={12} lg={12}>
+            <Stack
+              direction="row"
+              justifyContent={matches ? "flex-start" : "center"}
+              alignItems={matches ? "flex-start" : "center"}
+              flexDirection={matches ? "row" : "column"}
+            >
+              <ComponentTitle title="Annual MTD & YTD Summary" />
+            </Stack>
+          </Grid>
+          <Grid item xs={6} sm={6} md={6} lg={6}>
+            <Stack
+              direction="row"
+              justifyContent={matches ? "flex-start" : "center"}
+              alignItems={matches ? "flex-start" : "center"}
+              flexDirection={matches ? "row" : "column"}
+            >
+              <ComponentTitle title="Annual Sales Out Summary" />
+            </Stack>
+          </Grid>
+          <Grid item xs={6} sm={6} md={6} lg={6}>
+            <Stack
+              direction="row"
+              justifyContent={matches ? "flex-end" : "center"}
+              alignItems={matches ? "flex-end" : "center"}
+              flexDirection={matches ? "row" : "column"}
+              spacing={2}
+            >
+              <ButtonComponent
+                stx={configure.default_button}
+                iconType={showTableCards === true ? "generate" : "graph"}
+                type="button"
+                fullWidth={true}
+                children={showTableCards === true ? "Table View" : "Card View"}
+                click={
+                  showTableCards === true
+                    ? salesSummary.onClickShowTableSummary
+                    : salesSummary.onClickShowTableCardsSummary
+                }
               />
             </Stack>
           </Grid>

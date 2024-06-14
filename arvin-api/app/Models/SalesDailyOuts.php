@@ -19,4 +19,6 @@ class SalesDailyOuts extends Model
     public function getSalesDateAttribute($value){
         return $this->attributes['name'] = date('Y-m-d',strtotime($value));
     }
+    protected $hidden = ['id','created_at','updated_at','deleted_at','added_by','modified_by'];
+
 }

@@ -425,7 +425,7 @@ class SalesDailyOutsController extends Controller
         $datalist = SalesDailyOuts::where('subsection_code', $sub_section['code'])->whereDate('sales_date', $currentDate)->get();
 
 
-        $records = DB::table('vw_DailySales')
+         $records = DB::table('vw_DailySales')
             ->where('warehouse', $sub_section['type'])
             // ->whereDate('createdate', $currentDate)
             ->orderBy('createdate')
@@ -487,7 +487,7 @@ class SalesDailyOutsController extends Controller
                 }
         }
         foreach ($final_results as $value) {
-            $check_sale = SalesDailyOuts::where('sales_daily_out_annual_settings_sales_code', $value["sales_daily_out_annual_settings_sales_code"])
+            $check_sale = SalesDailyOuts::where('sales_daily_out_annual_settings_sales_code', '2')
                 ->where('subsection_code', $value["subsection_code"])
                 ->where('year_sales_target', $value["year_sales_target"])
                 ->whereDate('sales_date', $value["sales_date"])
@@ -507,7 +507,7 @@ class SalesDailyOutsController extends Controller
     }
 
     public function getFiveDaysSalesDailyOutbyCurrentDate() {
-        $records = DB::table('vw_daily_sales_latest_five_days')->get();
+        return $records = DB::table('vw_daily_sales_latest_five_days')->get();
         $subSections = RefSubSections::whereIn('type', $records->pluck('warehouse'))->get()->keyBy('type');
         $recordsByDate = [];
         
