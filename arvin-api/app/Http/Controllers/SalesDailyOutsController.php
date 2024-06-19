@@ -418,7 +418,7 @@ class SalesDailyOutsController extends Controller
             return $mtdFinal;
         }
 
-    public function insertSAPSalesDailyOut($id) {
+    public function insertSAPSalesDailyOut($id) { 
         // Step 1: Retrieve all records
         $currentDate = Carbon::now()->format('Y-m-d');
         $sub_section = RefSubSections::where('code', $id)->first();
@@ -507,7 +507,7 @@ class SalesDailyOutsController extends Controller
     }
 
     public function getFiveDaysSalesDailyOutbyCurrentDate() {
-        return $records = DB::table('vw_daily_sales_latest_five_days')->get();
+         $records = DB::table('vw_daily_sales_latest_five_days')->get();
         $subSections = RefSubSections::whereIn('type', $records->pluck('warehouse'))->get()->keyBy('type');
         $recordsByDate = [];
         

@@ -5,9 +5,10 @@ import { useSearchParams } from "react-router-dom";
 import { cancelRequest } from "../../../../../api/api";
 import { Constants } from "../../../../../reducer/Contants";
 import {
-  getAnnualSettingSaleRanking,
+  getSalesSummaryData,
   getReferenceSalesRankingPlacements,
 } from "../actions/SalesSummaryActions";
+import { ViewAmountFormatingDecimals } from "../../../../../utils/AccountingUtils";
 const SalesSummaryHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
   const [state, setState] = React.useState({
@@ -25,6 +26,8 @@ const SalesSummaryHooks = (props) => {
     searchParams.get("f") != null
       ? String(searchParams.get("f"))
       : moment(new Date()).format("YYYY");
+  const filter_id =
+    searchParams.get("id") != null ? searchParams.get("id") : "";
   const dispatch = useDispatch();
   const addModal = useSelector((state) => state.SalesDailyOutReducer.addModal);
   const addModal2 = useSelector(
@@ -58,21 +61,53 @@ const SalesSummaryHooks = (props) => {
   const showTableCards = useSelector(
     (state) => state.SalesDailyOutReducer.showTableCards
   );
+  const annual_sales_mtd_ytd_subsections = useSelector(
+    (state) => state.SalesDailyOutReducer.annual_sales_mtd_ytd_subsections
+  );
+  const annual_sales_out_summary = useSelector(
+    (state) => state.SalesDailyOutReducer.annual_sales_out_summary
+  );
+  const current_sales_mtd_ytd_subsections = useSelector(
+    (state) => state.SalesDailyOutReducer.current_sales_mtd_ytd_subsections
+  );
+  const yearly_sales_line_chart_summary = useSelector(
+    (state) => state.SalesDailyOutReducer.yearly_sales_line_chart_summary
+  );
+  const total_daily_out_amount = useSelector(
+    (state) => state.SalesDailyOutReducer.total_daily_out_amount
+  );
+  const showMTDTable = useSelector(
+    (state) => state.SalesDailyOutReducer.showMTDTable
+  );
+  const showYTDTable = useSelector(
+    (state) => state.SalesDailyOutReducer.showYTDTable
+  );
+  const annual_set_total_count_subsections = useSelector(
+    (state) => state.SalesDailyOutReducer.annual_set_total_count_subsections
+  );
+  const annual_set_subsections = useSelector(
+    (state) => state.SalesDailyOutReducer.annual_set_subsections
+  );
   const columns = [
     { id: "description", label: "Description", align: "left" },
-    { id: "value", label: "January", align: "left" },
-    { id: "value", label: "February", align: "left" },
-    { id: "value", label: "March", align: "left" },
-    { id: "value", label: "April", align: "left" },
-    { id: "value", label: "May", align: "left" },
-    { id: "value", label: "June", align: "left" },
-    { id: "value", label: "July", align: "left" },
-    { id: "value", label: "August", align: "left" },
-    { id: "value", label: "September", align: "left" },
-    { id: "value", label: "October", align: "left" },
-    { id: "value", label: "November", align: "left" },
-    { id: "value", label: "December", align: "left" },
-    { id: "type", label: "Total", align: "left" },
+    { id: "january", label: "January", align: "left" },
+    { id: "february", label: "February", align: "left" },
+    { id: "march", label: "March", align: "left" },
+    { id: "april", label: "April", align: "left" },
+    { id: "may", label: "May", align: "left" },
+    { id: "june", label: "June", align: "left" },
+    { id: "july", label: "July", align: "left" },
+    { id: "august", label: "August", align: "left" },
+    { id: "september", label: "September", align: "left" },
+    { id: "october", label: "October", align: "left" },
+    { id: "november", label: "November", align: "left" },
+    { id: "december", label: "December", align: "left" },
+    {
+      id: "total",
+      label: "Total",
+      align: "left",
+      format: (value) => ViewAmountFormatingDecimals(value, 2),
+    },
   ];
 
   const subcolumns = [
@@ -84,6 +119,47 @@ const SalesSummaryHooks = (props) => {
     { id: "subsection", label: "Subsection", align: "left" },
     { id: "current_mtd", label: "Current MTD", align: "left" },
     { id: "current_ytd", label: "Current YTD", align: "left" },
+  ];
+  const annual_sales_mtd_ytd_subsections_columns = [
+    { label: "Description" },
+    { label: "January" },
+    { label: "February" },
+    { label: "March" },
+    { label: "April" },
+    { label: "May" },
+    { label: "June" },
+    { label: "July" },
+    { label: "August" },
+    { label: "September" },
+    { label: "October" },
+    { label: "November" },
+    { label: "December" },
+  ];
+  const annual_sales_mtd_ytd_subsections_subcolumns = [
+    { label: "MTD" },
+    { label: "YTD" },
+    { label: "MTD" },
+    { label: "YTD" },
+    { label: "MTD" },
+    { label: "YTD" },
+    { label: "MTD" },
+    { label: "YTD" },
+    { label: "MTD" },
+    { label: "YTD" },
+    { label: "MTD" },
+    { label: "YTD" },
+    { label: "MTD" },
+    { label: "YTD" },
+    { label: "MTD" },
+    { label: "YTD" },
+    { label: "MTD" },
+    { label: "YTD" },
+    { label: "MTD" },
+    { label: "YTD" },
+    { label: "MTD" },
+    { label: "YTD" },
+    { label: "MTD" },
+    { label: "YTD" },
   ];
   const onClickOpenAddModal = () => {
     dispatch({
@@ -123,6 +199,7 @@ const SalesSummaryHooks = (props) => {
       p: page,
       l: String(rowsPerPage),
       f: filterQuery,
+      id: filter_id,
     });
   };
   const handleChangeRowsPerPage = (event) => {
@@ -135,14 +212,6 @@ const SalesSummaryHooks = (props) => {
   };
   const onSelectItem = async (data) => {
     console.log(data);
-    await dispatch(getReferenceSalesRankingPlacements(data.code));
-    await dispatch({
-      type: Constants.ACTION_SALES_DAILY_OUT,
-      payload: {
-        selectedDataList: data,
-        addModal2: true,
-      },
-    });
   };
   const onSelectItemtoUpdate = async (data) => {
     await dispatch({
@@ -152,19 +221,30 @@ const SalesSummaryHooks = (props) => {
         addModal3: true,
       },
     });
-    await dispatch(getReferenceSalesRankingPlacements(data.code));
   };
   const onDeleteDeduction = (data) => {
     console.log(data);
   };
-  const onChangeSearch = async (event) => {
+  const onChangeSearch = async (type) => {
     // SEARCH DATA
-    const search = event.target.value;
+    const search = type;
     setSearchParams({
       q: search,
       p: "1",
       l: String(rowsPerPage),
       f: filterQuery,
+      id: filter_id,
+    });
+  };
+  const onChangeSubsectionCode = async (code) => {
+    // SEARCH DATA
+    const filter_id = code;
+    setSearchParams({
+      q: search,
+      p: "1",
+      l: String(rowsPerPage),
+      f: filterQuery,
+      id: filter_id,
     });
   };
   const debounce = (func, delay) => {
@@ -177,50 +257,42 @@ const SalesSummaryHooks = (props) => {
       q: search,
       l: rowsPerPage,
       f: filterQuery,
-      u: account_details?.code,
+      id: filter_id,
     };
     return data;
   };
 
-  const GetAnnualSettingSaleRankingList = async () => {
+  const GetSalesSummary = async () => {
     try {
       const data = getListParam();
-      await dispatch(getAnnualSettingSaleRanking(data));
+      await dispatch(getSalesSummaryData(data));
     } catch (error) {
       console.error(error);
     }
   };
 
   React.useEffect(() => {
-    GetAnnualSettingSaleRankingList();
+    GetSalesSummary();
     return () => cancelRequest();
-  }, [refresh, filterQuery, search]);
+  }, [refresh, filterQuery, search, filter_id]);
 
-  const onChangeRankingPlacement = (event, index) => {
-    let valu = event.target.value;
-    let name = event.target.name;
-    setState((prev) => ({
-      ...prev,
-      ranking_placement: state.ranking_placement.map((val, index2) =>
-        index === index2 ? { ...val, [name]: valu } : val
-      ),
-    }));
+  const onClickShowMTDTable = () => {
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        showMTDTable: true,
+        showYTDTable: false,
+      },
+    });
   };
-
-  const onClickAddRankingPlacement = () => {
-    let placement = {
-      index: state.ranking_placement.length + 1,
-    };
-    state.ranking_placement.push(placement);
-    setState((prev) => ({
-      ...prev,
-    }));
-  };
-  const onClickRemoveRankingPlacement = () => {
-    state.ranking_placement.splice(state.ranking_placement.length - 1, 1);
-    setState((prev) => ({
-      ...prev,
-    }));
+  const onClickShowYTDTable = () => {
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        showMTDTable: false,
+        showYTDTable: true,
+      },
+    });
   };
   const onClickShowTableSummary = () => {
     dispatch({
@@ -236,6 +308,17 @@ const SalesSummaryHooks = (props) => {
       payload: {
         showTableCards: true,
       },
+    });
+  };
+  const onChangeFilter = (date) => {
+    // SEARCH DATA
+    const filterQuery = date;
+    setSearchParams({
+      p: page == null ? 1 : page,
+      q: search,
+      l: rowsPerPage,
+      f: filterQuery,
+      id: filter_id,
     });
   };
   return {
@@ -258,6 +341,17 @@ const SalesSummaryHooks = (props) => {
     sales_ranking_placements,
     showTableCards,
     current_sales_mtd_ytd_subsections_columns,
+    annual_sales_mtd_ytd_subsections_columns,
+    annual_sales_mtd_ytd_subsections_subcolumns,
+    annual_sales_mtd_ytd_subsections,
+    annual_sales_out_summary,
+    current_sales_mtd_ytd_subsections,
+    yearly_sales_line_chart_summary,
+    total_daily_out_amount,
+    showMTDTable,
+    showYTDTable,
+    annual_set_total_count_subsections,
+    annual_set_subsections,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,
@@ -265,14 +359,15 @@ const SalesSummaryHooks = (props) => {
     onChangeSearch,
     onClickOpenAddModal,
     onClickCloseAddModal,
-    onChangeRankingPlacement,
-    onClickAddRankingPlacement,
-    onClickRemoveRankingPlacement,
     onClickCloseAddModal2,
     onSelectItemtoUpdate,
     onClickCloseAddModal3,
     onClickShowTableSummary,
     onClickShowTableCardsSummary,
+    onClickShowMTDTable,
+    onClickShowYTDTable,
+    onChangeFilter,
+    onChangeSubsectionCode,
   };
 };
 

@@ -111,7 +111,13 @@ const Tables = (props) => {
                     {columns.map((column) => {
                       const value = row[column.id];
                       return (
-                        <TableCell key={column.id} align={column.align}>
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          style={{
+                            color: value < 0 ? "#C83232" : "inherit",
+                          }}
+                        >
                           {column?.format != undefined
                             ? column.format(value)
                             : value}

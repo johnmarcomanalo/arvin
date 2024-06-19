@@ -1,13 +1,8 @@
 import { Constants } from "../../../../../reducer/Contants";
-import {
-  GetMultiSpecificDefaultServices,
-  GetSpecificDefaultServices,
-  PostDefaultServices,
-  PutDefaultServices,
-} from "../../../../../services/apiService";
+import { GetSpecificDefaultServices } from "../../../../../services/apiService";
 import { decryptaes } from "../../../../../utils/LightSecurity";
 
-export const getReferenceSalesRankingPlacements = (id) => async (dispatch) => {
+export const getSalesSummaryData = (values) => async (dispatch) => {
   try {
     await dispatch({
       type: Constants.ACTION_LOADING,
@@ -16,8 +11,16 @@ export const getReferenceSalesRankingPlacements = (id) => async (dispatch) => {
       },
     });
     const response = GetSpecificDefaultServices(
-      "api/reference/ref_sales_ranking_placements/",
-      id
+      "api/salesdailyout/report/get_report_sales_summary/?page=" +
+        values.p +
+        "&limit=" +
+        values.l +
+        "&q=" +
+        values.q +
+        "&f=" +
+        values.f +
+        "&id=" +
+        values.id
     );
     response.then((res) => {
       try {
@@ -25,14 +28,17 @@ export const getReferenceSalesRankingPlacements = (id) => async (dispatch) => {
         dispatch({
           type: Constants.ACTION_SALES_DAILY_OUT,
           payload: {
-            dataSubList: decrypted,
-            dataSubListCount: decrypted?.length,
-          },
-        });
-        dispatch({
-          type: Constants.ACTION_REFERENCE,
-          payload: {
-            sales_ranking_placements: decrypted,
+            annual_sales_mtd_ytd_subsections:
+              decrypted?.annual_sales_mtd_ytd_subsections,
+            annual_sales_out_summary: decrypted?.annual_sales_out_summary,
+            current_sales_mtd_ytd_subsections:
+              decrypted?.current_sales_mtd_ytd_subsections,
+            yearly_sales_line_chart_summary:
+              decrypted?.yearly_sales_line_chart_summary,
+            total_daily_out_amount: decrypted?.total_daily_out_amount,
+            annual_set_total_count_subsections:
+              decrypted.annual_set_total_count_subsections,
+            annual_set_subsections: decrypted.annual_set_subsections,
           },
         });
       } catch (error) {
@@ -49,144 +55,3 @@ export const getReferenceSalesRankingPlacements = (id) => async (dispatch) => {
     console.log(error);
   }
 };
-
-export const postAnnualSettingSalesRanking =
-  (formValues) => async (dispatch) => {
-    try {
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: true,
-        },
-      });
-      const res = await PostDefaultServices(
-        "api/reference/sales_ranking",
-        formValues
-      );
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: false,
-        },
-      });
-      return res;
-    } catch (error) {
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: false,
-        },
-      });
-    }
-  };
-
-export const getAnnualSettingSaleRanking = (values) => async (dispatch) => {
-  try {
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: true,
-      },
-    });
-    const response = GetSpecificDefaultServices(
-      "api/reference/sales_ranking_list?page=" +
-        values.p +
-        "&limit=" +
-        values.l +
-        "&q=" +
-        values.q +
-        "&f=" +
-        values.f +
-        "&uid=" +
-        values.u
-    );
-    response.then((res) => {
-      dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: false,
-        },
-      });
-      let decrypted = decryptaes(res.data);
-      dispatch({
-        type: Constants.ACTION_SALES_DAILY_OUT,
-        payload: {
-          dataList: decrypted.dataList.data,
-          dataListCount: decrypted.dataList.total,
-        },
-      });
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const getAnnualMonthlyDailyTargetSalesBySectionSubsection =
-  (id, year) => async (dispatch) => {
-    try {
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: true,
-        },
-      });
-      const response = GetMultiSpecificDefaultServices(
-        "api/salesdailyout/annual_settings_sales/get_annual_monthly_daily_target_sales_by_section_subsection",
-        [id, year]
-      );
-      response.then((res) => {
-        let decypted = decryptaes(res.data);
-        dispatch({
-          type: Constants.ACTION_SALES_DAILY_OUT,
-          payload: {
-            annual_sales_target: decypted.annual_sales_target,
-            monthly_sales_target: decypted.monthly_sales_target,
-            daily_sales_target: decypted.daily_sales_target,
-            year_sales_target: decypted.year_sales_target,
-            sales_daily_out_annual_settings_sales_code:
-              decypted.sales_daily_out_annual_settings_sales_code,
-          },
-        });
-
-        dispatch({
-          type: Constants.ACTION_LOADING,
-          payload: {
-            loading: false,
-          },
-        });
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-export const putAnnualSettingSalesRanking =
-  (formValues, id) => async (dispatch) => {
-    try {
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: true,
-        },
-      });
-      const res = await PutDefaultServices(
-        "api/reference/sales_ranking/",
-        formValues.code,
-        formValues
-      );
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: false,
-        },
-      });
-      return res;
-    } catch (error) {
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: false,
-        },
-      });
-    }
-  };

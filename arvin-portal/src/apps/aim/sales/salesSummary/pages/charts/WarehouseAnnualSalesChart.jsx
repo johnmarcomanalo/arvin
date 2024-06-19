@@ -48,7 +48,6 @@ const handleAxisClick = (data) => {
     month: data.axisValue,
     value: seriesValues["auto-generated-id-0"], // Replace with appropriate key
   };
-  console.log(details);
 };
 
 // Main component

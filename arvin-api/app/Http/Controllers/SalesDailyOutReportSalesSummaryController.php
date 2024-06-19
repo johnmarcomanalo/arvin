@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use App\Models\SalesDailyOuts;
+use Illuminate\Support\Facades\Crypt;
 
 
 
@@ -78,13 +79,13 @@ class SalesDailyOutReportSalesSummaryController extends Controller
             return $formatted;
         }
         
-    public function getYearlySalesByDateRange($year) {
+    public function getYearlySalesByDateRange($year = null, $subsection_code = null) {
         $result = [];
         $year = (string) $year;
-        $selectedYear = Carbon::parse($year);
+        $selectedYear =  Carbon::createFromDate($year, 1, 1);
 
         //get selected year start and end
-        $selectedYearStart = $selectedYear->copy()->startOfYear()->format('Y-m-d');
+         $selectedYearStart = $selectedYear->copy()->startOfYear()->format('Y-m-d');
         $selectedYearEnd = $selectedYear->copy()->endOfYear()->format('Y-m-d');
 
         //get previous selected year start and end
@@ -96,41 +97,50 @@ class SalesDailyOutReportSalesSummaryController extends Controller
         $previous_Year = $selectedYear->copy()->subYear()->format('Y');
 
         // Get sales data for last year
-         $query_last_year = SalesDailyOuts::selectRaw('MONTH(sales_date) as month, SUM(sales_daily_out) as sales')
+        $query_last_year = SalesDailyOuts::selectRaw('MONTH(sales_date) as month, SUM(sales_daily_out) as sales')
             ->whereBetween('sales_date', [$selectedPreviousYearStart, $selectedPreviousYearEnd])
+            ->when(isset($subsection_code), function ($query) use ($subsection_code) {
+                return $query->where('subsection_code', $subsection_code);
+            })
             ->groupByRaw('MONTH(sales_date)')
             ->orderByRaw('MONTH(sales_date)')
             ->get();
 
         // Get sales data for the current year
-        $query_current_year = SalesDailyOuts::selectRaw('MONTH(sales_date) as month, SUM(sales_daily_out) as sales')
+         $query_current_year = SalesDailyOuts::selectRaw('MONTH(sales_date) as month, SUM(sales_daily_out) as sales')
+            ->when(isset($subsection_code), function ($query) use ($subsection_code) {
+                return $query->where('subsection_code', $subsection_code);
+            })
             ->whereBetween('sales_date', [$selectedYearStart, $selectedYearEnd])
             ->groupByRaw('MONTH(sales_date)')
             ->orderByRaw('MONTH(sales_date)')
             ->get();
-
+         
         // Format the last year and current year data
         if ($query_last_year->isNotEmpty()) {
             $result[strval($previous_Year)] = $this->formatQueryResult($query_last_year);
+        }else{
+             $result[strval($previous_Year)] = [];
         }
         if ($query_current_year->isNotEmpty()) {
             $result[strval($selected_Year)] = $this->formatQueryResult($query_current_year);
+        }else{
+             $result[strval($selected_Year)] = [];
         }
-
         return $result;
     }
 
-    public function getMonthlySalesofWarehouses($year) {
+    public function getMonthlySalesofWarehouses($year=null,$code = null) {
         $result = [];
         $year = (string) $year;
         $selectedYear = Carbon::parse($year);
         $selected_Year = $selectedYear->copy()->format('Y');
-
         //get selected year start and end
         $selectedYearStart = $selectedYear->copy()->startOfYear()->format('Y-m-d');
         $selectedYearEnd = $selectedYear->copy()->endOfYear()->format('Y-m-d');
 
         $query_current_year = SalesDailyOuts::join('ref_sub_sections', 'sales_daily_outs.subsection_code', '=', 'ref_sub_sections.code')
+         
         ->select(
             'ref_sub_sections.description',
               'ref_sub_sections.type',
@@ -138,7 +148,11 @@ class SalesDailyOutReportSalesSummaryController extends Controller
             DB::raw('MONTH(sales_date) as month'),
             DB::raw('SUM(sales_daily_out) as sales')
         )
-          ->groupBy('ref_sub_sections.description', 'ref_sub_sections.type', 'ref_sub_sections.code', DB::raw('MONTH(sales_date)'))
+         ->when(isset($code), function ($query) use ($code) {
+            return $query->where('subsection_code', $code);
+        })
+        ->groupBy('ref_sub_sections.description', 'ref_sub_sections.type', 'ref_sub_sections.code', DB::raw('MONTH(sales_date)'))
+      
         ->get();
         $results = $query_current_year->groupBy('description')->map(function ($group) {
             $total = 0;
@@ -149,44 +163,60 @@ class SalesDailyOutReportSalesSummaryController extends Controller
                 'description' => $description,
                 'type' => $type,
                 'subsection_code' => $subsection_code,
-                'january' => 0,
-                'february' => 0,
-                'march' => 0,
-                'april' => 0,
-                'may' => 0,
-                'june' => 0,
-                'july' => 0,
-                'august' => 0,
-                'september' => 0,
-                'october' => 0,
-                'november' => 0,
-                'december' => 0,
+                'january' => "--",
+                'february' => "--",
+                'march' => "--",
+                'april' => "--",
+                'may' => "--",
+                'june' => "--",
+                'july' => "--",
+                'august' => "--",
+                'september' => "--",
+                'october' => "--",
+                'november' => "--",
+                'december' => "--",
                 'total' => 0,
             ];
 
             foreach ($group as $item) {
                 $monthName = strtolower(Carbon::create()->month($item->month)->format('F'));
-                $monthlySales[$monthName] = $item->sales;
-                $monthlySales['total'] += ($item->sales);
+                $monthlySales[$monthName] = $item->sales > 0 ? number_format($item->sales, 2) : "--";
+                $monthlySales['total'] += $item->sales;
             }
-
             return $monthlySales;
         })->values()->all();
         // Function to format the query result
-        
+            
         return $results;
     }
 
-    public function getReportSalesSummary($year = 2024) {
+    public function getReportSalesSummary(Request $request) {
+        $page = $request->query('page');
+        $limit = $request->query('limit');
+        $query = $request->query('q');
+        $filter = $request->query('f');
+        $code = $request->query('id');
+         
         $totalDailyOutAmount = 0;
-        $queryRawData = SalesDailyOuts::where('year_sales_target', $year)
-            ->orderBy('sales_date')
-            ->get();
+        $queryRawData = SalesDailyOuts::where('year_sales_target', $filter)
+        ->when(isset($code), function ($qry) use ($code) {
+            return $qry->where('subsection_code', $code);
+        })
+        ->orderBy('sales_date')
+        ->get();
+            
+        $annual_set_total_count_subsections = SalesDailyOutAnnualSettingsSales::where('year_sales_target', $filter)->count();
+        $annual_set_subsections = SalesDailyOutAnnualSettingsSales::
+        join('ref_sub_sections', 'sales_daily_out_annual_settings_sales.subsection_code', '=', 'ref_sub_sections.code')
+        ->when(isset($query), function ($qry) use ($query) {
+            return $qry->where('ref_sub_sections.type', $query);
+        })
+        ->get(['ref_sub_sections.type','ref_sub_sections.code','ref_sub_sections.description']);
         
-        $annual_sales_out_summary = $this->getMonthlySalesofWarehouses($year);
-        $yearly_sales_line_chart_summary = $this->getYearlySalesByDateRange($year);
-        $current_sales_mtd_ytd_subsections = $this->currentSalesMtdYtdSubSections();
-        $annual_sales_mtd_ytd_subsections = $this->annualSalesMtdYtdSubSections($year);
+        $yearly_sales_line_chart_summary = $this->getYearlySalesByDateRange($filter,$code);
+        $annual_sales_out_summary = $this->getMonthlySalesofWarehouses($filter,$code);
+        $annual_sales_mtd_ytd_subsections = $this->annualSalesMtdYtdSubSections($filter,$code);
+        $current_sales_mtd_ytd_subsections = $this->currentSalesMtdYtdSubSections($code);
 
         foreach ($queryRawData as $value) {
             $salesDailyOut = (float)$value["sales_daily_out"];
@@ -194,22 +224,29 @@ class SalesDailyOutReportSalesSummaryController extends Controller
                 $totalDailyOutAmount += $salesDailyOut;
             }
         }
-
-        return $report_data = [
-            // "total_daily_out_amount"=>$totalDailyOutAmount,
-            // "yearly_sales_line_chart_summary"=>$yearly_sales_line_chart_summary,
-            // "annual_sales_out_summary"=>$annual_sales_out_summary,
-            // "current_sales_mtd_ytd_subsections"=>$current_sales_mtd_ytd_subsections,
+        $response = [
+            "total_daily_out_amount"=>$totalDailyOutAmount,
+            "yearly_sales_line_chart_summary"=>$yearly_sales_line_chart_summary,
+            "annual_sales_out_summary"=>$annual_sales_out_summary,
+            "current_sales_mtd_ytd_subsections"=>$current_sales_mtd_ytd_subsections,
             "annual_sales_mtd_ytd_subsections"=>$annual_sales_mtd_ytd_subsections,
+            "annual_set_total_count_subsections"=>$annual_set_total_count_subsections,
+            "annual_set_subsections"=>$annual_set_subsections,
         ];
+        return Crypt::encryptString(json_encode($response));
+        // return $response;
 
     }
-    public function currentSalesMtdYtdSubSections() {
+    public function currentSalesMtdYtdSubSections($code = null) {
         $salesDailyOutsController = new SalesDailyOutsController();
         $currentDate = Carbon::now();
         $dateMonth = MainController::formatSingleDigitMonthOnly($currentDate); //format date to single digit month without the zero (0)
         $dateYear = MainController::formatYearOnly($currentDate); //format date to year
-        $subSectionsWithAnnualSalesQuota = SalesDailyOutAnnualSettingsSales::where('year_sales_target', $dateYear)->get();
+        $subSectionsWithAnnualSalesQuota = SalesDailyOutAnnualSettingsSales::where('year_sales_target', $dateYear)
+           ->when(isset($code), function ($query) use ($code) {
+            return $query->where('subsection_code', $code);
+        })
+        ->get();
 
         $currentSalesMtdYtdSummary = [];
         foreach ($subSectionsWithAnnualSalesQuota as $subSection) {
@@ -218,8 +255,8 @@ class SalesDailyOutReportSalesSummaryController extends Controller
 
             $currentMtdSummary['subsection'] = $subSection['subsection'];
             $currentMtdSummary['subsection_code'] = $subSection['subsection_code'];
-            $currentMtdSummary['current_mtd'] = $currentMtdSummary['mtdFinal'];
-            $currentMtdSummary['current_ytd'] = $ytdSummary;
+            $currentMtdSummary['current_mtd'] = number_format($currentMtdSummary['mtdFinal'],2);
+            $currentMtdSummary['current_ytd'] = number_format($ytdSummary,2);
 
             if (isset($currentMtdSummary['mtd_data_list'])) {
                 unset($currentMtdSummary['mtd_data_list']);
@@ -234,38 +271,66 @@ class SalesDailyOutReportSalesSummaryController extends Controller
         }
         return $currentSalesMtdYtdSummary;
     }
+    public function transformData($data) {
+        $result = [];
+        foreach ($data as $item) {
+            $subsection = $item['subsection'];
+            $month = $item['month'];
+            $current_mtd = number_format($item['current_mtd'],2);
+            $current_ytd = number_format($item['current_ytd'],2);
+            if($current_mtd == '-100.00'){
+                $current_mtd = '--';
+                $current_ytd = '--';
+            }
+            if (!isset($result[$subsection])) {
+                $result[$subsection] = [
+                    'subsection' => $subsection
+                ];
+            }
 
-    public function annualSalesMtdYtdSubSections($year) {
+            $result[$subsection]["{$month}_current_mtd"] = $current_mtd;
+            $result[$subsection]["{$month}_current_ytd"] = $current_ytd;
+
+
+        }
+        return array_values($result);
+    }
+
+    public function annualSalesMtdYtdSubSections($year=null,$code =null) {
         $salesDailyOutsController = new SalesDailyOutsController();
         $months = range(1, 12);
         $dateYear = MainController::formatYearOnly($year); //format date to year
-        $subSectionsWithAnnualSalesQuota = SalesDailyOutAnnualSettingsSales::where('year_sales_target', $dateYear)->get();
+        $subSectionsWithAnnualSalesQuota = SalesDailyOutAnnualSettingsSales::where('year_sales_target', $dateYear)
+        ->when(isset($code), function ($query) use ($code) {
+            return $query->where('subsection_code', $code);
+        })
+        ->get();
         $annualtSalesMtdYtdSummary = [];
         $result = [];
         
         foreach ($subSectionsWithAnnualSalesQuota as $subSection) {
-        foreach ($months as  $dateMonth) {
-            $currentMtdSummary = $salesDailyOutsController->get_mtd($dateYear, $dateMonth, $subSection, $dateMonth);
-            $ytdSummary = $salesDailyOutsController->get_final_mtd($dateYear, $dateMonth, $subSection, $dateMonth);
+            foreach ($months as  $dateMonth) {
+                $currentMtdSummary = $salesDailyOutsController->get_mtd($dateYear, $dateMonth, $subSection, $dateMonth);
+                $ytdSummary = $salesDailyOutsController->get_final_mtd($dateYear, $dateMonth, $subSection, $dateMonth);
+                $monthName = strtolower(Carbon::create()->month($dateMonth)->format('F'));
+                $currentMtdSummary['subsection'] = $subSection['subsection'];
+                $currentMtdSummary['subsection_code'] = $subSection['subsection_code'];
+                $currentMtdSummary['current_mtd'] = $currentMtdSummary['mtdFinal'];
+                $currentMtdSummary['current_ytd'] = $ytdSummary;
+                $currentMtdSummary['month'] = $monthName;
 
-            $currentMtdSummary['subsection'] = $subSection['subsection'];
-            $currentMtdSummary['subsection_code'] = $subSection['subsection_code'];
-            $currentMtdSummary['current_mtd'] = $currentMtdSummary['mtdFinal'];
-            $currentMtdSummary['current_ytd'] = $ytdSummary;
-            $currentMtdSummary['month'] = $monthName = Carbon::create()->month($dateMonth)->format('F');
+                if (isset($currentMtdSummary['mtd_data_list'])) {
+                    unset($currentMtdSummary['mtd_data_list']);
+                    unset($currentMtdSummary['mtdFinal']);
+                    unset($currentMtdSummary['mtdTotalDailyQoutaAmount']);
+                    unset($currentMtdSummary['mtdTotalDailyOutAmount']);
+                    unset($currentMtdSummary['mtdTotalStatusDailyTarget']);
+                }
 
-            if (isset($currentMtdSummary['mtd_data_list'])) {
-                unset($currentMtdSummary['mtd_data_list']);
-                unset($currentMtdSummary['mtdFinal']);
-                unset($currentMtdSummary['mtdTotalDailyQoutaAmount']);
-                unset($currentMtdSummary['mtdTotalDailyOutAmount']);
-                unset($currentMtdSummary['mtdTotalStatusDailyTarget']);
-            }
-
-            $annualtSalesMtdYtdSummary[] = $currentMtdSummary;    
+                $annualtSalesMtdYtdSummary[] = $currentMtdSummary;    
             }
         }
-        
-        return $annualtSalesMtdYtdSummary;
+        $transformedData = $this->transformData($annualtSalesMtdYtdSummary);
+        return $transformedData;
     }
 }

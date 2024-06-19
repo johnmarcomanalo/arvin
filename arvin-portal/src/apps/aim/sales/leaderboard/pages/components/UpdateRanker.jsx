@@ -18,7 +18,6 @@ const submit = async (values, dispatch, props) => {
   try {
     values.rank_code = props.selected_code;
     values.ref_month_code = moment(values.ref_month_code).format("MM");
-    // console.log(values);
     const res = await dispatch(postPlacementAnnualSalesRanking(values));
     let decrypted = await decryptaes(res?.data);
     await dispatch({

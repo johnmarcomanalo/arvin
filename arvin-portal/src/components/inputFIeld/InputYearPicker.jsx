@@ -46,6 +46,7 @@ const InputYearPicker = ({
   required,
   placeholder,
   showText = true,
+  disableFuture = false,
 }) => {
   // Convert input value to a valid Date object using moment.js
   const dateValue = input.value ? moment(input.value).toDate() : null;
@@ -59,7 +60,7 @@ const InputYearPicker = ({
   return (
     <div>
       {showText ? (
-        <Typography sx={styleSheet.label}>
+        <Typography sx={styleSheet.label} align="left">
           {label}
           {required ? (
             <span style={{ color: configure.denied_color, fontSize: 15 }}>
@@ -82,6 +83,7 @@ const InputYearPicker = ({
           openTo="year"
           disabledKeyboardNavigation
           placeholderText={placeholder}
+          disableFuture={disableFuture}
           slotProps={{ field: { size: "small" } }}
           sx={{ width: "100%" }}
         />

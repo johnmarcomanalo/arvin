@@ -12,6 +12,7 @@ import TableRowsIcon from "@mui/icons-material/TableRows";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import LaunchIcon from "@mui/icons-material/Launch";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 const ButtonComponent = (props) => {
   const { ...params } = props;
   let icon = null;
@@ -45,6 +46,9 @@ const ButtonComponent = (props) => {
       break;
     case "view":
       icon = <LaunchIcon />;
+      break;
+    case "view2":
+      icon = <VisibilityIcon />;
       break;
     default:
       icon = <HelpIcon />;

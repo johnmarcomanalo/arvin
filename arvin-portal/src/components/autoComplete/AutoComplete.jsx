@@ -14,7 +14,7 @@ export default function ComboBox(props) {
   };
   return (
     <div>
-      <Typography sx={styleSheet.label}>
+      <Typography sx={styleSheet.label} align="left">
         {props.label}{" "}
         {props.required ? (
           <span style={{ color: configure.denied_color, fontSize: 15 }}>*</span>
@@ -30,9 +30,7 @@ export default function ComboBox(props) {
         onChange={props.onChangeHandle}
         value={props.value}
         defaultValue={{ [props.initialValue]: props.input.value }}
-        isOptionEqualToValue={(option, value) =>
-          option.value === value.value
-        }
+        isOptionEqualToValue={(option, value) => option.value === value.value}
         getOptionLabel={props.getOptionLabel}
         onInputChange={handleInputChange}
         renderInput={(params) => (

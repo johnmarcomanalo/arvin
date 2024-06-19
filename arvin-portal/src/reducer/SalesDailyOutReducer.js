@@ -32,6 +32,15 @@ const initialState = {
   addModal4: false,
   final_mtd_data: 0,
   showTableCards: false,
+  annual_sales_mtd_ytd_subsections: [],
+  annual_sales_out_summary: [],
+  current_sales_mtd_ytd_subsections: [],
+  yearly_sales_line_chart_summary: [],
+  total_daily_out_amount: 0,
+  showMTDTable: false,
+  showYTDTable: false,
+  annual_set_total_count_subsections: 0,
+  annual_set_subsections: [],
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
