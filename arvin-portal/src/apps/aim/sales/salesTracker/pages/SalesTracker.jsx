@@ -342,6 +342,7 @@ let SalesTracker = (props) => {
             <Page
               page={salesTracker?.page}
               limit={salesTracker?.dataListCount}
+              limitPerPage={salesTracker?.rowsPerPage}
               status={""}
               onHandleChange={salesTracker.handleChangePage}
             />

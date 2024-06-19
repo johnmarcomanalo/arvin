@@ -20,7 +20,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("p") != undefined ? searchParams.get("p") : 1;
   const rowsPerPage =
-    searchParams.get("l") != null ? searchParams.get("l") : 10;
+    searchParams.get("l") != null ? searchParams.get("l") : 30;
   const search =
     searchParams.get("q") != null ? String(searchParams.get("q")) : "";
   const filterQuery =

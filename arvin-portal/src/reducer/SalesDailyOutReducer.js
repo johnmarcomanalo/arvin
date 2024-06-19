@@ -4,7 +4,7 @@ const initialState = {
   refresh2: false,
   search: "",
   page: 1,
-  rowsPerPage: 10,
+  rowsPerPage: 30,
   dataList: [],
   dataSubList: [],
   dataListCount: 0,
