@@ -20,7 +20,9 @@ export const getSalesSummaryData = (values) => async (dispatch) => {
         "&f=" +
         values.f +
         "&id=" +
-        values.id
+        values.id +
+        "&user_code=" +
+        values.user_code
     );
     response.then((res) => {
       try {

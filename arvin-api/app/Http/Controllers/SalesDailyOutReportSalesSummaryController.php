@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use App\Models\SalesDailyOuts;
 use Illuminate\Support\Facades\Crypt;
+use App\Models\UserAccessOrganizationRights;
 
 
 
@@ -79,7 +80,7 @@ class SalesDailyOutReportSalesSummaryController extends Controller
             return $formatted;
         }
         
-    public function getYearlySalesByDateRange($year = null, $subsection_code = null) {
+    public function getYearlySalesByDateRange($year = null, $subsection_code = null,$access_subsection_codes) {
         $result = [];
         $year = (string) $year;
         $selectedYear =  Carbon::createFromDate($year, 1, 1);
@@ -110,6 +111,8 @@ class SalesDailyOutReportSalesSummaryController extends Controller
          $query_current_year = SalesDailyOuts::selectRaw('MONTH(sales_date) as month, SUM(sales_daily_out) as sales')
             ->when(isset($subsection_code), function ($query) use ($subsection_code) {
                 return $query->where('subsection_code', $subsection_code);
+            }, function ($qry) use ($access_subsection_codes) {
+                return $qry->whereIn('subsection_code', $access_subsection_codes);
             })
             ->whereBetween('sales_date', [$selectedYearStart, $selectedYearEnd])
             ->groupByRaw('MONTH(sales_date)')
@@ -130,7 +133,7 @@ class SalesDailyOutReportSalesSummaryController extends Controller
         return $result;
     }
 
-    public function getMonthlySalesofWarehouses($year=null,$code = null) {
+    public function getMonthlySalesofWarehouses($year=null,$code = null,$access_subsection_codes) {
         $result = [];
         $year = (string) $year;
         $selectedYear = Carbon::parse($year);
@@ -150,7 +153,9 @@ class SalesDailyOutReportSalesSummaryController extends Controller
         )
          ->when(isset($code), function ($query) use ($code) {
             return $query->where('subsection_code', $code);
-        })
+        }, function ($qry) use ($access_subsection_codes) {
+                return $qry->whereIn('subsection_code', $access_subsection_codes);
+            })
         ->groupBy('ref_sub_sections.description', 'ref_sub_sections.type', 'ref_sub_sections.code', DB::raw('MONTH(sales_date)'))
       
         ->get();
@@ -196,27 +201,41 @@ class SalesDailyOutReportSalesSummaryController extends Controller
         $query = $request->query('q');
         $filter = $request->query('f');
         $code = $request->query('id');
+        $user_code = $request->query('user_code');
          
         $totalDailyOutAmount = 0;
-        $queryRawData = SalesDailyOuts::where('year_sales_target', $filter)
-        ->when(isset($code), function ($qry) use ($code) {
-            return $qry->where('subsection_code', $code);
-        })
-        ->orderBy('sales_date')
-        ->get();
-            
-        $annual_set_total_count_subsections = SalesDailyOutAnnualSettingsSales::where('year_sales_target', $filter)->count();
-        $annual_set_subsections = SalesDailyOutAnnualSettingsSales::
-        join('ref_sub_sections', 'sales_daily_out_annual_settings_sales.subsection_code', '=', 'ref_sub_sections.code')
+
+         $annual_set_subsections = UserAccessOrganizationRights::
+        join('ref_sub_sections', 'user_access_organization_rights.subsection_code', '=', 'ref_sub_sections.code')
+        ->where('user_id',$user_code)
+        ->where('access_rights',1)
         ->when(isset($query), function ($qry) use ($query) {
             return $qry->where('ref_sub_sections.type', $query);
-        })
+        },
+        )
         ->get(['ref_sub_sections.type','ref_sub_sections.code','ref_sub_sections.description']);
-        
-        $yearly_sales_line_chart_summary = $this->getYearlySalesByDateRange($filter,$code);
-        $annual_sales_out_summary = $this->getMonthlySalesofWarehouses($filter,$code);
-        $annual_sales_mtd_ytd_subsections = $this->annualSalesMtdYtdSubSections($filter,$code);
-        $current_sales_mtd_ytd_subsections = $this->currentSalesMtdYtdSubSections($code);
+
+
+        // Extract the subsection codes
+        $access_subsection_codes = $annual_set_subsections->pluck('code')->toArray();
+
+        if (!in_array($code, $access_subsection_codes)) {
+            $code = null;
+        }
+        $queryRawData = SalesDailyOuts::where('year_sales_target', $filter)
+            ->when(isset($code), function ($qry) use ($code) {
+                return $qry->where('subsection_code', $code);
+            }, function ($qry) use ($access_subsection_codes) {
+                return $qry->whereIn('subsection_code', $access_subsection_codes);
+            })
+            ->orderBy('sales_date')
+            ->get();
+        $annual_set_total_count_subsections = SalesDailyOutAnnualSettingsSales::where('year_sales_target', $filter)->count();
+
+        $yearly_sales_line_chart_summary = $this->getYearlySalesByDateRange($filter,$code,$access_subsection_codes);
+        $annual_sales_out_summary = $this->getMonthlySalesofWarehouses($filter,$code,$access_subsection_codes);
+        $annual_sales_mtd_ytd_subsections = $this->annualSalesMtdYtdSubSections($filter,$code,$access_subsection_codes);
+        $current_sales_mtd_ytd_subsections = $this->currentSalesMtdYtdSubSections($code,$access_subsection_codes);
 
         foreach ($queryRawData as $value) {
             $salesDailyOut = (float)$value["sales_daily_out"];
@@ -237,7 +256,7 @@ class SalesDailyOutReportSalesSummaryController extends Controller
         // return $response;
 
     }
-    public function currentSalesMtdYtdSubSections($code = null) {
+    public function currentSalesMtdYtdSubSections($code = null,$access_subsection_codes) {
         $salesDailyOutsController = new SalesDailyOutsController();
         $currentDate = Carbon::now();
         $dateMonth = MainController::formatSingleDigitMonthOnly($currentDate); //format date to single digit month without the zero (0)
@@ -245,7 +264,9 @@ class SalesDailyOutReportSalesSummaryController extends Controller
         $subSectionsWithAnnualSalesQuota = SalesDailyOutAnnualSettingsSales::where('year_sales_target', $dateYear)
            ->when(isset($code), function ($query) use ($code) {
             return $query->where('subsection_code', $code);
-        })
+        }, function ($qry) use ($access_subsection_codes) {
+                return $qry->whereIn('subsection_code', $access_subsection_codes);
+            })
         ->get();
 
         $currentSalesMtdYtdSummary = [];
@@ -296,14 +317,16 @@ class SalesDailyOutReportSalesSummaryController extends Controller
         return array_values($result);
     }
 
-    public function annualSalesMtdYtdSubSections($year=null,$code =null) {
+    public function annualSalesMtdYtdSubSections($year=null,$code =null,$access_subsection_codes) {
         $salesDailyOutsController = new SalesDailyOutsController();
         $months = range(1, 12);
         $dateYear = MainController::formatYearOnly($year); //format date to year
         $subSectionsWithAnnualSalesQuota = SalesDailyOutAnnualSettingsSales::where('year_sales_target', $dateYear)
         ->when(isset($code), function ($query) use ($code) {
             return $query->where('subsection_code', $code);
-        })
+        }, function ($qry) use ($access_subsection_codes) {
+                return $qry->whereIn('subsection_code', $access_subsection_codes);
+            })
         ->get();
         $annualtSalesMtdYtdSummary = [];
         $result = [];

@@ -33,6 +33,14 @@ const IndexSalesSummary = lazy(() =>
 const IndexSelectedSalesSummary = lazy(() =>
   import("./apps/aim/sales/salesSummary/pages/IndexSelectedSalesSummary")
 );
+const IndexOrganizationRights = lazy(() =>
+  import(
+    "./apps/aim/accessrights/organizationrights/pages/IndexOrganizationRights"
+  )
+);
+const IndexPageRights = lazy(() =>
+  import("./apps/aim/accessrights/pagerights/pages/IndexPageRights")
+);
 const theme = createTheme({
   typography: {
     fontFamily: "Poppins, sans-serif",
@@ -99,8 +107,17 @@ function App() {
                     path="/Modules/Sales/Reports/SalesSummary/:id/:month/:year"
                     element={<IndexSelectedSalesSummary />}
                   />
+                  <Route
+                    path="/Modules/SystemSettings/AccessRights/OrganizationRights"
+                    element={<IndexOrganizationRights />}
+                  />
+                  <Route
+                    path="/Modules/SystemSettings/AccessRights/PageRights"
+                    element={<IndexPageRights />}
+                  />
                 </Route>
               )}
+
             <Route element={<NoMatch />} path="*" />
           </Routes>
         </Suspense>

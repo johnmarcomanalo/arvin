@@ -15,6 +15,8 @@ use App\Http\Controllers\RefSalesRankingPlacementsController;
 use App\Http\Controllers\SalesDailyOutAnnualSalesRankingController;
 use App\Http\Controllers\SalesDailyOutAnnualSalesRankingDetailsController;
 use App\Http\Controllers\SalesDailyOutReportSalesSummaryController;
+use App\Http\Controllers\UsersController;
+use App\Http\Controllers\UserAccessOrganizationRightsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -54,6 +56,8 @@ use Illuminate\Support\Facades\Route;
     Route::apiResource('reference/sales_ranking',RefSalesRankingController::class)->middleware(['light_decryption']);
     Route::apiResource('reference/ref_sales_ranking_placements',RefSalesRankingPlacementsController::class)->middleware(['light_decryption']);
     Route::get('reference/subsections/get_subsection/{id}',[RefSubSectionsController::class,'get_subsection'])->middleware(['light_decryption']);
+    Route::get('reference/system_settings/access_rights/organization_rights/get_employee_organization_access_list/{id}',[UserAccessOrganizationRightsController::class,'get_employee_organization_access_list']);
+    Route::apiResource('reference/system_settings/access_rights/organization_rights',UserAccessOrganizationRightsController::class)->middleware(['light_decryption']);
     // REFERENCE END
     
     //MODULE SALES DAILY OUT START
@@ -90,7 +94,9 @@ use Illuminate\Support\Facades\Route;
     Route::get('qoutation/annual_qouta/annual_qouta_computation/{amount}',[QuotationAnnualQuotasController::class, 'annual_qouta_computation'])->middleware(['light_decryption']);
     // QUOTATION END
 
-
+    // HUMAN RESOURCE START
+    Route::get('humanresource/employee_list',[UsersController::class, 'employee_list']);
+    // HUMAN RESOURCE END
 
     Route::group(['middleware' => ['auth:sanctum','cors','api']], function () {
         //REFERENCE

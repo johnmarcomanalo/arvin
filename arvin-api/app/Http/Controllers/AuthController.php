@@ -95,15 +95,18 @@ class AuthController extends Controller
 
         $user_access_module_rights = UserAccessModuleRights::join('ref_modules','user_access_module_rights.module_code','=','ref_modules.code')
         ->where('user_id',$user_id) 
+        ->orderBy('ref_modules.description')
         ->get(['user_access_module_rights.*','ref_modules.description','ref_modules.link']);
         
         $user_access_component_rights = UserAccessComponentRights::join('ref_components','user_access_component_rights.component_code','=','ref_components.code')
         ->where('user_id',$user_id)
+        ->orderBy('ref_components.description')
         ->get(['user_access_component_rights.*','ref_components.description','ref_components.link']);
         
         
         $user_access_sub_component_rights = UserAccessSubComponentRights::join('ref_sub_components','user_access_sub_component_rights.sub_component_code','=','ref_sub_components.code')
         ->where('user_id',$user_id)
+        ->orderBy('ref_sub_components.description')
         ->get(['user_access_sub_component_rights.*','ref_sub_components.description','ref_sub_components.link']);
         
         $response = [

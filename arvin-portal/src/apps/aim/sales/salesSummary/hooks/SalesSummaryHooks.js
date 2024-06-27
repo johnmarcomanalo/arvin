@@ -200,6 +200,7 @@ const SalesSummaryHooks = (props) => {
       l: String(rowsPerPage),
       f: filterQuery,
       id: filter_id,
+      user_code: account_details.code,
     });
   };
   const handleChangeRowsPerPage = (event) => {
@@ -234,6 +235,7 @@ const SalesSummaryHooks = (props) => {
       l: String(rowsPerPage),
       f: filterQuery,
       id: filter_id,
+      user_code: account_details.code,
     });
   };
   const onChangeSubsectionCode = async (code) => {
@@ -245,6 +247,7 @@ const SalesSummaryHooks = (props) => {
       l: String(rowsPerPage),
       f: filterQuery,
       id: filter_id,
+      user_code: account_details.code,
     });
   };
   const debounce = (func, delay) => {
@@ -258,6 +261,7 @@ const SalesSummaryHooks = (props) => {
       l: rowsPerPage,
       f: filterQuery,
       id: filter_id,
+      user_code: account_details.code,
     };
     return data;
   };
@@ -319,6 +323,7 @@ const SalesSummaryHooks = (props) => {
       l: rowsPerPage,
       f: filterQuery,
       id: filter_id,
+      user_code: account_details.code,
     });
   };
   return {

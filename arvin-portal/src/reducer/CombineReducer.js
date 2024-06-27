@@ -7,8 +7,10 @@ import LoadingReducer from "./LoadingReducer";
 import ReferenceReducer from "./ReferenceReducer";
 import AuthenticationReducer from "./AuthenticationReducer";
 import SalesDailyOutReducer from "./SalesDailyOutReducer";
+import HumanResourceReducer from "./HumanResourceReducer";
 
 export default combineReducers({
+  HumanResourceReducer: HumanResourceReducer,
   NavigationReducer: NavigationReducer,
   HomeReducer: HomeReducer,
   QuotationReducer: QuotationReducer,

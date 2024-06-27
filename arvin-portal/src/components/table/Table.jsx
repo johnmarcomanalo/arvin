@@ -26,6 +26,8 @@ const Tables = (props) => {
     action,
     actionshow,
     paginationShow = true,
+    subAction1Show = true,
+    subAction2Show = true,
   } = props;
 
   const [screenHeight, setScreenHeight] = React.useState(window.innerHeight);
@@ -95,16 +97,18 @@ const Tables = (props) => {
                   <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
                     {actionshow ? (
                       <TableCell>
-                        <Tooltip title="View">
-                          <LaunchIcon
-                            onClick={() => onSelectItem(row)}
-                            style={{
-                              color: "#009197",
-                              cursor: "pointer",
-                            }}
-                          />
-                        </Tooltip>
-                        {action(row)}
+                        {subAction1Show ? (
+                          <Tooltip title="View">
+                            <LaunchIcon
+                              onClick={() => onSelectItem(row)}
+                              style={{
+                                color: "#009197",
+                                cursor: "pointer",
+                              }}
+                            />
+                          </Tooltip>
+                        ) : null}
+                        {subAction2Show ? action(row) : null}
                       </TableCell>
                     ) : null}
 

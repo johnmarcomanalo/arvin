@@ -7,6 +7,7 @@ const initialState = {
   token: "",
   account_details: storedUserData ? decryptaes(storedUserData) : null,
   access: storedAccessData ? decryptaes(storedAccessData) : null,
+  organization_access: []
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

@@ -1,20 +1,22 @@
 import { Constants } from "./Contants";
 const initialState = {
+  viewModal: false,
   refresh: false,
-  companies: [],
-  business_units: [],
-  teams: [],
-  departments: [],
-  sections: [],
-  subsections: [],
-  selected_subsection: [],
-  sales_ranking: [],
-  sales_ranking_placements: [],
-  reference_employee_organization_access: [],
+  search: "",
+  page: 0,
+  rowsPerPage: 10,
+  dataList: [],
+  searchdataList: [],
+  dataListCount: 0,
+  searchdataListCount: 0,
+  filter: "",
+  dateFilterStart: new Date(),
+  dateFilterEnd: new Date(),
+  selectedDataList: [],
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
-    case Constants.ACTION_REFERENCE:
+    case Constants.ACTION_HUMAN_RESOURCE:
       return {
         ...state,
         ...action.payload,

@@ -20,7 +20,7 @@ const styleSheet = {
 };
 
 const InputField = (props) => {
-  const { alignment = "left", ...param } = props;
+  const { alignment = "left", onClick, ...param } = props;
   return (
     <div>
       <Typography sx={styleSheet.label} align={alignment}>
@@ -32,7 +32,7 @@ const InputField = (props) => {
         )}
       </Typography>
       <TextField
-        onClick={props.onClick}
+        onClick={onClick}
         InputProps={{ readOnly: props.readOnly }}
         {...props.input}
         error={props.meta.touched && props.meta.error ? true : false}

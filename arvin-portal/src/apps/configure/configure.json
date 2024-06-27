@@ -108,7 +108,18 @@
     }
   ],
   "months_names": [
-   "JANUARY","FEBRUARY", "MARCH", "APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"
+    "JANUARY",
+    "FEBRUARY",
+    "MARCH",
+    "APRIL",
+    "MAY",
+    "JUNE",
+    "JULY",
+    "AUGUST",
+    "SEPTEMBER",
+    "OCTOBER",
+    "NOVEMBER",
+    "DECEMBER"
   ],
   "modules": [
     {
@@ -232,6 +243,7 @@
   },
   "currency": "₱",
   "gray_color": "#ecf0f1",
+  "dark_gray_color": "#bdc3c7",
   "primary_color": "#093a5c",
   "secondary_color": "#00acd8",
   "tertiary_color": "#F1FAFF",

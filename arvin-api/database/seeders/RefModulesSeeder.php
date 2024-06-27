@@ -16,6 +16,8 @@ class RefModulesSeeder extends Seeder
     public function run()
     {
         DB::table('ref_modules')->delete();
+        DB::table('ref_components')->delete();
+        DB::table('ref_sub_components')->delete();
         RefModules::insert([
             [
             'code'=> '100',
@@ -45,6 +47,12 @@ class RefModulesSeeder extends Seeder
             'code'=> '500',
             'description' => 'Purchasing Request',
             'link'=> '/Modules/PurchasingRequest',
+            'added_by' => env('DEFAULT_USER'),
+            'modified_by' => env('DEFAULT_USER')],
+            [
+            'code'=> '600',
+            'description' => 'System Settings',
+            'link'=> '/Modules/SystemSettings',
             'added_by' => env('DEFAULT_USER'),
             'modified_by' => env('DEFAULT_USER')],
         ]);
