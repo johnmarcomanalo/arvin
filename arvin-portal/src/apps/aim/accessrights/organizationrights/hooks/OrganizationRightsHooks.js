@@ -7,6 +7,7 @@ import {
   postEmployeeOrganizationAccess,
 } from "../actions/OrganizationRightsActions";
 import { decryptaes } from "../../../../../utils/LightSecurity";
+import swal from "sweetalert";
 const OrganizationRightsHooks = (props) => {
   const dispatch = useDispatch();
   const HRrefresh = useSelector((state) => state.HumanResourceReducer.refresh);
@@ -14,7 +15,8 @@ const OrganizationRightsHooks = (props) => {
   const page = useSelector((state) => state.HomeReducer.page);
   const rowsPerPage = useSelector((state) => state.HomeReducer.rowsPerPage);
   const dataList = useSelector(
-    (state) => state.ReferenceReducer.reference_employee_organization_access
+    (state) =>
+      state.ReferenceReducer.search_reference_employee_organization_access
   );
   const dataListCount = useSelector((state) => state.HomeReducer.dataListCount);
   const dateFilterStart = useSelector(
@@ -91,10 +93,18 @@ const OrganizationRightsHooks = (props) => {
     data["user_id"] = selectedDataList?.code;
     data["added_by"] = account_details?.code;
     data["modified_by"] = account_details?.code;
-    let res = dispatch(postEmployeeOrganizationAccess(data));
-    dispatch(getEmployeeOrganizationAccessList(selectedDataList?.code));
-    let decrypted = await decryptaes(res?.data);
-    console.log(decrypted);
+    let res = await dispatch(postEmployeeOrganizationAccess(data));
+    await dispatch(getEmployeeOrganizationAccessList(selectedDataList?.code));
+    data = res?.data;
+    await swal(data.title, data.message, data.status);
+  };
+  const onChangeSearch = (event) => {
+    // SEARCH DATA
+    const search = event.target.value;
+    dispatch({
+      type: "seach_reference_employee_organization_access",
+      data: search,
+    });
   };
   return {
     search,
@@ -115,6 +125,7 @@ const OrganizationRightsHooks = (props) => {
     onClickOpenViewModal,
     onClickCloseViewModal,
     onUpdateEmployeeOrganizationAccess,
+    onChangeSearch,
   };
 };
 

@@ -30,6 +30,7 @@ export const getEmployeeOrganizationAccessList = (id) => async (dispatch) => {
         type: Constants.ACTION_REFERENCE,
         payload: {
           reference_employee_organization_access: decrypted.dataList,
+          search_reference_employee_organization_access: decrypted.dataList,
         },
       });
     });

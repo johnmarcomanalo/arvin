@@ -51,28 +51,19 @@ class UserAccessOrganizationRightsController extends Controller
         $check = UserAccessOrganizationRights::where($queryValues)->first();
         if ($check) {
             $check->update($values);
-
-            $response = [
-                'result' => true,
-                'title' => 'Success',
-                'status' => 'success',
-                'message' => 'Access updated successfully.',
-            ];
         } else {
             $code = $this->generate_code();
 
             $values['code'] = $code;
             UserAccessOrganizationRights::create($values);
-
-            $response = [
-                'result' => true,
-                'title' => 'Success',
-                'status' => 'success',
-                'message' => 'Access added successfully.',
-            ];
         }
-
-        return Crypt::encryptString(json_encode($response));
+        $response = [
+            'result' => true,
+            'title' => 'Success',
+            'status' => 'success',
+            'message' => 'Access updated successfully.',
+        ];
+        return $response;
     }
 
     /**

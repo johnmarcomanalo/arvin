@@ -16,6 +16,7 @@ import Table from "../../../../../components/table/Table";
 import configure from "../../../../configure/configure.json";
 import UserList from "../../../humanresource/employeeList/pages/components/UserList";
 import OrganizationRightsHooks from "../hooks/OrganizationRightsHooks";
+import SearchField from "../../../../../components/inputFIeld/SearchField";
 const formName = "PageRights";
 const submit = async (values, dispatch, props) => {
   try {
@@ -113,12 +114,11 @@ let OrganizationRights = (props) => {
             </Card>
           </Grid>
           <Grid item xs={12} sm={12} md={10} lg={10}>
-            <Card
-              sx={{
-                boxShadow: configure.box_shadow,
-              }}
-            >
-              <CardContent>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={12} md={3} lg={3}>
+                <SearchField onChange={organizationRights.onChangeSearch} />
+              </Grid>
+              <Grid item xs={12} sm={12} md={12} lg={12}>
                 <Table
                   columns={organizationRights.columns}
                   dataList={organizationRights.dataList}
@@ -165,8 +165,8 @@ let OrganizationRights = (props) => {
                   paginationShow={false}
                   subAction1Show={false}
                 />
-              </CardContent>
-            </Card>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </form>
