@@ -29,6 +29,7 @@ const CardComponent = (props) => {
     subvalue,
     fontSizeValue = "0.875rem",
     changeColorValue = false,
+    enableSubHeaderVariant = true,
   } = props;
   const [expanded, setExpanded] = React.useState(false);
 
@@ -65,6 +66,7 @@ const CardComponent = (props) => {
         <CardHeader
           avatar={
             <Avatar
+              align="center"
               size="large"
               sx={{
                 backgroundColor: "white",
@@ -77,6 +79,7 @@ const CardComponent = (props) => {
           }
           title={
             <Typography
+              align="center"
               style={{
                 fontWeight: 900,
                 color: default_color,
@@ -88,7 +91,8 @@ const CardComponent = (props) => {
           }
           subheader={
             <Typography
-              variant="caption"
+              align="center"
+              variant={enableSubHeaderVariant ? "caption" : "inherit"}
               style={{ fontWeight: 600, color: configure.secondary_color }}
             >
               {subtitle}

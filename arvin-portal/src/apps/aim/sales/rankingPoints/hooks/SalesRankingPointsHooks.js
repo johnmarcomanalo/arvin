@@ -115,7 +115,6 @@ const SalesRankingPointsHooks = (props) => {
     });
   };
   const onSelectItem = async (data) => {
-    console.log(data);
     await dispatch(getReferenceSalesRankingPlacements(data.code));
     await dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,

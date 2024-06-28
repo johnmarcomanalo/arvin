@@ -241,7 +241,6 @@ export default function SalesLeaderboard(props) {
                   {sortedDataList.map((data, index) => {
                     let current_point = 0;
                     try {
-                      console.log(data);
                       let point_details = data?.details;
                       return (
                         <TableRow

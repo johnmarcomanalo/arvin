@@ -75,6 +75,10 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   const final_mtd_data = useSelector(
     (state) => state.SalesDailyOutReducer.final_mtd_data
   );
+  const dateFilter = useSelector(
+    (state) => state.SalesDailyOutReducer.dateFilter
+  );
+
   const columns = [
     { id: "sales_date", label: "Date", align: "left" },
     { id: "sales_daily_qouta", label: "Daily Quota", align: "left" },
@@ -241,6 +245,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     previous_mtd_data,
     final_mtd_data,
     selected_subsection,
+    dateFilter,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,

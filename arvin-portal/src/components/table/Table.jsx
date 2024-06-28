@@ -28,8 +28,8 @@ const Tables = (props) => {
     paginationShow = true,
     subAction1Show = true,
     subAction2Show = true,
+    heightLimit = true,
   } = props;
-
   const [screenHeight, setScreenHeight] = React.useState(window.innerHeight);
 
   React.useEffect(() => {
@@ -53,7 +53,7 @@ const Tables = (props) => {
           }
         }}
         sx={{
-          maxHeight: screenHeight - 300,
+          maxHeight: heightLimit ? screenHeight - 300 : "100%",
           whiteSpace: "nowrap",
           overflowX: "auto",
         }}

@@ -19,6 +19,9 @@ import Table from "../../../../../components/table/Table";
 import configure from "../../../../configure/configure.json";
 import SalesTrackerHooks from "../hooks/SalesTrackerHooks";
 import AddSales from "./components/AddSales";
+import Slide from "@mui/material/Slide";
+import CloseIcon from "@mui/icons-material/Close";
+import Dialog from "@mui/material/Dialog";
 const formName = "SalesTracker";
 const submit = async (values, dispatch, props) => {
   try {
@@ -27,15 +30,32 @@ const submit = async (values, dispatch, props) => {
     console.log(error);
   }
 };
-
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 let SalesTracker = (props) => {
   const { ...salesTracker } = SalesTrackerHooks(props);
   const report_data = salesTracker.report_data;
   const present_mtd_data = salesTracker.present_mtd_data;
   const previous_mtd_data = salesTracker.previous_mtd_data;
   const final_mtd_data = salesTracker.final_mtd_data;
+  const dateFilter = salesTracker.dateFilter;
   const theme = useTheme();
   const matches = useMediaQuery("(min-width:600px)");
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = async () => {
+    await setOpen(true);
+    await alert("Press 'esc' to exit view mode");
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const styles = {
+    ...configure.default_button,
+    display: { xs: "none", sm: "none", md: "inline-block" },
+  };
   return (
     <React.Fragment>
       <Modal
@@ -48,9 +68,95 @@ let SalesTracker = (props) => {
       >
         <AddSales />
       </Modal>
-
+      <Dialog
+        fullScreen
+        open={open}
+        onClose={handleClose}
+        TransitionComponent={Transition}
+      >
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={12} md={6}>
+            <CardComponent
+              icon={
+                <PercentIcon
+                  sx={{
+                    backgroundColor: "white",
+                    color: configure.primary_color,
+                  }}
+                />
+              }
+              title={"Day"}
+              icon_color={configure.primary_color}
+              icon_bg_color={"white"}
+              subtitle={"% MTD (" + moment(dateFilter).format("MMMM") + ")"}
+              value={
+                typeof present_mtd_data?.mtdFinal !== "undefined"
+                  ? present_mtd_data?.mtdFinal
+                  : 0
+              }
+              subvalue={"this is sub value"}
+              enableSubHeaderVariant={false}
+              changeColorValue={true}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12} md={6}>
+            <CardComponent
+              icon={
+                <PercentIcon
+                  sx={{
+                    backgroundColor: "white",
+                    color: configure.primary_color,
+                  }}
+                />
+              }
+              title={"Day"}
+              icon_color={configure.primary_color}
+              icon_bg_color={"white"}
+              subtitle={"FINAL YTD (" + moment(dateFilter).format("YYYY") + ")"}
+              value={
+                typeof final_mtd_data !== "undefined"
+                  ? parseFloat(final_mtd_data).toFixed(2)
+                  : 0
+              }
+              fontSizeValue={18}
+              subvalue={"this is sub value"}
+              changeColorValue={true}
+              enableSubHeaderVariant={false}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12} md={12}>
+            <Table
+              columns={salesTracker.columns}
+              dataList={salesTracker.dataList}
+              page={salesTracker.page}
+              rowsPerPage={salesTracker.rowsPerPage}
+              handleChangePage={salesTracker.handleChangePage}
+              handleChangeRowsPerPage={salesTracker.handleChangeRowsPerPage}
+              onSelectItem={salesTracker.onSelectItem}
+              id={"home_attendance"}
+              localStorage={""}
+              rowCount={salesTracker.dataListCount}
+              paginationShow={false}
+              heightLimit={false}
+              action={(row) => {
+                return (
+                  <Tooltip title="Delete">
+                    <DeleteOutlineIcon
+                      onClick={() => salesTracker.onDeleteDeduction(row)}
+                      style={{
+                        color: "#009197",
+                        cursor: "pointer",
+                      }}
+                    />
+                  </Tooltip>
+                );
+              }}
+            />
+          </Grid>
+        </Grid>
+      </Dialog>
       <Grid container spacing={2}>
-        <Grid item sm={12} md={3}>
+        <Grid item xs={12} sm={12} md={3}>
           <CardComponent
             icon={
               <FlagCircleOutlinedIcon
@@ -68,7 +174,7 @@ let SalesTracker = (props) => {
             subvalue={"this is sub value"}
           />
         </Grid>
-        <Grid item sm={12} md={3}>
+        <Grid item xs={12} sm={12} md={3}>
           <CardComponent
             icon={
               <FlagCircleOutlinedIcon
@@ -86,7 +192,7 @@ let SalesTracker = (props) => {
             subvalue={"this is sub value"}
           />
         </Grid>
-        <Grid item sm={12} md={3}>
+        <Grid item xs={12} sm={12} md={3}>
           <CardComponent
             icon={
               <FlagCircleOutlinedIcon
@@ -104,7 +210,7 @@ let SalesTracker = (props) => {
             subvalue={"this is sub value"}
           />
         </Grid>
-        <Grid item sm={12} md={3}>
+        <Grid item xs={12} sm={12} md={3}>
           <CardComponent
             icon={
               <PercentIcon
@@ -128,7 +234,7 @@ let SalesTracker = (props) => {
             changeColorValue={true}
           />
         </Grid>
-        <Grid item sm={12} md={2}>
+        <Grid item xs={12} sm={12} md={2}>
           <CardComponent
             icon={
               <AttachMoneyIcon
@@ -151,7 +257,7 @@ let SalesTracker = (props) => {
             subvalue={"this is sub value"}
           />
         </Grid>
-        <Grid item sm={12} md={2}>
+        <Grid item xs={12} sm={12} md={2}>
           <CardComponent
             icon={
               <AttachMoneyIcon
@@ -174,7 +280,7 @@ let SalesTracker = (props) => {
             changeColorValue={true}
           />
         </Grid>
-        <Grid item sm={12} md={2}>
+        <Grid item xs={12} sm={12} md={2}>
           <CardComponent
             icon={
               <CalendarTodayIcon
@@ -198,7 +304,7 @@ let SalesTracker = (props) => {
             changeColorValue={true}
           />
         </Grid>
-        <Grid item sm={12} md={2}>
+        <Grid item xs={12} sm={12} md={2}>
           <CardComponent
             icon={
               <PercentIcon
@@ -211,7 +317,7 @@ let SalesTracker = (props) => {
             title={"Day"}
             icon_color={configure.primary_color}
             icon_bg_color={"white"}
-            subtitle={"TOTAL PERCENT TARGET"}
+            subtitle={"% MTD"}
             value={
               typeof present_mtd_data?.mtdFinal !== "undefined"
                 ? present_mtd_data?.mtdFinal
@@ -222,7 +328,7 @@ let SalesTracker = (props) => {
           />
         </Grid>
 
-        <Grid item sm={12} md={2}>
+        <Grid item xs={12} sm={12} md={2}>
           <CardComponent
             icon={
               <PercentIcon
@@ -235,7 +341,7 @@ let SalesTracker = (props) => {
             title={"Day"}
             icon_color={configure.primary_color}
             icon_bg_color={"white"}
-            subtitle={"% LOSS/EXCESS (PREV MO)"}
+            subtitle={"% PREV MTD"}
             value={
               typeof previous_mtd_data?.mtdFinal !== "undefined"
                 ? parseFloat(previous_mtd_data?.mtdFinal).toFixed(2)
@@ -246,7 +352,7 @@ let SalesTracker = (props) => {
           />
         </Grid>
 
-        <Grid item sm={12} md={2}>
+        <Grid item xs={12} sm={12} md={2}>
           <CardComponent
             icon={
               <IsoIcon
@@ -329,6 +435,18 @@ let SalesTracker = (props) => {
                 }}
               />
             </form>
+            <div style={{}}>
+              <ButtonComponent
+                stx={styles}
+                iconType="view2"
+                type="button"
+                fullWidth={true}
+                children={"test"}
+                click={handleClickOpen}
+              >
+                VIEW FULLSCREEN
+              </ButtonComponent>
+            </div>
           </Stack>
         </Grid>
         <Grid item xs={6} sm={6} md={6} lg={6}>
