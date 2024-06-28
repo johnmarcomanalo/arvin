@@ -119,7 +119,8 @@ const Tables = (props) => {
                           key={column.id}
                           align={column.align}
                           style={{
-                            color: value < 0 ? "#C83232" : "inherit",
+                            color:
+                              parseFloat(value) < 0 ? "#C83232" : "inherit",
                           }}
                         >
                           {column?.format != undefined

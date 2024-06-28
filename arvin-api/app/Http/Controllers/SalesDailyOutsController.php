@@ -206,15 +206,24 @@ class SalesDailyOutsController extends Controller
                 return $item;
             });
 
+            $startOfMonth = Carbon::create($date_year, $date_month, 1)->startOfMonth()->toDateString();
+            $current_month =  MainController::formatSingleDigitMonthOnly(date('Y-m-d'));
+            $current_date = Carbon::now()->toDateString();
             //get all data for dashboard cards for display
-            $dashboard_data_list = SalesDailyOuts::where('subsection_code',$user_data["subsection_code"])
+            $query = SalesDailyOuts::where('subsection_code',$user_data["subsection_code"])
                 ->where('year_sales_target',$date_year)
-                ->whereYear('sales_date', $date_year)
-                ->whereMonth('sales_date', $date_month)
-                ->get();
+                ->whereYear('sales_date', $date_year);
 
-       
-          
+                // Add condition based on current month
+            if ($current_month == $date_month) {
+                $query->whereBetween('sales_date', [$startOfMonth, $current_date]);
+            } else {
+                $query->whereMonth('sales_date', $date_month);
+            }
+
+            // Get the result
+            $dashboard_data_list = $query->get();
+             
             //computation for the dashboard
             foreach ($dashboard_data_list as  $value) {
                 $salesDailyQuota = (float)$value["sales_daily_qouta"];
