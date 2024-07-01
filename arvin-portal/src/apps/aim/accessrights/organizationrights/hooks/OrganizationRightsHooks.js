@@ -93,10 +93,8 @@ const OrganizationRightsHooks = (props) => {
     data["user_id"] = selectedDataList?.code;
     data["added_by"] = account_details?.code;
     data["modified_by"] = account_details?.code;
-    let res = await dispatch(postEmployeeOrganizationAccess(data));
+    await dispatch(postEmployeeOrganizationAccess(data));
     await dispatch(getEmployeeOrganizationAccessList(selectedDataList?.code));
-    data = res?.data;
-    await swal(data.title, data.message, data.status);
   };
   const onChangeSearch = (event) => {
     // SEARCH DATA

@@ -22,8 +22,12 @@ class CreateUserAccessPageRightsTable extends Migration
             $table->string('component_description')->nullable();
             $table->string('subcomponent_code')->nullable();
             $table->string('subcomponent_description')->nullable();
-            $table->string('type')->nullable();
             $table->unsignedBigInteger('user_id');
+            $table->integer('create')->default(0);
+            $table->integer('update')->default(0);
+            $table->integer('delete')->default(0);
+            $table->integer('generate')->default(0);
+            $table->integer('export')->default(0);
             $table->integer('access_rights')->default(0);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();

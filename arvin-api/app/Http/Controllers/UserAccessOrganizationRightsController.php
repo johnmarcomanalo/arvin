@@ -50,7 +50,7 @@ class UserAccessOrganizationRightsController extends Controller
 
         $check = UserAccessOrganizationRights::where($queryValues)->first();
         if ($check) {
-            $check->update($values);
+            return $check->update($values);
         } else {
             $code = $this->generate_code();
 

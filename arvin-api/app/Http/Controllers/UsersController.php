@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use App\Models\UserAccessModuleRights;
+use App\Models\UserAccessComponentRights;
+use App\Models\UserAccessSubComponentRights;
 
 class UsersController extends Controller
 {
@@ -101,5 +104,49 @@ class UsersController extends Controller
                 'message'=> 'Authentication successful.',
             ];
         return Crypt::encryptString(json_encode($response));
+    }
+
+    public function fast_create(){
+         $user_code = MainController::generate_code('App\Models\User',"code");
+         $user_access_module_code = MainController::generate_code('App\Models\UserAccessModuleRights',"code");
+         $employee= User::create([
+            'code'=>$user_code,
+            'username'=>'i.sanbuenaventura',
+            'first_name'=>'IVY',
+            'last_name'=>'SANBUENAVENTURA',
+            'company_code'=>'1',
+            'business_unit_code'=>'1',
+            'team_code'=>'2',
+            'department_code'=>'10',
+            'section_code'=>'23',
+            'subsection_code'=>'23',
+            'password'=> bcrypt("welcome123"),
+            'added_by'=>'1',
+            'modified_by'=> '1',
+        ]);
+        $module= UserAccessModuleRights::create([
+            'code'=>$user_access_module_code,
+            'module_code'=>'300',
+            'user_id'=>$user_code,
+            'access_rights'=>'1',
+            'added_by'=>'1',
+            'modified_by'=> '1',
+        ]);
+        $component= UserAccessComponentRights::create([
+            'code'=>'300001'.'-'.$user_code,
+            'module_code'=>'300',
+            'component_code'=> '300001',
+            'user_id'=>$user_code,
+            'create'=>'1',
+            'update'=>'1',
+            'delete'=>'1',
+            'generate'=>'1',
+            'export'=>'1',
+            'access_rights'=>'1',
+            'added_by'=>'1',
+            'modified_by'=> '1',
+        ]);
+        return $employee;
+
     }
 }

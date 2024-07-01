@@ -496,7 +496,7 @@ class SalesDailyOutsController extends Controller
                 }
         }
         foreach ($final_results as $value) {
-            $check_sale = SalesDailyOuts::where('sales_daily_out_annual_settings_sales_code', '2')
+            $check_sale = SalesDailyOuts::where('sales_daily_out_annual_settings_sales_code', '4')
                 ->where('subsection_code', $value["subsection_code"])
                 ->where('year_sales_target', $value["year_sales_target"])
                 ->whereDate('sales_date', $value["sales_date"])
@@ -518,51 +518,63 @@ class SalesDailyOutsController extends Controller
     public function getFiveDaysSalesDailyOutbyCurrentDate() {
          $records = DB::table('vw_daily_sales_latest_five_days')->get();
         $subSections = RefSubSections::whereIn('type', $records->pluck('warehouse'))->get()->keyBy('type');
-        $recordsByDate = [];
-        
+        $recordsByDateAndWarehouse = [];
+
         foreach ($records as $record) {
             $date = Carbon::parse($record->createdate)->format('Y-m-d');
-            $recordsByDate[$date] = $record;
+            $recordsByDateAndWarehouse[$date][$record->warehouse] = $record;
         }
-        foreach ($recordsByDate as $date => $record) {
+
+        foreach ($recordsByDateAndWarehouse as $date => $warehouseRecords) {
             $carbonDate = Carbon::parse($date);
 
             if ($carbonDate->isSunday()) {
                 // Find the corresponding Monday
                 $mondayDate = $carbonDate->addDay()->format('Y-m-d');
 
-                if (isset($recordsByDate[$mondayDate])) {
-                    // Add Sunday's QtyInKg to Monday's QtyInKg
+                foreach ($warehouseRecords as $warehouse => $record) {
+                    if (!isset($recordsByDateAndWarehouse[$mondayDate][$warehouse])) {
+                        // Initialize Monday's record if it doesn't exist
+                        $recordsByDateAndWarehouse[$mondayDate][$warehouse] = (object)[
+                            'warehouse' => $warehouse,
+                            'createdate' => $mondayDate,
+                            'QtyInKg' => 0
+                        ];
+                    }
+                    // Add Sunday's QtyInKg to Monday's QtyInKg for the same warehouse
                     $sundayQty = (float) $record->QtyInKg;
-                    $recordsByDate[$mondayDate]->QtyInKg = (float) $recordsByDate[$mondayDate]->QtyInKg + $sundayQty;
-
+                    $recordsByDateAndWarehouse[$mondayDate][$warehouse]->QtyInKg += $sundayQty;
                 }
             }
         }
 
-        foreach ($recordsByDate as $date => $record) {
+        $results = [];
+
+        foreach ($recordsByDateAndWarehouse as $date => $warehouseRecords) {
             $carbonDate = Carbon::parse($date);
             if (!$carbonDate->isSunday()) {
-                $results[] = [
-                    'warehouse' => $record->warehouse,
-                    'createdate' => $record->createdate,
-                    'QtyInKg' => $record->QtyInKg
-                ];
+                foreach ($warehouseRecords as $warehouse => $record) {
+                    $results[] = [
+                        'warehouse' => $record->warehouse,
+                        'createdate' => $record->createdate,
+                        'QtyInKg' => $record->QtyInKg
+                    ];
+                }
             }
         }
 
-       DB::transaction(function() use ($records, $subSections) {
+        DB::transaction(function() use ($results, $subSections) {
             $currentDate = Carbon::now()->format('Y-m-d');
-            foreach ($records as $records_value) {
-                $warehouse = $records_value->warehouse;
-                $create_date = Carbon::parse($records_value->createdate)->format('Y-m-d');
-                $sales_daily_out = round($records_value->QtyInKg, 2);
+            foreach ($results as $record) {
+                $warehouse = $record['warehouse'];
+                $create_date = Carbon::parse($record['createdate'])->format('Y-m-d');
+                $sales_daily_out = round($record['QtyInKg'], 2);
                 $sub_section_code = $subSections[$warehouse]->code ?? null;
 
                 if ($sub_section_code) {
                     $datalist = SalesDailyOuts::where('subsection_code', $sub_section_code)
-                                              ->whereDate('sales_date', $create_date)
-                                              ->first();
+                                            ->whereDate('sales_date', $create_date)
+                                            ->first();
 
                     if ($datalist && ($datalist->sales_daily_out < $sales_daily_out || $currentDate == $create_date)) {
                         $computation = $this->get_status_daily_target_and_percentage_daily_target_by_daily_out($sales_daily_out, $datalist->sales_daily_qouta);
@@ -578,4 +590,6 @@ class SalesDailyOutsController extends Controller
             }
         });
     }
+
+
 }

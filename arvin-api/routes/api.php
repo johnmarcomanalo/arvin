@@ -17,6 +17,7 @@ use App\Http\Controllers\SalesDailyOutAnnualSalesRankingDetailsController;
 use App\Http\Controllers\SalesDailyOutReportSalesSummaryController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UserAccessOrganizationRightsController;
+use App\Http\Controllers\UserAccessPageRightsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -58,6 +59,7 @@ use Illuminate\Support\Facades\Route;
     Route::get('reference/subsections/get_subsection/{id}',[RefSubSectionsController::class,'get_subsection'])->middleware(['light_decryption']);
     Route::get('reference/system_settings/access_rights/organization_rights/get_employee_organization_access_list/{id}',[UserAccessOrganizationRightsController::class,'get_employee_organization_access_list']);
     Route::apiResource('reference/system_settings/access_rights/organization_rights',UserAccessOrganizationRightsController::class)->middleware(['light_decryption']);
+    Route::get('reference/system_settings/access_rights/Page_rights/get_employee_Page_access_list',[UserAccessPageRightsController::class,'get_employee_page_access_list']);
     // REFERENCE END
     
     //MODULE SALES DAILY OUT START
@@ -96,6 +98,7 @@ use Illuminate\Support\Facades\Route;
 
     // HUMAN RESOURCE START
     Route::get('humanresource/employee_list',[UsersController::class, 'employee_list']);
+    Route::get('humanresource/fast_create',[UsersController::class, 'fast_create']);
     // HUMAN RESOURCE END
 
     Route::group(['middleware' => ['auth:sanctum','cors','api']], function () {

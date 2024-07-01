@@ -48,6 +48,20 @@ class UserAccessModuleRightsSeeder extends Seeder
             'access_rights'=> '1', 
             'added_by' => env('DEFAULT_USER'),
             'modified_by' => env('DEFAULT_USER')],
+            [
+            'code'=> '5',
+            'module_code'=> '300',
+            'user_id'=> '4',
+            'access_rights'=> '1', 
+            'added_by' => env('DEFAULT_USER'),
+            'modified_by' => env('DEFAULT_USER')],
+            [
+            'code'=> '6',
+            'module_code'=> '300',
+            'user_id'=> '5',
+            'access_rights'=> '1', 
+            'added_by' => env('DEFAULT_USER'),
+            'modified_by' => env('DEFAULT_USER')],
         ]);
     }
 }
