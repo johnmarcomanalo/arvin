@@ -70,18 +70,27 @@ const RequireAuth = ({ children }) => {
 function App() {
   const access = useSelector((state) => state.AuthenticationReducer.access);
   const hasAccess = (module, component, subComponent) => {
+    console.log("Access check for:", module, component, subComponent);
+
     const moduleAccess = access.user_access_module_rights.some(
-      (item) => item.module_code === module
+      (item) => item.description === module
     );
     const componentAccess = access.user_access_component_rights.some(
-      (item) => item.component_code === component
+      (item) => item.description === component
     );
-    const subComponentAccess = access.user_access_sub_component_rights.some(
-      (item) => item.sub_component_code === subComponent
-    );
+    let subComponentAccess = true; // Default to true if no subcomponent is provided
+    if (subComponent) {
+      subComponentAccess = access.user_access_sub_component_rights.some(
+        (item) => item.description === subComponent
+      );
+    }
+    console.log("Module access:", moduleAccess);
+    console.log("Component access:", componentAccess);
+    console.log("SubComponent access:", subComponentAccess);
 
     return moduleAccess && componentAccess && subComponentAccess;
   };
+
   const getAccessChecker = (routeInfo) => () => {
     const { module, component, subComponent } = routeInfo;
     return hasAccess(module, component, subComponent);
@@ -106,30 +115,69 @@ function App() {
                   <Route path="/" element={<IndexHome />} />
                   <Route
                     path="/Modules/Sales/Configuration/SalesQouta"
-                    element={<IndexSalesQouta />}
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Sales",
+                          component: "Configuration",
+                          subComponent: "Sales Qouta",
+                        })}
+                      >
+                        <IndexSalesQouta />
+                      </PrivateRoute>
+                    }
                   />
                   <Route
                     exact
                     path="/Modules/Sales/SalesTracker"
-                    element={<SalesTracker />}
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Sales",
+                          component: "Sales Tracker",
+                          subComponent: null,
+                        })}
+                      >
+                        <SalesTracker />
+                      </PrivateRoute>
+                    }
                   />
                   <Route
                     path="/Modules/Sales/SalesLeaderboard"
-                    element={<SalesLeaderboard />}
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Sales",
+                          component: "Sales Leaderboard",
+                          subComponent: null,
+                        })}
+                      >
+                        <SalesLeaderboard />
+                      </PrivateRoute>
+                    }
                   />
                   <Route
                     path="/Modules/Sales/Configuration/RankingPoints"
-                    element={<IndexSalesRankingPoints />}
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Sales",
+                          component: "Configuration",
+                          subComponent: "Ranking Points",
+                        })}
+                      >
+                        <IndexSalesRankingPoints />
+                      </PrivateRoute>
+                    }
                   />
                   <Route
                     path="/Modules/Sales/Reports/SalesSummary"
-                    // element={<IndexSalesSummary />}
                     element={
                       <PrivateRoute
                         accessChecker={getAccessChecker({
                           module: "Sales",
                           component: "Reports",
-                          subComponent: "SalesSummary",
+                          subComponent: "Sales Summary",
                         })}
                       >
                         <IndexSalesSummary />
@@ -138,15 +186,45 @@ function App() {
                   />
                   <Route
                     path="/Modules/Sales/Reports/SalesSummary/:id/:month/:year"
-                    element={<IndexSelectedSalesSummary />}
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Sales",
+                          component: "Reports",
+                          subComponent: "Sales Summary",
+                        })}
+                      >
+                        <IndexSelectedSalesSummary />
+                      </PrivateRoute>
+                    }
                   />
                   <Route
                     path="/Modules/SystemSettings/AccessRights/OrganizationRights"
-                    element={<IndexOrganizationRights />}
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "System Settings",
+                          component: "Access Rights",
+                          subComponent: "Organization Rights",
+                        })}
+                      >
+                        <IndexOrganizationRights />
+                      </PrivateRoute>
+                    }
                   />
                   <Route
                     path="/Modules/SystemSettings/AccessRights/PageRights"
-                    element={<IndexPageRights />}
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "System Settings",
+                          component: "Access Rights",
+                          subComponent: "Page Rights",
+                        })}
+                      >
+                        <IndexPageRights />
+                      </PrivateRoute>
+                    }
                   />
                 </Route>
               )}

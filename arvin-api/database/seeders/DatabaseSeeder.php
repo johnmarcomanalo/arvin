@@ -39,8 +39,8 @@ class DatabaseSeeder extends Seeder
         // $this->call(RefModulesSeeder::class);
         // $this->call(RefComponentsSeeder::class);
         // $this->call(RefSubComponentsSeeder::class);
-        $this->call(UserAccessModuleRightsSeeder::class);
-        $this->call(UserAccessComponentRightsSeeder::class);
+        // $this->call(UserAccessModuleRightsSeeder::class);
+        // $this->call(UserAccessComponentRightsSeeder::class);
         $this->call(UserAccessSubComponentRightsSeeder::class);
 
     }
