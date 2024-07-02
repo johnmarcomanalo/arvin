@@ -16,11 +16,13 @@ const submit = async (values, dispatch, props, navigate) => {
     let decrypted = res?.data;
     await swal(decrypted.title, decrypted.message, decrypted.status);
     await reset();
-    await localStorage.clear();
-    await navigate("/login");
-    await setTimeout(() => {
-      window.location.reload();
-    }, 500);
+    if (decrypted.result) {
+      await localStorage.clear();
+      await navigate("/login");
+      await setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    }
   } catch (error) {
     var title = configure.error_message.default;
     var message = "";
