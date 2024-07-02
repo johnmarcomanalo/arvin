@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\UserAccessModuleRights;
 use App\Models\UserAccessComponentRights;
@@ -46,7 +46,7 @@ class AuthController extends Controller
         }
         //check password
         // if(!$user || !Hash::check($fields['password'], $user->password)){
-
+        
         if(!Auth::attempt($fields)){    
              $response = [
                 'user' => Crypt::encryptString(json_encode([])),
@@ -115,5 +115,46 @@ class AuthController extends Controller
              'user_access_sub_component_rights' => $user_access_sub_component_rights,
         ];
         return Crypt::encryptString(json_encode($response));
+    }
+
+     public function change_password(Request $request){
+        $fields = $request->validate([
+            'current_password' => 'required|string',
+            'password' => 'required|confirmed', 
+            'account_id' => 'required', 
+        ]);
+
+         $user = User::where('code',$fields['account_id'])->first();
+
+        if(empty($user)){
+            return response([
+                 'message' => 'No user details available!',
+                 'result' => false
+             ], 200); 
+        }
+        
+        if(!Hash::check($fields['current_password'], $user->password)){
+            return response([
+                'result' => false,
+                'status' => 'warning',
+                'title' => 'Warning',
+                'message' => 'Invalid Old Password!',
+             ], 200); 
+        }
+
+        //change password
+
+        $user->update([
+            'password' => bcrypt($fields['password']),
+        ]);
+
+        return response([
+
+            'result' => true,
+            'status' => 'success',
+            'title' => 'Success',
+            'message' => "Today's sales updated successfully",
+        ], 200); 
+
     }
 }

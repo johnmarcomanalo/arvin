@@ -43,6 +43,8 @@ use Illuminate\Support\Facades\Route;
 */  
     //AUTH START
     Route::post('/login',[AuthController::class, 'login'])->middleware(['light_decryption']);
+    Route::post('/users/change-password',[AuthController::class, 'change_password'])->middleware(['light_decryption']);
+
     //AUTH END
     
     // REFERENCE START

@@ -17,6 +17,9 @@ const NavigationHooks = (props) => {
     (state) => state.AuthenticationReducer.account_details
   );
   const access = useSelector((state) => state.AuthenticationReducer.access);
+  const setting_modal = useSelector(
+    (state) => state.NavigationReducer.setting_modal
+  );
   const onOpenRequestModal = (type) => {
     dispatch({
       type: Constants.ACTION_NAVIGATION,
@@ -35,6 +38,22 @@ const NavigationHooks = (props) => {
       },
     });
   };
+  const onOpenSettingModal = () => {
+    dispatch({
+      type: Constants.ACTION_NAVIGATION,
+      payload: {
+        setting_modal: true,
+      },
+    });
+  };
+  const onCloseSettingModal = () => {
+    dispatch({
+      type: Constants.ACTION_NAVIGATION,
+      payload: {
+        setting_modal: false,
+      },
+    });
+  };
   React.useEffect(() => {
     if (
       typeof token === "undefined" &&
@@ -47,10 +66,14 @@ const NavigationHooks = (props) => {
   }, []);
   return {
     request_modal,
+    setting_modal,
     request_type,
     access,
+    account_details,
     onOpenRequestModal,
     onCloseRequestModal,
+    onOpenSettingModal,
+    onCloseSettingModal,
   };
 };
 

@@ -1,6 +1,7 @@
 import { Constants } from "./Contants";
 const initialState = {
   request_modal: false,
+  setting_modal: false,
   refresh: false,
   request_type: "",
 };

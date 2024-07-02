@@ -20,6 +20,7 @@ import Modal from "../../../components/modal/Modal";
 import configure from "../../configure/configure.json";
 import NavigationHooks from "../hooks/NavigationHooks";
 import RequestsForm from "./components/RequestForm";
+import ChangePasswordForm from "./components/ChangePasswordForm";
 const drawerWidth = 250;
 const ListItemTxt = styled(ListItemText)(({ theme }) => ({
   color: configure.primary_color,
@@ -232,6 +233,16 @@ export default function Navigation(props) {
       >
         <RequestsForm />
       </Modal>
+      <Modal
+        open={navigation_param.setting_modal}
+        fullScreen={false}
+        title={"Change Password Form"}
+        size={"xs"}
+        action={undefined}
+        handleClose={navigation_param.onCloseSettingModal}
+      >
+        <ChangePasswordForm />
+      </Modal>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -283,13 +294,13 @@ export default function Navigation(props) {
             </ListItemButton>
           </ListItem>
           <Divider />
-          {/*  <ListItem disablePadding>
+          {/* <ListItem disablePadding>
             <ListItemButton onClick={() => onClickSelectRequest()}>
               <ListItemText primary={"Request"} />
               {requestlist ? <ExpandLess /> : <ExpandMore />}{" "}
             </ListItemButton>
           </ListItem>
-          <Divider /> */}
+          <Divider />
 
           <Collapse
             in={requestlist}
@@ -342,8 +353,33 @@ export default function Navigation(props) {
                 </ListItemButton>
               </ListItem>
             </List>
-          </Collapse>
+          </Collapse> */}
           {modulesAccordion(access?.user_access_module_rights)}
+          <Divider />
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => onClickSelectRequest()}>
+              <ListItemText primary={"Account Settings"} />
+              {requestlist ? <ExpandLess /> : <ExpandMore />}{" "}
+            </ListItemButton>
+          </ListItem>
+          <Divider />
+
+          <Collapse
+            in={requestlist}
+            timeout="auto"
+            style={{ backgroundColor: "#f2f2f2de" }}
+            unmountOnExit
+          >
+            <List component="div" disablePadding>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => navigation_param.onOpenSettingModal()}
+                >
+                  <ListItemText primary={"Change Password"} />
+                </ListItemButton>
+              </ListItem>
+            </List>
+          </Collapse>
           <Divider />
           <ListItem disablePadding>
             <ListItemButton
