@@ -75,84 +75,97 @@ let SalesTracker = (props) => {
         TransitionComponent={Transition}
       >
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={12} md={6}>
-            <CardComponent
-              icon={
-                <PercentIcon
-                  sx={{
-                    backgroundColor: "white",
-                    color: configure.primary_color,
-                  }}
-                />
-              }
-              title={"Day"}
-              icon_color={configure.primary_color}
-              icon_bg_color={"white"}
-              subtitle={"% MTD (" + moment(dateFilter).format("MMMM") + ")"}
-              value={
-                typeof present_mtd_data?.mtdFinal !== "undefined"
-                  ? present_mtd_data?.mtdFinal
-                  : 0
-              }
-              subvalue={"this is sub value"}
-              enableSubHeaderVariant={false}
-              changeColorValue={true}
-            />
-          </Grid>
-          <Grid item xs={12} sm={12} md={6}>
-            <CardComponent
-              icon={
-                <PercentIcon
-                  sx={{
-                    backgroundColor: "white",
-                    color: configure.primary_color,
-                  }}
-                />
-              }
-              title={"Day"}
-              icon_color={configure.primary_color}
-              icon_bg_color={"white"}
-              subtitle={"FINAL YTD (" + moment(dateFilter).format("YYYY") + ")"}
-              value={
-                typeof final_mtd_data !== "undefined"
-                  ? parseFloat(final_mtd_data).toFixed(2)
-                  : 0
-              }
-              fontSizeValue={18}
-              subvalue={"this is sub value"}
-              changeColorValue={true}
-              enableSubHeaderVariant={false}
-            />
-          </Grid>
-          <Grid item xs={12} sm={12} md={12}>
-            <Table
-              columns={salesTracker.columns}
-              dataList={salesTracker.dataList}
-              page={salesTracker.page}
-              rowsPerPage={salesTracker.rowsPerPage}
-              handleChangePage={salesTracker.handleChangePage}
-              handleChangeRowsPerPage={salesTracker.handleChangeRowsPerPage}
-              onSelectItem={salesTracker.onSelectItem}
-              id={"home_attendance"}
-              localStorage={""}
-              rowCount={salesTracker.dataListCount}
-              paginationShow={false}
-              heightLimit={false}
-              action={(row) => {
-                return (
-                  <Tooltip title="Delete">
-                    <DeleteOutlineIcon
-                      onClick={() => salesTracker.onDeleteDeduction(row)}
-                      style={{
-                        color: "#009197",
-                        cursor: "pointer",
+          <Grid item xs={12} sm={12} md={4}></Grid>
+          <Grid item xs={12} sm={12} md={4}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={12} md={6}>
+                <CardComponent
+                  icon={
+                    <PercentIcon
+                      sx={{
+                        backgroundColor: "white",
+                        color: configure.primary_color,
                       }}
                     />
-                  </Tooltip>
-                );
-              }}
-            />
+                  }
+                  title={"Day"}
+                  icon_color={configure.primary_color}
+                  icon_bg_color={"white"}
+                  subtitle={
+                    "% MTD (" +
+                    moment(dateFilter).format("MMMM").toUpperCase() +
+                    ")"
+                  }
+                  value={
+                    typeof present_mtd_data?.mtdFinal !== "undefined"
+                      ? present_mtd_data?.mtdFinal
+                      : 0
+                  }
+                  fontSizeValue={30}
+                  subvalue={"this is sub value"}
+                  enableSubHeaderVariant={false}
+                  changeColorValue={true}
+                />
+              </Grid>
+              <Grid item xs={12} sm={12} md={6}>
+                <CardComponent
+                  icon={
+                    <PercentIcon
+                      sx={{
+                        backgroundColor: "white",
+                        color: configure.primary_color,
+                      }}
+                    />
+                  }
+                  title={"Day"}
+                  icon_color={configure.primary_color}
+                  icon_bg_color={"white"}
+                  subtitle={
+                    "FINAL YTD (" + moment(dateFilter).format("YYYY") + ")"
+                  }
+                  value={
+                    typeof final_mtd_data !== "undefined"
+                      ? parseFloat(final_mtd_data).toFixed(2)
+                      : 0
+                  }
+                  fontSizeValue={30}
+                  subvalue={"this is sub value"}
+                  changeColorValue={true}
+                  enableSubHeaderVariant={false}
+                />
+              </Grid>
+              <Grid item xs={12} sm={12} md={12}>
+                <Table
+                  columns={salesTracker.columns}
+                  dataList={salesTracker.dataList}
+                  page={salesTracker.page}
+                  rowsPerPage={salesTracker.rowsPerPage}
+                  handleChangePage={salesTracker.handleChangePage}
+                  handleChangeRowsPerPage={salesTracker.handleChangeRowsPerPage}
+                  onSelectItem={salesTracker.onSelectItem}
+                  id={"home_attendance"}
+                  localStorage={""}
+                  rowCount={salesTracker.dataListCount}
+                  paginationShow={false}
+                  heightLimit={false}
+                  action={(row) => {
+                    return (
+                      <Tooltip title="Delete">
+                        <DeleteOutlineIcon
+                          onClick={() => salesTracker.onDeleteDeduction(row)}
+                          style={{
+                            color: "#009197",
+                            cursor: "pointer",
+                          }}
+                        />
+                      </Tooltip>
+                    );
+                  }}
+                />
+              </Grid>
+            </Grid>
           </Grid>
+          <Grid item xs={12} sm={12} md={4}></Grid>
         </Grid>
       </Dialog>
       <Grid container spacing={2}>
