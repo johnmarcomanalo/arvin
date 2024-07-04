@@ -431,14 +431,20 @@ class SalesDailyOutsController extends Controller
         // Step 1: Retrieve all records
         $currentDate = Carbon::now()->format('Y-m-d');
         $sub_section = RefSubSections::where('code', $id)->first();
+        $sub_section_annual_settings_sales = SalesDailyOutAnnualSettingsSales::where('subsection_code', $id)->where('year_sales_target', '2024')->first();
         $datalist = SalesDailyOuts::where('subsection_code', $sub_section['code'])->whereDate('sales_date', $currentDate)->get();
 
-
-         $records = DB::table('vw_DailySales')
-            ->where('warehouse', $sub_section['type'])
-            // ->whereDate('createdate', $currentDate)
+        $records = [];
+        DB::table('vw_DailySales')
+            ->select('warehouse', 'createdate', 'QtyInKg') // Select only necessary columns
+            ->whereRaw('LEFT(warehouse, 3) = ?', [$sub_section['type']])
             ->orderBy('createdate')
-            ->get();
+            ->chunk(1000, function ($chunk) use (&$records) {
+                foreach ($chunk as $record) {
+                    $records[] = $record;
+                }
+        });
+
 
         // Step 2: Process records to add Sunday's QtyInKg to Monday's QtyInKg
         $recordsByDate = [];
@@ -496,7 +502,7 @@ class SalesDailyOutsController extends Controller
                 }
         }
         foreach ($final_results as $value) {
-            $check_sale = SalesDailyOuts::where('sales_daily_out_annual_settings_sales_code', '7')
+            $check_sale = SalesDailyOuts::where('sales_daily_out_annual_settings_sales_code', $sub_section_annual_settings_sales['code'])
                 ->where('subsection_code', $value["subsection_code"])
                 ->where('year_sales_target', $value["year_sales_target"])
                 ->whereDate('sales_date', $value["sales_date"])
@@ -516,14 +522,28 @@ class SalesDailyOutsController extends Controller
     }
 
     public function getFiveDaysSalesDailyOutbyCurrentDate() {
-        $records = DB::table('vw_daily_sales_latest_five_days')->get();
-        $subSections = RefSubSections::whereIn('type', $records->pluck('warehouse'))->get()->keyBy('type');
+        $records = [];
+        DB::table('vw_daily_sales_latest_five_days')
+            ->select('warehouse', 'createdate', 'QtyInKg') // Select only necessary columns
+            ->whereRaw('LEFT(warehouse, 3) IS NOT NULL') // Ensure the LEFT(warehouse, 3) is not null
+            ->orderBy('createdate')
+            ->chunk(1000, function ($chunk) use (&$records) {
+                foreach ($chunk as $record) {
+                    $records[] = $record;
+                }
+            });
+
+        // Convert $records array to a Collection
+        $recordsCollection = collect($records);
+
+        $subSections = RefSubSections::whereIn('type', $recordsCollection->pluck('warehouse'))->get()->keyBy('type');
         $recordsByDateAndWarehouse = [];
 
-        foreach ($records as $record) {
+        foreach ($recordsCollection as $record) {
             $date = Carbon::parse($record->createdate)->format('Y-m-d');
             $recordsByDateAndWarehouse[$date][$record->warehouse] = $record;
         }
+
 
         foreach ($recordsByDateAndWarehouse as $date => $warehouseRecords) {
             $carbonDate = Carbon::parse($date);
