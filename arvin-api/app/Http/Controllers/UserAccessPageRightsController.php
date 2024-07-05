@@ -96,16 +96,15 @@ class UserAccessPageRightsController extends Controller
             return $response;
             break;
         case 'sub_component':
-            $check = UserAccessSubComponentRights::
+            return $check = UserAccessSubComponentRights::
                 where('user_id',$fields['user_id'])->
                 where('sub_component_code',$fields['sub_component_code'])->
                 first();
-
             if ($check) {
-                return $check->update($fields);
+                 $check->update($fields);
             } else {
                 $fields['code'] = $this->generate_code($fields['sub_component_code'],$fields['user_id']);
-                UserAccessComponentRights::create($fields);
+                UserAccessSubComponentRights::create($fields);
             }
             $response = [
             'result' => true,
