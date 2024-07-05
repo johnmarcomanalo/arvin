@@ -33,7 +33,93 @@ class UserAccessPageRightsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $fields = $request->validate([
+            'module_code' => 'required',
+            'module_description' => 'required',
+            'module_link' => 'required',
+            'component_code' => 'nullable|string',
+            'component_description' => 'nullable|string',
+            'component_link' => 'nullable|string',
+            'sub_component_code' => 'nullable|string',
+            'sub_component_description' => 'nullable|string',
+            'sub_component_link' => 'nullable|string',
+            'access_rights' => 'required',
+            'create' => 'required',
+            'update' => 'required',
+            'delete' => 'required',
+            'generate' => 'required',
+            'export' => 'required',
+            'type' => 'required',
+            'user_id' => 'required',
+            'added_by' => 'required',
+            'modified_by' => 'required',
+        ]);
+        switch ($fields['type']) {
+        case 'module':
+            $check = UserAccessModuleRights::
+                where('user_id',$fields['user_id'])->
+                where('module_code',$fields['module_code'])->
+                first();
+            if ($check) {
+                return $check->update($fields);
+            } else {
+                $code = $this->generate_code_module();
+                $fields['code'] = $code;
+                UserAccessModuleRights::create($fields);
+            }
+            $response = [
+            'result' => true,
+            'title' => 'Success',
+            'status' => 'success',
+            'message' => 'Access updated successfully.',
+            ];
+            return $response;
+            break;
+        
+        case 'component':
+            $check = UserAccessComponentRights::
+                where('user_id',$fields['user_id'])->
+                where('component_code',$fields['component_code'])->
+                first();
+            if ($check) {
+                 $check->update($fields);
+            } else {
+                $fields['code'] = $this->generate_code($fields['component_code'],$fields['user_id']);
+                UserAccessComponentRights::create($fields);
+            }
+            $response = [
+            'result' => true,
+            'title' => 'Success',
+            'status' => 'success',
+            'message' => 'Access updated successfully.',
+            ];
+            return $response;
+            break;
+        case 'sub_component':
+            $check = UserAccessSubComponentRights::
+                where('user_id',$fields['user_id'])->
+                where('sub_component_code',$fields['sub_component_code'])->
+                first();
+
+            if ($check) {
+                return $check->update($fields);
+            } else {
+                $fields['code'] = $this->generate_code($fields['sub_component_code'],$fields['user_id']);
+                UserAccessComponentRights::create($fields);
+            }
+            $response = [
+            'result' => true,
+            'title' => 'Success',
+            'status' => 'success',
+            'message' => 'Access updated successfully.',
+            ];
+            return $response;
+            break;
+        default:
+            return response()->json(['error' => 'Invalid type specified'], 400);
+    }
+
+         
     }
 
     /**
@@ -69,9 +155,20 @@ class UserAccessPageRightsController extends Controller
     {
         //
     }
-
-    public function get_employee_page_access_list() {
-        $id = 2;
+    public function generate_code($code,$id){
+        $code = $code.'-'.$id;
+        return $code;
+    }
+    public function generate_code_module(){
+        $code = 1;
+        $current_date = date('Y-m-d');
+         $latest_code = UserAccessModuleRights::latest('code')->first('code')->code ?? NULL;
+        if(!empty($latest_code)){
+            $code = $latest_code + 1;
+        }
+        return $code;
+    }
+    public function get_employee_page_access_list($id) {
         // Retrieve all data from reference tables
         $ref_modules = RefModules::get(['code as module_code', 'description as module_description', 'link as module_link']);
         $ref_components = RefComponents::get(['code as component_code', 'module_code','description as component_description', 'link as component_link']);
@@ -94,6 +191,7 @@ class UserAccessPageRightsController extends Controller
             'delete' => 0,
             'generate' => 0,
             'export' => 0,
+            'type' => 'module',
             ];
             foreach ($ref_components->where('module_code', $modules->module_code) as $components) {
                 $user_components = UserAccessComponentRights::
@@ -117,7 +215,8 @@ class UserAccessPageRightsController extends Controller
                     'delete' => $user_components['delete']?? 0,
                     'generate' => $user_components['generate']?? 0,
                     'export' => $user_components['export']?? 0,
-                ];
+                    'type' => 'component',
+                ];  
                 foreach ($ref_subcomponents->where('component_code', $components->component_code) as $subsection) {
                     $user_subcomponents = UserAccessSubComponentRights::
                     where('user_id', $id)->
@@ -141,11 +240,20 @@ class UserAccessPageRightsController extends Controller
                         'delete' => $user_subcomponents['delete']?? 0,
                         'generate' => $user_subcomponents['generate']?? 0,
                         'export' => $user_subcomponents['export']?? 0,
+                        'type' => 'sub_component',
+
                     ];
                 }
             }
         }
-        return $result;
+          $response = [
+                'dataList' => $result,
+                'result' => true,
+                'title' => 'Success',
+                'status' => 'success',
+                'message' => 'Fetched successfully.',
+        ];
+        return Crypt::encryptString(json_encode($response));
     }
 
 }

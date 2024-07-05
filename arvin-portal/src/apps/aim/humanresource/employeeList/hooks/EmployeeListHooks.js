@@ -5,6 +5,7 @@ import { getEmployeeList } from "../actions/EmployeeListActions";
 import { useSearchParams } from "react-router-dom";
 import { useDebounce } from "../../../../../utils/HelperUtils";
 import { getEmployeeOrganizationAccessList } from "../../../accessrights/organizationrights/actions/OrganizationRightsActions";
+import { getEmployeePageAccessList } from "../../../accessrights/pagerights/actions/PageRightsActions";
 const EmployeeListHooks = (props) => {
   const refresh = useSelector((state) => state.HumanResourceReducer.refresh);
   const dispatch = useDispatch();
@@ -63,6 +64,7 @@ const EmployeeListHooks = (props) => {
   };
   const onSelectItem = async (data) => {
     await dispatch(getEmployeeOrganizationAccessList(data.code));
+    await dispatch(getEmployeePageAccessList(data.code));
     await dispatch({
       type: Constants.ACTION_HUMAN_RESOURCE,
       payload: {

@@ -70,9 +70,7 @@ const RequireAuth = ({ children }) => {
 function App() {
   const access = useSelector((state) => state.AuthenticationReducer.access);
   const hasAccess = (module, component, subComponent) => {
-    console.log("Access check for:", module, component, subComponent);
-
-    const moduleAccess = access.user_access_module_rights.some(
+      const moduleAccess = access.user_access_module_rights.some(
       (item) => item.description === module
     );
     const componentAccess = access.user_access_component_rights.some(
@@ -84,10 +82,6 @@ function App() {
         (item) => item.description === subComponent
       );
     }
-    console.log("Module access:", moduleAccess);
-    console.log("Component access:", componentAccess);
-    console.log("SubComponent access:", subComponentAccess);
-
     return moduleAccess && componentAccess && subComponentAccess;
   };
 

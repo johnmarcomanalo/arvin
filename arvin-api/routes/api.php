@@ -61,7 +61,8 @@ use Illuminate\Support\Facades\Route;
     Route::get('reference/subsections/get_subsection/{id}',[RefSubSectionsController::class,'get_subsection'])->middleware(['light_decryption']);
     Route::get('reference/system_settings/access_rights/organization_rights/get_employee_organization_access_list/{id}',[UserAccessOrganizationRightsController::class,'get_employee_organization_access_list']);
     Route::apiResource('reference/system_settings/access_rights/organization_rights',UserAccessOrganizationRightsController::class)->middleware(['light_decryption']);
-    Route::get('reference/system_settings/access_rights/Page_rights/get_employee_Page_access_list',[UserAccessPageRightsController::class,'get_employee_page_access_list']);
+    Route::get('reference/system_settings/access_rights/page_rights/get_employee_page_access_list/{id}',[UserAccessPageRightsController::class,'get_employee_page_access_list']);
+    Route::apiResource('reference/system_settings/access_rights/page_rights',UserAccessPageRightsController::class)->middleware(['light_decryption']);
     // REFERENCE END
     
     //MODULE SALES DAILY OUT START

@@ -18,7 +18,10 @@ const OrganizationRightsHooks = (props) => {
     (state) =>
       state.ReferenceReducer.search_reference_employee_organization_access
   );
-  const dataListCount = useSelector((state) => state.HomeReducer.dataListCount);
+  const dataListCount = useSelector(
+    (state) =>
+      state.ReferenceReducer.search_reference_employee_organization_access.count
+  );
   const dateFilterStart = useSelector(
     (state) => state.HomeReducer.dateFilterStart
   );
@@ -100,7 +103,7 @@ const OrganizationRightsHooks = (props) => {
     // SEARCH DATA
     const search = event.target.value;
     dispatch({
-      type: "seach_reference_employee_organization_access",
+      type: "search_reference_employee_organization_access",
       data: search,
     });
   };
