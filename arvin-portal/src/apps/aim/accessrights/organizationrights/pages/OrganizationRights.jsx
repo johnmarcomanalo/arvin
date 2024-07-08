@@ -164,6 +164,7 @@ let OrganizationRights = (props) => {
                   actionshow={true}
                   paginationShow={false}
                   subAction1Show={false}
+                  heightLimit={true}
                 />
               </Grid>
             </Grid>

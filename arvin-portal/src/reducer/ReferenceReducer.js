@@ -55,22 +55,13 @@ const dataReducer = (state = initialState, action) => {
     case "search_reference_employee_page_access":
       let search_page = state.reference_employee_page_access.filter((files) => {
         return (
-          files.company_description
+          files.module_description
             .toLowerCase()
             .indexOf(action.data.toLocaleLowerCase()) !== -1 ||
-          files.business_unit_description
+          files.component_description
             .toLowerCase()
             .indexOf(action.data.toLocaleLowerCase()) !== -1 ||
-          files.team_description
-            .toLowerCase()
-            .indexOf(action.data.toLocaleLowerCase()) !== -1 ||
-          files.department_description
-            .toLowerCase()
-            .indexOf(action.data.toLocaleLowerCase()) !== -1 ||
-          files.section_description
-            .toLowerCase()
-            .indexOf(action.data.toLocaleLowerCase()) !== -1 ||
-          files.subsection_description
+          files.sub_component_description
             .toLowerCase()
             .indexOf(action.data.toLocaleLowerCase()) !== -1
         );

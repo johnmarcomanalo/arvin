@@ -30,6 +30,7 @@ import Modal from "../../../../../components/modal/Modal";
 import configure from "../../../../configure/configure.json";
 import UserList from "../../../humanresource/employeeList/pages/components/UserList";
 import PageRightsHooks from "../hooks/PageRightsHooks";
+import SearchField from "../../../../../components/inputFIeld/SearchField";
 const formName = "PageRights";
 const submit = async (values, dispatch, props) => {
   try {
@@ -41,6 +42,7 @@ const submit = async (values, dispatch, props) => {
 let PageRights = (props) => {
   const { ...pageRights } = PageRightsHooks(props);
   const matches = useMediaQuery("(min-width:600px)");
+  const [screenHeight, setScreenHeight] = React.useState(window.innerHeight);
   return (
     <React.Fragment>
       <Modal
@@ -127,80 +129,23 @@ let PageRights = (props) => {
             </Card>
           </Grid>
           <Grid item xs={12} sm={12} md={10} lg={10}>
-            {/* <Card
-              sx={{
-                boxShadow: configure.box_shadow,
-              }}
-            >
-              <CardContent>
-                <Table
-                  columns={pageRights.columns}
-                  dataList={pageRights.dataList}
-                  page={pageRights.page}
-                  rowsPerPage={pageRights.rowsPerPage}
-                  handleChangePage={pageRights.handleChangePage}
-                  handleChangeRowsPerPage={pageRights.handleChangeRowsPerPage}
-                  onSelectItem={pageRights.onSelectItem}
-                  id={"page_rights_table"}
-                  localStorage={""}
-                  rowCount={pageRights.searchdataListCount}
-                  action={(row) => {
-                    let access_rights = row?.access_rights;
-                    if (typeof access_rights == "undefined") {
-                      access_rights = 0;
-                    }
-                    return (
-                      <FormControl size="small" fullWidth>
-                        <InputLabel
-                          id="demo-simple-select-label"
-                          shrink={true}
-                        ></InputLabel>
-                        <Select
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
-                          label="Age"
-                          value={access_rights}
-                          onChange={(e) => {
-                            pageRights.onUpdateEmployeeOrganizationAccess(
-                              row,
-                              e.target.value
-                            );
-                          }}
-                        >
-                          <MenuItem value={1}>Authorized</MenuItem>
-                          <MenuItem value={0}>Disabled</MenuItem>
-                        </Select>
-                      </FormControl>
-                    );
-                  }}
-                  actionshow={true}
-                  paginationShow={false}
-                  subAction1Show={false}
-                />
-              </CardContent>
-            </Card> */}
-            <Paper sx={{ boxShadow: configure.box_shadow }}>
-              <TableContainer
-                sx={{
-                  whiteSpace: "nowrap",
-                  overflowX: "auto",
-                }}
-                id={"tableScroll2"}
-              >
-                <Table size="small" stickyHeader aria-label="sticky table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell
-                        style={{
-                          backgroundColor: configure.primary_table_color,
-                          color: configure.primary_table_text_color,
-                          textAlign: "left",
-                        }}
-                      >
-                        Action
-                      </TableCell>
-                      {pageRights.columns.map((value) => {
-                        return (
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={12} md={3} lg={3}>
+                <SearchField onChange={pageRights.onChangeSearch} />
+              </Grid>
+              <Grid item xs={12} sm={12} md={12} lg={12}>
+                <Paper sx={{ boxShadow: configure.box_shadow }}>
+                  <TableContainer
+                    sx={{
+                      maxHeight: screenHeight - 300,
+                      whiteSpace: "nowrap",
+                      overflowX: "auto",
+                    }}
+                    id={"tableScroll2"}
+                  >
+                    <Table size="small" stickyHeader aria-label="sticky table">
+                      <TableHead>
+                        <TableRow>
                           <TableCell
                             style={{
                               backgroundColor: configure.primary_table_color,
@@ -208,183 +153,209 @@ let PageRights = (props) => {
                               textAlign: "left",
                             }}
                           >
-                            {value.label}
+                            Action
                           </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {pageRights.dataList.map((data, index) => {
-                      try {
-                        let access_rights = data?.access_rights;
-                        if (typeof access_rights == "undefined") {
-                          access_rights = 0;
-                        }
-                        return (
-                          <TableRow
-                            key={data.code}
-                            sx={{
-                              "&:last-child td, &:last-child th": { border: 0 },
-                            }}
-                          >
-                            <TableCell>
-                              <FormControl size="small" fullWidth>
-                                <InputLabel
-                                  id="demo-simple-select-label"
-                                  shrink={true}
-                                ></InputLabel>
-                                <Select
-                                  labelId="demo-simple-select-label"
-                                  id="demo-simple-select"
-                                  label="Age"
-                                  value={access_rights}
-                                  onChange={(e) => {
-                                    pageRights.onUpdateEmployeePageAccess(
-                                      data,
-                                      e.target.value
-                                    );
-                                  }}
-                                >
-                                  <MenuItem value={1}>Authorized</MenuItem>
-                                  <MenuItem value={0}>Disabled</MenuItem>
-                                </Select>
-                              </FormControl>
-                            </TableCell>
-                            <TableCell align="left">
-                              {data.module_description}
-                            </TableCell>
-                            <TableCell align="left">
-                              {data.component_description}
-                            </TableCell>
-                            <TableCell align="left">
-                              {data.sub_component_description}
-                            </TableCell>
-                            <TableCell align="left">
-                              <FormControlLabel
-                                label="Create"
-                                control={
-                                  <Checkbox
-                                    checked={data.create == 1 ? true : false}
-                                    disabled={
-                                      data.component_code == "" &&
-                                      data.sub_component_code == ""
-                                        ? true
-                                        : false
+                          {pageRights.columns.map((value) => {
+                            return (
+                              <TableCell
+                                style={{
+                                  backgroundColor:
+                                    configure.primary_table_color,
+                                  color: configure.primary_table_text_color,
+                                  textAlign: "left",
+                                }}
+                              >
+                                {value.label}
+                              </TableCell>
+                            );
+                          })}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {pageRights.dataList.map((data, index) => {
+                          try {
+                            let access_rights = data?.access_rights;
+                            if (typeof access_rights == "undefined") {
+                              access_rights = 0;
+                            }
+                            return (
+                              <TableRow
+                                key={data.code}
+                                sx={{
+                                  "&:last-child td, &:last-child th": {
+                                    border: 0,
+                                  },
+                                }}
+                              >
+                                <TableCell>
+                                  <FormControl size="small" fullWidth>
+                                    <InputLabel
+                                      id="demo-simple-select-label"
+                                      shrink={true}
+                                    ></InputLabel>
+                                    <Select
+                                      labelId="demo-simple-select-label"
+                                      id="demo-simple-select"
+                                      label="Age"
+                                      value={access_rights}
+                                      onChange={(e) => {
+                                        pageRights.onUpdateEmployeePageAccess(
+                                          data,
+                                          e.target.value
+                                        );
+                                      }}
+                                    >
+                                      <MenuItem value={1}>Authorized</MenuItem>
+                                      <MenuItem value={0}>Disabled</MenuItem>
+                                    </Select>
+                                  </FormControl>
+                                </TableCell>
+                                <TableCell align="left">
+                                  {data.module_description}
+                                </TableCell>
+                                <TableCell align="left">
+                                  {data.component_description}
+                                </TableCell>
+                                <TableCell align="left">
+                                  {data.sub_component_description}
+                                </TableCell>
+                                <TableCell align="left">
+                                  <FormControlLabel
+                                    label="Create"
+                                    control={
+                                      <Checkbox
+                                        checked={
+                                          data.create == 1 ? true : false
+                                        }
+                                        disabled={
+                                          data.component_code == "" &&
+                                          data.sub_component_code == ""
+                                            ? true
+                                            : false
+                                        }
+                                        onChange={(e) => {
+                                          pageRights.handleAccessCheckType(
+                                            e,
+                                            "create",
+                                            data
+                                          );
+                                        }}
+                                      />
                                     }
-                                    onChange={(e) => {
-                                      pageRights.handleAccessCheckType(
-                                        e,
-                                        "create",
-                                        data
-                                      );
-                                    }}
                                   />
-                                }
-                              />
-                            </TableCell>
-                            <TableCell align="left">
-                              <FormControlLabel
-                                label="Update"
-                                control={
-                                  <Checkbox
-                                    checked={data.update == 1 ? true : false}
-                                    disabled={
-                                      data.component_code == "" &&
-                                      data.sub_component_code == ""
-                                        ? true
-                                        : false
+                                </TableCell>
+                                <TableCell align="left">
+                                  <FormControlLabel
+                                    label="Update"
+                                    control={
+                                      <Checkbox
+                                        checked={
+                                          data.update == 1 ? true : false
+                                        }
+                                        disabled={
+                                          data.component_code == "" &&
+                                          data.sub_component_code == ""
+                                            ? true
+                                            : false
+                                        }
+                                        onChange={(e) => {
+                                          pageRights.handleAccessCheckType(
+                                            e,
+                                            "create",
+                                            data
+                                          );
+                                        }}
+                                      />
                                     }
-                                    onChange={(e) => {
-                                      pageRights.handleAccessCheckType(
-                                        e,
-                                        "create",
-                                        data
-                                      );
-                                    }}
                                   />
-                                }
-                              />
-                            </TableCell>
-                            <TableCell align="left">
-                              <FormControlLabel
-                                label="Delete"
-                                control={
-                                  <Checkbox
-                                    checked={data.delete == 1 ? true : false}
-                                    disabled={
-                                      data.component_code == "" &&
-                                      data.sub_component_code == ""
-                                        ? true
-                                        : false
+                                </TableCell>
+                                <TableCell align="left">
+                                  <FormControlLabel
+                                    label="Delete"
+                                    control={
+                                      <Checkbox
+                                        checked={
+                                          data.delete == 1 ? true : false
+                                        }
+                                        disabled={
+                                          data.component_code == "" &&
+                                          data.sub_component_code == ""
+                                            ? true
+                                            : false
+                                        }
+                                        onChange={(e) => {
+                                          pageRights.handleAccessCheckType(
+                                            e,
+                                            "delete",
+                                            data
+                                          );
+                                        }}
+                                      />
                                     }
-                                    onChange={(e) => {
-                                      pageRights.handleAccessCheckType(
-                                        e,
-                                        "delete",
-                                        data
-                                      );
-                                    }}
                                   />
-                                }
-                              />
-                            </TableCell>
-                            <TableCell align="left">
-                              <FormControlLabel
-                                label="Generate"
-                                control={
-                                  <Checkbox
-                                    checked={data.generate == 1 ? true : false}
-                                    disabled={
-                                      data.component_code == "" &&
-                                      data.sub_component_code == ""
-                                        ? true
-                                        : false
+                                </TableCell>
+                                <TableCell align="left">
+                                  <FormControlLabel
+                                    label="Generate"
+                                    control={
+                                      <Checkbox
+                                        checked={
+                                          data.generate == 1 ? true : false
+                                        }
+                                        disabled={
+                                          data.component_code == "" &&
+                                          data.sub_component_code == ""
+                                            ? true
+                                            : false
+                                        }
+                                        onChange={(e) => {
+                                          pageRights.handleAccessCheckType(
+                                            e,
+                                            "generate",
+                                            data
+                                          );
+                                        }}
+                                      />
                                     }
-                                    onChange={(e) => {
-                                      pageRights.handleAccessCheckType(
-                                        e,
-                                        "generate",
-                                        data
-                                      );
-                                    }}
                                   />
-                                }
-                              />
-                            </TableCell>
-                            <TableCell align="left">
-                              <FormControlLabel
-                                label="Export"
-                                control={
-                                  <Checkbox
-                                    checked={data.export == 1 ? true : false}
-                                    disabled={
-                                      data.component_code == "" &&
-                                      data.sub_component_code == ""
-                                        ? true
-                                        : false
+                                </TableCell>
+                                <TableCell align="left">
+                                  <FormControlLabel
+                                    label="Export"
+                                    control={
+                                      <Checkbox
+                                        checked={
+                                          data.export == 1 ? true : false
+                                        }
+                                        disabled={
+                                          data.component_code == "" &&
+                                          data.sub_component_code == ""
+                                            ? true
+                                            : false
+                                        }
+                                        onChange={(e) => {
+                                          pageRights.handleAccessCheckType(
+                                            e,
+                                            "export",
+                                            data
+                                          );
+                                        }}
+                                      />
                                     }
-                                    onChange={(e) => {
-                                      pageRights.handleAccessCheckType(
-                                        e,
-                                        "export",
-                                        data
-                                      );
-                                    }}
                                   />
-                                }
-                              />
-                            </TableCell>
-                          </TableRow>
-                        );
-                      } catch (error) {
-                        console.log(error);
-                      }
-                    })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          } catch (error) {
+                            console.log(error);
+                          }
+                        })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Paper>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </form>

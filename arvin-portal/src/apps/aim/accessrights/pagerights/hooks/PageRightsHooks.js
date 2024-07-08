@@ -108,6 +108,14 @@ const PageRightsHooks = (props) => {
     await dispatch(postEmployeePageAccess(data));
     await dispatch(getEmployeePageAccessList(selectedDataList?.code));
   };
+  const onChangeSearch = (event) => {
+    // SEARCH DATA
+    const search = event.target.value;
+    dispatch({
+      type: "search_reference_employee_page_access",
+      data: search,
+    });
+  };
   return {
     search,
     page,
@@ -128,6 +136,7 @@ const PageRightsHooks = (props) => {
     onClickCloseViewModal,
     onUpdateEmployeePageAccess,
     handleAccessCheckType,
+    onChangeSearch,
   };
 };
 
