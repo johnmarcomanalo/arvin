@@ -10,6 +10,8 @@ class UserAccessModuleRights extends Model
     use HasFactory;
     protected $fillable = ['code',
     'module_code',   
+    'component_code',   
+    'sub_component_code',   
     'user_id',
     'access_rights',
     'added_by',

@@ -15,6 +15,7 @@ class UserAccessComponentRights extends Model
     'create',
     'update',
     'delete',
+    'update',
     'generate',
     'export',
     'access_rights',

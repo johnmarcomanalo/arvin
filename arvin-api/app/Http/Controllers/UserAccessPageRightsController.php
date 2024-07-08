@@ -96,7 +96,7 @@ class UserAccessPageRightsController extends Controller
             return $response;
             break;
         case 'sub_component':
-            return $check = UserAccessSubComponentRights::
+             $check = UserAccessSubComponentRights::
                 where('user_id',$fields['user_id'])->
                 where('sub_component_code',$fields['sub_component_code'])->
                 first();
@@ -107,10 +107,10 @@ class UserAccessPageRightsController extends Controller
                 UserAccessSubComponentRights::create($fields);
             }
             $response = [
-            'result' => true,
-            'title' => 'Success',
-            'status' => 'success',
-            'message' => 'Access updated successfully.',
+                'result' => true,
+                'title' => 'Success',
+                'status' => 'success',
+                'message' => 'Access updated successfully.',
             ];
             return $response;
             break;

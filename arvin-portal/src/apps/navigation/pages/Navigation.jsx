@@ -167,7 +167,11 @@ export default function Navigation(props) {
                     {isOpen ? <ExpandLess /> : <ExpandMore />}{" "}
                   </ListItemButton>
                 ) : (
-                  <ListItemButton href={text.link} underline="none">
+                  <ListItemButton
+                    href={text.link}
+                    underline="none"
+                    onClick={() => navigation_param.onSelectActivePage(text)}
+                  >
                     <ListItemText primary={text.description} />
                   </ListItemButton>
                 )}
@@ -206,7 +210,11 @@ export default function Navigation(props) {
           return (
             <React.Fragment>
               <ListItem disablePadding>
-                <ListItemButton href={text.link} underline="none">
+                <ListItemButton
+                  href={text.link}
+                  underline="none"
+                  onClick={() => navigation_param.onSelectActivePage(text)}
+                >
                   <ListItemText primary={text.description} />
                 </ListItemButton>
               </ListItem>
@@ -294,66 +302,6 @@ export default function Navigation(props) {
             </ListItemButton>
           </ListItem>
           <Divider />
-          {/* <ListItem disablePadding>
-            <ListItemButton onClick={() => onClickSelectRequest()}>
-              <ListItemText primary={"Request"} />
-              {requestlist ? <ExpandLess /> : <ExpandMore />}{" "}
-            </ListItemButton>
-          </ListItem>
-          <Divider />
-
-          <Collapse
-            in={requestlist}
-            timeout="auto"
-            style={{ backgroundColor: "#f2f2f2de" }}
-            unmountOnExit
-          >
-            <List component="div" disablePadding>
-              <ListItem disablePadding>
-                <ListItemButton
-                  onClick={() => navigation_param.onOpenRequestModal("Leave")}
-                >
-                  <ListItemText primary={"Leave"} />
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton
-                  onClick={() =>
-                    navigation_param.onOpenRequestModal("Leave Premises")
-                  }
-                >
-                  <ListItemText primary={"Leave Premises"} />
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton
-                  onClick={() =>
-                    navigation_param.onOpenRequestModal("Official Business")
-                  }
-                >
-                  <ListItemText primary={"Official Business"} />
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton
-                  onClick={() =>
-                    navigation_param.onOpenRequestModal("Overtime")
-                  }
-                >
-                  <ListItemText primary={"Overtime"} />
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton
-                  onClick={() =>
-                    navigation_param.onOpenRequestModal("Undertime")
-                  }
-                >
-                  <ListItemText primary={"Undertime"} />
-                </ListItemButton>
-              </ListItem>
-            </List>
-          </Collapse> */}
           {modulesAccordion(access?.user_access_module_rights)}
           <Divider />
           <ListItem disablePadding>

@@ -13,21 +13,42 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import LaunchIcon from "@mui/icons-material/Launch";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import NavigationHooks from "../../apps/navigation/hooks/NavigationHooks";
+import DownloadIcon from "@mui/icons-material/Download";
 const ButtonComponent = (props) => {
+  const { ...navigationHooks } = NavigationHooks(props);
   const { ...params } = props;
+  const active_page = JSON.parse(navigationHooks.active_page);
+  console.log(active_page);
   let icon = null;
+  let dsbl = null;
   switch (params.iconType) {
     case "add":
       icon = <AddCircleIcon />;
+      if (active_page.create == 0) {
+        dsbl = true;
+      } else {
+        dsbl = false;
+      }
       break;
     case "submit":
       icon = <CheckCircleIcon />;
       break;
     case "delete":
       icon = <DeleteIcon />;
+      if (active_page.delete == 0) {
+        dsbl = true;
+      } else {
+        dsbl = false;
+      }
       break;
     case "update":
       icon = <SyncIcon />;
+      if (active_page.update == 0) {
+        dsbl = true;
+      } else {
+        dsbl = false;
+      }
       break;
     case "login":
       icon = <LoginIcon />;
@@ -37,6 +58,11 @@ const ButtonComponent = (props) => {
       break;
     case "generate":
       icon = <TableRowsIcon />;
+      if (active_page.generate == 0) {
+        dsbl = true;
+      } else {
+        dsbl = false;
+      }
       break;
     case "refresh":
       icon = <RefreshIcon />;
@@ -50,6 +76,14 @@ const ButtonComponent = (props) => {
     case "view2":
       icon = <VisibilityIcon />;
       break;
+    case "export":
+      icon = <DownloadIcon />;
+      if (active_page.export == 0) {
+        dsbl = true;
+      } else {
+        dsbl = false;
+      }
+      break;
     default:
       icon = <HelpIcon />;
       break;
@@ -62,6 +96,7 @@ const ButtonComponent = (props) => {
       type={params?.type}
       variant="contained"
       startIcon={icon}
+      disabled={dsbl}
       onClick={() => {
         if (params.click) {
           params.click(); // Invoke params.click if it exists
