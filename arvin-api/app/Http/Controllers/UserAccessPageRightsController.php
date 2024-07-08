@@ -56,12 +56,19 @@ class UserAccessPageRightsController extends Controller
         ]);
         switch ($fields['type']) {
         case 'module':
-            $check = UserAccessModuleRights::
+             $check = UserAccessModuleRights::
                 where('user_id',$fields['user_id'])->
                 where('module_code',$fields['module_code'])->
                 first();
+
             if ($check) {
-                return $check->update($fields);
+                $data = [
+                    'module_code' => $fields['module_code'],
+                    'access_rights' => $fields['access_rights'],
+                    'user_id' => $fields['user_id'],
+                    'modified_by' => $fields['modified_by'],
+                ];
+                $check->update($data);
             } else {
                 $code = $this->generate_code_module();
                 $fields['code'] = $code;
