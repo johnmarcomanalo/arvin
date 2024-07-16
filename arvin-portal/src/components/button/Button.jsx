@@ -19,7 +19,6 @@ const ButtonComponent = (props) => {
   const { ...navigationHooks } = NavigationHooks(props);
   const { ...params } = props;
   const active_page = JSON.parse(navigationHooks.active_page);
-  console.log(active_page);
   let icon = null;
   let dsbl = null;
   switch (params.iconType) {

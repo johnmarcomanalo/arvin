@@ -111,39 +111,16 @@ class UsersController extends Controller
          $user_access_module_code = MainController::generate_code('App\Models\UserAccessModuleRights',"code");
          $employee= User::create([
             'code'=>$user_code,
-            'username'=>'d.lustado',
-            'first_name'=>'DHONDE',
-            'last_name'=>'LUSTADO',
+            'username'=>'m.flora',
+            'first_name'=>'Michael',
+            'last_name'=>'Flora',
             'company_code'=>'1',
             'business_unit_code'=>'1',
-            'team_code'=>'2',
-            'department_code'=>'10',
-            'section_code'=>'25',
-            'subsection_code'=>'26',
+            'team_code'=>'1',
+            'department_code'=>'4',
+            'section_code'=>'12',
+            'subsection_code'=>'12',
             'password'=> bcrypt("welcome123"),
-            'added_by'=>'1',
-            'modified_by'=> '1',
-        ]);
-          UserAccessModuleRights::create([
-            'code'=>$user_access_module_code,
-            'module_code'=>'300',
-            'user_id'=>$user_code,
-            'access_rights'=>'1',
-            'added_by'=>'1',
-            'modified_by'=> '1',
-        ]);
-        
-        UserAccessComponentRights::create([
-            'code'=>'300001'.'-'.$user_code,
-            'module_code'=>'300',
-            'component_code'=> '300001',
-            'user_id'=>$user_code,
-            'create'=>'1',
-            'update'=>'1',
-            'delete'=>'1',
-            'generate'=>'1',
-            'export'=>'1',
-            'access_rights'=>'1',
             'added_by'=>'1',
             'modified_by'=> '1',
         ]);

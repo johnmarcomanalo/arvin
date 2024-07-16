@@ -6,7 +6,7 @@ import ComboBox from "../../../../../../components/autoComplete/AutoComplete";
 import ButtonComponent from "../../../../../../components/button/Button";
 import { Constants } from "../../../../../../reducer/Contants";
 import configure from "../../../../../configure/configure.json";
-import RefSalesRankingHooks from "../../../../reference/hooks/RefSalesRankingHooks";
+import RefSalesRankingHooks from "../../../../settings/reference/hooks/RefSalesRankingHooks";
 import SalesDailyOutComponentAnnualSalesRankingHooks from "../../hooks/SalesLeaderboardHooks";
 const formName = "GenerateAnnualSalesRanking";
 let GenerateAnnualSalesRanking = (props) => {

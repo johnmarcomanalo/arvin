@@ -18,6 +18,9 @@ use App\Http\Controllers\SalesDailyOutReportSalesSummaryController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UserAccessOrganizationRightsController;
 use App\Http\Controllers\UserAccessPageRightsController;
+use App\Http\Controllers\RefModulesController;
+use App\Http\Controllers\RefComponentsController;
+use App\Http\Controllers\RefSubComponentsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -63,6 +66,12 @@ use Illuminate\Support\Facades\Route;
     Route::apiResource('reference/system_settings/access_rights/organization_rights',UserAccessOrganizationRightsController::class)->middleware(['light_decryption']);
     Route::get('reference/system_settings/access_rights/page_rights/get_employee_page_access_list/{id}',[UserAccessPageRightsController::class,'get_employee_page_access_list']);
     Route::apiResource('reference/system_settings/access_rights/page_rights',UserAccessPageRightsController::class)->middleware(['light_decryption']);
+    Route::get('reference/ref_modules',[RefModulesController::class,'get_refence_modules']);
+    Route::apiResource('reference/modules',RefModulesController::class)->middleware(['light_decryption']);
+    Route::get('reference/ref_components',[RefComponentsController::class,'get_refence_components']);
+    Route::apiResource('reference/components',RefComponentsController::class)->middleware(['light_decryption']);
+    Route::get('reference/ref_subcomponents',[RefSubComponentsController::class,'get_refence_subcomponents']);
+    Route::apiResource('reference/subcomponents',RefSubComponentsController::class)->middleware(['light_decryption']);
     // REFERENCE END
     
     //MODULE SALES DAILY OUT START

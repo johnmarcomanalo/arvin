@@ -2,7 +2,7 @@ import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Collapse, List, ListItem } from "@mui/material";
+import { Collapse, List, ListItem, ListItemIcon } from "@mui/material";
 import MuiAppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -13,6 +13,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import PanoramaFishEyeIcon from "@mui/icons-material/PanoramaFishEye";
 import { styled, useTheme } from "@mui/material/styles";
 import * as React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -120,10 +121,33 @@ export default function Navigation(props) {
         const isOpen = clickedModuleIndex === index;
         return (
           <React.Fragment>
-            <ListItem disablePadding>
+            <ListItem
+              disablePadding
+              sx={{
+                backgroundColor: isOpen ? configure.primary_color : null,
+                transition: "background-color 0.3s ease-in-out",
+              }}
+            >
               <ListItemButton onClick={() => onClickSelectedModule(index)}>
-                <ListItemText primary={text.description} />
-                {isOpen ? <ExpandLess /> : <ExpandMore />}{" "}
+                <ListItemText
+                  primary={text.description}
+                  sx={{
+                    color: isOpen ? "white" : configure.primary_color,
+                  }}
+                />
+                {isOpen ? (
+                  <ExpandLess
+                    sx={{
+                      color: isOpen ? "white" : configure.primary_color,
+                    }}
+                  />
+                ) : (
+                  <ExpandMore
+                    sx={{
+                      color: isOpen ? "white" : configure.primary_color,
+                    }}
+                  />
+                )}{" "}
               </ListItemButton>
             </ListItem>
             <Divider />
@@ -163,7 +187,10 @@ export default function Navigation(props) {
                   <ListItemButton
                     onClick={() => onClickSelectedComponent(index)}
                   >
-                    <ListItemText primary={text.description} />
+                    <ListItemText
+                      primary={text.description}
+                      sx={{ textIndent: 10 }}
+                    />
                     {isOpen ? <ExpandLess /> : <ExpandMore />}{" "}
                   </ListItemButton>
                 ) : (
@@ -172,7 +199,10 @@ export default function Navigation(props) {
                     underline="none"
                     onClick={() => navigation_param.onSelectActivePage(text)}
                   >
-                    <ListItemText primary={text.description} />
+                    <ListItemText
+                      primary={text.description}
+                      sx={{ textIndent: 10 }}
+                    />
                   </ListItemButton>
                 )}
               </ListItem>
@@ -215,7 +245,10 @@ export default function Navigation(props) {
                   underline="none"
                   onClick={() => navigation_param.onSelectActivePage(text)}
                 >
-                  <ListItemText primary={text.description} />
+                  <ListItemText
+                    primary={"- " + text.description}
+                    sx={{ textIndent: 20 }}
+                  />
                 </ListItemButton>
               </ListItem>
               <Divider />
@@ -298,36 +331,16 @@ export default function Navigation(props) {
         <List>
           <ListItem disablePadding>
             <ListItemButton href={"/"} underline="none">
-              <ListItemText primary={"Home"} />
+              <ListItemText
+                primary={"Home"}
+                sx={{
+                  color: configure.primary_color,
+                }}
+              />
             </ListItemButton>
           </ListItem>
           <Divider />
           {modulesAccordion(access?.user_access_module_rights)}
-          <Divider />
-          <ListItem disablePadding>
-            <ListItemButton onClick={() => onClickSelectRequest()}>
-              <ListItemText primary={"Account Settings"} />
-              {requestlist ? <ExpandLess /> : <ExpandMore />}{" "}
-            </ListItemButton>
-          </ListItem>
-          <Divider />
-
-          <Collapse
-            in={requestlist}
-            timeout="auto"
-            style={{ backgroundColor: "#f2f2f2de" }}
-            unmountOnExit
-          >
-            <List component="div" disablePadding>
-              <ListItem disablePadding>
-                <ListItemButton
-                  onClick={() => navigation_param.onOpenSettingModal()}
-                >
-                  <ListItemText primary={"Change Password"} />
-                </ListItemButton>
-              </ListItem>
-            </List>
-          </Collapse>
           <Divider />
           <ListItem disablePadding>
             <ListItemButton

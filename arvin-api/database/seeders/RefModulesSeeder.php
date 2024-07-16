@@ -51,7 +51,7 @@ class RefModulesSeeder extends Seeder
             'modified_by' => env('DEFAULT_USER')],
             [
             'code'=> '600',
-            'description' => 'System Settings',
+            'description' => 'Settings',
             'link'=> '/Modules/SystemSettings',
             'added_by' => env('DEFAULT_USER'),
             'modified_by' => env('DEFAULT_USER')],

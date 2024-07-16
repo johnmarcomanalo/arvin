@@ -4,8 +4,8 @@ import { React, useEffect } from "react";
 import { getEmployeeList } from "../actions/EmployeeListActions";
 import { useSearchParams } from "react-router-dom";
 import { useDebounce } from "../../../../../utils/HelperUtils";
-import { getEmployeeOrganizationAccessList } from "../../../accessrights/organizationrights/actions/OrganizationRightsActions";
-import { getEmployeePageAccessList } from "../../../accessrights/pagerights/actions/PageRightsActions";
+import { getEmployeeOrganizationAccessList } from "../../../settings/accessrights/organizationrights/actions/OrganizationRightsActions";
+import { getEmployeePageAccessList } from "../../../settings/accessrights/pagerights/actions/PageRightsActions";
 const EmployeeListHooks = (props) => {
   const refresh = useSelector((state) => state.HumanResourceReducer.refresh);
   const dispatch = useDispatch();

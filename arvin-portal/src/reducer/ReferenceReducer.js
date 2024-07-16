@@ -14,6 +14,11 @@ const initialState = {
   search_reference_employee_organization_access: [],
   reference_employee_page_access: [],
   search_reference_employee_page_access: [],
+  modules: [],
+  components: [],
+  sub_components: [],
+  dataList: [],
+  dataListCount: 0,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

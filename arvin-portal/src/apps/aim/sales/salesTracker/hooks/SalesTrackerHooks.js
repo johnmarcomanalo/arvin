@@ -9,7 +9,7 @@ import {
   getSalesDailyOut,
   getStatusDailyTargetAndPercentageDailyTargetByDailyOut,
 } from "../actions/SalesTrackerActions";
-import { getSpecificRefSubSection } from "../../../reference/actions/ReferenceActions";
+import { getSpecificRefSubSection } from "../../../settings/reference/actions/ReferenceActions";
 const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
   const [state, setState] = React.useState({

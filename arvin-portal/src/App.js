@@ -38,11 +38,25 @@ const IndexSelectedSalesSummary = lazy(() =>
 );
 const IndexOrganizationRights = lazy(() =>
   import(
-    "./apps/aim/accessrights/organizationrights/pages/IndexOrganizationRights"
+    "./apps/aim/settings/accessrights/organizationrights/pages/IndexOrganizationRights"
   )
 );
 const IndexPageRights = lazy(() =>
-  import("./apps/aim/accessrights/pagerights/pages/IndexPageRights")
+  import("./apps/aim/settings/accessrights/pagerights/pages/IndexPageRights")
+);
+const IndexRefModules = lazy(() =>
+  import("./apps/aim/settings/reference/pages/IndexRefModules")
+);
+const IndexRefComponents = lazy(() =>
+  import("./apps/aim/settings/reference/pages/IndexRefComponents")
+);
+const IndexRefSubcomponents = lazy(() =>
+  import("./apps/aim/settings/reference/pages/IndexRefSubcomponents")
+);
+const IndexChangePassword = lazy(() =>
+  import(
+    "./apps/aim/settings/accountsettings/changepassword/pages/IndexChangePassword"
+  )
 );
 const theme = createTheme({
   typography: {
@@ -70,7 +84,7 @@ const RequireAuth = ({ children }) => {
 function App() {
   const access = useSelector((state) => state.AuthenticationReducer.access);
   const hasAccess = (module, component, subComponent) => {
-      const moduleAccess = access.user_access_module_rights.some(
+    const moduleAccess = access.user_access_module_rights.some(
       (item) => item.description === module
     );
     const componentAccess = access.user_access_component_rights.some(
@@ -197,7 +211,7 @@ function App() {
                     element={
                       <PrivateRoute
                         accessChecker={getAccessChecker({
-                          module: "System Settings",
+                          module: "Settings",
                           component: "Access Rights",
                           subComponent: "Organization Rights",
                         })}
@@ -211,7 +225,7 @@ function App() {
                     element={
                       <PrivateRoute
                         accessChecker={getAccessChecker({
-                          module: "System Settings",
+                          module: "Settings",
                           component: "Access Rights",
                           subComponent: "Page Rights",
                         })}
@@ -220,11 +234,66 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+                  <Route
+                    path="/Modules/SystemSettings/References/Modules"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Settings",
+                          component: "References",
+                          subComponent: "Modules",
+                        })}
+                      >
+                        <IndexRefModules />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/SystemSettings/References/Components"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Settings",
+                          component: "References",
+                          subComponent: "Components",
+                        })}
+                      >
+                        <IndexRefComponents />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/SystemSettings/References/Subcomponents"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Settings",
+                          component: "References",
+                          subComponent: "Subcomponents",
+                        })}
+                      >
+                        <IndexRefSubcomponents />
+                      </PrivateRoute>
+                    }
+                  />
                 </Route>
               )}
-
             <Route element={<NoMatch />} path="*" />
             <Route element={<NoAccess />} path="/invalid-access" />
+            <Route
+              path="/Modules/SystemSettings/AccountSettings/ResetPassword"
+              element={
+                <PrivateRoute
+                  accessChecker={getAccessChecker({
+                    module: "Settings",
+                    component: "Account Settings",
+                    subComponent: "Reset Password",
+                  })}
+                >
+                  <IndexChangePassword />
+                </PrivateRoute>
+              }
+            />
           </Routes>
         </Suspense>
       </ThemeProvider>
