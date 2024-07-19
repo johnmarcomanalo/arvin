@@ -14,6 +14,8 @@ const initialState = {
   search_reference_employee_organization_access: [],
   reference_employee_page_access: [],
   search_reference_employee_page_access: [],
+  reference_customer_page_access: [],
+  search_reference_customer_page_access: [],
   modules: [],
   components: [],
   sub_components: [],

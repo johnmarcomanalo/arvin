@@ -258,7 +258,7 @@ class UserAccessPageRightsController extends Controller
                 }
             }
         }
-          $response = [
+        $response = [
                 'dataList' => $result,
                 'result' => true,
                 'title' => 'Success',

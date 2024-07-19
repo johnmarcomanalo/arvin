@@ -6,17 +6,30 @@ import { useSearchParams } from "react-router-dom";
 import { useDebounce } from "../../../../../utils/HelperUtils";
 import { getEmployeeOrganizationAccessList } from "../../../settings/accessrights/organizationrights/actions/OrganizationRightsActions";
 import { getEmployeePageAccessList } from "../../../settings/accessrights/pagerights/actions/PageRightsActions";
+import { getEmployeeCustomerAccessList } from "../../../settings/accessrights/customerrights/actions/CustomerRightsActions";
 const EmployeeListHooks = (props) => {
   const refresh = useSelector((state) => state.HumanResourceReducer.refresh);
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams2, setSearchParams2] = useSearchParams();
   const search =
     searchParams.get("q") != null ? String(searchParams.get("q")) : "";
+
   const page = searchParams.get("p") != null ? searchParams.get("p") : 1;
   const rowsPerPage =
     searchParams.get("l") != null ? searchParams.get("l") : 10;
   const filterQuery =
     searchParams.get("f") != null ? String(searchParams.get("f")) : "";
+
+  //second search param start
+  const search2 =
+    searchParams.get("srch") != null ? String(searchParams.get("srch")) : "";
+  const page2 = searchParams.get("pg") != null ? searchParams.get("pg") : 1;
+  const rowsPerPage2 =
+    searchParams.get("lmt") != null ? searchParams.get("lmt") : 10;
+  const filterQuery2 =
+    searchParams.get("fltr") != null ? String(searchParams.get("fltr")) : "";
+  //second search param end
 
   const debounceSearch = useDebounce(searchParams, 500);
 
@@ -63,8 +76,10 @@ const EmployeeListHooks = (props) => {
     });
   };
   const onSelectItem = async (data) => {
+    const data2 = getListParam2();
     await dispatch(getEmployeeOrganizationAccessList(data.code));
     await dispatch(getEmployeePageAccessList(data.code));
+    await dispatch(getEmployeeCustomerAccessList(data2));
     await dispatch({
       type: Constants.ACTION_HUMAN_RESOURCE,
       payload: {
@@ -111,6 +126,17 @@ const EmployeeListHooks = (props) => {
       l: rowsPerPage,
       f: filterQuery,
       u: account_details?.code,
+    };
+    return data;
+  };
+
+  const getListParam2 = () => {
+    const data = {
+      pg: page2 == null ? 1 : page,
+      srch: search2,
+      lmt: rowsPerPage2,
+      fltr: filterQuery2,
+      uid: account_details?.code,
     };
     return data;
   };

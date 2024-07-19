@@ -78,8 +78,7 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
         $code = $this->generate_code();
 
         $dates_to_get = $this->get_dates_in_selected_year_without_sundays($fields["year_sales_target"]);
-
-
+            
         $data = SalesDailyOutAnnualSettingsSales::create([
                     'code' => $code,
                     'company_code' => $fields["company_code"],
@@ -105,6 +104,7 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
 
         foreach ($dates_to_get as $value) {
             $code = MainController::generate_code('App\Models\SalesDailyOuts',"code");
+            $sales_daily_quota = $this->get_number_of_days_in_a_month_with_out_sunday($value,$fields["monthly_sales_target"]) ;
             SalesDailyOuts::create([
                     'code' => $code,
                     'subsection_code' =>$fields["subsection_code"],
@@ -112,8 +112,9 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
                     'daily_sales_target_percentage' => -100,
                     'sales_date' => $value,
                     'sales_daily_out' => 0,
-                    'sales_daily_qouta' =>  $fields["daily_sales_target"],
-                    'sales_daily_target' =>  '-'.$fields["daily_sales_target"],
+                    // 'sales_daily_qouta' =>  $fields["daily_sales_target"],
+                    'sales_daily_qouta' =>  $sales_daily_quota,
+                    'sales_daily_target' =>  '-'.$sales_daily_quota,
                     'year_sales_target' => $fields["year_sales_target"],
                     'added_by' => $fields["added_by"],
                     'modified_by' => $fields["modified_by"],
@@ -285,5 +286,32 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
                 'message'=> 'Authentication successful.',
             ];
         return Crypt::encryptString(json_encode($response));
+    }
+
+    public function get_number_of_days_in_a_month_with_out_sunday($sales_date, $quota) 
+    {
+        $carbonDate = Carbon::parse($sales_date);
+        $month = $carbonDate->month;
+        $year = $carbonDate->year;
+        
+        // Create a Carbon instance for the first day of the month
+        $date = Carbon::create($year, $month, 1);
+
+        // Get the number of days in the month
+        $daysInMonth = $date->daysInMonth;
+
+        // Initialize a counter for non-Sunday days
+        $nonSundayDaysCount = 0;
+
+        // Loop through each day of the month
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            // Check if the current day is not a Sunday
+            if (!$date->copy()->setDay($day)->isSunday()) {
+                $nonSundayDaysCount++;
+            }
+        }
+
+        // Calculate and return the quota per non-Sunday day
+        return $quota / $nonSundayDaysCount;
     }
 }

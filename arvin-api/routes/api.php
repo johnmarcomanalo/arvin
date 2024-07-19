@@ -21,6 +21,7 @@ use App\Http\Controllers\UserAccessPageRightsController;
 use App\Http\Controllers\RefModulesController;
 use App\Http\Controllers\RefComponentsController;
 use App\Http\Controllers\RefSubComponentsController;
+use App\Http\Controllers\UserAccessCustomerRightsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -72,6 +73,7 @@ use Illuminate\Support\Facades\Route;
     Route::apiResource('reference/components',RefComponentsController::class)->middleware(['light_decryption']);
     Route::get('reference/ref_subcomponents',[RefSubComponentsController::class,'get_refence_subcomponents']);
     Route::apiResource('reference/subcomponents',RefSubComponentsController::class)->middleware(['light_decryption']);
+    Route::get('reference/get_employee_customer_access_list',[UserAccessCustomerRightsController::class,'get_employee_customer_access_list']);
     // REFERENCE END
     
     //MODULE SALES DAILY OUT START

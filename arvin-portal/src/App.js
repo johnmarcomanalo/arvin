@@ -58,6 +58,11 @@ const IndexChangePassword = lazy(() =>
     "./apps/aim/settings/accountsettings/changepassword/pages/IndexChangePassword"
   )
 );
+const IndexCustomerRights = lazy(() =>
+  import(
+    "./apps/aim/settings/accessrights/customerrights/pages/IndexCustomerRights"
+  )
+);
 const theme = createTheme({
   typography: {
     fontFamily: "Poppins, sans-serif",
@@ -276,8 +281,23 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+                  <Route
+                    path="/Modules/SystemSettings/AccessRights/CustomerRights"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Settings",
+                          component: "Access Rights",
+                          subComponent: "Customer Rights",
+                        })}
+                      >
+                        <IndexCustomerRights />
+                      </PrivateRoute>
+                    }
+                  />
                 </Route>
               )}
+
             <Route element={<NoMatch />} path="*" />
             <Route element={<NoAccess />} path="/invalid-access" />
             <Route

@@ -489,7 +489,7 @@ class SalesDailyOutsController extends Controller
                     if($sales_date = $result['sales_date']){
                         $computation = $this->get_status_daily_target_and_percentage_daily_target_by_daily_out($result['sales_daily_out'],$sales_daily_qouta);
                         $final_results[] = [
-                            'sales_daily_out_annual_settings_sales_code' => '1',
+                            'sales_daily_out_annual_settings_sales_code' =>  $sub_section_annual_settings_sales['code'],
                             'year_sales_target' => '2024',
                             'subsection_code' => $id,
                             'sales_daily_out' => $result['sales_daily_out'],
@@ -501,6 +501,7 @@ class SalesDailyOutsController extends Controller
                     }
                 }
         }
+
         foreach ($final_results as $value) {
             $check_sale = SalesDailyOuts::where('sales_daily_out_annual_settings_sales_code', $sub_section_annual_settings_sales['code'])
                 ->where('subsection_code', $value["subsection_code"])
@@ -582,7 +583,6 @@ class SalesDailyOutsController extends Controller
                 }
             }
         }
-
         DB::transaction(function() use ($results, $subSections) {
             $currentDate = Carbon::now()->format('Y-m-d');
             foreach ($results as $record) {
