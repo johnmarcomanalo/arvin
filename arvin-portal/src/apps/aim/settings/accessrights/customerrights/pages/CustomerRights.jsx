@@ -116,15 +116,22 @@ let CustomerRights = (props) => {
           </Grid>
           <Grid item xs={12} sm={12} md={10} lg={10}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={12} md={3} lg={3}>
-                <SearchField onChange={customerRights.onChangeSearch} />
-
-                <Page
-                  page={customerRights?.page}
-                  limit={customerRights?.dataListCount}
-                  status={""}
-                  onHandleChange={customerRights.handleChangePage}
-                />
+              <Grid item xs={12} sm={12} md={12} lg={12}>
+                <Stack
+                  direction="row"
+                  justifyContent={"space-between"}
+                  alignItems={"flex-end"}
+                  flexDirection={"row"}
+                  spacing={2}
+                >
+                  <SearchField onChange={customerRights.onChangeSearch} />
+                  <Page
+                    page={customerRights?.page}
+                    limit={customerRights?.dataListCount}
+                    status={""}
+                    onHandleChange={customerRights.handleChangePage}
+                  />
+                </Stack>
               </Grid>
               <Grid item xs={12} sm={12} md={12} lg={12}>
                 <Table

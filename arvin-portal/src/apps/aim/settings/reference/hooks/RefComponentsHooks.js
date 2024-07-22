@@ -20,7 +20,7 @@ const RefComponentsHooks = (props) => {
   );
   const columns = [
     { id: "code", label: "Code", align: "left" },
-    { id: "module", label: "Module", align: "left" },
+    { id: "module_description", label: "Module", align: "left" },
     { id: "description", label: "Description", align: "left" },
     { id: "link", label: "Link", align: "left" },
   ];

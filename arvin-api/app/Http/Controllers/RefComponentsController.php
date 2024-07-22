@@ -14,13 +14,9 @@ class RefComponentsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id)
     {
-        $data = array();
-        $data = RefComponents::whereNull('ref_components.deleted_at')->get( );
-        if(!empty($data)){
-          return Crypt::encryptString(json_encode($data));
-        }
+
     }
 
     /**
@@ -84,9 +80,9 @@ class RefComponentsController extends Controller
      * @param  \App\Models\RefComponents  $refComponents
      * @return \Illuminate\Http\Response
      */
-    public function show(RefComponents $refComponents)
+    public function show($id)
     {
-        //
+        return Crypt::encryptString($this->do_show($id));
     }
 
     /**
@@ -112,11 +108,13 @@ class RefComponentsController extends Controller
         //
     }
     public function generate_code($module_code){
-        $code = $module_code + 000;
+        $code = $module_code.'000';
         $current_date = date('Y-m-d');
         $latest_code = RefComponents::where('module_code',$module_code)->latest('code')->first('code')->code ?? NULL;
         if(!empty($latest_code)){
             $code = $latest_code + 1;
+        }else{
+            $code = $module_code.'001';
         }
         return $code;
     }
@@ -146,5 +144,19 @@ class RefComponentsController extends Controller
                 'message'=> '',
         ];
         return Crypt::encryptString(json_encode($response));
+    }
+    public function do_show($id = null)
+    {
+        if (isset($id)) {
+            $data = RefComponents::where('module_code', '=', $id)->whereNull('ref_components.deleted_at')->get();
+        } else {
+            $data = RefComponents::whereNull('ref_components.deleted_at')->all();
+        }
+
+        if ($data->isEmpty()) {
+            $data = array();
+        }
+
+        return $data;
     }
 }

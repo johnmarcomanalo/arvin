@@ -5,6 +5,7 @@ import { cancelRequest } from "../../../../../api/api";
 import { Constants } from "../../../../../reducer/Contants";
 import {
   getAllRefComponents,
+  getAllRefModules,
   getReferenceSubcomponents,
 } from "../actions/ReferenceActions";
 const RefSubomponentsHooks = (props) => {
@@ -14,13 +15,15 @@ const RefSubomponentsHooks = (props) => {
   );
   const refresh = useSelector((state) => state.ReferenceReducer.refresh);
   const components = useSelector((state) => state.ReferenceReducer.components);
+  const modules = useSelector((state) => state.ReferenceReducer.modules);
   const dataList = useSelector((state) => state.ReferenceReducer.dataList);
   const dataListCount = useSelector(
     (state) => state.ReferenceReducer.dataListCount
   );
   const columns = [
     { id: "code", label: "Code", align: "left" },
-    { id: "module", label: "Module", align: "left" },
+    { id: "module_description", label: "Module", align: "left" },
+    { id: "component_description", label: "Component", align: "left" },
     { id: "description", label: "Description", align: "left" },
     { id: "link", label: "Link", align: "left" },
   ];
@@ -90,12 +93,19 @@ const RefSubomponentsHooks = (props) => {
       await console.error(error);
     }
   };
+  const getComponentsbyModuleID = (id) => {
+    try {
+      dispatch(getAllRefComponents(id));
+    } catch (error) {
+      console.error(error);
+    }
+  };
   React.useEffect(() => {
     props.initialize({
       added_by: account_details?.code,
       modified_by: account_details?.code,
     });
-    dispatch(getAllRefComponents());
+    dispatch(getAllRefModules());
     return () => cancelRequest();
   }, [refresh]);
   React.useEffect(() => {
@@ -111,11 +121,13 @@ const RefSubomponentsHooks = (props) => {
     columns,
     rowsPerPage,
     components,
+    modules,
     onChangeSearch,
     getListParam,
     onChangeFilter,
     handleChangePage,
     handleChangeRowsPerPage,
+    getComponentsbyModuleID,
   };
 };
 

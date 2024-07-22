@@ -74,6 +74,7 @@ use Illuminate\Support\Facades\Route;
     Route::get('reference/ref_subcomponents',[RefSubComponentsController::class,'get_refence_subcomponents']);
     Route::apiResource('reference/subcomponents',RefSubComponentsController::class)->middleware(['light_decryption']);
     Route::get('reference/get_employee_customer_access_list',[UserAccessCustomerRightsController::class,'get_employee_customer_access_list']);
+    Route::apiResource('reference/system_settings/access_rights/customer_rights',UserAccessCustomerRightsController::class)->middleware(['light_decryption']);
     // REFERENCE END
     
     //MODULE SALES DAILY OUT START

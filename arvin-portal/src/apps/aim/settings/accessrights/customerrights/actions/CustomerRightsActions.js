@@ -50,32 +50,31 @@ export const getEmployeeCustomerAccessList =
     }
   };
 
-export const postEmployeeOrganizationAccess =
-  (formValues) => async (dispatch) => {
-    try {
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: true,
-        },
-      });
-      const res = await PostDefaultServices(
-        "api/reference/system_settings/access_rights/organization_rights",
-        formValues
-      );
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: false,
-        },
-      });
-      return res;
-    } catch (error) {
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: false,
-        },
-      });
-    }
-  };
+export const postEmployeeCustomerAccess = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PostDefaultServices(
+      "api/reference/system_settings/access_rights/customer_rights",
+      formValues
+    );
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+    return res;
+  } catch (error) {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};

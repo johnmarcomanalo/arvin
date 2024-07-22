@@ -264,7 +264,6 @@ export const getReferenceModule = (values) => async (dispatch) => {
         },
       });
       let decrypted = decryptaes(res.data);
-      console.log(decrypted);
       dispatch({
         type: Constants.ACTION_REFERENCE,
         payload: {
@@ -387,7 +386,6 @@ export const getReferenceComponents = (values) => async (dispatch) => {
         },
       });
       let decrypted = decryptaes(res.data);
-      console.log(decrypted);
       dispatch({
         type: Constants.ACTION_REFERENCE,
         payload: {
@@ -401,7 +399,7 @@ export const getReferenceComponents = (values) => async (dispatch) => {
   }
 };
 
-export const getAllRefComponents = () => async (dispatch) => {
+export const getAllRefComponents = (id) => async (dispatch) => {
   try {
     await dispatch({
       type: Constants.ACTION_LOADING,
@@ -409,7 +407,8 @@ export const getAllRefComponents = () => async (dispatch) => {
         loading: true,
       },
     });
-    const response = AuthGetReferences("api/reference/components");
+
+    const response = AuthGetReferencesChild("api/reference/components", id);
     response.then((res) => {
       dispatch({
         type: Constants.ACTION_LOADING,
@@ -455,7 +454,6 @@ export const getReferenceSubcomponents = (values) => async (dispatch) => {
         },
       });
       let decrypted = decryptaes(res.data);
-      console.log(decrypted);
       dispatch({
         type: Constants.ACTION_REFERENCE,
         payload: {

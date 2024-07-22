@@ -4,9 +4,9 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import WidgetsIcon from "@mui/icons-material/Widgets";
 import { Card, CardContent, Grid, Stack, Typography } from "@mui/material";
 import * as React from "react";
-import swal from "sweetalert";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
+import swal from "sweetalert";
 import ComboBox from "../../../../../components/autoComplete/AutoComplete";
 import BreadCrumbs from "../../../../../components/breadCrumb/BreadCrumbs";
 import ButtonComponent from "../../../../../components/button/Button";
@@ -18,7 +18,7 @@ import Table from "../../../../../components/table/Table";
 import { Constants } from "../../../../../reducer/Contants";
 import configure from "../../../../configure/configure.json";
 import { postReferenceSubcomponent } from "../actions/ReferenceActions";
-import RefSubomponentsHooks from "../hooks/RefSubomponentsHooks";
+import RefSubcomponentsHooks from "../hooks/RefSubcomponentsHooks";
 const title_page = "Subcomponents";
 const breadCrumbArray = [
   {
@@ -97,7 +97,7 @@ const submit = async (values, dispatch, props) => {
   }
 };
 let IndexRefComponents = (props) => {
-  const { ...refsubcomponents } = RefSubomponentsHooks(props);
+  const { ...refsubcomponents } = RefSubcomponentsHooks(props);
   return (
     <React.Fragment>
       <Grid container spacing={2}>
@@ -132,6 +132,25 @@ let IndexRefComponents = (props) => {
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={12}>
                     <Field
+                      id="module_description"
+                      name="module_description"
+                      label="Module"
+                      options={refsubcomponents?.modules}
+                      getOptionLabel={(option) =>
+                        option.description ? option.description : ""
+                      }
+                      required={true}
+                      component={ComboBox}
+                      onChangeHandle={(e, newValue) => {
+                        if (newValue?.description) {
+                          props.change("module_code", newValue.code);
+                          refsubcomponents.getComponentsbyModuleID(
+                            newValue.code
+                          );
+                        }
+                      }}
+                    />
+                    <Field
                       id="component_description"
                       name="component_description"
                       label="Component"
@@ -144,7 +163,6 @@ let IndexRefComponents = (props) => {
                       onChangeHandle={(e, newValue) => {
                         if (newValue?.description) {
                           console.log(newValue);
-                          props.change("module_code", newValue.module_code);
                           props.change("component_code", newValue.code);
                         }
                       }}

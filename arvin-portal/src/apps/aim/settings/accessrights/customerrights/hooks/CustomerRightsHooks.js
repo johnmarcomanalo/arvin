@@ -4,7 +4,7 @@ import { cancelRequest } from "../../../../../../api/api";
 import { Constants } from "../../../../../../reducer/Contants";
 import {
   getEmployeeCustomerAccessList,
-  postEmployeeOrganizationAccess,
+  postEmployeeCustomerAccess,
 } from "../actions/CustomerRightsActions";
 import { decryptaes } from "../../../../../../utils/LightSecurity";
 import swal from "sweetalert";
@@ -57,7 +57,7 @@ const CustomerRightsHooks = (props) => {
       srch: search,
       lmt: rowsPerPage,
       fltr: filterQuery,
-      uid: account_details?.code,
+      uid: selectedDataList?.code,
     });
   };
 
@@ -97,7 +97,7 @@ const CustomerRightsHooks = (props) => {
       srch: search,
       lmt: rowsPerPage,
       fltr: filterQuery,
-      uid: account_details?.code,
+      uid: selectedDataList?.code,
     };
     return data;
   };
@@ -110,7 +110,9 @@ const CustomerRightsHooks = (props) => {
     }
   };
   React.useEffect(() => {
-    GetCustomerList();
+    if (selectedDataList !== null) {
+      GetCustomerList();
+    }
   }, [HRrefresh, debounceSearch, filterQuery]);
   React.useEffect(() => {
     props.initialize({
@@ -122,12 +124,13 @@ const CustomerRightsHooks = (props) => {
   }, [HRrefresh]);
 
   const onUpdateEmployeeCustomerAccess = async (data, values) => {
+    const details = getListParam();
     data["access_rights"] = values;
     data["user_id"] = selectedDataList?.code;
     data["added_by"] = account_details?.code;
     data["modified_by"] = account_details?.code;
-    await dispatch(postEmployeeOrganizationAccess(data));
-    await dispatch(getEmployeeCustomerAccessList(selectedDataList?.code));
+    await dispatch(postEmployeeCustomerAccess(data));
+    await dispatch(getEmployeeCustomerAccessList(details));
   };
   const onChangeSearch = (event) => {
     // SEARCH DATA
@@ -137,7 +140,7 @@ const CustomerRightsHooks = (props) => {
       pg: "1",
       lmt: String(rowsPerPage),
       fltr: filterQuery,
-      uid: account_details?.code,
+      uid: selectedDataList?.code,
     });
   };
   return {

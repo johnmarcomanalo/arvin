@@ -12,7 +12,7 @@ const initialState = {
   filter: "",
   dateFilterStart: new Date(),
   dateFilterEnd: new Date(),
-  selectedDataList: [],
+  selectedDataList: null,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

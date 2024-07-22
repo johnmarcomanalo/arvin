@@ -27,7 +27,40 @@ class UserAccessCustomerRightsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $fields = $request->validate([
+            'customer_code' => 'required',
+            'description' => 'required',
+            'access_rights' => 'required',
+            'status' => 'required',
+            'type' => 'required',
+            'user_id' => 'required',
+            'added_by' => 'required',
+            'modified_by' => 'required',
+        ]);
+        $details = $request->all();
+        unset($details[0]);
+
+        $values = $details;
+        $excludeKeys = ['access_rights', 'added_by', 'modified_by'];
+        $queryValues = array_filter($values, function ($key) use ($excludeKeys) {
+            return !in_array($key, $excludeKeys);
+        }, ARRAY_FILTER_USE_KEY);
+
+        $check = UserAccessCustomerRights::where($queryValues)->first();
+        if ($check) {
+            return $check->update($values);
+        } else {
+            $code = $this->generate_code();
+            $values['code'] = $code;
+            UserAccessCustomerRights::create($values);
+        }
+        $response = [
+            'result' => true,
+            'title' => 'Success',
+            'status' => 'success',
+            'message' => 'Access updated successfully.',
+        ];
+        return $response;
     }
 
     /**
@@ -129,6 +162,15 @@ class UserAccessCustomerRightsController extends Controller
                 'message' => 'Fetched successfully.',
         ];
         return Crypt::encryptString(json_encode($response));
+    }
+    public function generate_code(){
+        $code = 1;
+        $current_date = date('Y-m-d');
+         $latest_code = UserAccessCustomerRights::latest('code')->first('code')->code ?? NULL;
+        if(!empty($latest_code)){
+            $code = $latest_code + 1;
+        }
+        return $code;
     }
 
 }
