@@ -173,4 +173,30 @@ class UserAccessCustomerRightsController extends Controller
         return $code;
     }
 
+    public function get_employee_customer_access_details (Request $request){
+        $fields = $request->validate([
+            'customer_code' => 'required',
+            'type' => 'required',
+            'status' => 'required',
+        ]);
+        $status = $fields['status'];
+        $statusValidfor = 'Y';
+        if ($status == 'Inactive') {
+            $statusValidfor = 'N';
+        }
+        $details = DB::table('ref_customer_by_code')
+        ->where('cardcode',$fields['customer_code'])
+        ->where('customer_type',$fields['type'])
+        ->where('validfor', $statusValidfor )
+        ->first();
+
+        $response = [
+            'result' => true,
+            'data' => $details,
+            'title' => 'Success',
+            'status' => 'success',
+            'message' => 'Customer fetched successfully.',
+        ];
+        return Crypt::encryptString(json_encode($response));
+    }
 }

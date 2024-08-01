@@ -337,5 +337,7 @@
     { "name": "October", "hex": "#E2725B" },
     { "name": "November", "hex": "#9DC183" },
     { "name": "December", "hex": "#E0B0FF" }
-  ]
+  ],
+  "quotation_opening_letter": "In view of your requirements only, we are quoting here under the following details for your perusal, to wit:",
+  "quotation_closing_letter": "We trust that our offer will merit your approval and we look forward to receiving your most favorable reply the soonest."
 }

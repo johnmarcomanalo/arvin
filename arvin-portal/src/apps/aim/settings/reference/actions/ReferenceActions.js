@@ -4,7 +4,7 @@ import {
   AuthGetReferences,
   AuthGetReferencesChild,
 } from "../services/referenceServices";
-import { decryptaes } from "../../../../../utils/LightSecurity";
+import { decryptaes, encryptaes } from "../../../../../utils/LightSecurity";
 import {
   GetSpecificDefaultServices,
   PostDefaultServices,
@@ -493,5 +493,178 @@ export const postReferenceSubcomponent = (formValues) => async (dispatch) => {
         loading: false,
       },
     });
+  }
+};
+
+export const getEmployeeCustomerAccessDetails =
+  (formValues) => async (dispatch) => {
+    try {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: true,
+        },
+      });
+      const res = await PostDefaultServices(
+        "api/reference/get_employee_customer_access_list/get_employee_customer_access_details",
+        formValues
+      );
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      return res;
+    } catch (error) {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+    }
+  };
+
+export const getRefProducts = (values) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = GetSpecificDefaultServices(
+      "api/reference/get_ref_products?pg=" +
+        values.pg +
+        "&lmt=" +
+        values.lmt +
+        "&srch=" +
+        values.srch +
+        "&tc=" +
+        values.tc +
+        "&brnd=" +
+        values.brnd +
+        "&brnch=" +
+        values.brnch +
+        "&grps=" +
+        values.grps +
+        "&u=" +
+        values.u
+    );
+    response.then(async (res) => {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      let decrypted = await decryptaes(res.data);
+      await dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          productList: decrypted.dataList,
+          dataListCount: decrypted.total,
+        },
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getReferenceRequestTypes = (values) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = GetSpecificDefaultServices(
+      "api/reference/get_ref_request_types?page=" +
+        values.p +
+        "&limit=" +
+        values.l +
+        "&q=" +
+        values.q +
+        "&f=" +
+        values.f
+    );
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      let decrypted = decryptaes(res.data);
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          dataList: decrypted.dataList.data,
+          dataListCount: decrypted.dataList.total,
+        },
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const postReferenceRequestType = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PostDefaultServices(
+      "api/reference/ref_request_types",
+      formValues
+    );
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+    return res;
+  } catch (error) {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
+export const getAllRefRequestTypes = () => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = AuthGetReferences("api/reference/ref_request_types");
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          request_types: decryptaes(res.data),
+        },
+      });
+    });
+  } catch (error) {
+    console.log(error);
   }
 };

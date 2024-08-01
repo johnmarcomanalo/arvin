@@ -42,7 +42,7 @@ const InputField = (props) => {
         id="outlined-required"
         type={props.type}
         multiline={props.multiline}
-        rows={props.multiline ? 4 : undefined}
+        rows={props.multiline ? props.linerow : undefined}
         disabled={props.disabled}
         placeholder={props.placeholder}
         sx={{

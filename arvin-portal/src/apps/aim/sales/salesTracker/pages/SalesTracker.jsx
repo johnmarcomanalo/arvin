@@ -394,29 +394,25 @@ let SalesTracker = (props) => {
       </Grid>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
-          {/*
-        
-        <Grid item xs={12} sm={12} md={12} lg={12}>
-          <Stack
-            direction="row"
-            justifyContent={matches ? "flex-end" : "center"}
-            alignItems={matches ? "flex-end" : "center"}
-            flexDirection={matches ? "row" : "column"}
-            spacing={2}
-            sx={{ marginTop: 2 }}
-          >
-            <ButtonComponent
-              stx={configure.default_button}
-              iconType="add"
-              type="button"
-              fullWidth={true}
-              children={"Add Today's Sale"}
-              click={salesTracker.onClickOpenAddModal}
-            />
-          </Stack>
-        </Grid>
-        
-        */}
+          <Grid item xs={12} sm={12} md={12} lg={12}>
+            <Stack
+              direction="row"
+              justifyContent={matches ? "flex-end" : "center"}
+              alignItems={matches ? "flex-end" : "center"}
+              flexDirection={matches ? "row" : "column"}
+              spacing={2}
+              sx={{ marginTop: 2 }}
+            >
+              <ButtonComponent
+                stx={configure.default_button}
+                iconType="add"
+                type="button"
+                fullWidth={true}
+                children={"Add Today's Sale"}
+                click={salesTracker.onClickOpenAddModal}
+              />
+            </Stack>
+          </Grid>
         </Grid>
         <Grid item xs={6} sm={6} md={6} lg={6}>
           <Stack

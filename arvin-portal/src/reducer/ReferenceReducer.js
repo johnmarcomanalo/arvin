@@ -21,6 +21,10 @@ const initialState = {
   sub_components: [],
   dataList: [],
   dataListCount: 0,
+  productList: [],
+  selected_productList: [{ index: 1 }],
+  request_types: [],
+  unit_of_measurements: [],
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

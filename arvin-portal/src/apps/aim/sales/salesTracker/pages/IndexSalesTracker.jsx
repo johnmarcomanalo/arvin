@@ -7,7 +7,7 @@ import BreadCrumbs from "../../../../../components/breadCrumb/BreadCrumbs";
 import PageTitle from "../../../../../components/pageTItle/PageTitle";
 import configure from "../../../../configure/configure.json";
 import SalesTrackerHooks from "../hooks/SalesTrackerHooks";
-import DailyQuota from "./SalesTracker";
+import SalesTracker from "./SalesTracker";
 const title_page = "Sales Tracker";
 const breadCrumbArray = [
   {
@@ -66,7 +66,7 @@ export default function IndexSalesTracker(props) {
           />
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
-          <DailyQuota />
+          <SalesTracker />
         </Grid>
       </Grid>
     </React.Fragment>

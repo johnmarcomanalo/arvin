@@ -17,6 +17,7 @@ use App\Models\User;
 use App\Models\UserAccessModuleRights;
 use App\Models\UserAccessComponentRights;
 use App\Models\UserAccessSubComponentRights;
+use App\Models\UserAccessCustomerRights;
 
 use Illuminate\Support\Facades\Crypt;
 
@@ -112,10 +113,16 @@ class AuthController extends Controller
         ->orderBy('ref_sub_components.description')
         ->get(['user_access_sub_component_rights.*','ref_sub_components.description','ref_sub_components.link']);
         
+        $user_access_customer_rights = UserAccessCustomerRights::where('user_id',$user_id)
+        ->where('access_rights',1)
+        ->orderBy('customer_code')
+        ->get();
+
         $response = [
              'user_access_module_rights' => $user_access_module_rights,
              'user_access_component_rights' => $user_access_component_rights,
              'user_access_sub_component_rights' => $user_access_sub_component_rights,
+             'user_access_customer_rights' => $user_access_customer_rights,
         ];
         return Crypt::encryptString(json_encode($response));
     }

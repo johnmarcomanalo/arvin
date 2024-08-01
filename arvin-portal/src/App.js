@@ -6,7 +6,7 @@ import Cookies from "universal-cookie";
 import "./App.css";
 import configure from "./apps/configure/configure.json";
 import PrivateRoute from "./security/PrivateRoute";
-import Loader from "./components/loading/Loading";
+const Loader = lazy(() => import("./components/loading/Loading"));
 const IndexHome = lazy(() => import("./apps/aim/home/pages/Home"));
 const Navigation = lazy(() => import("./apps/navigation/pages/Navigation"));
 const CostingItemList = lazy(() =>
@@ -62,6 +62,18 @@ const IndexCustomerRights = lazy(() =>
   import(
     "./apps/aim/settings/accessrights/customerrights/pages/IndexCustomerRights"
   )
+);
+const IndexMyQuotationList = lazy(() =>
+  import("./apps/aim/quotation/myquotationList/pages/IndexMyQuotationList")
+);
+const IndexRequestQuotation = lazy(() =>
+  import("./apps/aim/quotation/requestquotation/pages/IndexRequestQuotation")
+);
+const IndexRefRequestTypes = lazy(() =>
+  import("./apps/aim/settings/reference/pages/IndexRefRequestTypes")
+);
+const IndexRefUnitOfMeasurements = lazy(() =>
+  import("./apps/aim/settings/reference/pages/IndexRefUnitOfMeasurements")
 );
 const theme = createTheme({
   typography: {
@@ -292,6 +304,62 @@ function App() {
                         })}
                       >
                         <IndexCustomerRights />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/Quotation/MyQuotationList"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Quotation",
+                          component: "My Quotation List",
+                          subComponent: null,
+                        })}
+                      >
+                        <IndexMyQuotationList />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/Quotation/Request/RequestQuotation"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Quotation",
+                          component: "Request",
+                          subComponent: "Request Quotation",
+                        })}
+                      >
+                        <IndexRequestQuotation />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/SystemSettings/References/RequestTypes"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Settings",
+                          component: "References",
+                          subComponent: "Request Types",
+                        })}
+                      >
+                        <IndexRefRequestTypes />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/SystemSettings/References/UnitofMeasurements"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Settings",
+                          component: "References",
+                          subComponent: "Unit of Measurements",
+                        })}
+                      >
+                        <IndexRefUnitOfMeasurements />
                       </PrivateRoute>
                     }
                   />

@@ -1,27 +1,28 @@
 <?php
 //reference
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RefCompaniesController;
 use App\Http\Controllers\RefBusinessUnitsController;
 use App\Http\Controllers\RefTeamsController;
 use App\Http\Controllers\RefDepartmentsController;
 use App\Http\Controllers\RefSectionsController;
 use App\Http\Controllers\RefSubSectionsController;
-use App\Http\Controllers\QuotationAnnualQuotasController;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RefSalesRankingController;
-use App\Http\Controllers\SalesDailyOutAnnualSettingsSalesController;
-use App\Http\Controllers\SalesDailyOutsController;
 use App\Http\Controllers\RefSalesRankingPlacementsController;
-use App\Http\Controllers\SalesDailyOutAnnualSalesRankingController;
-use App\Http\Controllers\SalesDailyOutAnnualSalesRankingDetailsController;
-use App\Http\Controllers\SalesDailyOutReportSalesSummaryController;
-use App\Http\Controllers\UsersController;
-use App\Http\Controllers\UserAccessOrganizationRightsController;
-use App\Http\Controllers\UserAccessPageRightsController;
 use App\Http\Controllers\RefModulesController;
 use App\Http\Controllers\RefComponentsController;
 use App\Http\Controllers\RefSubComponentsController;
+use App\Http\Controllers\RefProducts;
+use App\Http\Controllers\RefRequestTypesController;
+use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UserAccessCustomerRightsController;
+use App\Http\Controllers\UserAccessOrganizationRightsController;
+use App\Http\Controllers\UserAccessPageRightsController;
+use App\Http\Controllers\SalesDailyOutAnnualSettingsSalesController;
+use App\Http\Controllers\SalesDailyOutsController;
+use App\Http\Controllers\SalesDailyOutAnnualSalesRankingController;
+use App\Http\Controllers\SalesDailyOutAnnualSalesRankingDetailsController;
+use App\Http\Controllers\SalesDailyOutReportSalesSummaryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -74,7 +75,11 @@ use Illuminate\Support\Facades\Route;
     Route::get('reference/ref_subcomponents',[RefSubComponentsController::class,'get_refence_subcomponents']);
     Route::apiResource('reference/subcomponents',RefSubComponentsController::class)->middleware(['light_decryption']);
     Route::get('reference/get_employee_customer_access_list',[UserAccessCustomerRightsController::class,'get_employee_customer_access_list']);
+    Route::post('reference/get_employee_customer_access_list/get_employee_customer_access_details',[UserAccessCustomerRightsController::class,'get_employee_customer_access_details'])->middleware(['light_decryption']);
     Route::apiResource('reference/system_settings/access_rights/customer_rights',UserAccessCustomerRightsController::class)->middleware(['light_decryption']);
+    Route::get('reference/get_ref_products',[RefProducts::class,'get_ref_products']);
+    Route::apiResource('reference/ref_request_types',RefRequestTypesController::class)->middleware(['light_decryption']);
+    Route::get('reference/get_ref_request_types',[RefRequestTypesController::class,'get_ref_request_types']);
     // REFERENCE END
     
     //MODULE SALES DAILY OUT START
@@ -107,8 +112,6 @@ use Illuminate\Support\Facades\Route;
     //MODULE SALES DAILY OUT END 
 
     // QUOTATION START
-    Route::apiResource('qoutation/annual_qouta',QuotationAnnualQuotasController::class)->middleware(['light_decryption']);
-    Route::get('qoutation/annual_qouta/annual_qouta_computation/{amount}',[QuotationAnnualQuotasController::class, 'annual_qouta_computation'])->middleware(['light_decryption']);
     // QUOTATION END
 
     // HUMAN RESOURCE START

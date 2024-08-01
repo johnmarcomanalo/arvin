@@ -1,13 +1,14 @@
-import { Grid } from "@mui/material";
-import * as React from "react";
-import configure from "../../../../configure/configure.json";
-import BreadCrumbs from "../../../../../components/breadCrumb/BreadCrumbs";
+import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import HomeIcon from "@mui/icons-material/Home";
 import RequestPageIcon from "@mui/icons-material/RequestPage";
-import DailyQuota from "./DailyQuota";
+import SettingsIcon from "@mui/icons-material/Settings";
+import { Grid } from "@mui/material";
+import * as React from "react";
+import BreadCrumbs from "../../../../../components/breadCrumb/BreadCrumbs";
 import PageTitle from "../../../../../components/pageTItle/PageTitle";
-import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
-const title_page = "Daily Quota";
+import configure from "../../../../configure/configure.json";
+import MyQuotationList from "./MyQuotationList";
+const title_page = "My Quotation List";
 const breadCrumbArray = [
   {
     name: "Home",
@@ -49,18 +50,18 @@ const breadCrumbArray = [
     ),
   },
 ];
-export default function IndexDailyQuota() {
+export default function IndexMyQuotationList() {
   return (
     <React.Fragment>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <BreadCrumbs breadCrumbs={breadCrumbArray} />
-        </Grid>{" "}
+        </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <PageTitle title={title_page} />
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
-          <DailyQuota />
+          <MyQuotationList />
         </Grid>
       </Grid>
     </React.Fragment>

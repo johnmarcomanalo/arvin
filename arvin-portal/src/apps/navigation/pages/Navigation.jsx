@@ -2,7 +2,7 @@ import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Collapse, List, ListItem, ListItemIcon } from "@mui/material";
+import { Collapse, List, ListItem } from "@mui/material";
 import MuiAppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -11,17 +11,13 @@ import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
+import { styled, useTheme } from "@mui/material/styles";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import PanoramaFishEyeIcon from "@mui/icons-material/PanoramaFishEye";
-import { styled, useTheme } from "@mui/material/styles";
 import * as React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import Modal from "../../../components/modal/Modal";
 import configure from "../../configure/configure.json";
 import NavigationHooks from "../hooks/NavigationHooks";
-import RequestsForm from "./components/RequestForm";
-import ChangePasswordForm from "./components/ChangePasswordForm";
 const drawerWidth = 250;
 const ListItemTxt = styled(ListItemText)(({ theme }) => ({
   color: configure.primary_color,
@@ -264,7 +260,7 @@ export default function Navigation(props) {
 
   return (
     <Box sx={{ display: "flex" }}>
-      <Modal
+      {/* <Modal
         open={navigation_param.request_modal}
         fullScreen={false}
         title={"Request Form"}
@@ -283,7 +279,7 @@ export default function Navigation(props) {
         handleClose={navigation_param.onCloseSettingModal}
       >
         <ChangePasswordForm />
-      </Modal>
+      </Modal> */}
       <CssBaseline />
       <AppBar
         position="fixed"

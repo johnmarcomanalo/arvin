@@ -1,24 +1,16 @@
-import {
-  Grid,
-  Stack,
-  Button,
-  Card,
-  CardContent,
-  Box,
-  Typography,
-} from "@mui/material";
+import { Box, Grid, Link, Stack, Typography } from "@mui/material";
 import * as React from "react";
-import ChangePasswordHooks from "../hooks/ChangePasswordHooks";
-import { Field, change, formValueSelector, reduxForm, reset } from "redux-form";
 import { connect } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { Field, change, reduxForm, reset } from "redux-form";
+import swal from "sweetalert";
+import ButtonComponent from "../../../../../../components/button/Button";
 import InputField from "../../../../../../components/inputFIeld/InputField";
+import CSRFToken from "../../../../../../security/csrftoken";
 import { required } from "../../../../../../utils/ErrorUtils";
 import configure from "../../../../../configure/configure.json";
 import { postAccountChangePassword } from "../actions/ChangePasswordActions";
-import swal from "sweetalert";
-import { Link, useNavigate } from "react-router-dom";
-import ButtonComponent from "../../../../../../components/button/Button";
-import CSRFToken from "../../../../../../security/csrftoken";
+import ChangePasswordHooks from "../hooks/ChangePasswordHooks";
 const formName = "ChangePasswordForm";
 const submit = async (values, dispatch, props, navigate) => {
   try {
@@ -172,6 +164,18 @@ let ChangePassword = (props) => {
                     fullWidth={true}
                     children={"Change Password"}
                   />
+                </Box>
+                <Box sx={{ width: "100%" }}>
+                  <Link
+                    href="/"
+                    variant="body2"
+                    sx={{
+                      fontWeight: 600,
+                      color: configure.primary_color,
+                    }}
+                  >
+                    Let's go back home
+                  </Link>
                 </Box>
               </Stack>
             </form>

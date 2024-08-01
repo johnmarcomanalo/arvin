@@ -30,7 +30,7 @@ const submit = async (values, dispatch, props) => {
       },
     });
     await swal(res.data.title, res.data.message, res.data.status);
-    reset();
+    await reset();
   } catch (error) {
     swal("Oppss!", "Something went wrong, please try again!", "error");
   }
