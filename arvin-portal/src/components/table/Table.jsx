@@ -29,6 +29,7 @@ const Tables = (props) => {
     subAction1Show = true,
     subAction2Show = true,
     heightLimit = true,
+    extraLayer,
   } = props;
   const [screenHeight, setScreenHeight] = React.useState(window.innerHeight);
 
@@ -135,6 +136,7 @@ const Tables = (props) => {
                 console.log(error);
               }
             })}
+            {extraLayer && extraLayer()}
           </TableBody>
         </Table>
       </TableContainer>

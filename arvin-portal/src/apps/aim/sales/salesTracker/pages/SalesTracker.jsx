@@ -4,7 +4,14 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import FlagCircleOutlinedIcon from "@mui/icons-material/FlagCircleOutlined";
 import IsoIcon from "@mui/icons-material/Iso";
 import PercentIcon from "@mui/icons-material/Percent";
-import { Grid, Stack, Tooltip, useMediaQuery } from "@mui/material";
+import {
+  Grid,
+  Stack,
+  TableCell,
+  TableRow,
+  Tooltip,
+  useMediaQuery,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import moment from "moment";
 import * as React from "react";
@@ -15,13 +22,15 @@ import CardComponent from "../../../../../components/card/CardComponent";
 import InputMonthYearPicker from "../../../../../components/inputFIeld/InputMonthYearPicker";
 import Modal from "../../../../../components/modal/Modal";
 import Page from "../../../../../components/pagination/Pagination";
-import Table from "../../../../../components/table/Table";
+import ComponentTable from "../../../../../components/table/Table";
+
 import configure from "../../../../configure/configure.json";
 import SalesTrackerHooks from "../hooks/SalesTrackerHooks";
 import AddSales from "./components/AddSales";
 import Slide from "@mui/material/Slide";
 import CloseIcon from "@mui/icons-material/Close";
 import Dialog from "@mui/material/Dialog";
+import { ViewAmountFormatingDecimals } from "../../../../../utils/AccountingUtils";
 const formName = "SalesTracker";
 const submit = async (values, dispatch, props) => {
   try {
@@ -135,7 +144,7 @@ let SalesTracker = (props) => {
                 />
               </Grid>
               <Grid item xs={12} sm={12} md={12}>
-                <Table
+                <ComponentTable
                   columns={salesTracker.columns}
                   dataList={salesTracker.dataList}
                   page={salesTracker.page}
@@ -159,6 +168,83 @@ let SalesTracker = (props) => {
                           }}
                         />
                       </Tooltip>
+                    );
+                  }}
+                  extraLayer={() => {
+                    return (
+                      <TableRow>
+                        <TableCell
+                          style={{
+                            backgroundColor: configure.primary_table_color,
+                            color: configure.primary_table_text_color,
+                            textAlign: "left",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          TOTAL
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            fontWeight: 600,
+                            color:
+                              parseFloat(
+                                report_data?.total_target_daily_quota_amount
+                              ) < 0
+                                ? "#C83232"
+                                : "inherit",
+                          }}
+                        >
+                          {ViewAmountFormatingDecimals(
+                            report_data?.total_target_daily_quota_amount,
+                            2
+                          )}
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            fontWeight: 600,
+                            color:
+                              parseFloat(report_data?.total_daily_out_amount) <
+                              0
+                                ? "#C83232"
+                                : "inherit",
+                          }}
+                        >
+                          {ViewAmountFormatingDecimals(
+                            report_data?.total_daily_out_amount,
+                            2
+                          )}
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            fontWeight: 600,
+                            color:
+                              parseFloat(
+                                report_data?.total_status_daily_target_amount
+                              ) < 0
+                                ? "#C83232"
+                                : "inherit",
+                          }}
+                        >
+                          {ViewAmountFormatingDecimals(
+                            report_data?.total_status_daily_target_amount,
+                            2
+                          )}
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            fontWeight: 600,
+                            color:
+                              parseFloat(present_mtd_data?.mtdFinal) < 0
+                                ? "#C83232"
+                                : "inherit",
+                          }}
+                        >
+                          {ViewAmountFormatingDecimals(
+                            present_mtd_data?.mtdFinal,
+                            2
+                          )}
+                        </TableCell>
+                      </TableRow>
                     );
                   }}
                 />
@@ -403,14 +489,14 @@ let SalesTracker = (props) => {
               spacing={2}
               sx={{ marginTop: 2 }}
             >
-              <ButtonComponent
+              {/* <ButtonComponent
                 stx={configure.default_button}
                 iconType="add"
                 type="button"
                 fullWidth={true}
                 children={"Add Today's Sale"}
                 click={salesTracker.onClickOpenAddModal}
-              />
+              /> */}
             </Stack>
           </Grid>
         </Grid>
@@ -476,7 +562,7 @@ let SalesTracker = (props) => {
           </Stack>
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
-          <Table
+          <ComponentTable
             columns={salesTracker.columns}
             dataList={salesTracker.dataList}
             page={salesTracker.page}
