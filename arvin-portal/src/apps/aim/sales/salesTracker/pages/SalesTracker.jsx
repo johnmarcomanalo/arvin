@@ -187,15 +187,13 @@ let SalesTracker = (props) => {
                           style={{
                             fontWeight: 600,
                             color:
-                              parseFloat(
-                                report_data?.total_target_daily_quota_amount
-                              ) < 0
+                              parseFloat(salesTracker.monthly_sales_target) < 0
                                 ? "#C83232"
                                 : "inherit",
                           }}
                         >
                           {ViewAmountFormatingDecimals(
-                            report_data?.total_target_daily_quota_amount,
+                            salesTracker.monthly_sales_target,
                             2
                           )}
                         </TableCell>
