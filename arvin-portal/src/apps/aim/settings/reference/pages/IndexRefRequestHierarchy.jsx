@@ -1,24 +1,40 @@
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
+import CloseIcon from "@mui/icons-material/Close";
 import HomeIcon from "@mui/icons-material/Home";
 import SettingsIcon from "@mui/icons-material/Settings";
 import WidgetsIcon from "@mui/icons-material/Widgets";
-import { Card, CardContent, Grid, Stack, Typography } from "@mui/material";
+import {
+  ButtonGroup,
+  Card,
+  CardContent,
+  Grid,
+  IconButton,
+  Stack,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
 import * as React from "react";
 import { connect } from "react-redux";
-import { Field, formValueSelector, reduxForm } from "redux-form";
+import { change, Field, formValueSelector, reduxForm } from "redux-form";
 import swal from "sweetalert";
+import ComboBox from "../../../../../components/autoComplete/AutoComplete";
 import BreadCrumbs from "../../../../../components/breadCrumb/BreadCrumbs";
 import ButtonComponent from "../../../../../components/button/Button";
 import InputField from "../../../../../components/inputFIeld/InputField";
 import SearchField from "../../../../../components/inputFIeld/SearchField";
+import Modal from "../../../../../components/modal/Modal";
 import PageTitle from "../../../../../components/pageTItle/PageTitle";
 import Page from "../../../../../components/pagination/Pagination";
 import Table from "../../../../../components/table/Table";
 import { Constants } from "../../../../../reducer/Contants";
 import configure from "../../../../configure/configure.json";
-import { postReferenceRequestType } from "../actions/ReferenceActions";
+import EmployeeList from "../../../humanresource/employeeList/pages/components/EmployeeList";
+import { postReferenceRequestHierarchy } from "../actions/ReferenceActions";
 import RefRequestHierarchyHooks from "../hooks/RefRequestHierarchyHooks";
-const title_page = "Request Types";
+const title_page = "Request Hierarchy";
 const breadCrumbArray = [
   {
     name: "Home",
@@ -76,13 +92,14 @@ const breadCrumbArray = [
 const formName = "RefRequestHierarchy";
 const submit = async (values, dispatch, props) => {
   try {
-    const response = await dispatch(postReferenceRequestType(values));
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
+    let data = {
+      description: values.description,
+      hierarchy_structure: values.hierarchy,
+      request_type_code: values.request_type_code,
+      added_by: values.added_by,
+      modified_by: values.modified_by,
+    };
+    const response = await dispatch(postReferenceRequestHierarchy(data));
     await dispatch({
       type: Constants.ACTION_REFERENCE,
       payload: {
@@ -96,8 +113,21 @@ const submit = async (values, dispatch, props) => {
 };
 let IndexRefRequestHierarchy = (props) => {
   const { ...refRequestHierarchy } = RefRequestHierarchyHooks(props);
+  const state = refRequestHierarchy.state;
+  const matches = useMediaQuery("(min-width:600px)");
+  props.dispatch(change(formName, "hierarchy", state?.hierarchy));
   return (
     <React.Fragment>
+      <Modal
+        open={refRequestHierarchy.viewModal}
+        fullScreen={matches ? false : true}
+        title={"Employee Search"}
+        size={"md"}
+        action={undefined}
+        handleClose={refRequestHierarchy.onClickCloseViewModal}
+      >
+        <EmployeeList onSelectApprover={refRequestHierarchy.onSelectApprover} />
+      </Modal>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <BreadCrumbs breadCrumbs={breadCrumbArray} />
@@ -105,7 +135,7 @@ let IndexRefRequestHierarchy = (props) => {
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <PageTitle title={title_page} />
         </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={2}>
+        <Grid item xs={12} sm={12} md={12} lg={3}>
           <form onSubmit={props.handleSubmit}>
             <Card
               sx={{
@@ -125,7 +155,7 @@ let IndexRefRequestHierarchy = (props) => {
                   gutterBottom
                   sx={{ color: configure.dark_gray_color, fontSize: 12 }}
                 >
-                  System Parameter for Reference Request Types
+                  System Parameter for Reference Hierarchy Request
                 </Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={12}>
@@ -137,28 +167,153 @@ let IndexRefRequestHierarchy = (props) => {
                       required={true}
                     />
                   </Grid>
+
                   <Grid item xs={12} md={12}>
-                    <Stack
-                      direction="row"
-                      justifyContent="flex-end"
-                      alignItems="flex-end"
-                      spacing={2}
+                    <Field
+                      id="request_type_description"
+                      name="request_type_description"
+                      label="Request Type"
+                      options={refRequestHierarchy?.request_types}
+                      getOptionLabel={(option) =>
+                        option.description ? option.description : ""
+                      }
+                      required={true}
+                      component={ComboBox}
+                      onChangeHandle={(e, newValue) => {
+                        if (newValue?.description) {
+                          props.change("request_type_code", newValue.code);
+                          props.change("request_type_type", newValue.type);
+                        }
+                      }}
+                    />
+                  </Grid>
+                  {state.hierarchy.map((value, index) => {
+                    let approvers = value?.approver;
+                    return (
+                      <Grid item xs={12} md={12}>
+                        <Field
+                          id={"level_description-" + index}
+                          name={"level_description-" + index}
+                          label={"Level " + (index + 1) + " Description "}
+                          component={InputField}
+                          value={value.description}
+                          required={true}
+                          multiline={true}
+                          onChange={(e) => {
+                            refRequestHierarchy.onChangeHierarchyLevelDescription(
+                              e,
+                              index
+                            );
+                          }}
+                        />
+                        <List
+                          sx={{
+                            width: "100%",
+                            maxWidth: 360,
+                            bgcolor: "background.paper",
+                          }}
+                        >
+                          {approvers.map((approver, index_approver) => (
+                            <ListItem
+                              key={index_approver}
+                              disableGutters
+                              secondaryAction={
+                                <IconButton
+                                  aria-label="comment"
+                                  onClick={() => {
+                                    refRequestHierarchy.onRemoveApprover(
+                                      approver
+                                    );
+                                  }}
+                                >
+                                  <CloseIcon />
+                                </IconButton>
+                              }
+                            >
+                              <ListItemText primary={approver.full_name} />
+                            </ListItem>
+                          ))}
+                        </List>
+                        <Stack
+                          direction="row"
+                          justifyContent="flex-end"
+                          alignItems="flex-end"
+                          spacing={2}
+                          sx={{ margin: 1 }}
+                        >
+                          <ButtonGroup
+                            disableElevation
+                            aria-label="Disabled button group"
+                          >
+                            <ButtonComponent
+                              stx={configure.default_button}
+                              iconType="add"
+                              type="button"
+                              fullWidth={true}
+                              children={"Add Approver"}
+                              click={() => {
+                                refRequestHierarchy.onClickOpenViewModal(index);
+                              }}
+                            />
+                          </ButtonGroup>
+                        </Stack>
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+
+                <Grid item xs={12} md={12}>
+                  <Stack
+                    direction="row"
+                    justifyContent="flex-end"
+                    alignItems="flex-end"
+                    spacing={2}
+                    sx={{ margin: 1 }}
+                  >
+                    <ButtonGroup
+                      disableElevation
+                      aria-label="Disabled button group"
                     >
                       <ButtonComponent
                         stx={configure.default_button}
                         iconType="add"
-                        type="submit"
+                        type="button"
                         fullWidth={true}
-                        children={"Add"}
+                        children={"Add Level"}
+                        click={refRequestHierarchy.onClickAddHierarchyLevel}
                       />
-                    </Stack>
-                  </Grid>
+                      <ButtonComponent
+                        stx={configure.default_button}
+                        iconType="remove"
+                        type="button"
+                        fullWidth={true}
+                        children={"Remove Level"}
+                        click={refRequestHierarchy.onClickRemoveHierarchyLevel}
+                      />
+                    </ButtonGroup>
+                  </Stack>
+                </Grid>
+                <Grid item xs={12} md={12}>
+                  <Stack
+                    direction="row"
+                    justifyContent="flex-end"
+                    alignItems="flex-end"
+                    spacing={2}
+                  >
+                    <ButtonComponent
+                      stx={configure.default_button}
+                      iconType="submit"
+                      type="submit"
+                      fullWidth={true}
+                      children={"Submit "}
+                    />
+                  </Stack>
                 </Grid>
               </CardContent>
             </Card>
           </form>
         </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={10}>
+        <Grid item xs={12} sm={12} md={12} lg={9}>
           <Stack
             direction="row"
             justifyContent={"space-between"}
@@ -180,7 +335,9 @@ let IndexRefRequestHierarchy = (props) => {
             page={refRequestHierarchy.page}
             rowsPerPage={refRequestHierarchy.rowsPerPage}
             handleChangePage={refRequestHierarchy.handleChangePage}
-            handleChangeRowsPerPage={refRequestHierarchy.handleChangeRowsPerPage}
+            handleChangeRowsPerPage={
+              refRequestHierarchy.handleChangeRowsPerPage
+            }
             onSelectItem={refRequestHierarchy.onSelectItem}
             id={"home_attendance"}
             localStorage={""}

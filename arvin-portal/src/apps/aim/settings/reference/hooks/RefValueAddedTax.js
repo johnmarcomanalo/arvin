@@ -1,25 +1,22 @@
-import { useDispatch, useSelector } from "react-redux";
 import * as React from "react";
-import { cancelRequest } from "../../../../../api/api";
+import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { getReferenceUnitOfMeasurements } from "../actions/ReferenceActions";
-import moment from "moment";
+import { cancelRequest } from "../../../../../api/api";
 import { Constants } from "../../../../../reducer/Contants";
-const RefUnitOfMeasurementsHooks = (props) => {
+import { getReferenceValueAddedTax } from "../actions/ReferenceActions";
+const RefValueAddedTax = (props) => {
   const dispatch = useDispatch();
   const account_details = useSelector(
     (state) => state.AuthenticationReducer.account_details
   );
   const refresh = useSelector((state) => state.ReferenceReducer.refresh);
-  const selected_ref = useSelector((state) => state.ReferenceReducer.selected_ref);
   const dataList = useSelector((state) => state.ReferenceReducer.dataList);
   const dataListCount = useSelector(
     (state) => state.ReferenceReducer.dataListCount
-  );;
+  );
   const columns = [
     { id: "code", label: "Code", align: "left" },
     { id: "description", label: "Description", align: "left" },
-    { id: "type", label: "Unit", align: "left" },
   ];
   const [state, setState] = React.useState({
     debounceTimer: null,
@@ -33,9 +30,6 @@ const RefUnitOfMeasurementsHooks = (props) => {
     searchParams.get("q") != null ? String(searchParams.get("q")) : "";
   const filterQuery =
     searchParams.get("f") != null ? String(searchParams.get("f")) : "";
-  const updateModal = useSelector(
-    (state) => state.ReferenceReducer.updateModal
-  );
   const onChangeSearch = (event) => {
     // SEARCH DATA
     const search = event.target.value;
@@ -83,7 +77,7 @@ const RefUnitOfMeasurementsHooks = (props) => {
   const getRefUnitOfMeasurements = async () => {
     try {
       const data = getListParam();
-      await dispatch(getReferenceUnitOfMeasurements(data));
+      await dispatch(getReferenceValueAddedTax(data));
     } catch (error) {
       await console.error(error);
     }
@@ -100,32 +94,6 @@ const RefUnitOfMeasurementsHooks = (props) => {
     getRefUnitOfMeasurements();
     return () => cancelRequest();
   }, [refresh, filterQuery, search, page]);
-
-  const onClickOpenUpdateModal = () => {
-    dispatch({
-      type: Constants.ACTION_REFERENCE,
-      payload: {
-        updateModal: true,
-      },
-    });
-  };
-  const onClickCloseUpdateModal = () => {
-    dispatch({
-      type: Constants.ACTION_REFERENCE,
-      payload: {
-        updateModal: false,
-      },
-    });
-  };
-  const onSelectItem = (data) => {
-    dispatch({
-      type: Constants.ACTION_REFERENCE,
-      payload: {
-        selected_ref:data,
-        updateModal: true,
-      },
-    });
-  };
   return {
     account_details,
     search,
@@ -134,17 +102,12 @@ const RefUnitOfMeasurementsHooks = (props) => {
     dataListCount,
     columns,
     rowsPerPage,
-    updateModal,
-    selected_ref,
     onChangeSearch,
     getListParam,
     onChangeFilter,
     handleChangePage,
     handleChangeRowsPerPage,
-    onClickOpenUpdateModal,
-    onClickCloseUpdateModal,
-    onSelectItem,
   };
 };
 
-export default RefUnitOfMeasurementsHooks;
+export default RefValueAddedTax;

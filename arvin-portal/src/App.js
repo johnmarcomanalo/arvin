@@ -75,6 +75,15 @@ const IndexRefRequestTypes = lazy(() =>
 const IndexRefUnitOfMeasurements = lazy(() =>
   import("./apps/aim/settings/reference/pages/IndexRefUnitOfMeasurements")
 );
+const IndexRefCurrencies = lazy(() =>
+  import("./apps/aim/settings/reference/pages/IndexRefCurrencies")
+);
+const IndexRefValueAddedTax = lazy(() =>
+  import("./apps/aim/settings/reference/pages/IndexRefValueAddedTax")
+);
+const IndexRefRequestHierarchy = lazy(() =>
+  import("./apps/aim/settings/reference/pages/IndexRefRequestHierarchy")
+);
 const theme = createTheme({
   typography: {
     fontFamily: "Poppins, sans-serif",
@@ -360,6 +369,48 @@ function App() {
                         })}
                       >
                         <IndexRefUnitOfMeasurements />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/SystemSettings/References/Currencies"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Settings",
+                          component: "References",
+                          subComponent: "Currencies",
+                        })}
+                      >
+                        <IndexRefCurrencies />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/SystemSettings/References/ValueAddedTax"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Settings",
+                          component: "References",
+                          subComponent: "Value Added Tax",
+                        })}
+                      >
+                        <IndexRefValueAddedTax />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/SystemSettings/References/RequestHierarchy"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Settings",
+                          component: "References",
+                          subComponent: "Request Hierarchy",
+                        })}
+                      >
+                        <IndexRefRequestHierarchy />
                       </PrivateRoute>
                     }
                   />

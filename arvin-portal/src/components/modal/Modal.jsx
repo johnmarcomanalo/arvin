@@ -1,14 +1,22 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
-import { styled } from "@mui/material/styles";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import Typography from "@mui/material/Typography";
-
+import { Paper } from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
+import { styled } from "@mui/material/styles";
+import * as React from "react";
+import Draggable from "react-draggable";
+function PaperComponent(props) {
+  return (
+    <Draggable
+      handle="#draggable-dialog-title"
+      cancel={'[class*="MuiDialogContent-root"]'}
+    >
+      <Paper {...props} />
+    </Draggable>
+  );
+}
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
     padding: theme.spacing(2),
@@ -32,12 +40,17 @@ export default function Modal(props) {
       <BootstrapDialog
         fullScreen={props.fullScreen}
         onClose={props.handleClose ? props.handleClose : undefined}
-        aria-labelledby="customized-dialog-title"
         open={props.open}
         fullWidth
         maxWidth={props.size}
+        PaperComponent={PaperComponent}
+        aria-labelledby="draggable-dialog-title"
       >
-        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+        <DialogTitle
+          sx={{ m: 0, p: 2 }}
+          style={{ cursor: "move" }}
+          id="draggable-dialog-title"
+        >
           {`${props.title}`}
         </DialogTitle>
         <IconButton

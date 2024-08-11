@@ -20,17 +20,21 @@ const styleSheet = {
 };
 
 const InputField = (props) => {
-  const { alignment = "left", onClick, ...param } = props;
+  const { alignment = "left", onClick, showLabel = true, ...param } = props;
   return (
     <div>
-      <Typography sx={styleSheet.label} align={alignment}>
-        {props.label}
-        {props.required ? (
-          <span style={{ color: configure.denied_color, fontSize: 15 }}>*</span>
-        ) : (
-          <span style={{ color: "transparent", fontSize: 15 }}>*</span>
-        )}
-      </Typography>
+      {showLabel ? (
+        <Typography sx={styleSheet.label} align={alignment}>
+          {props.label}
+          {props.required ? (
+            <span style={{ color: configure.denied_color, fontSize: 15 }}>
+              *
+            </span>
+          ) : (
+            <span style={{ color: "transparent", fontSize: 15 }}>*</span>
+          )}
+        </Typography>
+      ) : null}
       <TextField
         onClick={onClick}
         InputProps={{ readOnly: props.readOnly }}

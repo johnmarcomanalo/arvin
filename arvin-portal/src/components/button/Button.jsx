@@ -83,6 +83,8 @@ const ButtonComponent = (props) => {
         dsbl = false;
       }
       break;
+    case "remove":
+      icon = <DeleteIcon />;
     default:
       icon = <HelpIcon />;
       break;

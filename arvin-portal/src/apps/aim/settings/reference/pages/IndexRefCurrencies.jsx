@@ -2,12 +2,18 @@ import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import HomeIcon from "@mui/icons-material/Home";
 import SettingsIcon from "@mui/icons-material/Settings";
 import WidgetsIcon from "@mui/icons-material/Widgets";
-import { Card, CardContent, Grid, Stack, Typography } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Grid,
+  Stack,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import swal from "sweetalert";
-import ComboBox from "../../../../../components/autoComplete/AutoComplete";
 import BreadCrumbs from "../../../../../components/breadCrumb/BreadCrumbs";
 import ButtonComponent from "../../../../../components/button/Button";
 import InputField from "../../../../../components/inputFIeld/InputField";
@@ -17,9 +23,11 @@ import Page from "../../../../../components/pagination/Pagination";
 import Table from "../../../../../components/table/Table";
 import { Constants } from "../../../../../reducer/Contants";
 import configure from "../../../../configure/configure.json";
-import { postReferenceSubcomponent } from "../actions/ReferenceActions";
-import RefSubcomponentsHooks from "../hooks/RefSubcomponentsHooks";
-const title_page = "Subcomponents";
+import { postReferenceCurrencies } from "../actions/ReferenceActions";
+import RefCurrenciesHooks from "../hooks/RefCurrenciesHooks";
+import UpdateRefCurrencies from "./components/UpdateRefCurrencies";
+import Modal from "../../../../../components/modal/Modal";
+const title_page = "Currencies";
 const breadCrumbArray = [
   {
     name: "Home",
@@ -74,10 +82,10 @@ const breadCrumbArray = [
     ),
   },
 ];
-const formName = "RefSubcomponents";
+const formName = "RefCurrencies";
 const submit = async (values, dispatch, props) => {
   try {
-    const response = await dispatch(postReferenceSubcomponent(values));
+    const response = await dispatch(postReferenceCurrencies(values));
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -90,15 +98,29 @@ const submit = async (values, dispatch, props) => {
         refresh: !props.refresh,
       },
     });
-    swal(response.data.title, response.data.message, response.data.status);
+    swal(response.title, response.message, response.status);
   } catch (error) {
     console.log(error);
   }
 };
-let IndexRefComponents = (props) => {
-  const { ...refsubcomponents } = RefSubcomponentsHooks(props);
+let IndexRefCurrencies = (props) => {
+  const { ...refCurrencies } = RefCurrenciesHooks(props);
+  const matches = useMediaQuery("(min-width:600px)");
   return (
     <React.Fragment>
+      <Modal
+        open={refCurrencies.updateModal}
+        fullScreen={matches ? false : true}
+        title={"Update Currency"}
+        size={"xs"}
+        action={undefined}
+        handleClose={refCurrencies.onClickCloseUpdateModal}
+      >
+        <UpdateRefCurrencies
+          account_details={refCurrencies.account_details}
+          selected_ref={refCurrencies.selected_ref}
+        />
+      </Modal>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <BreadCrumbs breadCrumbs={breadCrumbArray} />
@@ -126,45 +148,10 @@ let IndexRefComponents = (props) => {
                   gutterBottom
                   sx={{ color: configure.dark_gray_color, fontSize: 12 }}
                 >
-                  System Parameter for Reference Subcomponents
+                  System Parameter for Reference Currencies
                 </Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={12}>
-                    <Field
-                      id="module_description"
-                      name="module_description"
-                      label="Module"
-                      options={refsubcomponents?.modules}
-                      getOptionLabel={(option) =>
-                        option.description ? option.description : ""
-                      }
-                      required={true}
-                      component={ComboBox}
-                      onChangeHandle={(e, newValue) => {
-                        if (newValue?.description) {
-                          props.change("module_code", newValue.code);
-                          refsubcomponents.getComponentsbyModuleID(
-                            newValue.code
-                          );
-                        }
-                      }}
-                    />
-                    <Field
-                      id="component_description"
-                      name="component_description"
-                      label="Component"
-                      options={refsubcomponents?.components}
-                      getOptionLabel={(option) =>
-                        option.description ? option.description : ""
-                      }
-                      required={true}
-                      component={ComboBox}
-                      onChangeHandle={(e, newValue) => {
-                        if (newValue?.description) {
-                          props.change("component_code", newValue.code);
-                        }
-                      }}
-                    />
                     <Field
                       id="description"
                       name="description"
@@ -172,10 +159,12 @@ let IndexRefComponents = (props) => {
                       component={InputField}
                       required={true}
                     />
+                  </Grid>
+                  <Grid item xs={12} md={12}>
                     <Field
-                      id="link"
-                      name="link"
-                      label="Link"
+                      id="type"
+                      name="type"
+                      label="Unit"
                       component={InputField}
                       required={true}
                     />
@@ -209,26 +198,26 @@ let IndexRefComponents = (props) => {
             spacing={2}
             sx={{ margin: 1 }}
           >
-            <SearchField onChange={refsubcomponents.onChangeSearch} />
+            <SearchField onChange={refCurrencies.onChangeSearch} />
             <Page
-              page={refsubcomponents?.page}
-              limit={refsubcomponents?.dataListCount}
+              page={refCurrencies?.page}
+              limit={refCurrencies?.dataListCount}
               status={""}
-              onHandleChange={refsubcomponents.handleChangePage}
+              onHandleChange={refCurrencies.handleChangePage}
             />
           </Stack>
           <Table
-            columns={refsubcomponents.columns}
-            dataList={refsubcomponents.dataList}
-            page={refsubcomponents.page}
-            rowsPerPage={refsubcomponents.rowsPerPage}
-            handleChangePage={refsubcomponents.handleChangePage}
-            handleChangeRowsPerPage={refsubcomponents.handleChangeRowsPerPage}
-            onSelectItem={refsubcomponents.onSelectItem}
+            columns={refCurrencies.columns}
+            dataList={refCurrencies.dataList}
+            page={refCurrencies.page}
+            rowsPerPage={refCurrencies.rowsPerPage}
+            handleChangePage={refCurrencies.handleChangePage}
+            handleChangeRowsPerPage={refCurrencies.handleChangeRowsPerPage}
+            onSelectItem={refCurrencies.onSelectItem}
             id={"home_attendance"}
             localStorage={""}
-            rowCount={refsubcomponents.dataListCount}
-            actionShow={false}
+            rowCount={refCurrencies.dataListCount}
+            actionshow={true}
             paginationShow={false}
             action={(row) => {
               return null;
@@ -242,7 +231,7 @@ let IndexRefComponents = (props) => {
 const ReduxFormComponent = reduxForm({
   form: formName,
   onSubmit: submit,
-})(IndexRefComponents);
+})(IndexRefCurrencies);
 const selector = formValueSelector(formName);
 export default connect((state) => {
   const refresh = state.ReferenceReducer.refresh;

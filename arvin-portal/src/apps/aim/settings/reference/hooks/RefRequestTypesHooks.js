@@ -3,13 +3,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { cancelRequest } from "../../../../../api/api";
 import { Constants } from "../../../../../reducer/Contants";
-import { getAllRefRequestTypes, getReferenceRequestTypes } from "../actions/ReferenceActions";
+import {
+  getAllRefRequestTypes,
+  getReferenceRequestTypes,
+} from "../actions/ReferenceActions";
 const RefRequestTypesHooks = (props) => {
   const dispatch = useDispatch();
   const account_details = useSelector(
     (state) => state.AuthenticationReducer.account_details
   );
   const refresh = useSelector((state) => state.ReferenceReducer.refresh);
+  const selected_ref = useSelector(
+    (state) => state.ReferenceReducer.selected_ref
+  );
   const dataList = useSelector((state) => state.ReferenceReducer.dataList);
   const dataListCount = useSelector(
     (state) => state.ReferenceReducer.dataListCount
@@ -30,6 +36,9 @@ const RefRequestTypesHooks = (props) => {
     searchParams.get("q") != null ? String(searchParams.get("q")) : "";
   const filterQuery =
     searchParams.get("f") != null ? String(searchParams.get("f")) : "";
+  const updateModal = useSelector(
+    (state) => state.ReferenceReducer.updateModal
+  );
   const onChangeSearch = (event) => {
     // SEARCH DATA
     const search = event.target.value;
@@ -78,7 +87,8 @@ const RefRequestTypesHooks = (props) => {
   };
   const getRefRequestTypes = async () => {
     try {
-      await dispatch(getAllRefRequestTypes());
+      let data = getListParam();
+      await dispatch(getReferenceRequestTypes(data));
     } catch (error) {
       await console.error(error);
     }
@@ -95,6 +105,24 @@ const RefRequestTypesHooks = (props) => {
     getRefRequestTypes();
     return () => cancelRequest();
   }, [refresh, filterQuery, search, page]);
+
+  const onClickCloseUpdateModal = () => {
+    dispatch({
+      type: Constants.ACTION_REFERENCE,
+      payload: {
+        updateModal: false,
+      },
+    });
+  };
+  const onSelectItem = (data) => {
+    dispatch({
+      type: Constants.ACTION_REFERENCE,
+      payload: {
+        selected_ref: data,
+        updateModal: true,
+      },
+    });
+  };
   return {
     account_details,
     search,
@@ -103,11 +131,15 @@ const RefRequestTypesHooks = (props) => {
     dataListCount,
     columns,
     rowsPerPage,
+    updateModal,
+    selected_ref,
     onChangeSearch,
     getListParam,
     onChangeFilter,
     handleChangePage,
     handleChangeRowsPerPage,
+    onClickCloseUpdateModal,
+    onSelectItem,
   };
 };
 

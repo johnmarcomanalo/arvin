@@ -3,13 +3,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { cancelRequest } from "../../../../../api/api";
 import { Constants } from "../../../../../reducer/Contants";
-import { getReferenceRequestTypes } from "../actions/ReferenceActions";
+import { getReferenceRequestHierarchy } from "../actions/ReferenceActions";
 const RefRequestHierarchyHooks = (props) => {
   const dispatch = useDispatch();
   const account_details = useSelector(
     (state) => state.AuthenticationReducer.account_details
   );
   const refresh = useSelector((state) => state.ReferenceReducer.refresh);
+  const request_types = useSelector(
+    (state) => state.ReferenceReducer.request_types
+  );
   const dataList = useSelector((state) => state.ReferenceReducer.dataList);
   const dataListCount = useSelector(
     (state) => state.ReferenceReducer.dataListCount
@@ -17,10 +20,13 @@ const RefRequestHierarchyHooks = (props) => {
   const columns = [
     { id: "code", label: "Code", align: "left" },
     { id: "description", label: "Description", align: "left" },
+    { id: "description", label: "Description", align: "left" },
   ];
   const [state, setState] = React.useState({
     debounceTimer: null,
     debounceDelay: 2000,
+    hierarchy: [{ approver: [] }],
+    index_level: null,
   });
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("p") != null ? searchParams.get("p") : 1;
@@ -30,6 +36,9 @@ const RefRequestHierarchyHooks = (props) => {
     searchParams.get("q") != null ? String(searchParams.get("q")) : "";
   const filterQuery =
     searchParams.get("f") != null ? String(searchParams.get("f")) : "";
+  const viewModal = useSelector(
+    (state) => state.HumanResourceReducer.viewModal
+  );
   const onChangeSearch = (event) => {
     // SEARCH DATA
     const search = event.target.value;
@@ -76,10 +85,10 @@ const RefRequestHierarchyHooks = (props) => {
       },
     });
   };
-  const getRefRequestTypes = async () => {
+  const getAllRefenceRequestHierarchy = async () => {
     try {
-      const data = getListParam();
-      await dispatch(getReferenceRequestTypes(data));
+      let data = getListParam();
+      await dispatch(getReferenceRequestHierarchy(data));
     } catch (error) {
       await console.error(error);
     }
@@ -93,9 +102,96 @@ const RefRequestHierarchyHooks = (props) => {
   }, [refresh]);
 
   React.useEffect(() => {
-    getRefRequestTypes();
+    getAllRefenceRequestHierarchy();
     return () => cancelRequest();
   }, [refresh, filterQuery, search, page]);
+
+  const onChangeHierarchyLevelDescription = (event, index) => {
+    let valu = event.target.value;
+    let target_name = event.target.name;
+    let name = target_name.split("-")[0];
+    setState((prev) => ({
+      ...prev,
+      hierarchy: state.hierarchy.map((val, index2) =>
+        index === index2 ? { ...val, [name]: valu } : val
+      ),
+    }));
+  };
+
+  const onClickAddHierarchyLevel = () => {
+    let level = {
+      index: state.hierarchy.length + 1,
+      approver: [],
+    };
+    state.hierarchy.push(level);
+    setState((prev) => ({
+      ...prev,
+    }));
+  };
+
+  const onClickRemoveHierarchyLevel = () => {
+    state.hierarchy.splice(state.hierarchy.length - 1, 1);
+    setState((prev) => ({
+      ...prev,
+    }));
+  };
+
+  const onClickOpenViewModal = (index) => {
+    setState((prev) => ({
+      ...prev,
+      index_level: index,
+    }));
+    dispatch({
+      type: Constants.ACTION_HUMAN_RESOURCE,
+      payload: {
+        viewModal: true,
+      },
+    });
+  };
+  const onClickCloseViewModal = () => {
+    dispatch({
+      type: Constants.ACTION_HUMAN_RESOURCE,
+      payload: {
+        viewModal: false,
+      },
+    });
+  };
+  const onSelectApprover = (data) => {
+    const updatedHierarchy = state.hierarchy.map((item, index) => {
+      if (index === state.index_level) {
+        // Check if approver property exists and is an array
+        const updatedApprover = Array.isArray(item.approver)
+          ? [...item.approver, data]
+          : [data];
+        return { ...item, approver: updatedApprover }; // Update the approver for the selected index
+      }
+      return item; // Keep other items unchanged
+    });
+    setState((prevState) => ({
+      ...prevState,
+      hierarchy: updatedHierarchy,
+    }));
+    console.log(updatedHierarchy[state.index_level]);
+  };
+
+  const onRemoveApprover = (data) => {
+    const updatedHierarchy = state.hierarchy.map((item, index) => {
+      if (index === state.index_level) {
+        // Check if approver property exists and is an array
+        const updatedApprover = Array.isArray(item.approver)
+          ? item.approver.filter((approver) => approver !== data)
+          : [];
+        return { ...item, approver: updatedApprover }; // Update the approver for the selected index
+      }
+      return item; // Keep other items unchanged
+    });
+    setState((prevState) => ({
+      ...prevState,
+      hierarchy: updatedHierarchy,
+    }));
+    console.log(updatedHierarchy[state.index_level]);
+  };
+
   return {
     account_details,
     search,
@@ -104,11 +200,21 @@ const RefRequestHierarchyHooks = (props) => {
     dataListCount,
     columns,
     rowsPerPage,
+    request_types,
+    state,
+    viewModal,
     onChangeSearch,
     getListParam,
     onChangeFilter,
     handleChangePage,
     handleChangeRowsPerPage,
+    onChangeHierarchyLevelDescription,
+    onClickAddHierarchyLevel,
+    onSelectApprover,
+    onClickOpenViewModal,
+    onClickCloseViewModal,
+    onRemoveApprover,
+    onClickRemoveHierarchyLevel,
   };
 };
 

@@ -7,34 +7,39 @@ const styleSheet = {
   label: { fontSize: 13 },
 };
 export default function ComboBox(props) {
+  const { showLabel = true, ...param } = props;
   const handleInputChange = (event, newInputValue) => {
     if (!newInputValue) {
-      props.input.onChange(""); // Clear the field when the input is empty
+      param.input.onChange(""); // Clear the field when the input is empty
     }
   };
   return (
     <div>
-      <Typography sx={styleSheet.label} align="left">
-        {props.label}{" "}
-        {props.required ? (
-          <span style={{ color: configure.denied_color, fontSize: 15 }}>*</span>
-        ) : undefined}
-      </Typography>
+      {showLabel ? (
+        <Typography sx={styleSheet.label} align="left">
+          {param.label}{" "}
+          {param.required ? (
+            <span style={{ color: configure.denied_color, fontSize: 15 }}>
+              *
+            </span>
+          ) : undefined}
+        </Typography>
+      ) : null}
       <Autocomplete
         disablePortal
-        id={props.id}
+        id={param.id}
         fullWidth
         size="small"
-        options={props.options}
-        {...props.input}
-        onChange={props.onChangeHandle}
-        value={props.value}
-        defaultValue={{ [props.initialValue]: props.input.value }}
+        options={param.options}
+        {...param.input}
+        onChange={param.onChangeHandle}
+        value={param.value}
+        defaultValue={{ [param.initialValue]: param.input.value }}
         isOptionEqualToValue={(option, value) => option.value === value.value}
-        getOptionLabel={props.getOptionLabel}
+        getOptionLabel={param.getOptionLabel}
         onInputChange={handleInputChange}
         renderInput={(params) => (
-          <TextField {...params} required={props.required} />
+          <TextField {...params} required={param.required} />
         )}
       />{" "}
     </div>

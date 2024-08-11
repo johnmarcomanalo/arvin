@@ -14,6 +14,7 @@ const initialState = {
   selectedDataList: [],
   addModal: false,
   viewModal: false,
+  updateModal: false,
   target_annual_quota: null,
   target_month_quota: null,
   target_day_quota: null,

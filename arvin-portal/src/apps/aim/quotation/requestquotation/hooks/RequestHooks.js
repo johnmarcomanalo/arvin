@@ -8,7 +8,12 @@ import { Constants } from "../../../../../reducer/Contants";
 import { useDebounce } from "../../../../../utils/HelperUtils";
 import { decryptaes } from "../../../../../utils/LightSecurity";
 import configure from "../../../../configure/configure.json";
-import { getEmployeeCustomerAccessDetails } from "../../../settings/reference/actions/ReferenceActions";
+import {
+  getAllRefCurrencies,
+  getAllRefUnitOfMeasurements,
+  getAllRefValueAddedTax,
+  getEmployeeCustomerAccessDetails,
+} from "../../../settings/reference/actions/ReferenceActions";
 
 const RequestHooks = (props) => {
   const refresh = useSelector((state) => state.QuotationReducer.refresh);
@@ -19,7 +24,50 @@ const RequestHooks = (props) => {
     product_list: [],
     noted_by: [],
     approved_by: [],
+    quotation_column_list: [
+      {
+        id: "code",
+        label: "Product Code",
+        status: 0,
+      },
+      {
+        id: "projected_quantity",
+        label: "Projected Quantity",
+        status: 0,
+      },
+      {
+        id: "destination",
+        label: "Destination",
+        status: 0,
+      },
+      {
+        id: "minimum_order_quantity",
+        label: "Minimum order Quantity",
+        status: 0,
+      },
+      {
+        id: "pickup_price",
+        label: "Pickup Price",
+        status: 0,
+      },
+      {
+        id: "price_per_unit",
+        label: "Price per unit",
+        status: 0,
+      },
+      {
+        id: "tax_code",
+        label: "Tax Code",
+        status: 0,
+      },
+    ],
   });
+  const columns = [
+    { id: "code", label: "Code", align: "left" },
+    { id: "customer", label: "Customer", align: "left" },
+    { id: "Date Request", label: "Date Request", align: "left" },
+    { id: "status", label: "Status", align: "left" },
+  ];
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("p") != null ? searchParams.get("p") : 1;
   const rowsPerPage =
@@ -35,6 +83,9 @@ const RequestHooks = (props) => {
 
   const dispatch = useDispatch();
   const viewModal = useSelector((state) => state.QuotationReducer.viewModal);
+  const updateModal = useSelector(
+    (state) => state.QuotationReducer.updateModal
+  );
   const dataList = useSelector((state) => state.QuotationReducer.dataList);
   const selected_productList = useSelector(
     (state) => state.ReferenceReducer.selected_productList
@@ -55,12 +106,14 @@ const RequestHooks = (props) => {
     (state) => state.QuotationReducer.selectedDataList
   );
   const access = useSelector((state) => state.AuthenticationReducer.access);
-  const columns = [
-    { id: "code", label: "Code", align: "left" },
-    { id: "customer", label: "Customer", align: "left" },
-    { id: "Date Request", label: "Date Request", align: "left" },
-    { id: "status", label: "Status", align: "left" },
-  ];
+  const currencies = useSelector((state) => state.ReferenceReducer.currencies);
+  const unit_of_measurements = useSelector(
+    (state) => state.ReferenceReducer.unit_of_measurements
+  );
+  const value_added_tax = useSelector(
+    (state) => state.ReferenceReducer.value_added_tax
+  );
+
   const onClickOpenViewModal = () => {
     dispatch({
       type: Constants.ACTION_QUOTATION,
@@ -134,9 +187,6 @@ const RequestHooks = (props) => {
       u: account_details?.code,
     });
   };
-  // React.useEffect(() => {
-  //   return () => cancelRequest();
-  // }, [refresh, filterQuery, search]);
 
   const GetCustomerDetails = async (value) => {
     try {
@@ -165,7 +215,8 @@ const RequestHooks = (props) => {
 
   const onChangeNotes = (event, index) => {
     let valu = event.target.value;
-    let name = event.target.name;
+    let target_name = event.target.name;
+    let name = target_name.split("-")[0];
     setState((prev) => ({
       ...prev,
       notes: state.notes.map((val, index2) =>
@@ -173,6 +224,7 @@ const RequestHooks = (props) => {
       ),
     }));
   };
+
   const onClickAddNotes = () => {
     let placement = {
       index: state.notes.length + 1,
@@ -182,18 +234,35 @@ const RequestHooks = (props) => {
       ...prev,
     }));
   };
+
   const onClickRemoveNotes = () => {
-    state.notes.splice(state.notes.length - 1, 1);
-    setState((prev) => ({
-      ...prev,
-    }));
+    if (state.notes.length > 1) {
+      state.notes.splice(state.notes.length - 1, 1);
+      setState((prev) => ({
+        ...prev,
+      }));
+    }
   };
 
   const onClickSelectItemProductList = (data) => {
     let product = {
       code: data.code,
-      description: data.description,
-      minimum_delivery_quantity: 0,
+      product_description: data.description,
+      product_weight: data.weight,
+      product_tax_code: data.tax_code,
+      product_brand: data.brand,
+      product_branch: data.branch,
+      product_group: data.groups,
+      projected_quantity: 0,
+      projected_quantity_unit: "",
+      destination: "",
+      minimum_order_quantity: 0,
+      minimum_order_quantity_unit: "",
+      pickup_price: 0,
+      pickup_price_unit: "",
+      price_per_unit: 0,
+      price_unit: "",
+      tax_code: "",
       added_by: account_details.code,
       modified_by: account_details.code,
     };
@@ -202,17 +271,70 @@ const RequestHooks = (props) => {
       ...prev,
     }));
   };
-  const onClickRemoveItemProductList = (data) => {
-    let product = {
-      code: data.code,
-      description: data.description,
-      minimum_delivery_quantity: 0,
-      added_by: account_details.code,
-      modified_by: account_details.code,
-    };
-    state.product_list.push(product);
+  const onClickRemoveItemProductList = () => {
+    state.product_list.splice(state.product_list.length - 1, 1);
     setState((prev) => ({
       ...prev,
+    }));
+  };
+
+  React.useEffect(() => {
+    dispatch(getAllRefCurrencies());
+    dispatch(getAllRefUnitOfMeasurements());
+    dispatch(getAllRefValueAddedTax());
+    return () => cancelRequest();
+  }, []);
+
+  const onClickOpenColumnListModal = () => {
+    dispatch({
+      type: Constants.ACTION_QUOTATION,
+      payload: {
+        updateModal: true,
+      },
+    });
+  };
+  const onClickCloseColumnListModal = () => {
+    dispatch({
+      type: Constants.ACTION_QUOTATION,
+      payload: {
+        updateModal: false,
+      },
+    });
+  };
+
+  const handleStatusChange = (index) => {
+    const updatedQuotationList = state.quotation_column_list.map((item, i) => {
+      if (i === index) {
+        return { ...item, status: item.status === 0 ? 1 : 0 };
+      }
+      return item;
+    });
+
+    setState((prevState) => ({
+      ...prevState,
+      quotation_column_list: updatedQuotationList,
+    }));
+  };
+  const onChangeSelectedProduct = (event, index) => {
+    let valu = event.target.value;
+    let target_name = event.target.name;
+    let name = target_name.split("-")[0];
+    setState((prev) => ({
+      ...prev,
+      product_list: state.product_list.map((val, index2) =>
+        index === index2 ? { ...val, [name]: valu } : val
+      ),
+    }));
+  };
+  const onSelectUOM = (event, value, index) => {
+    let valu = value.description;
+    let target_name = event.target.id;
+    let name = target_name.split("-")[0];
+    setState((prev) => ({
+      ...prev,
+      product_list: state.product_list.map((val, index2) =>
+        index === index2 ? { ...val, [name]: valu } : val
+      ),
     }));
   };
   return {
@@ -230,6 +352,10 @@ const RequestHooks = (props) => {
     account_details,
     access,
     selected_productList,
+    currencies,
+    unit_of_measurements,
+    updateModal,
+    value_added_tax,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,
@@ -243,6 +369,12 @@ const RequestHooks = (props) => {
     onClickAddNotes,
     onClickRemoveNotes,
     onClickSelectItemProductList,
+    onClickOpenColumnListModal,
+    onClickCloseColumnListModal,
+    handleStatusChange,
+    onChangeSelectedProduct,
+    onSelectUOM,
+    onClickRemoveItemProductList,
   };
 };
 

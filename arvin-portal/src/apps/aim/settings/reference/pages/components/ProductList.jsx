@@ -23,7 +23,6 @@ const submit = async (values, dispatch, props) => {
 };
 
 let ProductList = (props) => {
-  const matches = useMediaQuery("(min-width:600px)");
   const { ...refProducts } = RefProductsHooks(props);
   return (
     <React.Fragment>

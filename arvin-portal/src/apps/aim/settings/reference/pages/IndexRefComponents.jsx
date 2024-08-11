@@ -90,7 +90,6 @@ const submit = async (values, dispatch, props) => {
         refresh: !props.refresh,
       },
     });
-    console.log(response);
     swal(response.data.title, response.data.message, response.data.status);
   } catch (error) {
     console.log(error);

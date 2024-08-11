@@ -25,6 +25,10 @@ const initialState = {
   selected_productList: [{ index: 1 }],
   request_types: [],
   unit_of_measurements: [],
+  currencies: [],
+  value_added_tax: [],
+  updateModal: false,
+  selected_ref: []
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

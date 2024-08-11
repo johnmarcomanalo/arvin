@@ -1,8 +1,17 @@
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import HomeIcon from "@mui/icons-material/Home";
+import UpgradeIcon from "@mui/icons-material/Upgrade";
 import SettingsIcon from "@mui/icons-material/Settings";
 import WidgetsIcon from "@mui/icons-material/Widgets";
-import { Card, CardContent, Grid, Stack, Typography } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Grid,
+  Stack,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
@@ -16,8 +25,10 @@ import Page from "../../../../../components/pagination/Pagination";
 import Table from "../../../../../components/table/Table";
 import { Constants } from "../../../../../reducer/Contants";
 import configure from "../../../../configure/configure.json";
-import { postReferenceRequestType } from "../actions/ReferenceActions";
+import { postReferenceUnitOfMeasurements } from "../actions/ReferenceActions";
 import RefUnitOfMeasurementsHooks from "../hooks/RefUnitOfMeasurementsHooks";
+import UpdateRefUnitOfMeasurements from "./components/UpdateRefUnitOfMeasurements";
+import Modal from "../../../../../components/modal/Modal";
 const title_page = "Unit of Measurements";
 const breadCrumbArray = [
   {
@@ -76,7 +87,7 @@ const breadCrumbArray = [
 const formName = "RefUnitOfMeasurements";
 const submit = async (values, dispatch, props) => {
   try {
-    const response = await dispatch(postReferenceRequestType(values));
+    const response = await dispatch(postReferenceUnitOfMeasurements(values));
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -95,9 +106,23 @@ const submit = async (values, dispatch, props) => {
   }
 };
 let IndexRefUnitOfMeasurements = (props) => {
+  const matches = useMediaQuery("(min-width:600px)");
   const { ...refUnitOfMeasurements } = RefUnitOfMeasurementsHooks(props);
   return (
     <React.Fragment>
+      <Modal
+        open={refUnitOfMeasurements.updateModal}
+        fullScreen={matches ? false : true}
+        title={"Update Unit of Measurement"}
+        size={"xs"}
+        action={undefined}
+        handleClose={refUnitOfMeasurements.onClickCloseUpdateModal}
+      >
+        <UpdateRefUnitOfMeasurements
+          account_details={refUnitOfMeasurements.account_details}
+          selected_ref={refUnitOfMeasurements.selected_ref}
+        />
+      </Modal>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <BreadCrumbs breadCrumbs={breadCrumbArray} />
@@ -196,8 +221,7 @@ let IndexRefUnitOfMeasurements = (props) => {
             id={"home_attendance"}
             localStorage={""}
             rowCount={refUnitOfMeasurements.dataListCount}
-            actionShow={false}
-            paginationShow={false}
+            actionshow={true}
             action={(row) => {
               return null;
             }}

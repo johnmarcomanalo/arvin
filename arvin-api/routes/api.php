@@ -14,15 +14,25 @@ use App\Http\Controllers\RefComponentsController;
 use App\Http\Controllers\RefSubComponentsController;
 use App\Http\Controllers\RefProducts;
 use App\Http\Controllers\RefRequestTypesController;
+use App\Http\Controllers\RefUnitOfMeasurementController;
+use App\Http\Controllers\RefCurrenciesController;
+use App\Http\Controllers\RefValueAddedTaxController;
+use App\Http\Controllers\RefRequestHierarchiesController;
+
+
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UserAccessCustomerRightsController;
 use App\Http\Controllers\UserAccessOrganizationRightsController;
 use App\Http\Controllers\UserAccessPageRightsController;
+
+
 use App\Http\Controllers\SalesDailyOutAnnualSettingsSalesController;
 use App\Http\Controllers\SalesDailyOutsController;
 use App\Http\Controllers\SalesDailyOutAnnualSalesRankingController;
 use App\Http\Controllers\SalesDailyOutAnnualSalesRankingDetailsController;
 use App\Http\Controllers\SalesDailyOutReportSalesSummaryController;
+
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -80,6 +90,15 @@ use Illuminate\Support\Facades\Route;
     Route::get('reference/get_ref_products',[RefProducts::class,'get_ref_products']);
     Route::apiResource('reference/ref_request_types',RefRequestTypesController::class)->middleware(['light_decryption']);
     Route::get('reference/get_ref_request_types',[RefRequestTypesController::class,'get_ref_request_types']);
+    Route::apiResource('reference/ref_unit_of_measurement',RefUnitOfMeasurementController::class)->middleware(['light_decryption']);
+    Route::get('reference/get_ref_unit_of_measurement',[RefUnitOfMeasurementController::class,'get_ref_unit_of_measurement']);
+    Route::apiResource('reference/ref_currencies',RefCurrenciesController::class)->middleware(['light_decryption']);
+    Route::get('reference/get_ref_currencies',[RefCurrenciesController::class,'get_ref_currencies']);
+    Route::apiResource('reference/ref_value_added_tax',RefValueAddedTaxController::class)->middleware(['light_decryption']);
+    Route::get('reference/get_ref_value_added_tax',[RefValueAddedTaxController::class,'get_ref_value_added_tax']);
+    Route::apiResource('reference/ref_request_hierarchy',RefRequestHierarchiesController::class)->middleware(['light_decryption']);
+    Route::get('reference/get_ref_request_hierarchy',[RefRequestHierarchiesController::class,'get_ref_request_hierarchy']);
+   
     // REFERENCE END
     
     //MODULE SALES DAILY OUT START

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\RefUnitOfMeasurement;
+use App\Models\RefRequestHierarchies;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;   
+use Illuminate\Support\Facades\Crypt;
 
-class RefUnitOfMeasurementController extends Controller
+class RefRequestHierarchiesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,7 @@ class RefUnitOfMeasurementController extends Controller
     public function index()
     {
         $data = array();
-        $data = RefUnitOfMeasurement::whereNull('deleted_at')->get();
+        $data = RefRequestHierarchies::whereNull('deleted_at')->get();
         if(!empty($data)){
           return Crypt::encryptString(json_encode($data));
         }
@@ -30,14 +30,16 @@ class RefUnitOfMeasurementController extends Controller
      */
     public function store(Request $request)
     {
-        $fields = $request->validate([
+         $fields = $request->validate([
             'description' => 'required',
-            'type' => 'required',
+            'request_type_code' => 'required',
+            'hierarchy_structure' => 'required',
             'added_by' => 'required',
             'modified_by' => 'required',
         ]);
-        $existingRecord = RefUnitOfMeasurement::where('description', $fields['description'])
-            ->where('type', $fields['type'])                    
+        $existingRecord = RefRequestHierarchies::where('description', $fields['description'])
+            ->where('request_type_code', $fields['request_type_code'])                    
+            // ->where('hierarchy', $fields['hierarchy'])                    
             ->first();
 
         if ($existingRecord) {
@@ -45,16 +47,17 @@ class RefUnitOfMeasurementController extends Controller
                 'result' => true,
                 'status' => 'error',
                 'title' => 'Error',
-                'message' => 'Unit of measurement already exists.'
+                'message' => 'Hierarchy already exists.'
             ], 409);
         } else {
                 $fields['code'] = $this->generate_code();
-                RefUnitOfMeasurement::create($fields);
+                $fields['hierarchy_structure'] = json_encode($fields['hierarchy_structure']);
+                RefRequestHierarchies::create($fields);
                 return response([
                         'result' => true,
                         'status' => 'success',
                         'title' => 'Success',
-                        'message' => 'Unit of measurement added successfully.'
+                        'message' => 'Request Hierarchy added successfully.'
                 ], 201);
         }
     }
@@ -62,10 +65,10 @@ class RefUnitOfMeasurementController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\RefUnitOfMeasurement  $RefUnitOfMeasurement
+     * @param  \App\Models\RefRequestHierarchies  $refRequestHierarchies
      * @return \Illuminate\Http\Response
      */
-    public function show(RefUnitOfMeasurement $RefUnitOfMeasurement)
+    public function show(RefRequestHierarchies $refRequestHierarchies)
     {
         //
     }
@@ -74,49 +77,21 @@ class RefUnitOfMeasurementController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\RefUnitOfMeasurement  $RefUnitOfMeasurement
+     * @param  \App\Models\RefRequestHierarchies  $refRequestHierarchies
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, RefRequestHierarchies $refRequestHierarchies)
     {
-        $fields = $request->validate([
-            'modified_by' => 'required',
-            'code' => 'required',
-            'description' => 'required',
-            'type' => 'required',
-        ]);
-        $data = RefUnitOfMeasurement::where('code','=',$id)->first();
-        if(empty($data)){
-            $response = [
-                'result' => false,
-                'icon' => 'error',
-                'message' => 'No data found!',
-            ];
-            return response($response, 404);
-        }
-
-        $data->update([
-            'modified_by' => $fields['modified_by'],
-            'description' => $fields['description'],
-            'type' => $fields['type'],
-        ]);
-        $response = [
-            'message' => '',
-            'result' => true,
-            'icon' => 'success',
-            'title' => 'Successfully Updated!',
-        ];
-
-        return response($response, 200);
+        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\RefUnitOfMeasurement  $RefUnitOfMeasurement
+     * @param  \App\Models\RefRequestHierarchies  $refRequestHierarchies
      * @return \Illuminate\Http\Response
      */
-    public function destroy(RefUnitOfMeasurement $RefUnitOfMeasurement)
+    public function destroy(RefRequestHierarchies $refRequestHierarchies)
     {
         //
     }
@@ -124,21 +99,21 @@ class RefUnitOfMeasurementController extends Controller
     public function generate_code(){
         $code = 1;
         $current_date = date('Y-m-d');
-        $latest_code = RefUnitOfMeasurement::latest('code')->first('code')->code ?? NULL;
+        $latest_code = RefRequestHierarchies::latest('code')->first('code')->code ?? NULL;
         if(!empty($latest_code)){
             $code = $latest_code + 1;
         }
         return $code;
     }
 
-    public function get_ref_unit_of_measurement (Request $request)
+    public function get_ref_request_hierarchy (Request $request)
     {
         $page = $request->query('page');
         $limit = $request->query('limit');
         $query = $request->query('q');
         $filter = $request->query('f');
 
-        $dataListQuery = RefUnitOfMeasurement::whereNull('deleted_at');
+        $dataListQuery = RefRequestHierarchies::whereNull('deleted_at');
 
         if (isset($query)) {
             $dataListQuery->where(function($q) use ($query) {

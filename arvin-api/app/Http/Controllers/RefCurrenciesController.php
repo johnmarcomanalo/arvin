@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\RefUnitOfMeasurement;
+use App\Models\RefCurrencies;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;   
+use Illuminate\Support\Facades\Crypt;
 
-class RefUnitOfMeasurementController extends Controller
+class RefCurrenciesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,7 @@ class RefUnitOfMeasurementController extends Controller
     public function index()
     {
         $data = array();
-        $data = RefUnitOfMeasurement::whereNull('deleted_at')->get();
+        $data = RefCurrencies::whereNull('deleted_at')->get();
         if(!empty($data)){
           return Crypt::encryptString(json_encode($data));
         }
@@ -36,7 +36,7 @@ class RefUnitOfMeasurementController extends Controller
             'added_by' => 'required',
             'modified_by' => 'required',
         ]);
-        $existingRecord = RefUnitOfMeasurement::where('description', $fields['description'])
+        $existingRecord = RefCurrencies::where('description', $fields['description'])
             ->where('type', $fields['type'])                    
             ->first();
 
@@ -49,7 +49,7 @@ class RefUnitOfMeasurementController extends Controller
             ], 409);
         } else {
                 $fields['code'] = $this->generate_code();
-                RefUnitOfMeasurement::create($fields);
+                RefCurrencies::create($fields);
                 return response([
                         'result' => true,
                         'status' => 'success',
@@ -62,10 +62,10 @@ class RefUnitOfMeasurementController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\RefUnitOfMeasurement  $RefUnitOfMeasurement
+     * @param  \App\Models\RefCurrencies  $refCurrencies
      * @return \Illuminate\Http\Response
      */
-    public function show(RefUnitOfMeasurement $RefUnitOfMeasurement)
+    public function show(RefCurrencies $refCurrencies)
     {
         //
     }
@@ -74,18 +74,18 @@ class RefUnitOfMeasurementController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\RefUnitOfMeasurement  $RefUnitOfMeasurement
+     * @param  \App\Models\RefCurrencies  $refCurrencies
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $fields = $request->validate([
+         $fields = $request->validate([
             'modified_by' => 'required',
             'code' => 'required',
             'description' => 'required',
             'type' => 'required',
         ]);
-        $data = RefUnitOfMeasurement::where('code','=',$id)->first();
+        $data = RefCurrencies::where('code','=',$id)->first();
         if(empty($data)){
             $response = [
                 'result' => false,
@@ -113,10 +113,10 @@ class RefUnitOfMeasurementController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\RefUnitOfMeasurement  $RefUnitOfMeasurement
+     * @param  \App\Models\RefCurrencies  $refCurrencies
      * @return \Illuminate\Http\Response
      */
-    public function destroy(RefUnitOfMeasurement $RefUnitOfMeasurement)
+    public function destroy(RefCurrencies $refCurrencies)
     {
         //
     }
@@ -124,21 +124,21 @@ class RefUnitOfMeasurementController extends Controller
     public function generate_code(){
         $code = 1;
         $current_date = date('Y-m-d');
-        $latest_code = RefUnitOfMeasurement::latest('code')->first('code')->code ?? NULL;
+        $latest_code = RefCurrencies::latest('code')->first('code')->code ?? NULL;
         if(!empty($latest_code)){
             $code = $latest_code + 1;
         }
         return $code;
     }
 
-    public function get_ref_unit_of_measurement (Request $request)
+    public function get_ref_currencies (Request $request)
     {
         $page = $request->query('page');
         $limit = $request->query('limit');
         $query = $request->query('q');
         $filter = $request->query('f');
 
-        $dataListQuery = RefUnitOfMeasurement::whereNull('deleted_at');
+        $dataListQuery = RefCurrencies::whereNull('deleted_at');
 
         if (isset($query)) {
             $dataListQuery->where(function($q) use ($query) {

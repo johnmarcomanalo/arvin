@@ -2,7 +2,14 @@ import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import HomeIcon from "@mui/icons-material/Home";
 import SettingsIcon from "@mui/icons-material/Settings";
 import WidgetsIcon from "@mui/icons-material/Widgets";
-import { Card, CardContent, Grid, Stack, Typography } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Grid,
+  Stack,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
@@ -18,8 +25,10 @@ import { Constants } from "../../../../../reducer/Contants";
 import configure from "../../../../configure/configure.json";
 import { postReferenceRequestType } from "../actions/ReferenceActions";
 import RefRequestTypesHooks from "../hooks/RefRequestTypesHooks";
+import Modal from "../../../../../components/modal/Modal";
+import UpdateRefRequestTypes from "./components/UpdateRefRequestTypes";
 const title_page = "Request Types";
-const breadCrumbArray = [
+const breadCrumbArray =   [
   {
     name: "Home",
     href: "/",
@@ -95,9 +104,23 @@ const submit = async (values, dispatch, props) => {
   }
 };
 let IndexRefRequestTypes = (props) => {
+  const matches = useMediaQuery("(min-width:600px)");
   const { ...refRequestTypes } = RefRequestTypesHooks(props);
   return (
     <React.Fragment>
+      <Modal
+        open={refRequestTypes.updateModal}
+        fullScreen={matches ? false : true}
+        title={"Update Request Type"}
+        size={"xs"}
+        action={undefined}
+        handleClose={refRequestTypes.onClickCloseUpdateModal}
+      >
+        <UpdateRefRequestTypes
+          account_details={refRequestTypes.account_details}
+          selected_ref={refRequestTypes.selected_ref}
+        />
+      </Modal>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <BreadCrumbs breadCrumbs={breadCrumbArray} />
@@ -185,7 +208,7 @@ let IndexRefRequestTypes = (props) => {
             id={"home_attendance"}
             localStorage={""}
             rowCount={refRequestTypes.dataListCount}
-            actionShow={false}
+            actionshow={true}
             paginationShow={false}
             action={(row) => {
               return null;

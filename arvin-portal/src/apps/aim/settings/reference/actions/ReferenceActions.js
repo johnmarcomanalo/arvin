@@ -8,6 +8,7 @@ import { decryptaes, encryptaes } from "../../../../../utils/LightSecurity";
 import {
   GetSpecificDefaultServices,
   PostDefaultServices,
+  PutDefaultServices,
 } from "../../../../../services/apiService";
 export const getRefCompanies = () => async (dispatch) => {
   try {
@@ -667,4 +668,480 @@ export const getAllRefRequestTypes = () => async (dispatch) => {
   } catch (error) {
     console.log(error);
   }
+};
+
+export const putRefRequestTypes = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PutDefaultServices(
+      "api/reference/ref_request_types/",
+      formValues.code,
+      formValues
+    );
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+    return res;
+  } catch (error) {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
+export const getReferenceUnitOfMeasurements = (values) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = GetSpecificDefaultServices(
+      "api/reference/get_ref_unit_of_measurement?page=" +
+        values.p +
+        "&limit=" +
+        values.l +
+        "&q=" +
+        values.q +
+        "&f=" +
+        values.f
+    );
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      let decrypted = decryptaes(res.data);
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          dataList: decrypted.dataList.data,
+          dataListCount: decrypted.dataList.total,
+        },
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const postReferenceUnitOfMeasurements =
+  (formValues) => async (dispatch) => {
+    try {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: true,
+        },
+      });
+      const res = await PostDefaultServices(
+        "api/reference/ref_unit_of_measurement",
+        formValues
+      );
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      return res;
+    } catch (error) {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+    }
+  };
+
+export const getAllRefUnitOfMeasurements = () => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = AuthGetReferences("api/reference/ref_unit_of_measurement");
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          unit_of_measurements: decryptaes(res.data),
+        },
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const putRefUnitOfMeasurements = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PutDefaultServices(
+      "api/reference/ref_unit_of_measurement/",
+      formValues.code,
+      formValues
+    );
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+    return res;
+  } catch (error) {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
+export const getReferenceCurrencies = (values) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = GetSpecificDefaultServices(
+      "api/reference/get_ref_currencies?page=" +
+        values.p +
+        "&limit=" +
+        values.l +
+        "&q=" +
+        values.q +
+        "&f=" +
+        values.f
+    );
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      let decrypted = decryptaes(res.data);
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          dataList: decrypted.dataList.data,
+          dataListCount: decrypted.dataList.total,
+        },
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const postReferenceCurrencies = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PostDefaultServices(
+      "api/reference/ref_currencies",
+      formValues
+    );
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+    return res;
+  } catch (error) {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
+export const getAllRefCurrencies = () => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = AuthGetReferences("api/reference/ref_currencies");
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          currencies: decryptaes(res.data),
+        },
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const putRefCurrencies = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PutDefaultServices(
+      "api/reference/ref_currencies/",
+      formValues.code,
+      formValues
+    );
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+    return res;
+  } catch (error) {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
+export const getReferenceValueAddedTax = (values) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = GetSpecificDefaultServices(
+      "api/reference/get_ref_value_added_tax?page=" +
+        values.p +
+        "&limit=" +
+        values.l +
+        "&q=" +
+        values.q +
+        "&f=" +
+        values.f
+    );
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      let decrypted = decryptaes(res.data);
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          dataList: decrypted.dataList.data,
+          dataListCount: decrypted.dataList.total,
+        },
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const postReferenceValueAddedTax = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PostDefaultServices(
+      "api/reference/ref_value_added_tax",
+      formValues
+    );
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+    return res;
+  } catch (error) {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
+export const getAllRefValueAddedTax = () => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = AuthGetReferences("api/reference/ref_value_added_tax");
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          value_added_tax: decryptaes(res.data),
+        },
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getReferenceRequestHierarchy = (values) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = GetSpecificDefaultServices(
+      "api/reference/get_ref_request_hierarchy?page=" +
+        values.p +
+        "&limit=" +
+        values.l +
+        "&q=" +
+        values.q +
+        "&f=" +
+        values.f
+    );
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      let decrypted = decryptaes(res.data);
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          dataList: decrypted.dataList.data,
+          dataListCount: decrypted.dataList.total,
+        },
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const postReferenceRequestHierarchy =
+  (formValues) => async (dispatch) => {
+    try {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: true,
+        },
+      });
+      const res = await PostDefaultServices(
+        "api/reference/ref_request_hierarchy",
+        formValues
+      );
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      return res;
+    } catch (error) {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+    }
+  };
+
+  export const getAllRefRequestHierarchy = () => async (dispatch) => {
+    try {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: true,
+        },
+      });
+      const response = AuthGetReferences("api/reference/ref_request_hierarchy");
+      response.then((res) => {
+        dispatch({
+          type: Constants.ACTION_LOADING,
+          payload: {
+            loading: false,
+          },
+        });
+        dispatch({
+          type: Constants.ACTION_REFERENCE,
+          payload: {
+            value_added_tax: decryptaes(res.data),
+          },
+        });
+      });
+    } catch (error) {
+      console.log(error);
+    }
 };

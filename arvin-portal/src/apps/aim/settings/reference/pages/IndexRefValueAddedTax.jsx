@@ -7,7 +7,6 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import swal from "sweetalert";
-import ComboBox from "../../../../../components/autoComplete/AutoComplete";
 import BreadCrumbs from "../../../../../components/breadCrumb/BreadCrumbs";
 import ButtonComponent from "../../../../../components/button/Button";
 import InputField from "../../../../../components/inputFIeld/InputField";
@@ -17,9 +16,9 @@ import Page from "../../../../../components/pagination/Pagination";
 import Table from "../../../../../components/table/Table";
 import { Constants } from "../../../../../reducer/Contants";
 import configure from "../../../../configure/configure.json";
-import { postReferenceSubcomponent } from "../actions/ReferenceActions";
-import RefSubcomponentsHooks from "../hooks/RefSubcomponentsHooks";
-const title_page = "Subcomponents";
+import { postReferenceValueAddedTax } from "../actions/ReferenceActions";
+import RefValueAddedTax from "../hooks/RefValueAddedTax";
+const title_page = "Value Added Tax";
 const breadCrumbArray = [
   {
     name: "Home",
@@ -74,10 +73,10 @@ const breadCrumbArray = [
     ),
   },
 ];
-const formName = "RefSubcomponents";
+const formName = "RefValueAddedTax";
 const submit = async (values, dispatch, props) => {
   try {
-    const response = await dispatch(postReferenceSubcomponent(values));
+    const response = await dispatch(postReferenceValueAddedTax(values));
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -90,13 +89,13 @@ const submit = async (values, dispatch, props) => {
         refresh: !props.refresh,
       },
     });
-    swal(response.data.title, response.data.message, response.data.status);
+    swal(response.title, response.message, response.status);
   } catch (error) {
     console.log(error);
   }
 };
-let IndexRefComponents = (props) => {
-  const { ...refsubcomponents } = RefSubcomponentsHooks(props);
+let IndexRefValueAddedTax = (props) => {
+  const { ...refValueAddedTax } = RefValueAddedTax(props);
   return (
     <React.Fragment>
       <Grid container spacing={2}>
@@ -126,56 +125,14 @@ let IndexRefComponents = (props) => {
                   gutterBottom
                   sx={{ color: configure.dark_gray_color, fontSize: 12 }}
                 >
-                  System Parameter for Reference Subcomponents
+                  System Parameter for Reference Value Added Tax
                 </Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={12}>
                     <Field
-                      id="module_description"
-                      name="module_description"
-                      label="Module"
-                      options={refsubcomponents?.modules}
-                      getOptionLabel={(option) =>
-                        option.description ? option.description : ""
-                      }
-                      required={true}
-                      component={ComboBox}
-                      onChangeHandle={(e, newValue) => {
-                        if (newValue?.description) {
-                          props.change("module_code", newValue.code);
-                          refsubcomponents.getComponentsbyModuleID(
-                            newValue.code
-                          );
-                        }
-                      }}
-                    />
-                    <Field
-                      id="component_description"
-                      name="component_description"
-                      label="Component"
-                      options={refsubcomponents?.components}
-                      getOptionLabel={(option) =>
-                        option.description ? option.description : ""
-                      }
-                      required={true}
-                      component={ComboBox}
-                      onChangeHandle={(e, newValue) => {
-                        if (newValue?.description) {
-                          props.change("component_code", newValue.code);
-                        }
-                      }}
-                    />
-                    <Field
                       id="description"
                       name="description"
                       label="Description"
-                      component={InputField}
-                      required={true}
-                    />
-                    <Field
-                      id="link"
-                      name="link"
-                      label="Link"
                       component={InputField}
                       required={true}
                     />
@@ -209,25 +166,25 @@ let IndexRefComponents = (props) => {
             spacing={2}
             sx={{ margin: 1 }}
           >
-            <SearchField onChange={refsubcomponents.onChangeSearch} />
+            <SearchField onChange={refValueAddedTax.onChangeSearch} />
             <Page
-              page={refsubcomponents?.page}
-              limit={refsubcomponents?.dataListCount}
+              page={refValueAddedTax?.page}
+              limit={refValueAddedTax?.dataListCount}
               status={""}
-              onHandleChange={refsubcomponents.handleChangePage}
+              onHandleChange={refValueAddedTax.handleChangePage}
             />
           </Stack>
           <Table
-            columns={refsubcomponents.columns}
-            dataList={refsubcomponents.dataList}
-            page={refsubcomponents.page}
-            rowsPerPage={refsubcomponents.rowsPerPage}
-            handleChangePage={refsubcomponents.handleChangePage}
-            handleChangeRowsPerPage={refsubcomponents.handleChangeRowsPerPage}
-            onSelectItem={refsubcomponents.onSelectItem}
+            columns={refValueAddedTax.columns}
+            dataList={refValueAddedTax.dataList}
+            page={refValueAddedTax.page}
+            rowsPerPage={refValueAddedTax.rowsPerPage}
+            handleChangePage={refValueAddedTax.handleChangePage}
+            handleChangeRowsPerPage={refValueAddedTax.handleChangeRowsPerPage}
+            onSelectItem={refValueAddedTax.onSelectItem}
             id={"home_attendance"}
             localStorage={""}
-            rowCount={refsubcomponents.dataListCount}
+            rowCount={refValueAddedTax.dataListCount}
             actionShow={false}
             paginationShow={false}
             action={(row) => {
@@ -242,7 +199,7 @@ let IndexRefComponents = (props) => {
 const ReduxFormComponent = reduxForm({
   form: formName,
   onSubmit: submit,
-})(IndexRefComponents);
+})(IndexRefValueAddedTax);
 const selector = formValueSelector(formName);
 export default connect((state) => {
   const refresh = state.ReferenceReducer.refresh;

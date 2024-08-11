@@ -21,11 +21,13 @@ class CreateSalesQuotationRequestsTable extends Migration
             $table->string('customer_representative');
             $table->string('customer_address');
             $table->string('customer_type');
+            $table->dateTime('request_date');
             $table->string('quotation_opening_letter');
             $table->string('quotation_closing_letter');
             $table->string('status')->nullable();
-            $table->dateTime('request_date');
             $table->string('requested_by');
+            $table->string('request_hierarchy_code');
+            $table->string('request_hierarchy');
             $table->dateTime('approval_date')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();

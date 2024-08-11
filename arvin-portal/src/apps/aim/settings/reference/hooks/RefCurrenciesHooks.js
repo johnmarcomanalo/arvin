@@ -2,20 +2,25 @@ import { useDispatch, useSelector } from "react-redux";
 import * as React from "react";
 import { cancelRequest } from "../../../../../api/api";
 import { useSearchParams } from "react-router-dom";
-import { getReferenceUnitOfMeasurements } from "../actions/ReferenceActions";
+import {
+  getReferenceCurrencies,
+  getAllRefCurrencies,
+} from "../actions/ReferenceActions";
 import moment from "moment";
 import { Constants } from "../../../../../reducer/Contants";
-const RefUnitOfMeasurementsHooks = (props) => {
+const RefCurrenciesHooks = (props) => {
   const dispatch = useDispatch();
   const account_details = useSelector(
     (state) => state.AuthenticationReducer.account_details
   );
   const refresh = useSelector((state) => state.ReferenceReducer.refresh);
-  const selected_ref = useSelector((state) => state.ReferenceReducer.selected_ref);
+  const selected_ref = useSelector(
+    (state) => state.ReferenceReducer.selected_ref
+  );
   const dataList = useSelector((state) => state.ReferenceReducer.dataList);
   const dataListCount = useSelector(
     (state) => state.ReferenceReducer.dataListCount
-  );;
+  );
   const columns = [
     { id: "code", label: "Code", align: "left" },
     { id: "description", label: "Description", align: "left" },
@@ -80,10 +85,10 @@ const RefUnitOfMeasurementsHooks = (props) => {
       },
     });
   };
-  const getRefUnitOfMeasurements = async () => {
+  const getRefCurrencies = async () => {
     try {
       const data = getListParam();
-      await dispatch(getReferenceUnitOfMeasurements(data));
+      await dispatch(getReferenceCurrencies(data));
     } catch (error) {
       await console.error(error);
     }
@@ -97,10 +102,17 @@ const RefUnitOfMeasurementsHooks = (props) => {
   }, [refresh]);
 
   React.useEffect(() => {
-    getRefUnitOfMeasurements();
+    getRefCurrencies();
     return () => cancelRequest();
   }, [refresh, filterQuery, search, page]);
 
+  const getAllCurrencies = async () => {
+    try {
+      await dispatch(getAllCurrencies());
+    } catch (error) {
+      await console.error(error);
+    }
+  };
   const onClickOpenUpdateModal = () => {
     dispatch({
       type: Constants.ACTION_REFERENCE,
@@ -121,7 +133,7 @@ const RefUnitOfMeasurementsHooks = (props) => {
     dispatch({
       type: Constants.ACTION_REFERENCE,
       payload: {
-        selected_ref:data,
+        selected_ref: data,
         updateModal: true,
       },
     });
@@ -141,10 +153,11 @@ const RefUnitOfMeasurementsHooks = (props) => {
     onChangeFilter,
     handleChangePage,
     handleChangeRowsPerPage,
+    getAllCurrencies,
     onClickOpenUpdateModal,
     onClickCloseUpdateModal,
     onSelectItem,
   };
 };
 
-export default RefUnitOfMeasurementsHooks;
+export default RefCurrenciesHooks;
