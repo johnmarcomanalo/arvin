@@ -3,15 +3,25 @@ import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { cancelRequest } from "../../../../../api/api";
 import { Constants } from "../../../../../reducer/Contants";
-import { getReferenceRequestHierarchy } from "../actions/ReferenceActions";
+import {
+  getAllRefRequestTypes,
+  getReferenceRequestHierarchy,
+  getSpecificReferenceRequestHierarchy,
+} from "../actions/ReferenceActions";
 const RefRequestHierarchyHooks = (props) => {
   const dispatch = useDispatch();
   const account_details = useSelector(
     (state) => state.AuthenticationReducer.account_details
   );
   const refresh = useSelector((state) => state.ReferenceReducer.refresh);
+  const selected_ref = useSelector(
+    (state) => state.ReferenceReducer.selected_ref
+  );
   const request_types = useSelector(
     (state) => state.ReferenceReducer.request_types
+  );
+  const viewSelectedRefModal = useSelector(
+    (state) => state.ReferenceReducer.viewSelectedRefModal
   );
   const dataList = useSelector((state) => state.ReferenceReducer.dataList);
   const dataListCount = useSelector(
@@ -89,6 +99,7 @@ const RefRequestHierarchyHooks = (props) => {
     try {
       let data = getListParam();
       await dispatch(getReferenceRequestHierarchy(data));
+      await dispatch(getAllRefRequestTypes(data));
     } catch (error) {
       await console.error(error);
     }
@@ -191,7 +202,27 @@ const RefRequestHierarchyHooks = (props) => {
     }));
     console.log(updatedHierarchy[state.index_level]);
   };
-
+  const onSelectItem = async (data) => {
+    try {
+      await dispatch(getSpecificReferenceRequestHierarchy(data.code));
+      await dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          viewSelectedRefModal: true,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const onClickCloseRefViewModal = () => {
+    dispatch({
+      type: Constants.ACTION_REFERENCE,
+      payload: {
+        viewSelectedRefModal: false,
+      },
+    });
+  };
   return {
     account_details,
     search,
@@ -203,6 +234,8 @@ const RefRequestHierarchyHooks = (props) => {
     request_types,
     state,
     viewModal,
+    viewSelectedRefModal,
+    selected_ref,
     onChangeSearch,
     getListParam,
     onChangeFilter,
@@ -215,6 +248,8 @@ const RefRequestHierarchyHooks = (props) => {
     onClickCloseViewModal,
     onRemoveApprover,
     onClickRemoveHierarchyLevel,
+    onSelectItem,
+    onClickCloseRefViewModal,
   };
 };
 

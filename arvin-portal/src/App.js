@@ -9,9 +9,7 @@ import PrivateRoute from "./security/PrivateRoute";
 const Loader = lazy(() => import("./components/loading/Loading"));
 const IndexHome = lazy(() => import("./apps/aim/home/pages/Home"));
 const Navigation = lazy(() => import("./apps/navigation/pages/Navigation"));
-const CostingItemList = lazy(() =>
-  import("./apps/aim/costing/itemList/pages/indexItemList")
-);
+
 const IndexSalesQouta = lazy(() =>
   import("./apps/aim/sales/salesQuota/pages/IndexSalesQuota")
 );
@@ -84,6 +82,15 @@ const IndexRefValueAddedTax = lazy(() =>
 const IndexRefRequestHierarchy = lazy(() =>
   import("./apps/aim/settings/reference/pages/IndexRefRequestHierarchy")
 );
+const IndexEmployeeMasterList = lazy(() =>
+  import("./apps/aim/humanresource/employeeList/pages/IndexEmployeeMasterList")
+);
+
+const IndexRequestRights = lazy(() =>
+  import(
+    "./apps/aim/settings/accessrights/requestrights/pages/IndexRequestRights"
+  )
+);
 const theme = createTheme({
   typography: {
     fontFamily: "Poppins, sans-serif",
@@ -147,6 +154,7 @@ function App() {
                   }
                 >
                   <Route path="/" element={<IndexHome />} />
+                  {/* SALES START */}
                   <Route
                     path="/Modules/Sales/Configuration/SalesQouta"
                     element={
@@ -232,6 +240,55 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+                  {/* SALES END */}
+                  {/* QUOTATION START */}
+                  <Route
+                    path="/Modules/Quotation/MyQuotationList"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Quotation",
+                          component: "My Quotation List",
+                          subComponent: null,
+                        })}
+                      >
+                        <IndexMyQuotationList />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/Quotation/Request/RequestQuotation"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Quotation",
+                          component: "Request",
+                          subComponent: "Request Quotation",
+                        })}
+                      >
+                        <IndexRequestQuotation />
+                      </PrivateRoute>
+                    }
+                  />
+                  {/* QUOTATION END */}
+                  {/* HUMAN RESOURCE START */}
+                  <Route
+                    path="/Modules/HumanResource/EmployeeMasterList"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Human Resource",
+                          component: "Employee Master List",
+                          subComponent: null,
+                        })}
+                      >
+                        <IndexEmployeeMasterList />
+                      </PrivateRoute>
+                    }
+                  />
+                  {/* HUMAN RESOURCE END */}
+                  {/* SYSTEM SETTINGS START */}
+                  {/* ACCESS RIGHTS START */}
                   <Route
                     path="/Modules/SystemSettings/AccessRights/OrganizationRights"
                     element={
@@ -260,6 +317,37 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+                  <Route
+                    path="/Modules/SystemSettings/AccessRights/CustomerRights"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Settings",
+                          component: "Access Rights",
+                          subComponent: "Customer Rights",
+                        })}
+                      >
+                        <IndexCustomerRights />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/SystemSettings/AccessRights/RequestRights"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Settings",
+                          component: "Access Rights",
+                          subComponent: "Request Rights",
+                        })}
+                      >
+                        <IndexRequestRights />
+                      </PrivateRoute>
+                    }
+                  />
+
+                  {/* ACCESS RIGHTS END */}
+                  {/* REFENRECE START */}
                   <Route
                     path="/Modules/SystemSettings/References/Modules"
                     element={
@@ -299,48 +387,6 @@ function App() {
                         })}
                       >
                         <IndexRefSubcomponents />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    path="/Modules/SystemSettings/AccessRights/CustomerRights"
-                    element={
-                      <PrivateRoute
-                        accessChecker={getAccessChecker({
-                          module: "Settings",
-                          component: "Access Rights",
-                          subComponent: "Customer Rights",
-                        })}
-                      >
-                        <IndexCustomerRights />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    path="/Modules/Quotation/MyQuotationList"
-                    element={
-                      <PrivateRoute
-                        accessChecker={getAccessChecker({
-                          module: "Quotation",
-                          component: "My Quotation List",
-                          subComponent: null,
-                        })}
-                      >
-                        <IndexMyQuotationList />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    path="/Modules/Quotation/Request/RequestQuotation"
-                    element={
-                      <PrivateRoute
-                        accessChecker={getAccessChecker({
-                          module: "Quotation",
-                          component: "Request",
-                          subComponent: "Request Quotation",
-                        })}
-                      >
-                        <IndexRequestQuotation />
                       </PrivateRoute>
                     }
                   />
@@ -414,11 +460,14 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+                  {/* REFENRECE END */}
+                  {/* SYSTEM SETTINGS END */}
                 </Route>
               )}
 
-            <Route element={<NoMatch />} path="*" />
-            <Route element={<NoAccess />} path="/invalid-access" />
+            {/* SYSTEM SETTINGS START */}
+
+            {/* ACCOUTN SETTINGS START */}
             <Route
               path="/Modules/SystemSettings/AccountSettings/ResetPassword"
               element={
@@ -433,6 +482,12 @@ function App() {
                 </PrivateRoute>
               }
             />
+            {/* ACCOUTN SETTINGS END */}
+
+            {/* SYSTEM SETTINGS END */}
+
+            <Route element={<NoMatch />} path="*" />
+            <Route element={<NoAccess />} path="/invalid-access" />
           </Routes>
         </Suspense>
       </ThemeProvider>

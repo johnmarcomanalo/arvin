@@ -16,6 +16,8 @@ const initialState = {
   search_reference_employee_page_access: [],
   reference_customer_page_access: [],
   search_reference_customer_page_access: [],
+  reference_request_type_page_access: [],
+  search_reference_request_type_page_access: [],
   modules: [],
   components: [],
   sub_components: [],
@@ -28,7 +30,9 @@ const initialState = {
   currencies: [],
   value_added_tax: [],
   updateModal: false,
-  selected_ref: []
+  selected_ref: [],
+  viewSelectedRefModal: false,
+  request_hierarchies: [],
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -86,6 +90,26 @@ const dataReducer = (state = initialState, action) => {
         search_reference_employee_page_access: search_page,
       };
 
+    case "search_reference_request_type_page_access":
+      let search_request_type = state.reference_request_type_page_access.filter(
+        (files) => {
+          return (
+            files.module_description
+              .toLowerCase()
+              .indexOf(action.data.toLocaleLowerCase()) !== -1 ||
+            files.component_description
+              .toLowerCase()
+              .indexOf(action.data.toLocaleLowerCase()) !== -1 ||
+            files.sub_component_description
+              .toLowerCase()
+              .indexOf(action.data.toLocaleLowerCase()) !== -1
+          );
+        }
+      );
+      return {
+        ...state,
+        search_reference_request_type_page_access: search_request_type,
+      };
     default:
       return state;
   }

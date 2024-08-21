@@ -34,6 +34,7 @@ import configure from "../../../../configure/configure.json";
 import EmployeeList from "../../../humanresource/employeeList/pages/components/EmployeeList";
 import { postReferenceRequestHierarchy } from "../actions/ReferenceActions";
 import RefRequestHierarchyHooks from "../hooks/RefRequestHierarchyHooks";
+import ViewRefRequestHierarchy from "./components/ViewRefRequestHierarchy";
 const title_page = "Request Hierarchy";
 const breadCrumbArray = [
   {
@@ -126,7 +127,17 @@ let IndexRefRequestHierarchy = (props) => {
         action={undefined}
         handleClose={refRequestHierarchy.onClickCloseViewModal}
       >
-        <EmployeeList onSelectApprover={refRequestHierarchy.onSelectApprover} />
+        <EmployeeList onClickSelect={refRequestHierarchy.onSelectApprover} />
+      </Modal>
+      <Modal
+        open={refRequestHierarchy.viewSelectedRefModal}
+        fullScreen={matches ? false : true}
+        title={"Hierarchy"}
+        size={"sm"}
+        action={undefined}
+        handleClose={refRequestHierarchy.onClickCloseRefViewModal}
+      >
+        <ViewRefRequestHierarchy />
       </Modal>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -342,7 +353,8 @@ let IndexRefRequestHierarchy = (props) => {
             id={"home_attendance"}
             localStorage={""}
             rowCount={refRequestHierarchy.dataListCount}
-            actionShow={false}
+            actionshow={true}
+            subAction1Show={true}
             paginationShow={false}
             action={(row) => {
               return null;

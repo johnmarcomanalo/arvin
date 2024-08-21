@@ -46,3 +46,44 @@ export const getEmployeeList = (values) => async (dispatch) => {
     console.log(error);
   }
 };
+
+export const getUserEmployeeList = (values) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = GetSpecificDefaultServices(
+      "api/humanresource/employee_list?page=" +
+        values.p +
+        "&limit=" +
+        values.l +
+        "&q=" +
+        values.q +
+        "&f=" +
+        values.f +
+        "&uid=" +
+        values.u
+    );
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      let decrypted = decryptaes(res.data);
+      dispatch({
+        type: Constants.ACTION_HUMAN_RESOURCE,
+        payload: {
+          dataList: decrypted.dataList.data,
+          dataListCount: decrypted.dataList.total,
+        },
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};

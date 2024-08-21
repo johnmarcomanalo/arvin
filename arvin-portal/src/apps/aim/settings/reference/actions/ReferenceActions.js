@@ -658,10 +658,12 @@ export const getAllRefRequestTypes = () => async (dispatch) => {
           loading: false,
         },
       });
+      let decrypted = decryptaes(res.data);
+      console.log(decrypted);
       dispatch({
         type: Constants.ACTION_REFERENCE,
         payload: {
-          request_types: decryptaes(res.data),
+          request_types: decrypted,
         },
       });
     });
@@ -1118,7 +1120,36 @@ export const postReferenceRequestHierarchy =
     }
   };
 
-  export const getAllRefRequestHierarchy = () => async (dispatch) => {
+export const getAllRefRequestHierarchy = () => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = AuthGetReferences("api/reference/ref_request_hierarchy");
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          value_added_tax: decryptaes(res.data),
+        },
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getSpecificReferenceRequestHierarchy =
+  (id) => async (dispatch) => {
     try {
       await dispatch({
         type: Constants.ACTION_LOADING,
@@ -1126,7 +1157,11 @@ export const postReferenceRequestHierarchy =
           loading: true,
         },
       });
-      const response = AuthGetReferences("api/reference/ref_request_hierarchy");
+      const response = GetSpecificDefaultServices(
+        "api/reference/get_specific_ref_request_hierarchy/",
+        id
+      );
+
       response.then((res) => {
         dispatch({
           type: Constants.ACTION_LOADING,
@@ -1134,14 +1169,50 @@ export const postReferenceRequestHierarchy =
             loading: false,
           },
         });
+        let decrypted = decryptaes(res.data);
+        console.log();
         dispatch({
           type: Constants.ACTION_REFERENCE,
           payload: {
-            value_added_tax: decryptaes(res.data),
+            selected_ref: decrypted,
           },
         });
       });
     } catch (error) {
       console.log(error);
     }
-};
+  };
+
+export const getReferenceRequestHierarchyByRequestType =
+  (id) => async (dispatch) => {
+    try {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: true,
+        },
+      });
+      const response = AuthGetReferencesChild(
+        "api/reference/ref_request_hierarchy",
+        id
+      );
+      response.then((res) => {
+        dispatch({
+          type: Constants.ACTION_LOADING,
+          payload: {
+            loading: false,
+          },
+        });
+        let decrypted = decryptaes(res.data);
+        console.log(decrypted);
+        dispatch({
+          type: Constants.ACTION_REFERENCE,
+          payload: {
+            request_hierarchies: decrypted,
+          },
+        });
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };

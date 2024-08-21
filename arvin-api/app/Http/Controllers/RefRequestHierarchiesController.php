@@ -68,9 +68,20 @@ class RefRequestHierarchiesController extends Controller
      * @param  \App\Models\RefRequestHierarchies  $refRequestHierarchies
      * @return \Illuminate\Http\Response
      */
-    public function show(RefRequestHierarchies $refRequestHierarchies)
+    public function show($id)
     {
-        //
+        $data = RefRequestHierarchies::join('ref_request_types', 'ref_request_hierarchies.request_type_code', '=', 'ref_request_types.code')
+        ->where('ref_request_hierarchies.request_type_code', $id)
+        ->whereNull('ref_request_hierarchies.deleted_at')
+        ->get(['ref_request_hierarchies.*', 'ref_request_types.description as ref_request_types_description']);
+
+        if (is_null($data)) {
+            $data = [];
+        } else {
+            $data = $data->toArray(); // Convert to array if not null
+        }
+
+        return Crypt::encryptString(json_encode($data));
     }
 
     /**
@@ -132,4 +143,19 @@ class RefRequestHierarchiesController extends Controller
         ];
         return Crypt::encryptString(json_encode($response));
     }
+
+    public function get_specific_ref_request_hierarchy ($id)
+    {
+        $data = RefRequestHierarchies::join('ref_request_types', 'ref_request_hierarchies.request_type_code', '=', 'ref_request_types.code')
+        ->where('ref_request_hierarchies.code', $id)
+        ->first(['ref_request_hierarchies.*', 'ref_request_types.description as ref_request_types_description']);
+
+        if (is_null($data)) {
+            $data = [];
+        } else {
+            $data = $data->toArray(); // Convert to array if not null
+        }
+
+        return Crypt::encryptString(json_encode($data));
+    } 
 }

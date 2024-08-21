@@ -15,6 +15,7 @@ import LaunchIcon from "@mui/icons-material/Launch";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import NavigationHooks from "../../apps/navigation/hooks/NavigationHooks";
 import DownloadIcon from "@mui/icons-material/Download";
+import UploadIcon from "@mui/icons-material/Upload";
 const ButtonComponent = (props) => {
   const { ...navigationHooks } = NavigationHooks(props);
   const { ...params } = props;
@@ -77,6 +78,14 @@ const ButtonComponent = (props) => {
       break;
     case "export":
       icon = <DownloadIcon />;
+      if (active_page.export == 0) {
+        dsbl = true;
+      } else {
+        dsbl = false;
+      }
+      break;
+    case "import":
+      icon = <UploadIcon />;
       if (active_page.export == 0) {
         dsbl = true;
       } else {

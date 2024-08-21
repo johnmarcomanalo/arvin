@@ -45,7 +45,7 @@ let EmployeeList = (props) => {
             rowsPerPage={employeeList.rowsPerPage}
             handleChangePage={employeeList.handleChangePage}
             handleChangeRowsPerPage={employeeList.handleChangeRowsPerPage}
-            onSelectItem={props.onSelectApprover}
+            onSelectItem={props.onClickSelect}
             id={"home_attendance"}
             localStorage={""}
             rowCount={employeeList.searchdataListCount}
