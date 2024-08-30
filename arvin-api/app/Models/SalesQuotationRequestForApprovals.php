@@ -5,13 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SalesQuotationRequest extends Model
+class SalesQuotationRequestForApprovals extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
-   
-    protected $casts = [
-        'request_date' => 'datetime:M d, Y',
-    ];
-
 }

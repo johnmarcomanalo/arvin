@@ -16,6 +16,8 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import NavigationHooks from "../../apps/navigation/hooks/NavigationHooks";
 import DownloadIcon from "@mui/icons-material/Download";
 import UploadIcon from "@mui/icons-material/Upload";
+import DoneIcon from "@mui/icons-material/Done";
+import DoNotDisturbAltIcon from "@mui/icons-material/DoNotDisturbAlt";
 const ButtonComponent = (props) => {
   const { ...navigationHooks } = NavigationHooks(props);
   const { ...params } = props;
@@ -94,6 +96,23 @@ const ButtonComponent = (props) => {
       break;
     case "remove":
       icon = <DeleteIcon />;
+      break;
+    case "approve":
+      icon = <DoneIcon />;
+      if (active_page.update == 0) {
+        dsbl = true;
+      } else {
+        dsbl = false;
+      }
+      break;
+    case "deny":
+      icon = <DoNotDisturbAltIcon />;
+      if (active_page.update == 0) {
+        dsbl = true;
+      } else {
+        dsbl = false;
+      }
+      break;
     default:
       icon = <HelpIcon />;
       break;

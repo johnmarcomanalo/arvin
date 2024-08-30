@@ -61,12 +61,19 @@ const IndexCustomerRights = lazy(() =>
     "./apps/aim/settings/accessrights/customerrights/pages/IndexCustomerRights"
   )
 );
+
 const IndexMyQuotationList = lazy(() =>
   import("./apps/aim/quotation/myquotationList/pages/IndexMyQuotationList")
 );
 const IndexRequestQuotation = lazy(() =>
   import("./apps/aim/quotation/requestquotation/pages/IndexRequestQuotation")
 );
+const IndexForApprovalQuotation = lazy(() =>
+  import(
+    "./apps/aim/quotation/forapprovalquotation/pages/IndexForApprovalQuotation"
+  )
+);
+
 const IndexRefRequestTypes = lazy(() =>
   import("./apps/aim/settings/reference/pages/IndexRefRequestTypes")
 );
@@ -91,6 +98,7 @@ const IndexRequestRights = lazy(() =>
     "./apps/aim/settings/accessrights/requestrights/pages/IndexRequestRights"
   )
 );
+
 const theme = createTheme({
   typography: {
     fontFamily: "Poppins, sans-serif",
@@ -270,6 +278,21 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+                  <Route
+                    path="/Modules/Quotation/Request/ForApprovalQuotation"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Quotation",
+                          component: "Request",
+                          subComponent: "For Approval Quotation",
+                        })}
+                      >
+                        <IndexForApprovalQuotation />
+                      </PrivateRoute>
+                    }
+                  />
+
                   {/* QUOTATION END */}
                   {/* HUMAN RESOURCE START */}
                   <Route
@@ -345,7 +368,6 @@ function App() {
                       </PrivateRoute>
                     }
                   />
-
                   {/* ACCESS RIGHTS END */}
                   {/* REFENRECE START */}
                   <Route

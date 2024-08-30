@@ -26,8 +26,12 @@ class CreateSalesQuotationRequestsTable extends Migration
             $table->string('quotation_closing_letter');
             $table->string('status')->nullable();
             $table->string('requested_by');
+            $table->string('currency_description');
+            $table->string('currency_type');
+            $table->string('term');
             $table->string('request_hierarchy_code');
-            $table->string('request_hierarchy');
+            $table->longtext('request_hierarchy');
+            $table->longtext('request_hierarchy_level');
             $table->dateTime('approval_date')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();

@@ -35,7 +35,7 @@ const RefRequestHierarchyHooks = (props) => {
   const [state, setState] = React.useState({
     debounceTimer: null,
     debounceDelay: 2000,
-    hierarchy: [{ approver: [] }],
+    hierarchy: [{ index: 1, approver: [], status: "Pending" }],
     index_level: null,
   });
   const [searchParams, setSearchParams] = useSearchParams();
@@ -99,7 +99,7 @@ const RefRequestHierarchyHooks = (props) => {
     try {
       let data = getListParam();
       await dispatch(getReferenceRequestHierarchy(data));
-      await dispatch(getAllRefRequestTypes(data));
+      await dispatch(getAllRefRequestTypes());
     } catch (error) {
       await console.error(error);
     }
@@ -133,6 +133,7 @@ const RefRequestHierarchyHooks = (props) => {
     let level = {
       index: state.hierarchy.length + 1,
       approver: [],
+      status: "Pending",
     };
     state.hierarchy.push(level);
     setState((prev) => ({
@@ -182,7 +183,6 @@ const RefRequestHierarchyHooks = (props) => {
       ...prevState,
       hierarchy: updatedHierarchy,
     }));
-    console.log(updatedHierarchy[state.index_level]);
   };
 
   const onRemoveApprover = (data) => {
@@ -200,7 +200,6 @@ const RefRequestHierarchyHooks = (props) => {
       ...prevState,
       hierarchy: updatedHierarchy,
     }));
-    console.log(updatedHierarchy[state.index_level]);
   };
   const onSelectItem = async (data) => {
     try {

@@ -659,7 +659,6 @@ export const getAllRefRequestTypes = () => async (dispatch) => {
         },
       });
       let decrypted = decryptaes(res.data);
-      console.log(decrypted);
       dispatch({
         type: Constants.ACTION_REFERENCE,
         payload: {
@@ -1170,7 +1169,6 @@ export const getSpecificReferenceRequestHierarchy =
           },
         });
         let decrypted = decryptaes(res.data);
-        console.log();
         dispatch({
           type: Constants.ACTION_REFERENCE,
           payload: {
@@ -1204,7 +1202,6 @@ export const getReferenceRequestHierarchyByRequestType =
           },
         });
         let decrypted = decryptaes(res.data);
-        console.log(decrypted);
         dispatch({
           type: Constants.ACTION_REFERENCE,
           payload: {

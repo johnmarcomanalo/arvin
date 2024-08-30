@@ -33,6 +33,8 @@ use App\Http\Controllers\SalesDailyOutAnnualSalesRankingController;
 use App\Http\Controllers\SalesDailyOutAnnualSalesRankingDetailsController;
 use App\Http\Controllers\SalesDailyOutReportSalesSummaryController;
 
+use App\Http\Controllers\SalesQuotationRequestController;
+use App\Http\Controllers\SalesQuotationRequestForApprovalsController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -135,6 +137,11 @@ use Illuminate\Support\Facades\Route;
     //MODULE SALES DAILY OUT END 
 
     // QUOTATION START
+    Route::apiResource('quotation/request',SalesQuotationRequestController::class)->middleware(['light_decryption']);
+    Route::get('quotation/for_approval_quotation/get_request_for_approval',[SalesQuotationRequestForApprovalsController::class,'get_request_for_approval']);
+    Route::apiResource('quotation/for_approval_quotation',SalesQuotationRequestForApprovalsController::class)->middleware(['light_decryption']);
+
+    
     // QUOTATION END
 
     // HUMAN RESOURCE START

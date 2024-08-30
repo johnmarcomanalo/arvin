@@ -61,6 +61,14 @@ const RequestHooks = (props) => {
         status: 0,
       },
     ],
+    term: [
+      {
+        description: "Short Term",
+      },
+      {
+        description: "Long Term",
+      },
+    ],
   });
   const columns = [
     { id: "code", label: "Code", align: "left" },
@@ -282,6 +290,11 @@ const RequestHooks = (props) => {
     dispatch(getAllRefCurrencies());
     dispatch(getAllRefUnitOfMeasurements());
     dispatch(getAllRefValueAddedTax());
+    props.initialize({
+      added_by: account_details?.code,
+      modified_by: account_details?.code,
+      request_type: "Sales Quotation",
+    });
     return () => cancelRequest();
   }, []);
 
