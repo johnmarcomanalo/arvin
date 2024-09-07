@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\RefSalutations;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;   
 
 class RefSalutationsController extends Controller
 {
@@ -14,7 +15,11 @@ class RefSalutationsController extends Controller
      */
     public function index()
     {
-        //
+        $data = array();
+        $data = RefSalutations::whereNull('deleted_at')->get();
+        if(!empty($data)){
+          return Crypt::encryptString(json_encode($data));
+        }
     }
 
     /**
@@ -25,7 +30,31 @@ class RefSalutationsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $fields = $request->validate([
+            'description' => 'required',
+            'added_by' => 'required',
+            'modified_by' => 'required',
+        ]);
+        $existingRecord = RefSalutations::where('description', $fields['description'])
+            ->first();
+
+        if ($existingRecord) {
+            return response([
+                'result' => true,
+                'status' => 'error',
+                'title' => 'Error',
+                'message' => 'Salutation already exists.'
+            ], 409);
+        } else {
+            $fields['code'] = $this->generate_code();
+            RefSalutations::create($fields);
+            return response([
+                    'result' => true,
+                    'status' => 'success',
+                    'title' => 'Success',
+                    'message' => 'Salutation added successfully.'
+            ], 201);
+        }
     }
 
     /**
@@ -46,9 +75,35 @@ class RefSalutationsController extends Controller
      * @param  \App\Models\RefSalutations  $refSalutations
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, RefSalutations $refSalutations)
+    public function update(Request $request, $id)
     {
-        //
+        $fields = $request->validate([
+            'modified_by' => 'required',
+            'code' => 'required',
+            'description' => 'required',
+        ]);
+        $data = RefSalutations::where('code','=',$id)->first();
+        if(empty($data)){
+            $response = [
+                'result' => false,
+                'icon' => 'error',
+                'message' => 'No data found!',
+            ];
+            return response($response, 404);
+        }
+
+        $data->update([
+            'modified_by' => $fields['modified_by'],
+            'description' => $fields['description'],
+        ]);
+        $response = [
+            'message' => '',
+            'result' => true,
+            'icon' => 'success',
+            'title' => 'Successfully Updated!',
+        ];
+
+        return response($response, 200);
     }
 
     /**
@@ -60,5 +115,41 @@ class RefSalutationsController extends Controller
     public function destroy(RefSalutations $refSalutations)
     {
         //
+    }
+
+    public function generate_code(){
+        $code = 1;
+        $current_date = date('Y-m-d');
+        $latest_code = RefSalutations::latest('code')->first('code')->code ?? NULL;
+        if(!empty($latest_code)){
+            $code = $latest_code + 1;
+        }
+        return $code;
+    }
+
+    public function get_ref_salutations (Request $request)
+    {
+        $page = $request->query('page');
+        $limit = $request->query('limit');
+        $query = $request->query('q');
+        $filter = $request->query('f');
+
+        $dataListQuery = RefSalutations::whereNull('deleted_at');
+
+        if (isset($query)) {
+            $dataListQuery->where(function($q) use ($query) {
+                $q->where('description', 'like', '%' . $query . '%');
+            });
+        }
+
+        $data_list = $dataListQuery->paginate($limit, ['*'], 'page', $page);
+        $response = [
+                "dataList"=>$data_list,
+                'result'=>True,
+                'title'=>'Success',
+                'status'=>'success',
+                'message'=> '',
+        ];
+        return Crypt::encryptString(json_encode($response));
     }
 }

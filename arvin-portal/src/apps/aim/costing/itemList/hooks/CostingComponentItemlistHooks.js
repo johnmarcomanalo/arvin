@@ -28,7 +28,7 @@ const HomeComponentAttendanceHooks = (props) => {
   const handleChangePage = (event, newPage) => {
     dispatch({
       type: HomeConstants.ACTION_HOME,
-      data: {
+      payload: {
         page: newPage,
       },
     });
@@ -36,7 +36,7 @@ const HomeComponentAttendanceHooks = (props) => {
   const handleChangeRowsPerPage = (event) => {
     dispatch({
       type: HomeConstants.ACTION_HOME,
-      data: {
+      payload: {
         rowsPerPage: event.target.value,
       },
     });

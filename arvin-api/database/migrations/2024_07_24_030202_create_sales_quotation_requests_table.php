@@ -19,6 +19,8 @@ class CreateSalesQuotationRequestsTable extends Migration
             $table->string('customer_code'); 
             $table->string('customer_description');
             $table->string('customer_representative');
+            $table->string('representative_nickname');
+            $table->string('representative_salutation');
             $table->string('customer_address');
             $table->string('customer_type');
             $table->dateTime('request_date');

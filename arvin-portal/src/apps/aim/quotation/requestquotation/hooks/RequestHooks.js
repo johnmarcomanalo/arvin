@@ -10,6 +10,7 @@ import { decryptaes } from "../../../../../utils/LightSecurity";
 import configure from "../../../../configure/configure.json";
 import {
   getAllRefCurrencies,
+  getAllRefSalutations,
   getAllRefUnitOfMeasurements,
   getAllRefValueAddedTax,
   getEmployeeCustomerAccessDetails,
@@ -69,6 +70,15 @@ const RequestHooks = (props) => {
         description: "Long Term",
       },
     ],
+    signatories: [],
+    signatory_type: [
+      {
+        description: "Approved By:",
+      },
+      {
+        description: "Noted By:",
+      },
+    ],
   });
   const columns = [
     { id: "code", label: "Code", align: "left" },
@@ -91,6 +101,9 @@ const RequestHooks = (props) => {
 
   const dispatch = useDispatch();
   const viewModal = useSelector((state) => state.QuotationReducer.viewModal);
+  const viewEmployeeModal = useSelector(
+    (state) => state.HumanResourceReducer.viewModal
+  );
   const updateModal = useSelector(
     (state) => state.QuotationReducer.updateModal
   );
@@ -115,6 +128,9 @@ const RequestHooks = (props) => {
   );
   const access = useSelector((state) => state.AuthenticationReducer.access);
   const currencies = useSelector((state) => state.ReferenceReducer.currencies);
+  const salutations = useSelector(
+    (state) => state.ReferenceReducer.salutations
+  );
   const unit_of_measurements = useSelector(
     (state) => state.ReferenceReducer.unit_of_measurements
   );
@@ -216,6 +232,14 @@ const RequestHooks = (props) => {
           customer_details?.CntctPrsn
         )
       );
+      props.dispatch(
+        change(
+          "RequestQuotation",
+          "representative_nickname",
+          customer_details?.CntctPrsn?.split(" ")[1] ??
+            customer_details?.CntctPrsn
+        )
+      );
     } catch (error) {
       console.error(error);
     }
@@ -290,6 +314,7 @@ const RequestHooks = (props) => {
     dispatch(getAllRefCurrencies());
     dispatch(getAllRefUnitOfMeasurements());
     dispatch(getAllRefValueAddedTax());
+    dispatch(getAllRefSalutations());
     props.initialize({
       added_by: account_details?.code,
       modified_by: account_details?.code,
@@ -350,6 +375,52 @@ const RequestHooks = (props) => {
       ),
     }));
   };
+  const onClickOpenViewEmployeeModal = () => {
+    dispatch({
+      type: Constants.ACTION_HUMAN_RESOURCE,
+      payload: {
+        viewModal: true,
+      },
+    });
+  };
+  const onClickCloseViewEmployeeModal = () => {
+    dispatch({
+      type: Constants.ACTION_HUMAN_RESOURCE,
+      payload: {
+        viewModal: false,
+      },
+    });
+  };
+  const onSelectSignatory = (data) => {
+    let signatory = {
+      code: data.code,
+      signatory: data.full_name,
+      type: "",
+    };
+    // state.signatories.push(signatory);
+    setState((prevState) => ({
+      ...prevState,
+      signatories: [...prevState.signatories, signatory], // Create a new array
+    }));
+  };
+
+  const onClickRemoveSignatory = () => {
+    state.signatories.splice(state.signatories.length - 1, 1);
+    setState((prev) => ({
+      ...prev,
+    }));
+  };
+  const onSelectSignatoryType = (event, value, index) => {
+    let valu = value.description;
+    let target_name = event.target.id;
+    let name = target_name.split("-")[0];
+    setState((prev) => ({
+      ...prev,
+      signatories: state.signatories.map((val, index2) =>
+        index === index2 ? { ...val, [name]: valu } : val
+      ),
+    }));
+  };
   return {
     state,
     search,
@@ -369,6 +440,8 @@ const RequestHooks = (props) => {
     unit_of_measurements,
     updateModal,
     value_added_tax,
+    salutations,
+    viewEmployeeModal,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,
@@ -388,6 +461,11 @@ const RequestHooks = (props) => {
     onChangeSelectedProduct,
     onSelectUOM,
     onClickRemoveItemProductList,
+    onSelectSignatory,
+    onClickOpenViewEmployeeModal,
+    onClickCloseViewEmployeeModal,
+    onClickRemoveSignatory,
+    onSelectSignatoryType,
   };
 };
 

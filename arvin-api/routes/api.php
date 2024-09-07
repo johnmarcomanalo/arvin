@@ -18,6 +18,7 @@ use App\Http\Controllers\RefUnitOfMeasurementController;
 use App\Http\Controllers\RefCurrenciesController;
 use App\Http\Controllers\RefValueAddedTaxController;
 use App\Http\Controllers\RefRequestHierarchiesController;
+use App\Http\Controllers\RefSalutationsController;
 
 
 use App\Http\Controllers\UsersController;
@@ -38,15 +39,6 @@ use App\Http\Controllers\SalesQuotationRequestForApprovalsController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-
-
-
-
-
-
-
-
 
 
 /*
@@ -104,7 +96,8 @@ use Illuminate\Support\Facades\Route;
     Route::get('reference/get_specific_ref_request_hierarchy/{id}',[RefRequestHierarchiesController::class,'get_specific_ref_request_hierarchy']);
     Route::get('reference/get_request_rights_access_list',[UserAccessRequestRightsController::class,'get_request_rights_access_list']);
     Route::apiResource('reference/system_settings/access_rights/request_rights_access_list',UserAccessRequestRightsController::class)->middleware(['light_decryption']);
-    
+    Route::apiResource('reference/ref_salutations',RefSalutationsController::class)->middleware(['light_decryption']);
+    Route::get('reference/get_ref_salutations',[RefSalutationsController::class,'get_ref_salutations']);
     // REFERENCE END
     
     //MODULE SALES DAILY OUT START
@@ -137,6 +130,7 @@ use Illuminate\Support\Facades\Route;
     //MODULE SALES DAILY OUT END 
 
     // QUOTATION START
+    Route::get('quotation/request/get_request_quotation',[SalesQuotationRequestController::class,'get_request_quotation']);
     Route::apiResource('quotation/request',SalesQuotationRequestController::class)->middleware(['light_decryption']);
     Route::get('quotation/for_approval_quotation/get_request_for_approval',[SalesQuotationRequestForApprovalsController::class,'get_request_for_approval']);
     Route::apiResource('quotation/for_approval_quotation',SalesQuotationRequestForApprovalsController::class)->middleware(['light_decryption']);

@@ -222,6 +222,7 @@ let IndexRefUnitOfMeasurements = (props) => {
             localStorage={""}
             rowCount={refUnitOfMeasurements.dataListCount}
             actionshow={true}
+            paginationShow={false}
             action={(row) => {
               return null;
             }}

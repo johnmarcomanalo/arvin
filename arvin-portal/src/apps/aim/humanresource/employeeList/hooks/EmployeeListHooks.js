@@ -62,7 +62,7 @@ const EmployeeListHooks = (props) => {
   const handleChangePage = (event, newPage) => {
     dispatch({
       type: Constants.ACTION_HOME,
-      data: {
+      payload: {
         page: newPage,
       },
     });
@@ -70,7 +70,7 @@ const EmployeeListHooks = (props) => {
   const handleChangeRowsPerPage = (event) => {
     dispatch({
       type: Constants.ACTION_HOME,
-      data: {
+      payload: {
         rowsPerPage: event.target.value,
       },
     });
@@ -95,7 +95,7 @@ const EmployeeListHooks = (props) => {
   const onClickOpenViewModal = () => {
     dispatch({
       type: Constants.ACTION_HUMAN_RESOURCE,
-      data: {
+      payloads: {
         viewModal: true,
       },
     });
@@ -103,7 +103,7 @@ const EmployeeListHooks = (props) => {
   const onClickCloseViewModal = () => {
     dispatch({
       type: Constants.ACTION_HUMAN_RESOURCE,
-      data: {
+      payloads: {
         viewModal: false,
       },
     });

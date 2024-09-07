@@ -11,6 +11,7 @@ import Tooltip from "@mui/material/Tooltip";
 import PropTypes from "prop-types"; // ES6
 import React from "react";
 import configure from "../../apps/configure/configure.json";
+import { Stack } from "@mui/material";
 const Tables = (props) => {
   const {
     columns,
@@ -98,18 +99,27 @@ const Tables = (props) => {
                   <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
                     {actionshow ? (
                       <TableCell>
-                        {subAction1Show ? (
-                          <Tooltip title="View">
-                            <LaunchIcon
-                              onClick={() => onSelectItem(row)}
-                              style={{
-                                color: "#009197",
-                                cursor: "pointer",
-                              }}
-                            />
-                          </Tooltip>
-                        ) : null}
-                        {subAction2Show ? action(row) : null}
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          sx={{
+                            justifyContent: "flex-start",
+                            alignItems: "center",
+                          }}
+                        >
+                          {subAction1Show ? (
+                            <Tooltip title="View">
+                              <LaunchIcon
+                                onClick={() => onSelectItem(row)}
+                                style={{
+                                  color: "#009197",
+                                  cursor: "pointer",
+                                }}
+                              />
+                            </Tooltip>
+                          ) : null}
+                          {subAction2Show ? action(row) : null}
+                        </Stack>
                       </TableCell>
                     ) : null}
 

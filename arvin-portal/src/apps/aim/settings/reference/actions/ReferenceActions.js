@@ -35,6 +35,12 @@ export const getRefCompanies = () => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -63,6 +69,12 @@ export const getRefBusinessUnits = (id) => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -91,6 +103,12 @@ export const getRefTeams = (id) => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -119,6 +137,12 @@ export const getRefDepartments = (id) => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -147,6 +171,12 @@ export const getRefSections = (id) => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -175,6 +205,12 @@ export const getRefSubSections = (id) => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -206,6 +242,12 @@ export const getSpecificRefSubSection = (id) => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -236,6 +278,12 @@ export const getRefSalesRanking = () => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -275,6 +323,12 @@ export const getReferenceModule = (values) => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -295,6 +349,7 @@ export const postReferenceModule = (formValues) => async (dispatch) => {
     });
     return res;
   } catch (error) {
+    console.log(error);
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -329,6 +384,12 @@ export const getAllRefModules = () => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -352,6 +413,7 @@ export const postReferenceComponent = (formValues) => async (dispatch) => {
     });
     return res;
   } catch (error) {
+    console.log(error);
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -397,6 +459,12 @@ export const getReferenceComponents = (values) => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -426,6 +494,12 @@ export const getAllRefComponents = (id) => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -465,6 +539,12 @@ export const getReferenceSubcomponents = (values) => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -488,6 +568,7 @@ export const postReferenceSubcomponent = (formValues) => async (dispatch) => {
     });
     return res;
   } catch (error) {
+    console.log(error);
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -518,6 +599,7 @@ export const getEmployeeCustomerAccessDetails =
       });
       return res;
     } catch (error) {
+      console.log(error);
       await dispatch({
         type: Constants.ACTION_LOADING,
         payload: {
@@ -571,6 +653,12 @@ export const getRefProducts = (values) => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -610,6 +698,12 @@ export const getReferenceRequestTypes = (values) => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -668,6 +762,12 @@ export const getAllRefRequestTypes = () => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -737,6 +837,12 @@ export const getReferenceUnitOfMeasurements = (values) => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -761,6 +867,7 @@ export const postReferenceUnitOfMeasurements =
       });
       return res;
     } catch (error) {
+      console.log(error);
       await dispatch({
         type: Constants.ACTION_LOADING,
         payload: {
@@ -795,6 +902,12 @@ export const getAllRefUnitOfMeasurements = () => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -864,6 +977,12 @@ export const getReferenceCurrencies = (values) => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -921,6 +1040,12 @@ export const getAllRefCurrencies = () => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -990,6 +1115,12 @@ export const getReferenceValueAddedTax = (values) => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -1047,6 +1178,12 @@ export const getAllRefValueAddedTax = () => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -1086,6 +1223,12 @@ export const getReferenceRequestHierarchy = (values) => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -1144,6 +1287,12 @@ export const getAllRefRequestHierarchy = () => async (dispatch) => {
     });
   } catch (error) {
     console.log(error);
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -1213,3 +1362,129 @@ export const getReferenceRequestHierarchyByRequestType =
       console.log(error);
     }
   };
+
+export const getReferenceSalutations = (values) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = GetSpecificDefaultServices(
+      "api/reference/get_ref_salutations?page=" +
+        values.p +
+        "&limit=" +
+        values.l +
+        "&q=" +
+        values.q +
+        "&f=" +
+        values.f
+    );
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      let decrypted = decryptaes(res.data);
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          dataList: decrypted.dataList.data,
+          dataListCount: decrypted.dataList.total,
+        },
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const postReferenceSalutations = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PostDefaultServices(
+      "api/reference/ref_salutations",
+      formValues
+    );
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+    return res;
+  } catch (error) {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
+export const getAllRefSalutations = () => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = AuthGetReferences("api/reference/ref_salutations");
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          salutations: decryptaes(res.data),
+        },
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const putRefSalutations = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PutDefaultServices(
+      "api/reference/ref_salutations/",
+      formValues.code,
+      formValues
+    );
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+    return res;
+  } catch (error) {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};

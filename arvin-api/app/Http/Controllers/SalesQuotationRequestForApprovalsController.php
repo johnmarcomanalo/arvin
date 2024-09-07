@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SalesQuotationRequestForApprovals;
 use App\Models\SalesQuotationRequestNotes;
 use App\Models\SalesQuotationRequestProducts;
+use App\Models\SalesQuotationRequestSignatories;
 use App\Models\SalesQuotationRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
@@ -59,7 +60,7 @@ class SalesQuotationRequestForApprovalsController extends Controller
             } else {
                 $response = [
                     'result' => true,
-                    'status' => 'warning',
+                    'status' => 'error',
                     'title' => 'Error',
                     'message' => "Request code-".$value->code." unavailable for updating of status",
                 ];
@@ -101,17 +102,17 @@ class SalesQuotationRequestForApprovalsController extends Controller
             $updateData['status'] = $status;
             }
             $sales_quotation_request->update($updateData);
-            
-            // Return a success response
-            $response = [
-                'result' => true,
-                'status' => 'success',
-                'title' => 'Requests Processed',
-                'message' => 'The selected request/s have been successfully processed.',
-            ];
-
-            return Crypt::encryptString(json_encode($response));
+                // Return a success response
+        
         }
+        $response = [
+            'result' => true,
+            'icon' => 'success',
+            'title' => 'Requests Processed',
+            'message' => 'The selected request/s have been successfully processed.',
+        ];
+
+        return response($response, 200);
     }
 
     /**
@@ -123,8 +124,15 @@ class SalesQuotationRequestForApprovalsController extends Controller
     public function show($id)
     {
         // Retrieve the SalesQuotationRequest by code
-        $sales_quotation_request = SalesQuotationRequest::where('code', $id)->first();
-
+        $sales_quotation_request = SalesQuotationRequest::join('users', 'sales_quotation_requests.requested_by', '=', 'users.code')
+        ->where('sales_quotation_requests.code', $id)
+        ->first([
+            DB::raw("users.first_name + ' ' + users.last_name as requestor_name"), // Using CONCAT for string concatenation
+            'sales_quotation_requests.*'
+        ]);
+        if ($sales_quotation_request) {
+            $sales_quotation_request->date_requested = Carbon::parse($sales_quotation_request->created_at)->format('F d, Y');
+        }
         // Check if the request exists
         if (!$sales_quotation_request) {
             $response = [
@@ -139,11 +147,22 @@ class SalesQuotationRequestForApprovalsController extends Controller
         // Retrieve related products and notes for the request
         $sale_request_products_for_approval = SalesQuotationRequestProducts::where('sales_quotation_request_code', $id)->get();
         $sale_request_notes_for_approval = SalesQuotationRequestNotes::where('sales_quotation_request_code', $id)->get();
+        // $sale_request_signatories_for_appr   oval = SalesQuotationRequestSignatories::where('sales_quotation_request_code', $id)->get();
+        $sale_request_signatories_noted_by_for_approval = SalesQuotationRequestSignatories::join('users', 'sales_quotation_request_signatories.signatory_code', '=', 'users.code')
+            ->where('type', 'Noted By:')
+            ->where('sales_quotation_request_code', $value->code)
+            ->get(['sales_quotation_request_signatories.*','users.position as signatory_position']);
 
+        $sale_request_signatories_approved_by_for_approval = SalesQuotationRequestSignatories::join('users', 'sales_quotation_request_signatories.signatory_code', '=', 'users.code')
+            ->where('type', 'Approved By:')
+            ->where('sales_quotation_request_code', $value->code)
+            ->get(['sales_quotation_request_signatories.*','users.position as signatory_position']);
         // Combine the request with its related products and notes
         $sales_quotation_request->products = $sale_request_products_for_approval;
         $sales_quotation_request->notes = $sale_request_notes_for_approval;
-
+        $sales_quotation_request->noted_by = $sale_request_signatories_noted_by_for_approval;
+        $sales_quotation_request->approved_by = $sale_request_signatories_approved_by_for_approval;
+        
         // Prepare the response
         $response = [
             'dataList' => $sales_quotation_request,
@@ -244,6 +263,7 @@ class SalesQuotationRequestForApprovalsController extends Controller
             // Fetch products and notes for the current request
             $sale_request_products_for_approval = SalesQuotationRequestProducts::where('sales_quotation_request_code', $value->code)->get();
             $sale_request_notes_for_approval = SalesQuotationRequestNotes::where('sales_quotation_request_code', $value->code)->get();
+            $sale_request_signatories_for_approval = SalesQuotationRequestSignatories::where('sales_quotation_request_code', $value->code)->get();
 
             // Prepare the approval request entry
             if($sale_request_for_approval){

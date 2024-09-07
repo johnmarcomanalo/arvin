@@ -1,18 +1,23 @@
-import { useEffect } from "react";
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { useDebounce } from "../../../../../utils/HelperUtils";
-import { encryptaes } from "../../../../../utils/LightSecurity";
-import { getForApprovalSalesQuotation } from "../actions/ForApprovalQuotationActions";
 import { change } from "redux-form";
+import { Constants } from "../../../../../reducer/Contants";
+import { useDebounce } from "../../../../../utils/HelperUtils";
+import { decryptaes } from "../../../../../utils/LightSecurity";
+import { ViewSalesQuotation } from "../../myquotationList/actions/MyQuotationListActions";
+import { getForApprovalSalesQuotation } from "../actions/ForApprovalQuotationActions";
 
 const ForApprovalQuotationHooks = (props) => {
   const dispatch = useDispatch();
   const [state, setState] = React.useState({
     selectedDataList: [],
   });
+  const selectedDataList = useSelector(
+    (state) => state.QuotationReducer.selectedDataList
+  );
   const refresh = useSelector((state) => state.QuotationReducer.refresh);
+  const viewModal = useSelector((state) => state.QuotationReducer.viewModal);
   const dataList = useSelector((state) => state.QuotationReducer.dataList);
   const [searchParams, setSearchParams] = useSearchParams();
   const search =
@@ -27,7 +32,6 @@ const ForApprovalQuotationHooks = (props) => {
   const account_details = useSelector(
     (state) => state.AuthenticationReducer.account_details
   );
-  const encryted_user_code = encryptaes(account_details?.code);
   const debounceSearch = useDebounce(searchParams, 500);
   const getListParam = () => {
     const data = {
@@ -100,12 +104,57 @@ const ForApprovalQuotationHooks = (props) => {
       }));
     }
   };
+  const onResetSelectedDataList = () => {
+    setState((prev) => ({
+      ...prev,
+      selectedDataList: [],
+    }));
+  };
+
+  const onChangeSearch = (event) => {
+    // SEARCH DATA
+    const search = event.target.value;
+    setSearchParams({
+      p: page == null ? 1 : page,
+      q: search,
+      l: rowsPerPage,
+      fs: filterStartQuery,
+      fe: filterEndQuery,
+      u: account_details?.code,
+    });
+  };
+  const onClickOpenViewModal = async (row) => {
+    const res = await dispatch(ViewSalesQuotation(row.code));
+    let decrypted = await decryptaes(res.data);
+    await dispatch({
+      type: Constants.ACTION_QUOTATION,
+      payload: {
+        selectedDataList: decrypted.dataList,
+        viewModal: true,
+      },
+    });
+  };
+  const onClickCloseViewModal = () => {
+    dispatch({
+      type: Constants.ACTION_QUOTATION,
+      payload: {
+        viewModal: false,
+      },
+    });
+  };
   return {
     state,
     columns,
     dataList,
+    search,
+    viewModal,
+    selectedDataList,
     onSelectRow,
     onClickSubmit,
+    onResetSelectedDataList,
+    onChangeSearch,
+    onClickOpenViewModal,
+    onClickCloseViewModal,
   };
 };
 

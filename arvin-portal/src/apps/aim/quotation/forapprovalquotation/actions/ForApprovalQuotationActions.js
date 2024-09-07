@@ -67,8 +67,7 @@ export const postForApprovalSalesQuotation =
           loading: false,
         },
       });
-      console.log(decryptaes(res.data));
-      return res;
+      return res?.data;
     } catch (error) {
       await dispatch({
         type: Constants.ACTION_LOADING,

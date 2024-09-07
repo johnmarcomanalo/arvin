@@ -33,6 +33,8 @@ const initialState = {
   selected_ref: [],
   viewSelectedRefModal: false,
   request_hierarchies: [],
+  salutations: [],
+  printModal: false,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

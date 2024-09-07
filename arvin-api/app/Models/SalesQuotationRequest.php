@@ -9,9 +9,5 @@ class SalesQuotationRequest extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
-   
-    protected $casts = [
-        'request_date' => 'datetime:M d, Y',
-    ];
 
 }

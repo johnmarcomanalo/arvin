@@ -1,38 +1,64 @@
 import {
   Checkbox,
   FormControlLabel,
-  FormGroup,
   Grid,
+  Card,
   Stack,
   useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import * as React from "react";
+import { connect } from "react-redux";
+import { change, formValueSelector, reduxForm } from "redux-form";
+import swal from "sweetalert";
 import ButtonComponent from "../../../../../components/button/Button";
 import SearchField from "../../../../../components/inputFIeld/SearchField";
-import Page from "../../../../../components/pagination/Pagination";
+import Modal from "../../../../../components/modal/Modal";
 import Table from "../../../../../components/table/Table";
-import configure from "../../../../configure/configure.json";
-import ForApprovalQuotationHooks from "../hooks/ForApprovalQuotationHooks";
-import { change, formValueSelector, reduxForm } from "redux-form";
-import { connect } from "react-redux";
-import { postForApprovalSalesQuotation } from "../actions/ForApprovalQuotationActions";
 import { Constants } from "../../../../../reducer/Contants";
-import swal from "sweetalert";
-
+import configure from "../../../../configure/configure.json";
+import { postForApprovalSalesQuotation } from "../actions/ForApprovalQuotationActions";
+import ForApprovalQuotationHooks from "../hooks/ForApprovalQuotationHooks";
+import ViewQuotation from "../../quotationlist/pages/components/ViewQuotation";
 const formName = "ForApprovalQuotation";
-const submit = async (values, dispatch, props) => {
+const submit = async (values, dispatch, props, hook) => {
   try {
-    const res = await dispatch(postForApprovalSalesQuotation(values));
-    // await dispatch({
-    //   type: Constants.ACTION_REFERENCE,
-    //   payload: {
-    //     refresh: !props.refresh,
-    //   },
-    // });
-    // swal(res.data.title, res.data.message, res.data.icon);
+    const result = await swal({
+      title: "Are you sure?",
+      text:
+        "Do you want to " +
+        (values.status === "Approved" ? "approve" : "deny") +
+        " this request?",
+      icon: "warning",
+      buttons: ["No", "Yes"],
+      dangerMode: true,
+    });
+
+    if (result) {
+      // Await the dispatch and handle the response
+      const res = await dispatch(postForApprovalSalesQuotation(values));
+
+      // Dispatching the action to refresh
+      await dispatch({
+        type: Constants.ACTION_QUOTATION,
+        payload: {
+          refresh: !props.refresh,
+        },
+      });
+
+      // Reset the selected data list
+      await hook.onResetSelectedDataList();
+
+      // Show the success or error message from the response
+      await swal(res.title, res.message, res.icon);
+    } else {
+      // Optional: handle when the user cancels the action
+      await swal("Cancelled", "The request remains unchanged.", "info");
+    }
   } catch (error) {
     console.log(error);
+    // Optional: Handle errors with a SweetAlert
+    swal("Error", "An error occurred while processing the request.", "error");
   }
 };
 
@@ -44,10 +70,22 @@ let ForApprovalQuotation = (props) => {
   props.dispatch(
     change(formName, "selected_requests", state?.selectedDataList)
   );
-  const onSubmit = (values) => submit(values, props.dispatch, props);
+  const onSubmit = (values) =>
+    submit(values, props.dispatch, props, forApprovalQuotation);
 
   return (
     <React.Fragment>
+      {/*  */}
+      <Modal
+        open={forApprovalQuotation?.viewModal}
+        fullScreen={matches ? false : true}
+        title={"Quotation Details"}
+        size={"lg"}
+        action={undefined}
+        handleClose={forApprovalQuotation.onClickCloseViewModal}
+      >
+        <ViewQuotation selected_data={forApprovalQuotation.selectedDataList} />
+      </Modal>
       <form onSubmit={props.handleSubmit(onSubmit)}>
         <Grid container spacing={2}>
           <Grid item xs={6} sm={6} md={6} lg={6}>
@@ -64,7 +102,7 @@ let ForApprovalQuotation = (props) => {
               />
             </Stack>
           </Grid>
-          <Grid item xs={12} sm={12} md={6} lg={6}>
+          {/* <Grid item xs={12} sm={12} md={6} lg={6}>
             <Stack
               direction="row"
               justifyContent={matches ? "flex-end" : "center"}
@@ -81,8 +119,8 @@ let ForApprovalQuotation = (props) => {
                 click={forApprovalQuotation.onClickSelectedApprove}
               />
             </Stack>
-          </Grid>
-          <Grid item xs={12} sm={12} md={12} lg={12}>
+          </Grid> */}
+          <Grid item xs={12} sm={12} md={6} lg={6}>
             <Stack
               direction="row"
               justifyContent={matches ? "flex-end" : "center"}
@@ -122,29 +160,28 @@ let ForApprovalQuotation = (props) => {
               handleChangeRowsPerPage={
                 forApprovalQuotation.handleChangeRowsPerPage
               }
-              onSelectItem={forApprovalQuotation.onSelectItem}
+              onSelectItem={forApprovalQuotation.onClickOpenViewModal}
               id={"home_attendance"}
               localStorage={""}
               rowCount={forApprovalQuotation.dataListCount}
               actionshow={true}
               paginationShow={false}
-              subAction1Show={false}
+              subAction1Show={true}
               subAction2Show={true}
               action={(row, index) => {
                 return (
-                  <FormGroup row>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          // checked={false}
-                          onChange={(e) => {
-                            forApprovalQuotation.onSelectRow(e, row);
-                          }}
-                        />
-                      }
-                      // label={"test"}
-                    />
-                  </FormGroup>
+                  <FormControlLabel
+                    size="small"
+                    control={
+                      <Checkbox
+                        // checked={false}
+                        onChange={(e) => {
+                          forApprovalQuotation.onSelectRow(e, row);
+                        }}
+                      />
+                    }
+                    // label={"test"}
+                  />
                 );
               }}
             />

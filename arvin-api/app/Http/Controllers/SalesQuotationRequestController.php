@@ -6,10 +6,13 @@ use App\Models\SalesQuotationRequest;
 use App\Models\SalesQuotationRequestNotes;
 use App\Models\SalesQuotationRequestProducts;
 use App\Models\SalesQuotationRequestForApprovals;
+use App\Models\SalesQuotationRequestSignatories;
 use App\Models\RefRequestHierarchies;
 use App\Models\RefRequestTypes;
 use App\Models\UserAccessRequestRights;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class SalesQuotationRequestController extends Controller
@@ -41,8 +44,11 @@ class SalesQuotationRequestController extends Controller
             'customer_type' => 'required',
             'customer_description' => 'required',
             'customer_representative' => 'required',
-            'notes' => 'required',
-            'product_list' => 'required',
+            'representative_salutation' => 'required',
+            'representative_nickname' => 'required',
+            'notes' => 'required|array|min:1',
+            'product_list' => 'required|array|min:1',
+            // 'signatories' => 'required|array',
             'quotation_opening_letter' => 'required',
             'quotation_closing_letter' => 'required',
             'request_date' => 'required',
@@ -72,6 +78,8 @@ class SalesQuotationRequestController extends Controller
                 'customer_code' => $fields["customer_code"],
                 'customer_description' => $fields["customer_description"],
                 'customer_representative' => $fields["customer_representative"],
+                'representative_salutation' => $fields["representative_salutation"],
+                'representative_nickname' => $fields["representative_nickname"],
                 'customer_address' => $fields["customer_address"],
                 'customer_type' => $fields["customer_type"],
                 'request_date' => $fields["request_date"],
@@ -129,6 +137,22 @@ class SalesQuotationRequestController extends Controller
                 ]);
             }
 
+            if(isset($fields["signatories"])){
+                foreach ($fields["signatories"] as $signatory) {
+                    $sales_quotation_request_signatories_code = MainController::generate_code(SalesQuotationRequestSignatories::class, "code");
+                    SalesQuotationRequestSignatories::create([
+                        'code' => $sales_quotation_request_signatories_code,
+                        'sales_quotation_request_code' => $sales_quotation_request_code,
+                        'type' => $signatory->type,
+                        'signatory_code' => $signatory->code,
+                        'signatory' => $signatory->signatory,
+                        'added_by' => $fields["added_by"],
+                        'modified_by' => $fields["modified_by"],
+                    ]);
+                }
+            }
+            
+
             // Prepare and insert sales quotation request approvals
             foreach ($hierarchy_structure as $index => $level) {
                 foreach ($level->approver as $approver) {
@@ -156,6 +180,7 @@ class SalesQuotationRequestController extends Controller
                 ]);
             }
 
+
             $response = [
             'result' => true,
             'status' => 'success',
@@ -182,9 +207,66 @@ class SalesQuotationRequestController extends Controller
      * @param  \App\Models\SalesQuotationRequest  $salesQuotationRequest
      * @return \Illuminate\Http\Response
      */
-    public function show(SalesQuotationRequest $salesQuotationRequest)
+    public function show($id)
     {
-        //
+        // Retrieve the SalesQuotationRequest by code
+         $sales_quotation_request = SalesQuotationRequest::join('users', 'sales_quotation_requests.requested_by', '=', 'users.code')
+        ->where('sales_quotation_requests.code', $id)
+        ->first([
+            DB::raw("users.first_name + ' ' + users.last_name as requestor_name",), // Using CONCAT for string concatenation
+            'sales_quotation_requests.*',
+            "users.position as requestor_position"
+        ]);
+        if ($sales_quotation_request) {
+            $sales_quotation_request->date_requested = Carbon::parse($sales_quotation_request->created_at)->format('F j, Y');
+            $sales_quotation_request->request_date = Carbon::parse($sales_quotation_request->request_date)->format('F j, Y');
+        }
+
+
+        // Check if the request exists
+        if (!$sales_quotation_request) {
+            $response = [
+                'result' => false,
+                'status' => 'error',
+                'title' => 'Not Found',
+                'message' => 'Sales Quotation Request not found.',
+            ];
+            return response()->json($response, 404); // Return a 404 status code for not found
+        }
+
+        // Retrieve related products and notes for the request
+        $sale_request_products_for_approval = SalesQuotationRequestProducts::where('sales_quotation_request_code', $id)->get();
+        $sale_request_notes_for_approval = SalesQuotationRequestNotes::where('sales_quotation_request_code', $id)->get();
+        $sale_request_signatories_noted_by_for_approval = SalesQuotationRequestSignatories::join('users', 'sales_quotation_request_signatories.signatory_code', '=', 'users.code')
+            ->where('type', 'Noted By:')
+            ->where('sales_quotation_request_code', $id)
+            ->get(['sales_quotation_request_signatories.*','users.position as signatory_position']);
+
+        $sale_request_signatories_approved_by_for_approval = SalesQuotationRequestSignatories::join('users', 'sales_quotation_request_signatories.signatory_code', '=', 'users.code')
+            ->where('type', 'Approved By:')
+            ->where('sales_quotation_request_code', $id)
+            ->get(['sales_quotation_request_signatories.*','users.position as signatory_position']);
+        
+        
+        
+        
+        // Combine the request with its related products and notes
+        $sales_quotation_request->products = $sale_request_products_for_approval;
+        $sales_quotation_request->notes = $sale_request_notes_for_approval;
+        $sales_quotation_request->noted_by = $sale_request_signatories_noted_by_for_approval;
+        $sales_quotation_request->approved_by = $sale_request_signatories_approved_by_for_approval;
+        
+        // Prepare the response
+        $response = [
+            'dataList' => $sales_quotation_request,
+            'result' => true,
+            'status' => 'success',
+            'title' => 'Success',
+            'message' => 'Fetched successfully.',
+        ];
+
+        // Return the encrypted response
+        return Crypt::encryptString(json_encode($response));
     }
 
     /**
@@ -218,5 +300,89 @@ class SalesQuotationRequestController extends Controller
             $code = $latest_code + 1;
         }
         return $code;
+    }
+
+
+    public function get_request_quotation(Request $request)
+    {
+
+        // Extract request parameters
+        $query = $request->query('q');
+        $status = $request->query('status');
+        $filter_date_start = $request->query('fs');
+        $filter_date_end = $request->query('fe');
+        $type = $request->query('type');
+        $user_id = $request->query('u');
+
+        // Early return for invalid user ID or type
+        if (empty($user_id) && empty($type)) {
+            return response()->json([
+                'result' => false,
+                'status' => 'warning',
+                'title' => 'Oops!',
+                'message' => 'Invalid request. Please login.',
+            ], 200);
+        }
+
+        // Initialize query for SalesQuotationRequest
+        $sales_quotation_requests = SalesQuotationRequest::join('users', 'sales_quotation_requests.requested_by', '=', 'users.code');
+
+        // Apply filters using Laravel's `when` method for cleaner, conditional logic
+        $sales_quotation_requests->when($query, function ($q) use ($query) {
+            $q->where(function ($subQuery) use ($query) {
+                $subQuery->where('sales_quotation_requests.customer_description', 'like', '%' . $query . '%')
+                    ->orWhere(DB::raw("users.first_name + ' ' + users.last_name"), 'like', '%' . $query . '%')
+                    ->orWhere(DB::raw("users.last_name + ' ' + users.first_name"), 'like', '%' . $query . '%');
+            });
+        });
+
+        $sales_quotation_requests->when($status, function ($q) use ($status) {
+            $q->where('sales_quotation_requests.status', $status);
+        });
+
+        $sales_quotation_requests->when($type === 'm', function ($q) use ($user_id) {
+            $q->where('sales_quotation_requests.requested_by', $user_id);
+        });
+
+        // Apply date filter if both start and end dates are provided
+        $sales_quotation_requests->when($filter_date_start && $filter_date_end, function ($q) use ($filter_date_start, $filter_date_end) {
+            // Optional: Use Carbon to handle date formatting and validation
+            $startDate = Carbon::parse($filter_date_start)->startOfDay();
+            $endDate = Carbon::parse($filter_date_end)->endOfDay();
+            $q->whereBetween('sales_quotation_requests.request_date', [$startDate, $endDate]);
+        });
+
+        // Fetch sales quotation requests with formatted fields
+         $sales_quotation_request_list = $sales_quotation_requests->get([
+            DB::raw("users.first_name + ' ' + users.last_name as requestor_name"), // Using + operator for concatenation
+            'sales_quotation_requests.*'
+        ]);
+        $requests = []; 
+
+        foreach ($sales_quotation_request_list as $key => $value) {
+            // $sale_request_products_for_approval = SalesQuotationRequestProducts::where('sales_quotation_request_code', $value->code)->get();
+            // $sale_request_notes_for_approval = SalesQuotationRequestNotes::where('sales_quotation_request_code', $value->code)->get();
+            // $sale_request_signatories_for_approval = SalesQuotationRequestSignatories::where('sales_quotation_request_code', $value->code)->get();
+            // // Prepare the approval request entry
+            $requests[] = [
+                'code' => $value->code,
+                'customer_description' => $value->customer_description,
+                'request_date' => Carbon::parse($value->request_date)->format('F d, Y'),
+                'status' => $value->status,
+                'requestor_name' => $value->requestor_name,
+                'request_hierarchy_level' => $value->request_hierarchy_level,
+            ];
+        }
+        // Prepare response data
+         $response = [
+            'dataList' => $requests,
+            'result' => true,
+            'title' => 'Success',
+            'status' => 'success',
+            'message' => 'Fetched successfully.',
+        ];
+
+        // Return the encrypted response
+        return Crypt::encryptString(json_encode($response));
     }
 }

@@ -5,6 +5,7 @@ import {
   Grid,
   Paper,
   Stack,
+  TextField,
   Typography,
   useMediaQuery,
 } from "@mui/material";
@@ -29,22 +30,31 @@ import ProductList from "../../../settings/reference/pages/components/ProductLis
 import { postQuotationRequest } from "../actions/RequestActions";
 import RequestHooks from "../hooks/RequestHooks";
 import QuotationColumnList from "./components/QuotationColumnList";
+import EmployeeList from "../../../humanresource/employeeList/pages/components/EmployeeList";
 const formName = "RequestQuotation";
 const submit = async (values, dispatch, props) => {
   try {
-    const res = await dispatch(postQuotationRequest(values));
-    let decrypted = await decryptaes(res?.data);
-    await dispatch({
-      type: Constants.ACTION_QUOTATION,
-      payload: {
-        refresh: !props.refresh,
-      },
-    });
-    await swal(decrypted.title, decrypted.message, decrypted.status);
-    if (decrypted.result == true) {
-      await dispatch(reset(formName));
-      await window.location.reload();
+    console.log(values);
+    if (values.term == "Long Term" && values.signatories.length == 0) {
+      await swal(
+        "Oops",
+        "Signatories are required in Long Term Quotation. Please make sure to add them.",
+        "warning"
+      );
     }
+    // const res = await dispatch(postQuotationRequest(values));
+    // let decrypted = await decryptaes(res?.data);
+    // await dispatch({
+    //   type: Constants.ACTION_QUOTATION,
+    //   payload: {
+    //     refresh: !props.refresh,
+    //   },
+    // });
+    // await swal(decrypted.title, decrypted.message, decrypted.status);
+    // if (decrypted.result == true) {
+    //   await dispatch(reset(formName));
+    //   await window.location.reload();
+    // }
   } catch (error) {
     console.log(error);
   }
@@ -57,6 +67,7 @@ let RequestQuotation = (props) => {
   const state = request?.state;
   props.dispatch(change(formName, "notes", state?.notes));
   props.dispatch(change(formName, "product_list", state?.product_list));
+  props.dispatch(change(formName, "signatories", state?.signatories));
   React.useEffect(() => {
     const handleResize = () => {
       setScreenHeight(window.innerHeight);
@@ -96,6 +107,16 @@ let RequestQuotation = (props) => {
           quotation_column_list={state.quotation_column_list}
           handleStatusChange={request.handleStatusChange}
         />
+      </Modal>
+      <Modal
+        open={request.viewEmployeeModal}
+        fullScreen={matches ? false : true}
+        title={"Employee Search"}
+        size={"md"}
+        action={undefined}
+        handleClose={request.onClickCloseViewEmployeeModal}
+      >
+        <EmployeeList onClickSelect={request.onSelectSignatory} />
       </Modal>
       <form onSubmit={props.handleSubmit}>
         <Grid container spacing={2}>
@@ -140,14 +161,9 @@ let RequestQuotation = (props) => {
                       component={ComboBox}
                       onChangeHandle={(e, newValue) => {
                         if (newValue?.description) {
-                          let res = request.GetCustomerDetails(newValue);
+                          request.GetCustomerDetails(newValue);
                           props.change("customer_code", newValue.customer_code);
                           props.change("customer_type", newValue.type);
-                          props.change("customer_address", res?.Street);
-                          props.change(
-                            "customer_representative",
-                            res?.CntctPrsn
-                          );
                           props.change(
                             "quotation_opening_letter",
                             configure?.quotation_opening_letter
@@ -214,6 +230,28 @@ let RequestQuotation = (props) => {
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={6}>
                     <Field
+                      id="representative_salutation"
+                      name="representative_salutation"
+                      label="Representative Salutation"
+                      options={request?.salutations}
+                      getOptionLabel={(option) =>
+                        option?.description ? option?.description : ""
+                      }
+                      required={true}
+                      component={ComboBox}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={6}>
+                    <Field
+                      id="representative_nickname"
+                      name="representative_nickname"
+                      label="Dear"
+                      required={true}
+                      component={InputField}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={6}>
+                    <Field
                       id="customer_representative"
                       name="customer_representative"
                       label="Attention"
@@ -230,6 +268,15 @@ let RequestQuotation = (props) => {
                       component={InputField}
                       multiline={true}
                     />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12} lg={12}>
+                    <Typography
+                      align="left"
+                      gutterBottom
+                      sx={{ color: configure.primary_color }}
+                    >
+                      Product Quotation
+                    </Typography>
                   </Grid>
                   <Grid item xs={12} sm={12} md={12} lg={12}>
                     <TableContainer
@@ -722,6 +769,15 @@ let RequestQuotation = (props) => {
                     </Stack>
                   </Grid>
                   <Grid item xs={12} sm={12} md={12} lg={12}>
+                    <Typography
+                      align="left"
+                      gutterBottom
+                      sx={{ color: configure.primary_color }}
+                    >
+                      Quotation Note
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12} lg={12}>
                     <TableContainer
                       sx={{
                         maxHeight: screenHeight - 300,
@@ -777,6 +833,7 @@ let RequestQuotation = (props) => {
                       </Table>
                     </TableContainer>
                   </Grid>
+
                   <Grid item xs={12} md={12}>
                     <Stack
                       direction="row"
@@ -807,6 +864,7 @@ let RequestQuotation = (props) => {
                       </ButtonGroup>
                     </Stack>
                   </Grid>
+
                   <Grid item xs={12} sm={12} md={12} lg={12}>
                     <Field
                       id="quotation_closing_letter"
@@ -816,6 +874,118 @@ let RequestQuotation = (props) => {
                       component={InputField}
                       multiline={true}
                     />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12} lg={12}>
+                    <Typography
+                      align="left"
+                      gutterBottom
+                      sx={{ color: configure.primary_color }}
+                    >
+                      Signatories
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12} lg={12}>
+                    <TableContainer
+                      sx={{
+                        maxHeight: screenHeight - 300,
+                        whiteSpace: "nowrap",
+                        overflowX: "auto",
+                      }}
+                    >
+                      <Table size="small">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell
+                              style={{
+                                backgroundColor: configure.primary_table_color,
+                                color: configure.primary_table_text_color,
+                              }}
+                            >
+                              Signatory Type
+                            </TableCell>
+                            <TableCell
+                              style={{
+                                backgroundColor: configure.primary_table_color,
+                                color: configure.primary_table_text_color,
+                              }}
+                            >
+                              Signatory Name
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {state?.signatories.map((value, index) => {
+                            return (
+                              <TableRow>
+                                <TableCell align="left">
+                                  <Field
+                                    id={"type-" + index}
+                                    name={"type-" + index}
+                                    label=""
+                                    options={state?.signatory_type}
+                                    getOptionLabel={(option) =>
+                                      option?.description
+                                        ? option?.description
+                                        : ""
+                                    }
+                                    required={true}
+                                    component={ComboBox}
+                                    showLabel={false}
+                                    onChangeHandle={(e, newValue) => {
+                                      if (newValue?.description) {
+                                        request.onSelectSignatoryType(
+                                          e,
+                                          newValue,
+                                          index
+                                        );
+                                      }
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    size="small"
+                                    disabled
+                                    fullWidth
+                                    value={value.signatory}
+                                  />
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Grid>
+                  <Grid item xs={12} md={12}>
+                    <Stack
+                      direction="row"
+                      justifyContent="flex-end"
+                      alignItems="flex-end"
+                      spacing={2}
+                    >
+                      <ButtonGroup
+                        disableElevation
+                        aria-label="Disabled button group"
+                      >
+                        <ButtonComponent
+                          stx={configure.default_button}
+                          iconType="add"
+                          type="button"
+                          fullWidth={true}
+                          children={"Add Signatory"}
+                          click={request.onClickOpenViewEmployeeModal}
+                        />
+                        <ButtonComponent
+                          stx={configure.default_button}
+                          iconType="delete"
+                          type="button"
+                          fullWidth={true}
+                          children={"Remove Signatory"}
+                          click={request.onClickRemoveSignatory}
+                        />
+                      </ButtonGroup>
+                    </Stack>
                   </Grid>
                   <Grid item xs={12} sm={12} md={12} lg={12}>
                     <Stack
