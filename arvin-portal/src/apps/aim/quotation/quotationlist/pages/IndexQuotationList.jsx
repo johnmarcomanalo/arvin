@@ -7,8 +7,8 @@ import * as React from "react";
 import BreadCrumbs from "../../../../../components/breadCrumb/BreadCrumbs";
 import PageTitle from "../../../../../components/pageTItle/PageTitle";
 import configure from "../../../../configure/configure.json";
-import MyQuotationList from "./MyQuotationList";
-const title_page = "My Quotation List";
+import QuotationList from "./QuotationList";
+const title_page = "Quotation List";
 const breadCrumbArray = [
   {
     name: "Home",
@@ -50,7 +50,7 @@ const breadCrumbArray = [
     ),
   },
 ];
-export default function IndexMyQuotationList() {
+export default function IndexQuotationList() {
   return (
     <React.Fragment>
       <Grid container spacing={2}>
@@ -61,7 +61,7 @@ export default function IndexMyQuotationList() {
           <PageTitle title={title_page} />
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
-          <MyQuotationList />
+          <QuotationList />
         </Grid>
       </Grid>
     </React.Fragment>

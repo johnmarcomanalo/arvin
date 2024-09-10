@@ -66,7 +66,6 @@ let UpdateUserRequestHierarchy = (props) => {
               component={ComboBox}
               onChangeHandle={(e, newValue) => {
                 if (newValue?.description) {
-                  console.log(newValue);
                   props.change("ref_request_hierarchies_code", newValue.code);
                 }
               }}

@@ -120,7 +120,7 @@ class RefModulesController extends Controller
     public function get_refence_modules (Request $request)
     {
         $page = $request->query('page');
-        $limit = $request->query('limit');
+        $limit = $request->query('lim  it');
         $query = $request->query('q');
         $filter = $request->query('f');
 

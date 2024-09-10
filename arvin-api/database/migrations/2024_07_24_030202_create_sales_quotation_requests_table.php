@@ -19,6 +19,8 @@ class CreateSalesQuotationRequestsTable extends Migration
             $table->string('customer_code'); 
             $table->string('customer_description');
             $table->string('customer_representative');
+            $table->string('representative_nickname');
+            $table->string('representative_salutation');
             $table->string('customer_address');
             $table->string('customer_type');
             $table->dateTime('request_date');
@@ -26,8 +28,12 @@ class CreateSalesQuotationRequestsTable extends Migration
             $table->string('quotation_closing_letter');
             $table->string('status')->nullable();
             $table->string('requested_by');
+            $table->string('currency_description');
+            $table->string('currency_type');
+            $table->string('term');
             $table->string('request_hierarchy_code');
-            $table->string('request_hierarchy');
+            $table->longtext('request_hierarchy');
+            $table->longtext('request_hierarchy_level');
             $table->dateTime('approval_date')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();

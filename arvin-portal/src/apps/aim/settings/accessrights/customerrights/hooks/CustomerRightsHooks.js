@@ -64,7 +64,7 @@ const CustomerRightsHooks = (props) => {
   const handleChangeRowsPerPage = (event) => {
     dispatch({
       type: Constants.ACTION_HOME,
-      data: {
+      payload: {
         rowsPerPage: event.target.value,
       },
     });

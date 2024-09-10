@@ -111,19 +111,19 @@ class UsersController extends Controller
          $user_access_module_code = MainController::generate_code('App\Models\UserAccessModuleRights',"code");
          $employee= User::create([
             'code'=>$user_code,
-            'username'=>'m.flora',
-            'first_name'=>'Michael',
-            'last_name'=>'Flora',
+            'username'=>'g.garcia',
+            'first_name'=>'Ghenievy',
+            'last_name'=>'Garcia',
             'company_code'=>'1',
             'business_unit_code'=>'1',
             'team_code'=>'1',
-            'department_code'=>'4',
-            'section_code'=>'12',
-            'subsection_code'=>'12',
+            'department_code'=>'8',
+            'section_code'=>'26',
+            'subsection_code'=>'31',
             'password'=> bcrypt("welcome123"),
             'added_by'=>'1',
             'modified_by'=> '1',
-        ]);
+        ]); 
         return $employee;
 
     }

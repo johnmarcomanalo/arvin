@@ -128,8 +128,8 @@ class RefRequestHierarchiesController extends Controller
 
         if (isset($query)) {
             $dataListQuery->where(function($q) use ($query) {
-                $q->where('description', 'like', '%' . $query . '%')
-                ->orWhere('type', 'like', '%' . $query . '%');
+                $q->where('description', 'like', '%' . $query . '%');
+                // ->orWhere('type', 'like', '%' . $query . '%');
             });
         }
 

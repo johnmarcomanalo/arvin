@@ -24,7 +24,6 @@ const submit = async (values, dispatch, props) => {
         updateModal: false,
       },
     });
-    console.log(res.data);
     swal(res.data.title, res.data.message, res.data.icon);
   } catch (error) {
     console.log(error);

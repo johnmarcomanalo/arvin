@@ -6,34 +6,59 @@ import Cookies from "universal-cookie";
 import "./App.css";
 import configure from "./apps/configure/configure.json";
 import PrivateRoute from "./security/PrivateRoute";
+import { Start } from "@mui/icons-material";
 const Loader = lazy(() => import("./components/loading/Loading"));
-const IndexHome = lazy(() => import("./apps/aim/home/pages/Home"));
 const Navigation = lazy(() => import("./apps/navigation/pages/Navigation"));
-
-const IndexSalesQouta = lazy(() =>
-  import("./apps/aim/sales/salesQuota/pages/IndexSalesQuota")
-);
-const SalesTracker = lazy(() =>
-  import("./apps/aim/sales/salesTracker/pages/IndexSalesTracker")
-);
-
-const SalesLeaderboard = lazy(() =>
-  import("./apps/aim/sales/leaderboard/pages/IndexSalesLeaderboard")
-);
-
-const IndexSalesRankingPoints = lazy(() =>
-  import("./apps/aim/sales/rankingPoints/pages/IndexSalesRankingPoints")
-);
-
 const IndexLogin = lazy(() => import("./apps/auth/login/pages/IndexLogin"));
 const NoMatch = lazy(() => import("./apps/aim/home/pages/NoMatch"));
 const NoAccess = lazy(() => import("./apps/aim/home/pages/NoAccess"));
+
+// LANDING PAGE START
+const IndexHome = lazy(() => import("./apps/aim/home/pages/Home"));
+// LANDING PAGE END
+
+// SALES START
+const SalesLeaderboard = lazy(() =>
+  import("./apps/aim/sales/leaderboard/pages/IndexSalesLeaderboard")
+);
+const IndexSalesRankingPoints = lazy(() =>
+  import("./apps/aim/sales/rankingPoints/pages/IndexSalesRankingPoints")
+);
 const IndexSalesSummary = lazy(() =>
   import("./apps/aim/sales/salesSummary/pages/IndexSalesSummary")
 );
 const IndexSelectedSalesSummary = lazy(() =>
   import("./apps/aim/sales/salesSummary/pages/IndexSelectedSalesSummary")
 );
+const IndexSalesQouta = lazy(() =>
+  import("./apps/aim/sales/salesQuota/pages/IndexSalesQuota")
+);
+const SalesTracker = lazy(() =>
+  import("./apps/aim/sales/salesTracker/pages/IndexSalesTracker")
+);
+// SALES END
+
+// QUOTATION START
+const IndexQuotationList = lazy(() =>
+  import("./apps/aim/quotation/quotationlist/pages/IndexQuotationList")
+);
+const IndexRequestQuotation = lazy(() =>
+  import("./apps/aim/quotation/requestquotation/pages/IndexRequestQuotation")
+);
+const IndexForApprovalQuotation = lazy(() =>
+  import(
+    "./apps/aim/quotation/forapprovalquotation/pages/IndexForApprovalQuotation"
+  )
+);
+// QUOTATION END
+
+// HUMAN RESOURCE START
+const IndexEmployeeMasterList = lazy(() =>
+  import("./apps/aim/humanresource/employeeList/pages/IndexEmployeeMasterList")
+);
+// HUMAN RESOURCE END
+
+//ACCESS RIGHTS START
 const IndexOrganizationRights = lazy(() =>
   import(
     "./apps/aim/settings/accessrights/organizationrights/pages/IndexOrganizationRights"
@@ -42,6 +67,27 @@ const IndexOrganizationRights = lazy(() =>
 const IndexPageRights = lazy(() =>
   import("./apps/aim/settings/accessrights/pagerights/pages/IndexPageRights")
 );
+const IndexCustomerRights = lazy(() =>
+  import(
+    "./apps/aim/settings/accessrights/customerrights/pages/IndexCustomerRights"
+  )
+);
+const IndexRequestRights = lazy(() =>
+  import(
+    "./apps/aim/settings/accessrights/requestrights/pages/IndexRequestRights"
+  )
+);
+//ACCESS RIGHTS END
+
+// ACCOUNT SETTINGS START
+const IndexChangePassword = lazy(() =>
+  import(
+    "./apps/aim/settings/accountsettings/changepassword/pages/IndexChangePassword"
+  )
+);
+// ACCOUNT SETTINGS END
+
+// REFERENCE START
 const IndexRefModules = lazy(() =>
   import("./apps/aim/settings/reference/pages/IndexRefModules")
 );
@@ -50,22 +96,6 @@ const IndexRefComponents = lazy(() =>
 );
 const IndexRefSubcomponents = lazy(() =>
   import("./apps/aim/settings/reference/pages/IndexRefSubcomponents")
-);
-const IndexChangePassword = lazy(() =>
-  import(
-    "./apps/aim/settings/accountsettings/changepassword/pages/IndexChangePassword"
-  )
-);
-const IndexCustomerRights = lazy(() =>
-  import(
-    "./apps/aim/settings/accessrights/customerrights/pages/IndexCustomerRights"
-  )
-);
-const IndexMyQuotationList = lazy(() =>
-  import("./apps/aim/quotation/myquotationList/pages/IndexMyQuotationList")
-);
-const IndexRequestQuotation = lazy(() =>
-  import("./apps/aim/quotation/requestquotation/pages/IndexRequestQuotation")
 );
 const IndexRefRequestTypes = lazy(() =>
   import("./apps/aim/settings/reference/pages/IndexRefRequestTypes")
@@ -82,15 +112,11 @@ const IndexRefValueAddedTax = lazy(() =>
 const IndexRefRequestHierarchy = lazy(() =>
   import("./apps/aim/settings/reference/pages/IndexRefRequestHierarchy")
 );
-const IndexEmployeeMasterList = lazy(() =>
-  import("./apps/aim/humanresource/employeeList/pages/IndexEmployeeMasterList")
+const IndexRefSalutations = lazy(() =>
+  import("./apps/aim/settings/reference/pages/IndexRefSalutations")
 );
+// REFERENCE END
 
-const IndexRequestRights = lazy(() =>
-  import(
-    "./apps/aim/settings/accessrights/requestrights/pages/IndexRequestRights"
-  )
-);
 const theme = createTheme({
   typography: {
     fontFamily: "Poppins, sans-serif",
@@ -243,16 +269,16 @@ function App() {
                   {/* SALES END */}
                   {/* QUOTATION START */}
                   <Route
-                    path="/Modules/Quotation/MyQuotationList"
+                    path="/Modules/Quotation/QuotationList"
                     element={
                       <PrivateRoute
                         accessChecker={getAccessChecker({
                           module: "Quotation",
-                          component: "My Quotation List",
+                          component: "Quotation List",
                           subComponent: null,
                         })}
                       >
-                        <IndexMyQuotationList />
+                        <IndexQuotationList />
                       </PrivateRoute>
                     }
                   />
@@ -267,6 +293,20 @@ function App() {
                         })}
                       >
                         <IndexRequestQuotation />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/Quotation/Request/ForApprovalQuotation"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Quotation",
+                          component: "Request",
+                          subComponent: "For Approval Quotation",
+                        })}
+                      >
+                        <IndexForApprovalQuotation />
                       </PrivateRoute>
                     }
                   />
@@ -345,7 +385,6 @@ function App() {
                       </PrivateRoute>
                     }
                   />
-
                   {/* ACCESS RIGHTS END */}
                   {/* REFENRECE START */}
                   <Route
@@ -457,6 +496,20 @@ function App() {
                         })}
                       >
                         <IndexRefRequestHierarchy />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/SystemSettings/References/Salutations"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Settings",
+                          component: "References",
+                          subComponent: "Salutations",
+                        })}
+                      >
+                        <IndexRefSalutations />
                       </PrivateRoute>
                     }
                   />

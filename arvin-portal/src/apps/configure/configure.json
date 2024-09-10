@@ -284,7 +284,7 @@
     "boxShadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;"
   },
   "approve_button": {
-    "backgroundImage": "linear-gradient(to right, #00acd8, #00acd8)",
+    "backgroundImage": "linear-gradient(to right,  #00ac56, #00ac56)",
     "_comment_backgroundImage": "linear-gradient(to right, #c4280c, #f50404)",
     "color": "#F1FAFF",
     "padding": "6px 16px",

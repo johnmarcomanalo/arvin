@@ -25,7 +25,7 @@ const HomeComponentRequestsHooks = (props) => {
   const handleChangePage = (event, newPage) => {
     dispatch({
       type: Constants.ACTION_HOME,
-      data: {
+      payload: {
         page: newPage,
       },
     });
@@ -33,7 +33,7 @@ const HomeComponentRequestsHooks = (props) => {
   const handleChangeRowsPerPage = (event) => {
     dispatch({
       type: Constants.ACTION_HOME,
-      data: {
+      payload: {
         rowsPerPage: event.target.value,
       },
     });
