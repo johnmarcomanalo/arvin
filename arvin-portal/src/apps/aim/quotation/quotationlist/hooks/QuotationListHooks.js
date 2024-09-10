@@ -8,11 +8,26 @@ import { useDebounce } from "../../../../../utils/HelperUtils";
 import { decryptaes } from "../../../../../utils/LightSecurity";
 import { ViewSalesQuotation } from "../../myquotationList/actions/MyQuotationListActions";
 import { getSalesQuotations } from "../actions/QuotationListActions";
+import moment from "moment";
 
 const QuotationListHooks = (props) => {
   const dispatch = useDispatch();
   const [state, setState] = React.useState({
     selectedDataList: [],
+    status: [
+      {
+        description: "All",
+      },
+      {
+        description: "Pending",
+      },
+      {
+        description: "Approved",
+      },
+      {
+        description: "Denied",
+      },
+    ],
   });
   const selectedDataList = useSelector(
     (state) => state.QuotationReducer.selectedDataList
@@ -28,9 +43,15 @@ const QuotationListHooks = (props) => {
   const rowsPerPage =
     searchParams.get("l") != null ? searchParams.get("l") : 10;
   const filterStartQuery =
-    searchParams.get("fs") != null ? String(searchParams.get("fs")) : "";
+    searchParams.get("fs") != null
+      ? String(searchParams.get("fs"))
+      : moment(new Date()).format("YYYY-MM-DD");
   const filterEndQuery =
-    searchParams.get("fe") != null ? String(searchParams.get("fe")) : "";
+    searchParams.get("fe") != null
+      ? String(searchParams.get("fe"))
+      : moment(new Date()).format("YYYY-MM-DD");
+  const filterStatus =
+    searchParams.get("st") != null ? String(searchParams.get("st")) : "All";
   const account_details = useSelector(
     (state) => state.AuthenticationReducer.account_details
   );
@@ -42,6 +63,7 @@ const QuotationListHooks = (props) => {
       l: rowsPerPage,
       fs: filterStartQuery,
       fe: filterEndQuery,
+      st: filterStatus,
       u: account_details?.code,
     };
     return data;
@@ -70,11 +92,14 @@ const QuotationListHooks = (props) => {
 
   useEffect(() => {
     SalesQutoationRequestLists();
-  }, [refresh, debounceSearch, filterStartQuery, filterEndQuery]);
+  }, [refresh, debounceSearch, filterStartQuery, filterEndQuery, filterStatus]);
 
   useEffect(() => {
     props.initialize({
       approved_by: account_details?.code,
+      filter_date_start: filterStartQuery,
+      filter_date_end: filterEndQuery,
+      filterStatus: filterStatus,
     });
   }, []);
   const onSelectRow = async (e, data) => {
@@ -122,6 +147,7 @@ const QuotationListHooks = (props) => {
       l: rowsPerPage,
       fs: filterStartQuery,
       fe: filterEndQuery,
+      st: filterStatus,
       u: account_details?.code,
     });
   };
@@ -172,6 +198,43 @@ const QuotationListHooks = (props) => {
       },
     });
   };
+  const onChangeFilterStart = (date) => {
+    const newdate = moment(date).format("YYYY-MM-DD");
+    setSearchParams({
+      p: page == null ? 1 : page,
+      q: search,
+      l: rowsPerPage,
+      fs: newdate,
+      fe: filterEndQuery,
+      st: filterStatus,
+      u: account_details?.code,
+    });
+  };
+
+  const onChangeFilterEnd = (date) => {
+    const newdate = moment(date).format("YYYY-MM-DD");
+    setSearchParams({
+      p: page == null ? 1 : page,
+      q: search,
+      l: rowsPerPage,
+      fs: filterStartQuery,
+      fe: newdate,
+      st: filterStatus,
+      u: account_details?.code,
+    });
+  };
+
+  const onChangeFilterStatus = (status) => {
+    setSearchParams({
+      p: page == null ? 1 : page,
+      q: search,
+      l: rowsPerPage,
+      fs: filterStartQuery,
+      fe: filterEndQuery,
+      st: status,
+      u: account_details?.code,
+    });
+  };
   return {
     state,
     columns,
@@ -188,6 +251,9 @@ const QuotationListHooks = (props) => {
     onClickCloseViewModal,
     onClickOpenPrintModal,
     onClickClosePrintModal,
+    onChangeFilterStart,
+    onChangeFilterEnd,
+    onChangeFilterStatus,
   };
 };
 

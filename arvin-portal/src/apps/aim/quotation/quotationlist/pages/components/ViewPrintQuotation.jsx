@@ -474,61 +474,64 @@ export default function ViewPrintQuotation(props) {
                 {data.requestor_position}
               </Text>
             </View>
-            {data.noted_by.map((value, index) => {
-              return (
-                <View
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    margin: 5,
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.text_font,
-                      styles.poppins_regular,
-                      styles.margin_bottom_spacing,
-                    ]}
+            {data.noted_by.length > 0 &&
+              data.noted_by.map((value, index) => {
+                return (
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      margin: 5,
+                    }}
                   >
-                    {index == 0 ? "Noted By" : " "}
-                  </Text>
-                  <Text style={[styles.text_font, styles.poppins_bold]}>
-                    {value.signatory}
-                  </Text>
-                  <Text style={[styles.text_font, styles.poppins_regular]}>
-                    {value.signatory_position}
-                  </Text>
-                </View>
-              );
-            })}
-            {data.approved_by.map((value, index) => {
-              return (
-                <View
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    margin: 5,
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.text_font,
-                      styles.poppins_regular,
-                      styles.margin_bottom_spacing,
-                    ]}
-                  >
-                    {index == 0 ? "Approved By" : " "}
-                  </Text>
+                    <Text
+                      style={[
+                        styles.text_font,
+                        styles.poppins_regular,
+                        styles.margin_bottom_spacing,
+                      ]}
+                    >
+                      {index == 0 ? "Noted By" : " "}
+                    </Text>
+                    <Text style={[styles.text_font, styles.poppins_bold]}>
+                      {value.signatory}
+                    </Text>
+                    <Text style={[styles.text_font, styles.poppins_regular]}>
+                      {value.signatory_position}
+                    </Text>
+                  </View>
+                );
+              })}
 
-                  <Text style={[styles.text_font, styles.poppins_bold]}>
-                    {value.signatory}
-                  </Text>
-                  <Text style={[styles.text_font, styles.poppins_regular]}>
-                    {value.signatory_position}
-                  </Text>
-                </View>
-              );
-            })}
+            {data.approved_by.length > 0 &&
+              data.approved_by.map((value, index) => {
+                return (
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      margin: 5,
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.text_font,
+                        styles.poppins_regular,
+                        styles.margin_bottom_spacing,
+                      ]}
+                    >
+                      {index == 0 ? "Approved By" : " "}
+                    </Text>
+
+                    <Text style={[styles.text_font, styles.poppins_bold]}>
+                      {value.signatory}
+                    </Text>
+                    <Text style={[styles.text_font, styles.poppins_regular]}>
+                      {value.signatory_position}
+                    </Text>
+                  </View>
+                );
+              })}
           </View>
         </Page>
       </Document>

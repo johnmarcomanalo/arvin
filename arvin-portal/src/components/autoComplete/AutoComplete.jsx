@@ -39,7 +39,7 @@ export default function ComboBox(props) {
         getOptionLabel={param.getOptionLabel}
         onInputChange={handleInputChange}
         renderInput={(params) => (
-          <TextField {...params} required={param.required} />
+          <TextField {...params} required={param.required} fullWidth />
         )}
       />{" "}
     </div>

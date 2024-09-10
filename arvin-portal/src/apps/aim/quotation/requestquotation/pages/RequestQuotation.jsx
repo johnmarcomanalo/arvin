@@ -34,27 +34,27 @@ import EmployeeList from "../../../humanresource/employeeList/pages/components/E
 const formName = "RequestQuotation";
 const submit = async (values, dispatch, props) => {
   try {
-    console.log(values);
     if (values.term == "Long Term" && values.signatories.length == 0) {
       await swal(
         "Oops",
         "Signatories are required in Long Term Quotation. Please make sure to add them.",
         "warning"
       );
+    } else {
+      const res = await dispatch(postQuotationRequest(values));
+      let decrypted = await decryptaes(res?.data);
+      await dispatch({
+        type: Constants.ACTION_QUOTATION,
+        payload: {
+          refresh: !props.refresh,
+        },
+      });
+      await swal(decrypted.title, decrypted.message, decrypted.status);
+      if (decrypted.result == true) {
+        await dispatch(reset(formName));
+        await window.location.reload();
+      }
     }
-    // const res = await dispatch(postQuotationRequest(values));
-    // let decrypted = await decryptaes(res?.data);
-    // await dispatch({
-    //   type: Constants.ACTION_QUOTATION,
-    //   payload: {
-    //     refresh: !props.refresh,
-    //   },
-    // });
-    // await swal(decrypted.title, decrypted.message, decrypted.status);
-    // if (decrypted.result == true) {
-    //   await dispatch(reset(formName));
-    //   await window.location.reload();
-    // }
   } catch (error) {
     console.log(error);
   }

@@ -85,7 +85,6 @@ const timeline = (hierarchy_structure) => {
       </TimelineItem>
       {hierarchy_structure.map((value, index) => {
         const { level_description, approver, status } = value;
-        console.log(value);
         return (
           <TimelineItem key={`timeline-item-${index}`}>
             <TimelineOppositeContent color={configure.primary_color}>
@@ -426,40 +425,44 @@ let ViewQuotation = (props) => {
             </TableContainer>
           </Grid>
 
-          <Grid item xs={12} sm={12} md={12} lg={12}>
-            <TableContainer
-              sx={{
-                // maxHeight: screenHeight - 300,
-                whiteSpace: "nowrap",
-                overflowX: "auto",
-              }}
-            >
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell
-                      style={{
-                        backgroundColor: configure.primary_table_color,
-                        color: configure.primary_table_text_color,
-                      }}
-                    >
-                      Notes
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {selected_data?.notes?.map((value, index) => {
-                    return (
-                      <TableRow>
-                        <TableCell>{value.description}</TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Grid>
-          
+          {selected_data?.signatories.length > 0 && (
+            <Grid item xs={12} sm={12} md={12} lg={12}>
+              <TableContainer
+                sx={{
+                  // maxHeight: screenHeight - 300,
+                  whiteSpace: "nowrap",
+                  overflowX: "auto",
+                }}
+              >
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell
+                        colSpan={2}
+                        style={{
+                          backgroundColor: configure.primary_table_color,
+                          color: configure.primary_table_text_color,
+                        }}
+                      >
+                        Signatories
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {selected_data?.signatories?.map((value, index) => {
+                      return (
+                        <TableRow>
+                          <TableCell>{value.type}</TableCell>
+                          <TableCell>{value.signatory}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Grid>
+          )}
+
           <Grid item xs={12} md={12}>
             <Field
               id="quotation_closing_letter"

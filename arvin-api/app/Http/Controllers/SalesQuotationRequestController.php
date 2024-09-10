@@ -237,6 +237,10 @@ class SalesQuotationRequestController extends Controller
         // Retrieve related products and notes for the request
         $sale_request_products_for_approval = SalesQuotationRequestProducts::where('sales_quotation_request_code', $id)->get();
         $sale_request_notes_for_approval = SalesQuotationRequestNotes::where('sales_quotation_request_code', $id)->get();
+        $sale_request_signatories = SalesQuotationRequestSignatories::join('users', 'sales_quotation_request_signatories.signatory_code', '=', 'users.code')
+            ->where('sales_quotation_request_code', $id)
+            ->get(['sales_quotation_request_signatories.*','users.position as signatory_position']);
+
         $sale_request_signatories_noted_by_for_approval = SalesQuotationRequestSignatories::join('users', 'sales_quotation_request_signatories.signatory_code', '=', 'users.code')
             ->where('type', 'Noted By:')
             ->where('sales_quotation_request_code', $id)
@@ -255,6 +259,7 @@ class SalesQuotationRequestController extends Controller
         $sales_quotation_request->notes = $sale_request_notes_for_approval;
         $sales_quotation_request->noted_by = $sale_request_signatories_noted_by_for_approval;
         $sales_quotation_request->approved_by = $sale_request_signatories_approved_by_for_approval;
+        $sales_quotation_request->signatories = $sale_request_signatories;
         
         // Prepare the response
         $response = [
@@ -308,7 +313,7 @@ class SalesQuotationRequestController extends Controller
 
         // Extract request parameters
         $query = $request->query('q');
-        $status = $request->query('status');
+        $status = $request->query('st');
         $filter_date_start = $request->query('fs');
         $filter_date_end = $request->query('fe');
         $type = $request->query('type');
@@ -336,34 +341,41 @@ class SalesQuotationRequestController extends Controller
             });
         });
 
-        $sales_quotation_requests->when($status, function ($q) use ($status) {
-            $q->where('sales_quotation_requests.status', $status);
-        });
+        // $sales_quotation_requests->when($status, function ($q) use ($status) {
+        //     $q->where('sales_quotation_requests.status', $status);
+        // });
 
         $sales_quotation_requests->when($type === 'm', function ($q) use ($user_id) {
             $q->where('sales_quotation_requests.requested_by', $user_id);
         });
-
-        // Apply date filter if both start and end dates are provided
-        $sales_quotation_requests->when($filter_date_start && $filter_date_end, function ($q) use ($filter_date_start, $filter_date_end) {
-            // Optional: Use Carbon to handle date formatting and validation
-            $startDate = Carbon::parse($filter_date_start)->startOfDay();
-            $endDate = Carbon::parse($filter_date_end)->endOfDay();
-            $q->whereBetween('sales_quotation_requests.request_date', [$startDate, $endDate]);
-        });
-
+        // $sales_quotation_requests->when($status !== '', function ($q) use ($status) {
+        //     $q->where('sales_quotation_requests.status', $status);
+        // });
+        if ($status !== 'All') {
+            $sales_quotation_requests->where(function($q) use ($status) {
+                $q->where('status',$status );
+            });
+        }
+        if ($filter_date_start) {
+            if(!$filter_date_end){
+                 $filter_date_end = Carbon::now()->format('Y-m-d');
+            }
+            $sales_quotation_requests->whereBetween('request_date', [$filter_date_start, $filter_date_end]);
+        }
+        if ($filter_date_end) {
+               if(!$filter_date_start){
+                 $filter_date_start = Carbon::now()->format('Y-m-d');
+            }
+            $sales_quotation_requests->whereBetween('request_date', [$filter_date_start, $filter_date_end]);
+        }
         // Fetch sales quotation requests with formatted fields
-         $sales_quotation_request_list = $sales_quotation_requests->get([
+            $sales_quotation_request_list = $sales_quotation_requests->get([
             DB::raw("users.first_name + ' ' + users.last_name as requestor_name"), // Using + operator for concatenation
             'sales_quotation_requests.*'
         ]);
         $requests = []; 
 
         foreach ($sales_quotation_request_list as $key => $value) {
-            // $sale_request_products_for_approval = SalesQuotationRequestProducts::where('sales_quotation_request_code', $value->code)->get();
-            // $sale_request_notes_for_approval = SalesQuotationRequestNotes::where('sales_quotation_request_code', $value->code)->get();
-            // $sale_request_signatories_for_approval = SalesQuotationRequestSignatories::where('sales_quotation_request_code', $value->code)->get();
-            // // Prepare the approval request entry
             $requests[] = [
                 'code' => $value->code,
                 'customer_description' => $value->customer_description,
