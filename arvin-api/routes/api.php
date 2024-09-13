@@ -57,7 +57,7 @@ use Illuminate\Support\Facades\Route;
     
     //MODULE SALES DAILY OUT START
 
-    Route::group(['middleware' => ['auth:sanctum']], function () {
+    // Route::group(['middleware' => ['auth:sanctum']], function () {
         //REFERENCE
         // Route::apiResource('reference/companies',RefCompaniesController::class)->middleware(['light_decryption']);
 
@@ -151,7 +151,7 @@ use Illuminate\Support\Facades\Route;
 
 
 
-    });
+    // });
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return $request->user();
     });

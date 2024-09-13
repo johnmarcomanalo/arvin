@@ -158,7 +158,6 @@ const RequestRightsHooks = (props) => {
   };
 
   const onClickOpenUpdateModal = (row) => {
-    console.log(row);
     dispatch({
       type: Constants.ACTION_REFERENCE,
       payload: {

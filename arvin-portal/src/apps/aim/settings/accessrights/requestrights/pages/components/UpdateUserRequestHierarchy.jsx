@@ -27,7 +27,6 @@ const submit = async (values, dispatch, props) => {
         refresh: !props.HRrefresh,
       },
     });
-    console.log(res);
     await swal(res.data.title, res.data.message, res.data.status);
   } catch (error) {
     console.log(error);

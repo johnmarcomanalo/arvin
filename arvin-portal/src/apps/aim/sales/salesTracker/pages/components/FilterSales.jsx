@@ -15,7 +15,6 @@ const submit = async (values, dispatch, props) => {
     swal("Oppss!", "Something went wrong, please try again!", "error");
   }
 };
-
 let FilterSales = (props) => {
   const dispatch = useDispatch();
   const { ...param } = props;
@@ -36,7 +35,6 @@ let FilterSales = (props) => {
               component={ComboBox}
               onChangeHandle={(e, newValue) => {
                 if (newValue?.description) {
-                  console.log(newValue);
                   param.onChangeFilter(newValue);
                 }
               }}

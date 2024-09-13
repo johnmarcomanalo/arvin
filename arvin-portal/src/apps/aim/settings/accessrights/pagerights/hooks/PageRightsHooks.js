@@ -94,7 +94,6 @@ const PageRightsHooks = (props) => {
     data["user_id"] = selectedDataList?.code;
     data["added_by"] = account_details?.code;
     data["modified_by"] = account_details?.code;
-    console.log(data);
     await dispatch(postEmployeePageAccess(data));
     await dispatch(getEmployeePageAccessList(selectedDataList?.code));
   };

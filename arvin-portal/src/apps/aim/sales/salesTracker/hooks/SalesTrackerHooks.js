@@ -126,6 +126,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       p: page,
       l: String(rowsPerPage),
       f: filterQuery,
+      sc: filterSubComponent,
     });
   };
   const handleChangeRowsPerPage = (event) => {
@@ -151,6 +152,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       p: "1",
       l: String(rowsPerPage),
       f: filterQuery,
+      sc: filterSubComponent,
     });
   };
   const debounce = (func, delay) => {
@@ -182,6 +184,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       p: "1",
       l: String(rowsPerPage),
       f: selected_date,
+      sc: filterSubComponent,
     });
     dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
@@ -214,7 +217,9 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     try {
       dispatch(
         getAnnualMonthlyDailyTargetSalesBySectionSubsection(
-          account_details?.subsection_code,
+          filterSubComponent == null
+            ? account_details?.subsection_code
+            : filterSubComponent,
           moment(filterQuery).format("YYYY")
         )
       );
@@ -224,7 +229,12 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   };
   const GetSpecificRefSubSection = () => {
     try {
-      dispatch(getSpecificRefSubSection(account_details.subsection_code));
+      let id = account_details?.subsection_code;
+      if (typeof filterSubComponent !== null || filterSubComponent !== "") {
+        id = filterSubComponent;
+      }
+      console.log(id);
+      dispatch(getSpecificRefSubSection(account_details?.subsection_code));
     } catch (error) {
       console.error(error);
     }
@@ -235,13 +245,13 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   };
 
   React.useEffect(() => {
-    GetAnnualMonthlyDailyTargetSalesBySectionSubsection();
-    GetSpecificRefSubSection();
     onFetchOrganizationAccess();
   }, []);
   React.useEffect(() => {
     GetSalesDailyOut();
-  }, [refresh, debounceSearch, filterQuery]);
+    GetAnnualMonthlyDailyTargetSalesBySectionSubsection();
+    GetSpecificRefSubSection();
+  }, [refresh, debounceSearch, filterQuery, filterSubComponent]);
   const onClickOpenFilterModal = () => {
     dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,

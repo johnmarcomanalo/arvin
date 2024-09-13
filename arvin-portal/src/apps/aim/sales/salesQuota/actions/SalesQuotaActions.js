@@ -130,6 +130,7 @@ export const getAnnualMonthlyDailyTargetSalesBySectionSubsection =
       );
       response.then((res) => {
         let decypted = decryptaes(res.data);
+        
         dispatch({
           type: Constants.ACTION_SALES_DAILY_OUT,
           payload: {
