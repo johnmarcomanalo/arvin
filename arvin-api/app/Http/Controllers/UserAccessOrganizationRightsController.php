@@ -72,9 +72,9 @@ class UserAccessOrganizationRightsController extends Controller
      * @param  \App\Models\UserAccessOrganizationRights  $userAccessOrganizationRights
      * @return \Illuminate\Http\Response
      */
-    public function show(UserAccessOrganizationRights $userAccessOrganizationRights)
+    public function show($id)
     {
-        //
+
     }
 
     /**

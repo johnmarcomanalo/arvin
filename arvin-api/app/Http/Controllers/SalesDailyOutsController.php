@@ -142,8 +142,9 @@ class SalesDailyOutsController extends Controller
             $query = $request->query('q');
             $filter = $request->query('f');
             $user_id = $request->query('uid');
+             $sc = $request->query('sc');
 
-
+            
             $totalTargetDailyQuotaAmount = 0;
             $totalDailyOutAmount = 0;
             $totalStatusDailyTargetAmount = 0;
@@ -166,9 +167,12 @@ class SalesDailyOutsController extends Controller
             }
 
             $user_data = User::where('code',$user_id)->first(); // fetch data from users table
-
+            
+            if(isset($sc)){
+                $user_data["subsection_code"] = $sc;
+            }
             //check if the is record for the selected date
-            $data_count = SalesDailyOuts::where('subsection_code',$user_data["subsection_code"])
+             $data_count = SalesDailyOuts::where('subsection_code',$user_data["subsection_code"])
                 ->where('year_sales_target',$date_year)
                 ->whereYear('sales_date', $date_year)
                 ->whereMonth('sales_date', $date_month)

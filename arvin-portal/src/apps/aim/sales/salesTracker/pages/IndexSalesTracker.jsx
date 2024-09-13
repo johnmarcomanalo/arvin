@@ -51,20 +51,12 @@ const breadCrumbArray = [
   },
 ];
 export default function IndexSalesTracker(props) {
-  const { ...salesTracker } = SalesTrackerHooks(props);
-  const selected_subsection = salesTracker?.selected_subsection;
   return (
     <React.Fragment>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <BreadCrumbs breadCrumbs={breadCrumbArray} />
         </Grid>{" "}
-        <Grid item xs={12} sm={12} md={12} lg={12}>
-          <PageTitle
-            title={title_page}
-            subtitle={selected_subsection.description}
-          />
-        </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <SalesTracker />
         </Grid>

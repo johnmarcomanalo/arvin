@@ -6,11 +6,14 @@ const styleSheet = {
   visibility: "invinsible",
 };
 const SearchField = (props) => {
+  const { textHidden = true, ...param } = props;
   return (
     <div>
-      <Typography sx={{ fontSize: 13, visibility: "hidden" }} align="left">
-        Search
-      </Typography>
+      {textHidden === false && (
+        <Typography sx={{ fontSize: 13, visibility: "hidden" }} align="left">
+          Search
+        </Typography>
+      )}
       <TextField
         onChange={props.onChange}
         fullWidth

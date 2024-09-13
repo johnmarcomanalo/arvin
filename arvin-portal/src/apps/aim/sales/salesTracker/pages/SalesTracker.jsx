@@ -31,6 +31,8 @@ import Slide from "@mui/material/Slide";
 import CloseIcon from "@mui/icons-material/Close";
 import Dialog from "@mui/material/Dialog";
 import { ViewAmountFormatingDecimals } from "../../../../../utils/AccountingUtils";
+import FilterSales from "./components/FilterSales";
+import PageTitle from "../../../../../components/pageTItle/PageTitle";
 const formName = "SalesTracker";
 const submit = async (values, dispatch, props) => {
   try {
@@ -49,6 +51,9 @@ let SalesTracker = (props) => {
   const previous_mtd_data = salesTracker.previous_mtd_data;
   const final_mtd_data = salesTracker.final_mtd_data;
   const dateFilter = salesTracker.dateFilter;
+  const selected_subsection = salesTracker?.selected_subsection;
+  const state = salesTracker?.state;
+
   const theme = useTheme();
   const matches = useMediaQuery("(min-width:600px)");
   const [open, setOpen] = React.useState(false);
@@ -61,10 +66,7 @@ let SalesTracker = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
-  const styles = {
-    ...configure.default_button,
-    display: { xs: "none", sm: "none", md: "inline-block" },
-  };
+
   return (
     <React.Fragment>
       <Modal
@@ -76,6 +78,22 @@ let SalesTracker = (props) => {
         handleClose={salesTracker.onClickCloseAddModal}
       >
         <AddSales />
+      </Modal>
+      <Modal
+        open={salesTracker?.filterModal}
+        fullScreen={matches ? false : true}
+        title={"Filter Sales Tracker"}
+        size={"xs"}
+        action={undefined}
+        handleClose={salesTracker.onClickCloseFilterModal}
+      >
+        <FilterSales
+          user_access_organization_rights={
+            salesTracker.user_access_organization_rights
+          }
+          onChangeFilter={salesTracker.filterSubComponents}
+          onClose={salesTracker.onClickCloseFilterModal}
+        />
       </Modal>
       <Dialog
         fullScreen
@@ -252,7 +270,18 @@ let SalesTracker = (props) => {
           <Grid item xs={12} sm={12} md={4}></Grid>
         </Grid>
       </Dialog>
+
       <Grid container spacing={2}>
+        <Grid item xs={12} sm={12} md={12} lg={12}>
+          <PageTitle
+            title={"Sales Tracker"}
+            subtitle={
+              state?.active_subsections == null
+                ? selected_subsection.description
+                : state?.active_subsections
+            }
+          />
+        </Grid>
         <Grid item xs={12} sm={12} md={3}>
           <CardComponent
             icon={
@@ -498,7 +527,7 @@ let SalesTracker = (props) => {
             </Stack>
           </Grid>
         </Grid>
-        <Grid item xs={6} sm={6} md={6} lg={6}>
+        <Grid item xs={12} sm={12} md={6} lg={6}>
           <Stack
             direction="row"
             justifyContent={matches ? "flex-start" : "center"}
@@ -528,21 +557,25 @@ let SalesTracker = (props) => {
                 }}
               />
             </form>
-            <div style={{}}>
-              <ButtonComponent
-                stx={styles}
-                iconType="view2"
-                type="button"
-                fullWidth={true}
-                children={"test"}
-                click={handleClickOpen}
-              >
-                VIEW FULLSCREEN
-              </ButtonComponent>
-            </div>
+            <ButtonComponent
+              stx={configure.default_button}
+              iconType="view2"
+              type="button"
+              fullWidth={true}
+              children={"VIEW FULLSCREEN"}
+              click={handleClickOpen}
+            />
+            <ButtonComponent
+              stx={configure.default_button}
+              iconType="generate"
+              type="button"
+              fullWidth={true}
+              children={"Generate"}
+              click={salesTracker.onClickOpenFilterModal}
+            />
           </Stack>
         </Grid>
-        <Grid item xs={6} sm={6} md={6} lg={6}>
+        {/* <Grid item xs={6} sm={6} md={4} lg={4}>
           <Stack
             direction="row"
             justifyContent={"flex-end"}
@@ -558,7 +591,7 @@ let SalesTracker = (props) => {
               onHandleChange={salesTracker.handleChangePage}
             />
           </Stack>
-        </Grid>
+        </Grid> */}
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <ComponentTable
             columns={salesTracker.columns}

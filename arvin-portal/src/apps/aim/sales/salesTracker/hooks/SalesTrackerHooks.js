@@ -10,12 +10,14 @@ import {
   getStatusDailyTargetAndPercentageDailyTargetByDailyOut,
 } from "../actions/SalesTrackerActions";
 import { getSpecificRefSubSection } from "../../../settings/reference/actions/ReferenceActions";
+import { getEmployeeOrganizationAccessList } from "../../../settings/accessrights/organizationrights/actions/OrganizationRightsActions";
 const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
   const [state, setState] = React.useState({
     debounceTimer: null,
     debounceDelay: 2000,
     year: moment(new Date()).format("YYYY"),
+    active_subsections: null,
   });
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("p") != undefined ? searchParams.get("p") : 1;
@@ -27,10 +29,13 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     searchParams.get("f") != null
       ? String(searchParams.get("f"))
       : moment(new Date()).format("YYYY-MM-DD");
+  const filterSubComponent =
+    searchParams.get("sc") != null ? String(searchParams.get("sc")) : null;
   const debounceSearch = useDebounce(searchParams, 500);
   //filtering,search,page,limit end
 
   const dispatch = useDispatch();
+  const access = useSelector((state) => state.AuthenticationReducer.access);
   const addModal = useSelector((state) => state.SalesDailyOutReducer.addModal);
   const dataList = useSelector((state) => state.SalesDailyOutReducer.dataList);
   const present_mtd_data = useSelector(
@@ -78,7 +83,11 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   const dateFilter = useSelector(
     (state) => state.SalesDailyOutReducer.dateFilter
   );
-
+  const filterModal = useSelector(
+    (state) => state.SalesDailyOutReducer.filterModal
+  );
+  const user_access_organization_rights =
+    access?.user_access_organization_rights;
   const columns = [
     { id: "sales_date", label: "Date", align: "left" },
     { id: "sales_daily_qouta", label: "Daily Quota", align: "left" },
@@ -94,6 +103,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       align: "left",
     },
   ];
+
   const onClickOpenAddModal = () => {
     dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
@@ -188,6 +198,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       l: rowsPerPage,
       f: filterQuery,
       u: account_details?.code,
+      sc: filterSubComponent,
     };
     return data;
   };
@@ -218,14 +229,49 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       console.error(error);
     }
   };
+
+  const onFetchOrganizationAccess = async (data, values) => {
+    await dispatch(getEmployeeOrganizationAccessList(account_details.code));
+  };
+
   React.useEffect(() => {
     GetAnnualMonthlyDailyTargetSalesBySectionSubsection();
     GetSpecificRefSubSection();
+    onFetchOrganizationAccess();
   }, []);
   React.useEffect(() => {
     GetSalesDailyOut();
   }, [refresh, debounceSearch, filterQuery]);
-
+  const onClickOpenFilterModal = () => {
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        filterModal: true,
+      },
+    });
+  };
+  const onClickCloseFilterModal = () => {
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        filterModal: false,
+      },
+    });
+  };
+  const filterSubComponents = (data) => {
+    console.log(data);
+    setState((prev) => ({
+      ...prev,
+      active_subsections: data.description, // Update the state to trigger re-render
+    }));
+    setSearchParams({
+      p: page == null ? 1 : page,
+      q: search,
+      l: rowsPerPage,
+      f: filterQuery,
+      sc: data.code,
+    });
+  };
   return {
     search,
     page,
@@ -246,6 +292,9 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     final_mtd_data,
     selected_subsection,
     dateFilter,
+    user_access_organization_rights,
+    filterModal,
+    state,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,
@@ -257,6 +306,9 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     GetStatusDailyTargetAndPercentageDailyTargetByDailyOut,
     GetSalesDailyOut,
     filterMonthAndYear,
+    onClickOpenFilterModal,
+    onClickCloseFilterModal,
+    filterSubComponents,
   };
 };
 

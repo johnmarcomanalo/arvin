@@ -25,7 +25,9 @@ export const getSalesDailyOut = (values) => async (dispatch) => {
         "&f=" +
         values.f +
         "&uid=" +
-        values.u
+        values.u +
+        "&sc=" +
+        values.sc
     );
     response.then((res) => {
       try {

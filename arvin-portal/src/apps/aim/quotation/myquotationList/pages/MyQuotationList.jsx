@@ -101,6 +101,7 @@ let MyQuotationList = (props) => {
               <SearchField
                 value={forApprovalQuotation.search}
                 onChange={forApprovalQuotation.onChangeSearch}
+                textHidden={false}
               />
             </Stack>
           </Grid>

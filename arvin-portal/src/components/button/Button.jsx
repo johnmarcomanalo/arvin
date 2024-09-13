@@ -7,6 +7,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SyncIcon from "@mui/icons-material/Sync";
 import HelpIcon from "@mui/icons-material/Help";
 import LoginIcon from "@mui/icons-material/Login";
+import CloseIcon from "@mui/icons-material/Close";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import TableRowsIcon from "@mui/icons-material/TableRows";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -112,6 +113,9 @@ const ButtonComponent = (props) => {
       } else {
         dsbl = false;
       }
+      break;
+    case "close":
+      icon = <CloseIcon />;
       break;
     default:
       icon = <HelpIcon />;

@@ -41,6 +41,7 @@ const initialState = {
   showYTDTable: false,
   annual_set_total_count_subsections: 0,
   annual_set_subsections: [],
+  filterModal: false,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

@@ -71,6 +71,7 @@ let QuotationList = (props) => {
               <SearchField
                 value={quotationList.search}
                 onChange={quotationList.onChangeSearch}
+                textHidden={false}
               />
               <Stack
                 direction={matches ? "row" : "column"}

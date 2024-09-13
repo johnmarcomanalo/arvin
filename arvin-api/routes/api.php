@@ -53,103 +53,105 @@ use Illuminate\Support\Facades\Route;
 */  
     //AUTH START
     Route::post('/login',[AuthController::class, 'login'])->middleware(['light_decryption']);
-    Route::post('/users/change-password',[AuthController::class, 'change_password'])->middleware(['light_decryption']);
-
-    //AUTH END
-    
-    // REFERENCE START
-    Route::apiResource('reference/companies',RefCompaniesController::class)->middleware(['light_decryption']);
-    Route::apiResource('reference/business_units',RefBusinessUnitsController::class)->middleware(['light_decryption']);
-    Route::apiResource('reference/teams',RefTeamsController::class)->middleware(['light_decryption']);
-    Route::apiResource('reference/departments',RefDepartmentsController::class)->middleware(['light_decryption']);
-    Route::apiResource('reference/sections',RefSectionsController::class)->middleware(['light_decryption']);
-    Route::apiResource('reference/subsections',RefSubSectionsController::class)->middleware(['light_decryption']);
-    Route::get('reference/sales_ranking/get_ref_sales_ranking',[RefSalesRankingController::class,'get_ref_sales_ranking']);
-    Route::get('reference/sales_ranking_list',[RefSalesRankingController::class,'get_ref_sales_ranking']);
-    Route::apiResource('reference/sales_ranking',RefSalesRankingController::class)->middleware(['light_decryption']);
-    Route::apiResource('reference/ref_sales_ranking_placements',RefSalesRankingPlacementsController::class)->middleware(['light_decryption']);
-    Route::get('reference/subsections/get_subsection/{id}',[RefSubSectionsController::class,'get_subsection'])->middleware(['light_decryption']);
-    Route::get('reference/system_settings/access_rights/organization_rights/get_employee_organization_access_list/{id}',[UserAccessOrganizationRightsController::class,'get_employee_organization_access_list']);
-    Route::apiResource('reference/system_settings/access_rights/organization_rights',UserAccessOrganizationRightsController::class)->middleware(['light_decryption']);
-    Route::get('reference/system_settings/access_rights/page_rights/get_employee_page_access_list/{id}',[UserAccessPageRightsController::class,'get_employee_page_access_list']);
-    Route::apiResource('reference/system_settings/access_rights/page_rights',UserAccessPageRightsController::class)->middleware(['light_decryption']);
-    Route::get('reference/ref_modules',[RefModulesController::class,'get_refence_modules']);
-    Route::apiResource('reference/modules',RefModulesController::class)->middleware(['light_decryption']);
-    Route::get('reference/ref_components',[RefComponentsController::class,'get_refence_components']);
-    Route::apiResource('reference/components',RefComponentsController::class)->middleware(['light_decryption']);
-    Route::get('reference/ref_subcomponents',[RefSubComponentsController::class,'get_refence_subcomponents']);
-    Route::apiResource('reference/subcomponents',RefSubComponentsController::class)->middleware(['light_decryption']);
-    Route::get('reference/get_employee_customer_access_list',[UserAccessCustomerRightsController::class,'get_employee_customer_access_list']);
-    Route::post('reference/get_employee_customer_access_list/get_employee_customer_access_details',[UserAccessCustomerRightsController::class,'get_employee_customer_access_details'])->middleware(['light_decryption']);
-    Route::apiResource('reference/system_settings/access_rights/customer_rights',UserAccessCustomerRightsController::class)->middleware(['light_decryption']);
-    Route::get('reference/get_ref_products',[RefProducts::class,'get_ref_products']);
-    Route::apiResource('reference/ref_request_types',RefRequestTypesController::class)->middleware(['light_decryption']);
-    Route::get('reference/get_ref_request_types',[RefRequestTypesController::class,'get_ref_request_types']);
-    Route::apiResource('reference/ref_unit_of_measurement',RefUnitOfMeasurementController::class)->middleware(['light_decryption']);
-    Route::get('reference/get_ref_unit_of_measurement',[RefUnitOfMeasurementController::class,'get_ref_unit_of_measurement']);
-    Route::apiResource('reference/ref_currencies',RefCurrenciesController::class)->middleware(['light_decryption']);
-    Route::get('reference/get_ref_currencies',[RefCurrenciesController::class,'get_ref_currencies']);
-    Route::apiResource('reference/ref_value_added_tax',RefValueAddedTaxController::class)->middleware(['light_decryption']);
-    Route::get('reference/get_ref_value_added_tax',[RefValueAddedTaxController::class,'get_ref_value_added_tax']);
-    Route::apiResource('reference/ref_request_hierarchy',RefRequestHierarchiesController::class)->middleware(['light_decryption']);
-    Route::get('reference/get_ref_request_hierarchy',[RefRequestHierarchiesController::class,'get_ref_request_hierarchy']);
-    Route::get('reference/get_specific_ref_request_hierarchy/{id}',[RefRequestHierarchiesController::class,'get_specific_ref_request_hierarchy']);
-    Route::get('reference/get_request_rights_access_list',[UserAccessRequestRightsController::class,'get_request_rights_access_list']);
-    Route::apiResource('reference/system_settings/access_rights/request_rights_access_list',UserAccessRequestRightsController::class)->middleware(['light_decryption']);
-    Route::apiResource('reference/ref_salutations',RefSalutationsController::class)->middleware(['light_decryption']);
-    Route::get('reference/get_ref_salutations',[RefSalutationsController::class,'get_ref_salutations']);
-    // REFERENCE END
+   
     
     //MODULE SALES DAILY OUT START
 
-    // SALES DAILY OUT START
-    Route::get('salesdailyout/get_five_days_sales_daily_out_by_current_date',[SalesDailyOutsController::class,'getFiveDaysSalesDailyOutbyCurrentDate']);
-    Route::get('salesdailyout/insert_sap_sales_daily_out/{id}',[SalesDailyOutsController::class,'insertSAPSalesDailyOut']);
-    Route::get('salesdailyout/daily_out/get_sales_daily_out',[SalesDailyOutsController::class,'get_sales_daily_out']);//for pagination
-    Route::get('salesdailyout/daily_out/get_status_daily_target_and_percentage_daily_target_by_daily_out/{daily_out}/{daily_quota}',[SalesDailyOutsController::class, 'get_status_daily_target_and_percentage_daily_target_by_daily_out'])->middleware(['light_decryption']);
-    Route::apiResource('salesdailyout/daily_out',SalesDailyOutsController::class)->middleware(['light_decryption']);
-     // SALES DAILY OUT END 
-
-    // Sales Daily Out Annual Settings Sales START
-    Route::get('salesdailyout/annual_settings_sales/get_sales_annual_settings',[SalesDailyOutAnnualSettingsSalesController::class,'get_sales_annual_settings']);//for pagination
-    Route::apiResource('salesdailyout/annual_settings_sales',SalesDailyOutAnnualSettingsSalesController::class)->middleware(['light_decryption']);
-    Route::get('salesdailyout/annual_settings_sales/annual_target_sales_computation/{amount}',[SalesDailyOutAnnualSettingsSalesController::class, 'annual_target_sales_computation'])->middleware(['light_decryption']);
-    Route::get('salesdailyout/annual_settings_sales/get_annual_monthly_daily_target_sales_by_section_subsection/{id}/{year}',[SalesDailyOutAnnualSettingsSalesController::class, 'get_annual_monthly_daily_target_sales_by_section_subsection'])->middleware(['light_decryption']);
-    // Sales Daily Out Annual Settings Sales END 
-
-    // Sales Daily Out Annual Sales Ranking START
-    Route::get('salesdailyout/annual_sales_ranking/get_sales_ranking_by_id',[SalesDailyOutAnnualSalesRankingController::class,'get_sales_ranking_by_id']);
-    Route::apiResource('salesdailyout/annual_sales_ranking',SalesDailyOutAnnualSalesRankingController::class)->middleware(['light_decryption']);
-    Route::apiResource('salesdailyout/annual_sales_ranking_details',SalesDailyOutAnnualSalesRankingDetailsController::class)->middleware(['light_decryption']);
-    // Sales Daily Out Annual Sales Ranking END
-    
-    // Sales Daily Out Annual Report START
-    Route::get('salesdailyout/report/get_report_sales_summary',[SalesDailyOutReportSalesSummaryController::class,'getReportSalesSummary']);
-    // Sales Daily Out Annual Report End
-
-    //MODULE SALES DAILY OUT END 
-
-    // QUOTATION START
-    Route::get('quotation/request/get_request_quotation',[SalesQuotationRequestController::class,'get_request_quotation']);
-    Route::apiResource('quotation/request',SalesQuotationRequestController::class)->middleware(['light_decryption']);
-    Route::get('quotation/for_approval_quotation/get_request_for_approval',[SalesQuotationRequestForApprovalsController::class,'get_request_for_approval']);
-    Route::apiResource('quotation/for_approval_quotation',SalesQuotationRequestForApprovalsController::class)->middleware(['light_decryption']);
-
-    
-    // QUOTATION END
-
-    // HUMAN RESOURCE START
-    Route::get('humanresource/employee_list',[UsersController::class, 'employee_list']);
-    Route::get('humanresource/fast_create',[UsersController::class, 'fast_create']);
-    // HUMAN RESOURCE END
-
-    Route::group(['middleware' => ['auth:sanctum','cors','api']], function () {
+    Route::group(['middleware' => ['auth:sanctum']], function () {
         //REFERENCE
         // Route::apiResource('reference/companies',RefCompaniesController::class)->middleware(['light_decryption']);
+
+         Route::post('/users/change-password',[AuthController::class, 'change_password'])->middleware(['light_decryption']);
+
+        //AUTH END
+        
+        // REFERENCE START
+        Route::apiResource('reference/companies',RefCompaniesController::class)->middleware(['light_decryption']);
+        Route::apiResource('reference/business_units',RefBusinessUnitsController::class)->middleware(['light_decryption']);
+        Route::apiResource('reference/teams',RefTeamsController::class)->middleware(['light_decryption']);
+        Route::apiResource('reference/departments',RefDepartmentsController::class)->middleware(['light_decryption']);
+        Route::apiResource('reference/sections',RefSectionsController::class)->middleware(['light_decryption']);
+        Route::apiResource('reference/subsections',RefSubSectionsController::class)->middleware(['light_decryption']);
+        Route::get('reference/sales_ranking/get_ref_sales_ranking',[RefSalesRankingController::class,'get_ref_sales_ranking']);
+        Route::get('reference/sales_ranking_list',[RefSalesRankingController::class,'get_ref_sales_ranking']);
+        Route::apiResource('reference/sales_ranking',RefSalesRankingController::class)->middleware(['light_decryption']);
+        Route::apiResource('reference/ref_sales_ranking_placements',RefSalesRankingPlacementsController::class)->middleware(['light_decryption']);
+        Route::get('reference/subsections/get_subsection/{id}',[RefSubSectionsController::class,'get_subsection'])->middleware(['light_decryption']);
+        Route::get('reference/system_settings/access_rights/organization_rights/get_employee_organization_access_list/{id}',[UserAccessOrganizationRightsController::class,'get_employee_organization_access_list']);
+        Route::apiResource('reference/system_settings/access_rights/organization_rights',UserAccessOrganizationRightsController::class)->middleware(['light_decryption']);
+        Route::get('reference/system_settings/access_rights/page_rights/get_employee_page_access_list/{id}',[UserAccessPageRightsController::class,'get_employee_page_access_list']);
+        Route::apiResource('reference/system_settings/access_rights/page_rights',UserAccessPageRightsController::class)->middleware(['light_decryption']);
+        Route::get('reference/ref_modules',[RefModulesController::class,'get_refence_modules']);
+        Route::apiResource('reference/modules',RefModulesController::class)->middleware(['light_decryption']);
+        Route::get('reference/ref_components',[RefComponentsController::class,'get_refence_components']);
+        Route::apiResource('reference/components',RefComponentsController::class)->middleware(['light_decryption']);
+        Route::get('reference/ref_subcomponents',[RefSubComponentsController::class,'get_refence_subcomponents']);
+        Route::apiResource('reference/subcomponents',RefSubComponentsController::class)->middleware(['light_decryption']);
+        Route::get('reference/get_employee_customer_access_list',[UserAccessCustomerRightsController::class,'get_employee_customer_access_list']);
+        Route::post('reference/get_employee_customer_access_list/get_employee_customer_access_details',[UserAccessCustomerRightsController::class,'get_employee_customer_access_details'])->middleware(['light_decryption']);
+        Route::apiResource('reference/system_settings/access_rights/customer_rights',UserAccessCustomerRightsController::class)->middleware(['light_decryption']);
+        Route::get('reference/get_ref_products',[RefProducts::class,'get_ref_products']);
+        Route::apiResource('reference/ref_request_types',RefRequestTypesController::class)->middleware(['light_decryption']);
+        Route::get('reference/get_ref_request_types',[RefRequestTypesController::class,'get_ref_request_types']);
+        Route::apiResource('reference/ref_unit_of_measurement',RefUnitOfMeasurementController::class)->middleware(['light_decryption']);
+        Route::get('reference/get_ref_unit_of_measurement',[RefUnitOfMeasurementController::class,'get_ref_unit_of_measurement']);
+        Route::apiResource('reference/ref_currencies',RefCurrenciesController::class)->middleware(['light_decryption']);
+        Route::get('reference/get_ref_currencies',[RefCurrenciesController::class,'get_ref_currencies']);
+        Route::apiResource('reference/ref_value_added_tax',RefValueAddedTaxController::class)->middleware(['light_decryption']);
+        Route::get('reference/get_ref_value_added_tax',[RefValueAddedTaxController::class,'get_ref_value_added_tax']);
+        Route::apiResource('reference/ref_request_hierarchy',RefRequestHierarchiesController::class)->middleware(['light_decryption']);
+        Route::get('reference/get_ref_request_hierarchy',[RefRequestHierarchiesController::class,'get_ref_request_hierarchy']);
+        Route::get('reference/get_specific_ref_request_hierarchy/{id}',[RefRequestHierarchiesController::class,'get_specific_ref_request_hierarchy']);
+        Route::get('reference/get_request_rights_access_list',[UserAccessRequestRightsController::class,'get_request_rights_access_list']);
+        Route::apiResource('reference/system_settings/access_rights/request_rights_access_list',UserAccessRequestRightsController::class)->middleware(['light_decryption']);
+        Route::apiResource('reference/ref_salutations',RefSalutationsController::class)->middleware(['light_decryption']);
+        Route::get('reference/get_ref_salutations',[RefSalutationsController::class,'get_ref_salutations']);
+        // REFERENCE END
+
+
+        // SALES DAILY OUT START
+        Route::get('salesdailyout/get_five_days_sales_daily_out_by_current_date',[SalesDailyOutsController::class,'getFiveDaysSalesDailyOutbyCurrentDate']);
+        Route::get('salesdailyout/insert_sap_sales_daily_out/{id}',[SalesDailyOutsController::class,'insertSAPSalesDailyOut']);
+        Route::get('salesdailyout/daily_out/get_sales_daily_out',[SalesDailyOutsController::class,'get_sales_daily_out']);//for pagination
+        Route::get('salesdailyout/daily_out/get_status_daily_target_and_percentage_daily_target_by_daily_out/{daily_out}/{daily_quota}',[SalesDailyOutsController::class, 'get_status_daily_target_and_percentage_daily_target_by_daily_out'])->middleware(['light_decryption']);
+        Route::apiResource('salesdailyout/daily_out',SalesDailyOutsController::class)->middleware(['light_decryption']);
+        // SALES DAILY OUT END 
+
+        // Sales Daily Out Annual Settings Sales START
+        Route::get('salesdailyout/annual_settings_sales/get_sales_annual_settings',[SalesDailyOutAnnualSettingsSalesController::class,'get_sales_annual_settings']);//for pagination
+        Route::apiResource('salesdailyout/annual_settings_sales',SalesDailyOutAnnualSettingsSalesController::class)->middleware(['light_decryption']);
+        Route::get('salesdailyout/annual_settings_sales/annual_target_sales_computation/{amount}',[SalesDailyOutAnnualSettingsSalesController::class, 'annual_target_sales_computation'])->middleware(['light_decryption']);
+        Route::get('salesdailyout/annual_settings_sales/get_annual_monthly_daily_target_sales_by_section_subsection/{id}/{year}',[SalesDailyOutAnnualSettingsSalesController::class, 'get_annual_monthly_daily_target_sales_by_section_subsection'])->middleware(['light_decryption']);
+        // Sales Daily Out Annual Settings Sales END 
+
+        // Sales Daily Out Annual Sales Ranking START
+        Route::get('salesdailyout/annual_sales_ranking/get_sales_ranking_by_id',[SalesDailyOutAnnualSalesRankingController::class,'get_sales_ranking_by_id']);
+        Route::apiResource('salesdailyout/annual_sales_ranking',SalesDailyOutAnnualSalesRankingController::class)->middleware(['light_decryption']);
+        Route::apiResource('salesdailyout/annual_sales_ranking_details',SalesDailyOutAnnualSalesRankingDetailsController::class)->middleware(['light_decryption']);
+        // Sales Daily Out Annual Sales Ranking END
+        
+        // Sales Daily Out Annual Report START
+        Route::get('salesdailyout/report/get_report_sales_summary',[SalesDailyOutReportSalesSummaryController::class,'getReportSalesSummary']);
+        // Sales Daily Out Annual Report End
+
+        //MODULE SALES DAILY OUT END 
+
+        // QUOTATION START
+        Route::get('quotation/request/get_request_quotation',[SalesQuotationRequestController::class,'get_request_quotation']);
+        Route::apiResource('quotation/request',SalesQuotationRequestController::class)->middleware(['light_decryption']);
+        Route::get('quotation/for_approval_quotation/get_request_for_approval',[SalesQuotationRequestForApprovalsController::class,'get_request_for_approval']);
+        Route::apiResource('quotation/for_approval_quotation',SalesQuotationRequestForApprovalsController::class)->middleware(['light_decryption']);
+        // QUOTATION END
+
+        // HUMAN RESOURCE START
+        Route::get('humanresource/employee_list',[UsersController::class, 'employee_list']);
+        Route::get('humanresource/fast_create',[UsersController::class, 'fast_create']);
+        // HUMAN RESOURCE END
+
+
+
+
     });
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return $request->user();
-
-
-
-});
+    });

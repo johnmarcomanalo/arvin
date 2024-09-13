@@ -8,7 +8,6 @@ const initialState = {
   token: "",
   account_details: storedUserData ? decryptaes(storedUserData) : null,
   access: storedAccessData ? decryptaes(storedAccessData) : null,
-  organization_access: [],
   active_page: storedActivePage ? decryptaes(storedActivePage) : null,
 };
 const dataReducer = (state = initialState, action) => {
