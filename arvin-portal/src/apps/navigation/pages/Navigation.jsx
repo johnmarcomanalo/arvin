@@ -15,7 +15,7 @@ import { styled, useTheme } from "@mui/material/styles";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import configure from "../../configure/configure.json";
 import NavigationHooks from "../hooks/NavigationHooks";
 const drawerWidth = 250;
@@ -191,7 +191,8 @@ export default function Navigation(props) {
                   </ListItemButton>
                 ) : (
                   <ListItemButton
-                    href={text.link}
+                    component={Link}
+                    to={text.link}
                     underline="none"
                     onClick={() => navigation_param.onSelectActivePage(text)}
                   >
@@ -237,7 +238,8 @@ export default function Navigation(props) {
             <React.Fragment>
               <ListItem disablePadding>
                 <ListItemButton
-                  href={text.link}
+                  component={Link}
+                  to={text.link}
                   underline="none"
                   onClick={() => navigation_param.onSelectActivePage(text)}
                 >
@@ -326,7 +328,11 @@ export default function Navigation(props) {
         <Divider />
         <List>
           <ListItem disablePadding>
-            <ListItemButton href={"/"} underline="none">
+            <ListItemButton
+              component={Link}
+              to={"/"}
+              underline="none"
+            >
               <ListItemText
                 primary={"Home"}
                 sx={{

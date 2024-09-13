@@ -5,9 +5,8 @@ import { change } from "redux-form";
 import { Constants } from "../../../../../reducer/Contants";
 import { useDebounce } from "../../../../../utils/HelperUtils";
 import { decryptaes } from "../../../../../utils/LightSecurity";
-import { ViewSalesQuotation } from "../../myquotationList/actions/MyQuotationListActions";
 import { getForApprovalSalesQuotation } from "../actions/ForApprovalQuotationActions";
-
+import { ViewSalesQuotation } from "../../quotationlist/actions/QuotationListActions";
 const ForApprovalQuotationHooks = (props) => {
   const dispatch = useDispatch();
   const [state, setState] = React.useState({

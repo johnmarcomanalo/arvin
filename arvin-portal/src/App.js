@@ -166,7 +166,7 @@ function App() {
     <div className="App">
       <Loader />
       <ThemeProvider theme={theme}>
-        <Suspense fallback={<div>Loading</div>}>
+        <Suspense fallback={<Loader />}>
           <Routes>
             <Route path="/login" element={<IndexLogin />} />
             {typeof token !== "undefined" &&

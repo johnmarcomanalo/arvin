@@ -166,9 +166,8 @@ class SalesDailyOutsController extends Controller
                 return response($response,200);
             }
 
-            $user_data = User::where('code',$user_id)->first(); // fetch data from users table
-            
-            if(isset($sc)){
+             $user_data = User::where('code',$user_id)->first(); // fetch data from users table
+            if(empty($sc)){
                 $user_data["subsection_code"] = $sc;
             }
             //check if the is record for the selected date

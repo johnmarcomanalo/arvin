@@ -6,10 +6,9 @@ import { change } from "redux-form";
 import { Constants } from "../../../../../reducer/Contants";
 import { useDebounce } from "../../../../../utils/HelperUtils";
 import { decryptaes } from "../../../../../utils/LightSecurity";
-import { ViewSalesQuotation } from "../../myquotationList/actions/MyQuotationListActions";
 import { getSalesQuotations } from "../actions/QuotationListActions";
 import moment from "moment";
-
+import { ViewSalesQuotation } from "../actions/QuotationListActions";
 const QuotationListHooks = (props) => {
   const dispatch = useDispatch();
   const [state, setState] = React.useState({

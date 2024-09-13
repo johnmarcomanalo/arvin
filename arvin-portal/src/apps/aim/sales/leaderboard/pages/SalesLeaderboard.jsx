@@ -43,7 +43,7 @@ export default function SalesLeaderboard(props) {
     return current_point;
   };
 
-  const sortedDataList = salesLeaderboard.dataList
+  const sortedDataList = (salesLeaderboard?.dataList ?? [])
     .map((data) => ({
       ...data,
       current_point: calculateCurrentPoint(data.details),
