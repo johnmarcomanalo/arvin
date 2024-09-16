@@ -5,6 +5,8 @@ import {
   GetSpecificDefaultServices,
   PostDefaultServices,
 } from "../../../../../services/apiService";
+import swal from "sweetalert";
+import configure from "../../../../configure/configure.json";
 import { decryptaes } from "../../../../../utils/LightSecurity";
 export const getSalesDailyOut = (values) => async (dispatch) => {
   try {
@@ -44,7 +46,23 @@ export const getSalesDailyOut = (values) => async (dispatch) => {
           },
         });
       } catch (error) {
-        console.log(error);
+        var title = configure.error_message.default;
+        var message = "";
+        if (typeof error.response.data.message !== "undefined")
+          title = error.response.data.message;
+        if (typeof error.response.data.errors !== "undefined") {
+          const formattedErrors = Object.entries(error.response.data.errors)
+            .map(([key, value]) => `${value.join(", ")}`)
+            .join("\n");
+          message = formattedErrors;
+        }
+        swal(title, message, "error");
+        dispatch({
+          type: Constants.ACTION_LOADING,
+          payload: {
+            loading: false,
+          },
+        });
       }
       dispatch({
         type: Constants.ACTION_LOADING,
@@ -54,7 +72,23 @@ export const getSalesDailyOut = (values) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -78,6 +112,17 @@ export const postSalesDailyOut = (formValues) => async (dispatch) => {
     });
     return res;
   } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -115,11 +160,43 @@ export const getAnnualSettingSale = () => async (dispatch) => {
           },
         });
       } catch (error) {
-        console.log(error);
+        var title = configure.error_message.default;
+        var message = "";
+        if (typeof error.response.data.message !== "undefined")
+          title = error.response.data.message;
+        if (typeof error.response.data.errors !== "undefined") {
+          const formattedErrors = Object.entries(error.response.data.errors)
+            .map(([key, value]) => `${value.join(", ")}`)
+            .join("\n");
+          message = formattedErrors;
+        }
+        swal(title, message, "error");
+        dispatch({
+          type: Constants.ACTION_LOADING,
+          payload: {
+            loading: false,
+          },
+        });
       }
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -154,6 +231,22 @@ export const getStatusDailyTargetAndPercentageDailyTargetByDailyOut =
         });
       });
     } catch (error) {
-      console.log(error);
+      var title = configure.error_message.default;
+      var message = "";
+      if (typeof error.response.data.message !== "undefined")
+        title = error.response.data.message;
+      if (typeof error.response.data.errors !== "undefined") {
+        const formattedErrors = Object.entries(error.response.data.errors)
+          .map(([key, value]) => `${value.join(", ")}`)
+          .join("\n");
+        message = formattedErrors;
+      }
+      await swal(title, message, "error");
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
     }
   };

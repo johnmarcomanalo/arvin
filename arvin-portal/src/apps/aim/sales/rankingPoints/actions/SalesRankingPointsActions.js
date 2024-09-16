@@ -6,6 +6,8 @@ import {
   PutDefaultServices,
 } from "../../../../../services/apiService";
 import { decryptaes } from "../../../../../utils/LightSecurity";
+import swal from "sweetalert";
+import configure from "../../../../configure/configure.json";
 
 export const getReferenceSalesRankingPlacements = (id) => async (dispatch) => {
   try {
@@ -36,7 +38,17 @@ export const getReferenceSalesRankingPlacements = (id) => async (dispatch) => {
           },
         });
       } catch (error) {
-        console.log(error);
+        var title = configure.error_message.default;
+        var message = "";
+        if (typeof error.response.data.message !== "undefined")
+          title = error.response.data.message;
+        if (typeof error.response.data.errors !== "undefined") {
+          const formattedErrors = Object.entries(error.response.data.errors)
+            .map(([key, value]) => `${value.join(", ")}`)
+            .join("\n");
+          message = formattedErrors;
+        }
+        swal(title, message, "error");
       }
       dispatch({
         type: Constants.ACTION_LOADING,
@@ -46,7 +58,23 @@ export const getReferenceSalesRankingPlacements = (id) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -71,6 +99,17 @@ export const postAnnualSettingSalesRanking =
       });
       return res;
     } catch (error) {
+      var title = configure.error_message.default;
+      var message = "";
+      if (typeof error.response.data.message !== "undefined")
+        title = error.response.data.message;
+      if (typeof error.response.data.errors !== "undefined") {
+        const formattedErrors = Object.entries(error.response.data.errors)
+          .map(([key, value]) => `${value.join(", ")}`)
+          .join("\n");
+        message = formattedErrors;
+      }
+      await swal(title, message, "error");
       await dispatch({
         type: Constants.ACTION_LOADING,
         payload: {
@@ -117,7 +156,23 @@ export const getAnnualSettingSaleRanking = (values) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -143,6 +198,17 @@ export const putAnnualSettingSalesRanking =
       });
       return res;
     } catch (error) {
+      var title = configure.error_message.default;
+      var message = "";
+      if (typeof error.response.data.message !== "undefined")
+        title = error.response.data.message;
+      if (typeof error.response.data.errors !== "undefined") {
+        const formattedErrors = Object.entries(error.response.data.errors)
+          .map(([key, value]) => `${value.join(", ")}`)
+          .join("\n");
+        message = formattedErrors;
+      }
+      await swal(title, message, "error");
       await dispatch({
         type: Constants.ACTION_LOADING,
         payload: {

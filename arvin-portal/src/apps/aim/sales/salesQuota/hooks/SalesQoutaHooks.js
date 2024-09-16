@@ -46,7 +46,7 @@ const SalesQoutaHooks = (props) => {
   const selectedDataList = useSelector(
     (state) => state.SalesDailyOutReducer.selectedDataList
   );
-  
+
   const columns = [
     { id: "code", label: "Code", align: "left" },
     { id: "year_sales_target", label: "Year", align: "left" },
@@ -54,7 +54,7 @@ const SalesQoutaHooks = (props) => {
     { id: "subsection", label: "Subsection", align: "left" },
     { id: "annual_sales_target", label: "Annual Quota", align: "left" },
     { id: "monthly_sales_target", label: "Monthly Quota", align: "left" },
-    { id: "daily_sales_target", label: "Daily Quota", align: "left" },
+    // { id: "daily_sales_target", label: "Daily Quota", align: "left" },
   ];
   const onClickOpenAddModal = () => {
     dispatch({
@@ -139,14 +139,14 @@ const SalesQoutaHooks = (props) => {
       console.error(error);
     }
   };
-   const GetSectionsByDepartmentCode = async () => {
-     try {
-       const data = getListParam();
-       await dispatch(getAnnualSettingSale(data));
-     } catch (error) {
-       console.error(error);
-     }
-   };
+  const GetSectionsByDepartmentCode = async () => {
+    try {
+      const data = getListParam();
+      await dispatch(getAnnualSettingSale(data));
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const onChangeFilter = (date) => {
     const filter = date;
     setSearchParams({
