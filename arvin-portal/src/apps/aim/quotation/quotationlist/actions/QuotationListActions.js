@@ -21,6 +21,8 @@ export const getSalesQuotations = (values) => async (dispatch) => {
         values.fs +
         "&fe=" +
         values.fe +
+        "&type=" +
+        values.type +
         "&st=" +
         values.st +
         "&u=" +

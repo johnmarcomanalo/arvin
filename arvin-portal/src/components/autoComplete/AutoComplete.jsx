@@ -1,20 +1,22 @@
-import { Typography } from "@mui/material";
+import { Typography, Popper } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import configure from "../../apps/configure/configure.json";
+import { createTheme } from "@mui/material/styles";
 
 const styleSheet = {
   label: { fontSize: 13 },
 };
+
 export default function ComboBox(props) {
-  const { showLabel = true, ...param } = props;
+  const { showLabel = true, disable = false, ...param } = props;
   const handleInputChange = (event, newInputValue) => {
     if (!newInputValue) {
       param.input.onChange(""); // Clear the field when the input is empty
     }
   };
   return (
-    <div>
+    <div style={{ width: "100%" }}>
       {showLabel ? (
         <Typography sx={styleSheet.label} align="left">
           {param.label}{" "}
@@ -22,15 +24,19 @@ export default function ComboBox(props) {
             <span style={{ color: configure.denied_color, fontSize: 15 }}>
               *
             </span>
-          ) : undefined}
+          ) : (
+            <span style={{ color: "transparent", fontSize: 15 }}>*</span>
+          )}
         </Typography>
       ) : null}
       <Autocomplete
+        disabled={disable}
         disablePortal
         id={param.id}
         fullWidth
         size="small"
         options={param.options}
+        // PopperComponent={CustomPopper}
         {...param.input}
         onChange={param.onChangeHandle}
         value={param.value}

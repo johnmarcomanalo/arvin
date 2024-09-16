@@ -33,6 +33,7 @@ import Dialog from "@mui/material/Dialog";
 import { ViewAmountFormatingDecimals } from "../../../../../utils/AccountingUtils";
 import FilterSales from "./components/FilterSales";
 import PageTitle from "../../../../../components/pageTItle/PageTitle";
+import ComboBox from "../../../../../components/autoComplete/AutoComplete";
 const formName = "SalesTracker";
 const submit = async (values, dispatch, props) => {
   try {
@@ -52,8 +53,9 @@ let SalesTracker = (props) => {
   const final_mtd_data = salesTracker.final_mtd_data;
   const dateFilter = salesTracker.dateFilter;
   const selected_subsection = salesTracker?.selected_subsection;
+  const active_page = salesTracker?.active_page;
   const state = salesTracker?.state;
-
+  console.log(active_page);
   const theme = useTheme();
   const matches = useMediaQuery("(min-width:600px)");
   const [open, setOpen] = React.useState(false);
@@ -528,18 +530,18 @@ let SalesTracker = (props) => {
           </Grid>
         </Grid>
         <Grid item xs={12} sm={12} md={6} lg={6}>
-          <Stack
-            direction="row"
-            justifyContent={matches ? "flex-start" : "center"}
-            alignItems={matches ? "flex-start" : "center"}
-            flexDirection={matches ? "row" : "column"}
-            spacing={2}
-          >
-            {/* <SearchField
+          <form onSubmit={props.handleSubmit}>
+            <Stack
+              direction="row"
+              justifyContent={matches ? "flex-start" : "center"}
+              alignItems={matches ? "flex-start" : "center"}
+              flexDirection={matches ? "row" : "column"}
+              spacing={2}
+            >
+              {/* <SearchField
               value={salesTracker.search}
               onChange={salesTracker.onChangeSearch}
             /> */}
-            <form onSubmit={props.handleSubmit}>
               <Field
                 name="sales_date"
                 label="Date"
@@ -551,12 +553,38 @@ let SalesTracker = (props) => {
                 disablePast={false}
                 disableFuture={true}
                 disableSunday={true}
-                showText={false}
+                showText={true}
                 onChange={(date) => {
                   salesTracker.filterMonthAndYear(date);
                 }}
               />
-            </form>
+              <Field
+                id="subcomponents"
+                name="subcomponents"
+                label="Warehouses"
+                options={salesTracker?.user_access_organization_rights}
+                getOptionLabel={(option) =>
+                  option?.description ? option?.description : ""
+                }
+                disable={active_page.generate == "1" ? false : true}
+                component={ComboBox}
+                onChangeHandle={(e, newValue) => {
+                  if (newValue?.description) {
+                    salesTracker.filterSubComponents(newValue);
+                  }
+                }}
+              />
+            </Stack>
+          </form>
+        </Grid>
+        <Grid item xs={6} sm={6} md={6} lg={6}>
+          <Stack
+            direction="row"
+            justifyContent={matches ? "flex-end" : "center"}
+            alignItems={matches ? "flex-end" : "center"}
+            flexDirection={matches ? "row" : "column"}
+            spacing={2}
+          >
             <ButtonComponent
               stx={configure.default_button}
               iconType="view2"
@@ -565,14 +593,14 @@ let SalesTracker = (props) => {
               children={"VIEW FULLSCREEN"}
               click={handleClickOpen}
             />
-            <ButtonComponent
-              stx={configure.default_button}
-              iconType="generate"
-              type="button"
-              fullWidth={true}
-              children={"Generate"}
-              click={salesTracker.onClickOpenFilterModal}
-            />
+            {/* <ButtonComponent
+                  stx={configure.default_button}
+                  iconType="generate"
+                  type="button"
+                  fullWidth={true}
+                  children={"Generate"}
+                  click={salesTracker.onClickOpenFilterModal}
+                /> */}
           </Stack>
         </Grid>
         {/* <Grid item xs={6} sm={6} md={4} lg={4}>

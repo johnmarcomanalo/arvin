@@ -50,6 +50,9 @@ const IndexForApprovalQuotation = lazy(() =>
     "./apps/aim/quotation/forapprovalquotation/pages/IndexForApprovalQuotation"
   )
 );
+const IndexMyQuotationList = lazy(() =>
+  import("./apps/aim/quotation/myquotationList/pages/IndexMyQuotationList")
+);
 // QUOTATION END
 
 // HUMAN RESOURCE START
@@ -307,6 +310,20 @@ function App() {
                         })}
                       >
                         <IndexForApprovalQuotation />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/Quotation/MyQuotationList"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Quotation",
+                          component: "My Quotation List",
+                          subComponent: null,
+                        })}
+                      >
+                        <IndexMyQuotationList />
                       </PrivateRoute>
                     }
                   />

@@ -36,6 +36,9 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
 
   const dispatch = useDispatch();
   const access = useSelector((state) => state.AuthenticationReducer.access);
+  const json_active_page = useSelector(
+    (state) => state.AuthenticationReducer.active_page
+  );
   const addModal = useSelector((state) => state.SalesDailyOutReducer.addModal);
   const dataList = useSelector((state) => state.SalesDailyOutReducer.dataList);
   const present_mtd_data = useSelector(
@@ -103,7 +106,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       align: "left",
     },
   ];
-
+  const active_page = JSON.parse(json_active_page);
   const onClickOpenAddModal = () => {
     dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
@@ -308,6 +311,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     user_access_organization_rights,
     filterModal,
     state,
+    active_page,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,
