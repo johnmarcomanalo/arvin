@@ -193,11 +193,12 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
         return $code;
     }
 
-    public function get_annual_monthly_daily_target_sales_by_section_subsection($id,$year){
-        
-        $count = SalesDailyOutAnnualSettingsSales::where('subsection_code',$id)->where("year_sales_target",$year)->count();
+    public function get_annual_monthly_daily_target_sales_by_section_subsection($id,$date){
+        $carbonDate = Carbon::parse($date);
+        $month = $carbonDate->month;
+        $year = $carbonDate->year;
+         $count = SalesDailyOutAnnualSettingsSales::where('subsection_code',$id)->where("year_sales_target",$year)->count();
         if($count == 0){
-
             $response = [
                     'message' => "No target sale found. Please try other date.",
                     'result' => false,
@@ -207,12 +208,13 @@ class SalesDailyOutAnnualSettingsSalesController extends Controller
         return Crypt::encryptString(json_encode($response));
         }
         $annual_monthly_daily_target_sales_data = SalesDailyOutAnnualSettingsSales::where('subsection_code',$id)->where("year_sales_target",$year)->first();
+        $daily_sales_target = $this->get_number_of_days_in_a_month_with_out_sunday($date.'-01',$annual_monthly_daily_target_sales_data->monthly_sales_target) ;
        
         $response = [
             "year_sales_target"=>$annual_monthly_daily_target_sales_data->year_sales_target,
             "annual_sales_target"=>$annual_monthly_daily_target_sales_data->annual_sales_target,
             "monthly_sales_target"=>$annual_monthly_daily_target_sales_data->monthly_sales_target,
-            "daily_sales_target"=>$annual_monthly_daily_target_sales_data->daily_sales_target,
+            "daily_sales_target"=>$daily_sales_target,
             "sales_daily_out_annual_settings_sales_code"=>$annual_monthly_daily_target_sales_data->code
         ];
 

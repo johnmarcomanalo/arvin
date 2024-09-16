@@ -142,7 +142,7 @@ class SalesDailyOutsController extends Controller
             $query = $request->query('q');
             $filter = $request->query('f');
             $user_id = $request->query('uid');
-             $sc = $request->query('sc');
+            $sc = $request->query('sc');
 
             
             $totalTargetDailyQuotaAmount = 0;
@@ -166,12 +166,10 @@ class SalesDailyOutsController extends Controller
                 return response($response,200);
             }
 
-             $user_data = User::where('code',$user_id)->first(); // fetch data from users table
-            if(empty($sc)){
-                $user_data["subsection_code"] = $sc;
-            }
+            $user_data = User::where('code',$user_id)->first(); // fetch data from users table
             //check if the is record for the selected date
-             $data_count = SalesDailyOuts::where('subsection_code',$user_data["subsection_code"])
+            $user_data["subsection_code"] = $sc;
+            $data_count = SalesDailyOuts::where('subsection_code',$user_data["subsection_code"])
                 ->where('year_sales_target',$date_year)
                 ->whereYear('sales_date', $date_year)
                 ->whereMonth('sales_date', $date_month)
@@ -257,7 +255,7 @@ class SalesDailyOutsController extends Controller
             $totalStatusDailyTargetAmount = $totalStatusDailyTargetAmount;
             $averagePercentageDailyTarget = $averagePercentageDailyTarget;
           
-            $mtd_date_selected_month = $this->get_mtd($date_year,$date_month,$user_data,$date_month);
+             $mtd_date_selected_month = $this->get_mtd($date_year,$date_month,$user_data,$date_month);
           
             $mtd_date_previous_month = $this->get_previous_mtd($date_year,$date_month,$user_data);
             

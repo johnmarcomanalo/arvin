@@ -30,7 +30,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       ? String(searchParams.get("f"))
       : moment(new Date()).format("YYYY-MM-DD");
   const filterSubComponent =
-    searchParams.get("sc") != null ? String(searchParams.get("sc")) : null;
+    searchParams.get("sc") != null ? String(searchParams.get("sc")) : "";
   const debounceSearch = useDebounce(searchParams, 500);
   //filtering,search,page,limit end
 
@@ -201,14 +201,17 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       l: rowsPerPage,
       f: filterQuery,
       u: account_details?.code,
-      sc: filterSubComponent,
+      sc:
+        filterSubComponent == ""
+          ? account_details?.subsection_code
+          : filterSubComponent,
     };
     return data;
   };
-  const GetSalesDailyOut = () => {
+  const GetSalesDailyOut = async () => {
     try {
-      const data = getListParam();
-      dispatch(getSalesDailyOut(data));
+      const data = await getListParam();
+      await dispatch(getSalesDailyOut(data));
     } catch (error) {
       console.error(error);
     }
@@ -217,10 +220,10 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     try {
       dispatch(
         getAnnualMonthlyDailyTargetSalesBySectionSubsection(
-          filterSubComponent == null
+          filterSubComponent == ""
             ? account_details?.subsection_code
             : filterSubComponent,
-          moment(filterQuery).format("YYYY")
+          moment(filterQuery).format("YYYY-MM")
         )
       );
     } catch (error) {
@@ -248,8 +251,8 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     onFetchOrganizationAccess();
   }, []);
   React.useEffect(() => {
-    GetSalesDailyOut();
     GetAnnualMonthlyDailyTargetSalesBySectionSubsection();
+    GetSalesDailyOut();
     GetSpecificRefSubSection();
   }, [refresh, debounceSearch, filterQuery, filterSubComponent]);
   const onClickOpenFilterModal = () => {
@@ -269,18 +272,18 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     });
   };
   const filterSubComponents = (data) => {
-    console.log(data);
-    setState((prev) => ({
-      ...prev,
-      active_subsections: data.description, // Update the state to trigger re-render
-    }));
+    let filterSubComponent = data.code;
     setSearchParams({
       p: page == null ? 1 : page,
       q: search,
       l: rowsPerPage,
       f: filterQuery,
-      sc: data.code,
+      sc: filterSubComponent,
     });
+    setState((prev) => ({
+      ...prev,
+      active_subsections: data.description, // Update the state to trigger re-render
+    }));
   };
   return {
     search,
