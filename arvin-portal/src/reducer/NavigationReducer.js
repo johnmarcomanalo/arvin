@@ -4,6 +4,7 @@ const initialState = {
   setting_modal: false,
   refresh: false,
   request_type: "",
+  sync_access_modal: false,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

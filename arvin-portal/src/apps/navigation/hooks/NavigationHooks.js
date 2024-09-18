@@ -24,6 +24,9 @@ const NavigationHooks = (props) => {
   const setting_modal = useSelector(
     (state) => state.NavigationReducer.setting_modal
   );
+  const sync_access_modal = useSelector(
+    (state) => state.NavigationReducer.sync_access_modal
+  );
   const onOpenRequestModal = (type) => {
     dispatch({
       type: Constants.ACTION_NAVIGATION,
@@ -71,6 +74,22 @@ const NavigationHooks = (props) => {
     }
     return () => cancelRequest();
   }, []);
+  const onOpenSyncAccessModal = (type) => {
+    dispatch({
+      type: Constants.ACTION_NAVIGATION,
+      payload: {
+        sync_access_modal: true,
+      },
+    });
+  };
+  const onCloseSyncAccessModal = () => {
+    dispatch({
+      type: Constants.ACTION_NAVIGATION,
+      payload: {
+        sync_access_modal: false,
+      },
+    });
+  };
   return {
     request_modal,
     setting_modal,
@@ -78,11 +97,14 @@ const NavigationHooks = (props) => {
     access,
     account_details,
     active_page,
+    sync_access_modal,
     onOpenRequestModal,
     onCloseRequestModal,
     onOpenSettingModal,
     onCloseSettingModal,
     onSelectActivePage,
+    onOpenSyncAccessModal,
+    onCloseSyncAccessModal,
   };
 };
 

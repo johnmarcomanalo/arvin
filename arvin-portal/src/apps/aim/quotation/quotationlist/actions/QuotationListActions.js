@@ -13,11 +13,11 @@ export const getSalesQuotations = (values) => async (dispatch) => {
       },
     });
     const response = GetSpecificDefaultServices(
-      "api/quotation/request/get_request_quotation?p=" +
-        values.p +
-        "&l=" +
-        values.l +
-        "&q=" +
+      "api/quotation/request/get_request_quotation?q=" +
+        // values.p +
+        // "&l=" +
+        // values.l +
+        // "&q=" +
         values.q +
         "&fs=" +
         values.fs +

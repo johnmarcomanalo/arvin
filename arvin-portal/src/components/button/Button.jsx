@@ -28,7 +28,7 @@ const ButtonComponent = (props) => {
   switch (params.iconType) {
     case "add":
       icon = <AddCircleIcon />;
-      if (active_page.create == 0) {
+      if (active_page?.create == 0) {
         dsbl = true;
       } else {
         dsbl = false;
@@ -39,7 +39,7 @@ const ButtonComponent = (props) => {
       break;
     case "delete":
       icon = <DeleteIcon />;
-      if (active_page.delete == 0) {
+      if (active_page?.delete == 0) {
         dsbl = true;
       } else {
         dsbl = false;
@@ -47,7 +47,7 @@ const ButtonComponent = (props) => {
       break;
     case "update":
       icon = <SyncIcon />;
-      if (active_page.update == 0) {
+      if (active_page?.update == 0) {
         dsbl = true;
       } else {
         dsbl = false;
@@ -61,7 +61,7 @@ const ButtonComponent = (props) => {
       break;
     case "generate":
       icon = <TableRowsIcon />;
-      if (active_page.generate == 0) {
+      if (active_page?.generate == 0) {
         dsbl = true;
       } else {
         dsbl = false;
@@ -81,7 +81,7 @@ const ButtonComponent = (props) => {
       break;
     case "export":
       icon = <DownloadIcon />;
-      if (active_page.export == 0) {
+      if (active_page?.export == 0) {
         dsbl = true;
       } else {
         dsbl = false;
@@ -89,7 +89,7 @@ const ButtonComponent = (props) => {
       break;
     case "import":
       icon = <UploadIcon />;
-      if (active_page.export == 0) {
+      if (active_page?.export == 0) {
         dsbl = true;
       } else {
         dsbl = false;
@@ -100,7 +100,7 @@ const ButtonComponent = (props) => {
       break;
     case "approve":
       icon = <DoneIcon />;
-      if (active_page.update == 0) {
+      if (active_page?.update == 0) {
         dsbl = true;
       } else {
         dsbl = false;
@@ -108,7 +108,7 @@ const ButtonComponent = (props) => {
       break;
     case "deny":
       icon = <DoNotDisturbAltIcon />;
-      if (active_page.update == 0) {
+      if (active_page?.update == 0) {
         dsbl = true;
       } else {
         dsbl = false;

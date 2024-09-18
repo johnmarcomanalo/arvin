@@ -10,6 +10,9 @@ import {
   PostDefaultServices,
   PutDefaultServices,
 } from "../../../../../services/apiService";
+import swal from "sweetalert";
+import configure from "../../../../configure/configure.json";
+
 export const getRefCompanies = () => async (dispatch) => {
   try {
     await dispatch({
@@ -34,8 +37,18 @@ export const getRefCompanies = () => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
-    dispatch({
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
         loading: false,
@@ -68,8 +81,18 @@ export const getRefBusinessUnits = (id) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
-    dispatch({
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
         loading: false,
@@ -102,8 +125,18 @@ export const getRefTeams = (id) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
-    dispatch({
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
         loading: false,
@@ -136,8 +169,18 @@ export const getRefDepartments = (id) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
-    dispatch({
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
         loading: false,
@@ -170,8 +213,18 @@ export const getRefSections = (id) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
-    dispatch({
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
         loading: false,
@@ -204,8 +257,18 @@ export const getRefSubSections = (id) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
-    dispatch({
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
         loading: false,
@@ -241,8 +304,18 @@ export const getSpecificRefSubSection = (id) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
-    dispatch({
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
         loading: false,
@@ -277,8 +350,18 @@ export const getRefSalesRanking = () => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
-    dispatch({
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
         loading: false,
@@ -322,8 +405,18 @@ export const getReferenceModule = (values) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
-    dispatch({
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
         loading: false,
@@ -349,7 +442,17 @@ export const postReferenceModule = (formValues) => async (dispatch) => {
     });
     return res;
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -383,7 +486,17 @@ export const getAllRefModules = () => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -413,7 +526,17 @@ export const postReferenceComponent = (formValues) => async (dispatch) => {
     });
     return res;
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -458,7 +581,17 @@ export const getReferenceComponents = (values) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -493,7 +626,17 @@ export const getAllRefComponents = (id) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -538,7 +681,17 @@ export const getReferenceSubcomponents = (values) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -568,7 +721,17 @@ export const postReferenceSubcomponent = (formValues) => async (dispatch) => {
     });
     return res;
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -599,7 +762,17 @@ export const getEmployeeCustomerAccessDetails =
       });
       return res;
     } catch (error) {
-      console.log(error);
+      var title = configure.error_message.default;
+      var message = "";
+      if (typeof error.response.data.message !== "undefined")
+        title = error.response.data.message;
+      if (typeof error.response.data.errors !== "undefined") {
+        const formattedErrors = Object.entries(error.response.data.errors)
+          .map(([key, value]) => `${value.join(", ")}`)
+          .join("\n");
+        message = formattedErrors;
+      }
+      await swal(title, message, "error");
       await dispatch({
         type: Constants.ACTION_LOADING,
         payload: {
@@ -652,7 +825,17 @@ export const getRefProducts = (values) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -697,7 +880,17 @@ export const getReferenceRequestTypes = (values) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -727,6 +920,17 @@ export const postReferenceRequestType = (formValues) => async (dispatch) => {
     });
     return res;
   } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -761,7 +965,17 @@ export const getAllRefRequestTypes = () => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -792,6 +1006,17 @@ export const putRefRequestTypes = (formValues) => async (dispatch) => {
     });
     return res;
   } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -836,7 +1061,17 @@ export const getReferenceUnitOfMeasurements = (values) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -867,7 +1102,17 @@ export const postReferenceUnitOfMeasurements =
       });
       return res;
     } catch (error) {
-      console.log(error);
+      var title = configure.error_message.default;
+      var message = "";
+      if (typeof error.response.data.message !== "undefined")
+        title = error.response.data.message;
+      if (typeof error.response.data.errors !== "undefined") {
+        const formattedErrors = Object.entries(error.response.data.errors)
+          .map(([key, value]) => `${value.join(", ")}`)
+          .join("\n");
+        message = formattedErrors;
+      }
+      await swal(title, message, "error");
       await dispatch({
         type: Constants.ACTION_LOADING,
         payload: {
@@ -901,7 +1146,17 @@ export const getAllRefUnitOfMeasurements = () => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -932,6 +1187,17 @@ export const putRefUnitOfMeasurements = (formValues) => async (dispatch) => {
     });
     return res;
   } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -976,7 +1242,17 @@ export const getReferenceCurrencies = (values) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -1006,6 +1282,17 @@ export const postReferenceCurrencies = (formValues) => async (dispatch) => {
     });
     return res;
   } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -1039,7 +1326,17 @@ export const getAllRefCurrencies = () => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -1070,6 +1367,17 @@ export const putRefCurrencies = (formValues) => async (dispatch) => {
     });
     return res;
   } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -1114,7 +1422,17 @@ export const getReferenceValueAddedTax = (values) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -1144,6 +1462,17 @@ export const postReferenceValueAddedTax = (formValues) => async (dispatch) => {
     });
     return res;
   } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -1177,7 +1506,17 @@ export const getAllRefValueAddedTax = () => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -1222,7 +1561,17 @@ export const getReferenceRequestHierarchy = (values) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -1253,6 +1602,17 @@ export const postReferenceRequestHierarchy =
       });
       return res;
     } catch (error) {
+      var title = configure.error_message.default;
+      var message = "";
+      if (typeof error.response.data.message !== "undefined")
+        title = error.response.data.message;
+      if (typeof error.response.data.errors !== "undefined") {
+        const formattedErrors = Object.entries(error.response.data.errors)
+          .map(([key, value]) => `${value.join(", ")}`)
+          .join("\n");
+        message = formattedErrors;
+      }
+      await swal(title, message, "error");
       await dispatch({
         type: Constants.ACTION_LOADING,
         payload: {
@@ -1286,7 +1646,17 @@ export const getAllRefRequestHierarchy = () => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -1326,7 +1696,23 @@ export const getSpecificReferenceRequestHierarchy =
         });
       });
     } catch (error) {
-      console.log(error);
+      var title = configure.error_message.default;
+      var message = "";
+      if (typeof error.response.data.message !== "undefined")
+        title = error.response.data.message;
+      if (typeof error.response.data.errors !== "undefined") {
+        const formattedErrors = Object.entries(error.response.data.errors)
+          .map(([key, value]) => `${value.join(", ")}`)
+          .join("\n");
+        message = formattedErrors;
+      }
+      await swal(title, message, "error");
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
     }
   };
 
@@ -1359,7 +1745,23 @@ export const getReferenceRequestHierarchyByRequestType =
         });
       });
     } catch (error) {
-      console.log(error);
+      var title = configure.error_message.default;
+      var message = "";
+      if (typeof error.response.data.message !== "undefined")
+        title = error.response.data.message;
+      if (typeof error.response.data.errors !== "undefined") {
+        const formattedErrors = Object.entries(error.response.data.errors)
+          .map(([key, value]) => `${value.join(", ")}`)
+          .join("\n");
+        message = formattedErrors;
+      }
+      await swal(title, message, "error");
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
     }
   };
 
@@ -1398,7 +1800,23 @@ export const getReferenceSalutations = (values) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -1422,6 +1840,17 @@ export const postReferenceSalutations = (formValues) => async (dispatch) => {
     });
     return res;
   } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -1455,7 +1884,23 @@ export const getAllRefSalutations = () => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -1480,6 +1925,17 @@ export const putRefSalutations = (formValues) => async (dispatch) => {
     });
     return res;
   } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {

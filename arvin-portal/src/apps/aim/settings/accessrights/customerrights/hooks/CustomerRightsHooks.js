@@ -12,6 +12,10 @@ import { useSearchParams } from "react-router-dom";
 import { useDebounce } from "../../../../../../utils/HelperUtils";
 const CustomerRightsHooks = (props) => {
   const dispatch = useDispatch();
+  const [state, setState] = React.useState({
+    debounceTimer: null,
+    debounceDelay: 500,
+  });
   const HRrefresh = useSelector((state) => state.HumanResourceReducer.refresh);
   const dataList = useSelector(
     (state) => state.ReferenceReducer.search_reference_customer_page_access
@@ -101,10 +105,16 @@ const CustomerRightsHooks = (props) => {
     };
     return data;
   };
+  const debounce = (func, delay) => {
+    clearTimeout(state.debounceTimer);
+    state.debounceTimer = setTimeout(func, delay);
+  };
   const GetCustomerList = async () => {
     try {
       const data = getListParam();
-      await dispatch(getEmployeeCustomerAccessList(data));
+      await debounce(() => {
+        dispatch(getEmployeeCustomerAccessList(data));
+      }, state.debounceDelay);
     } catch (error) {
       await console.error(error);
     }

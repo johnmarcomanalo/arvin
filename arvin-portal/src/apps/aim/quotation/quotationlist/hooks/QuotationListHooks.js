@@ -57,9 +57,9 @@ const QuotationListHooks = (props) => {
   const debounceSearch = useDebounce(searchParams, 500);
   const getListParam = () => {
     const data = {
-      p: page == null ? 1 : page,
+      // p: page == null ? 1 : page,
       q: search,
-      l: rowsPerPage,
+      // l: rowsPerPage,
       fs: filterStartQuery,
       fe: filterEndQuery,
       st: filterStatus,
@@ -141,9 +141,9 @@ const QuotationListHooks = (props) => {
     // SEARCH DATA
     const search = event.target.value;
     setSearchParams({
-      p: page == null ? 1 : page,
+      // p: page == null ? 1 : page,
       q: search,
-      l: rowsPerPage,
+      // l: rowsPerPage,
       fs: filterStartQuery,
       fe: filterEndQuery,
       st: filterStatus,
@@ -200,9 +200,9 @@ const QuotationListHooks = (props) => {
   const onChangeFilterStart = (date) => {
     const newdate = moment(date).format("YYYY-MM-DD");
     setSearchParams({
-      p: page == null ? 1 : page,
+      // p: page == null ? 1 : page,
       q: search,
-      l: rowsPerPage,
+      // l: rowsPerPage,
       fs: newdate,
       fe: filterEndQuery,
       st: filterStatus,
@@ -213,9 +213,9 @@ const QuotationListHooks = (props) => {
   const onChangeFilterEnd = (date) => {
     const newdate = moment(date).format("YYYY-MM-DD");
     setSearchParams({
-      p: page == null ? 1 : page,
+      // p: page == null ? 1 : page,
       q: search,
-      l: rowsPerPage,
+      // l: rowsPerPage,
       fs: filterStartQuery,
       fe: newdate,
       st: filterStatus,
@@ -225,9 +225,9 @@ const QuotationListHooks = (props) => {
 
   const onChangeFilterStatus = (status) => {
     setSearchParams({
-      p: page == null ? 1 : page,
+      // p: page == null ? 1 : page,
       q: search,
-      l: rowsPerPage,
+      // l: rowsPerPage,
       fs: filterStartQuery,
       fe: filterEndQuery,
       st: status,

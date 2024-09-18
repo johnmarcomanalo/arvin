@@ -76,7 +76,7 @@ class AuthController extends Controller
         $token = $user->createToken('myapptoken')->plainTextToken;
         // $request->session()->regenerate();
         
-         $access = $this->get_user_access_right_by_id($user['code']);
+        $access = $this->get_user_access_right_by_id($user['code']);
 
         $response = [
             'user' => Crypt::encryptString(json_encode($user)),
@@ -174,5 +174,22 @@ class AuthController extends Controller
             'message' => "Today's sales updated successfully",
         ], 200); 
 
+    }
+
+    public function sync_user_access_right_by_id(Request $request){
+        $fields = $request->validate([
+            'code' => 'required',
+        ]);
+        $user = User::where('code',$fields['code'])->first();
+        $access = $this->get_user_access_right_by_id($fields['code']);
+        $response = [
+            'user' => Crypt::encryptString(json_encode($user)),
+            'access' => $access,
+            'result' => true,
+            'title'=>'Success',
+            'status'=>'success',
+            'message' => 'Successfully synced!',
+        ];
+        return Crypt::encryptString(json_encode($response));
     }
 }

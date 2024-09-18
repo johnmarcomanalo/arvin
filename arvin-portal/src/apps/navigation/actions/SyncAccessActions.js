@@ -1,9 +1,13 @@
-import { Constants } from "../../../../../../reducer/Contants";
-import { PostDefaultServices } from "../../../../../../services/apiService";
+import { Constants } from "../../../reducer/Contants";
+import {
+  GetSpecificDefaultServices,
+  PostDefaultServices,
+} from "../../../services/apiService";
+import { decryptaes } from "../../../utils/LightSecurity";
+import configure from "../../configure/configure.json";
 import swal from "sweetalert";
-import configure from "../../../../../configure/configure.json";
 
-export const postAccountChangePassword = (formValues) => async (dispatch) => {
+export const syncAccessbyUser = (formValues) => async (dispatch) => {
   try {
     await dispatch({
       type: Constants.ACTION_LOADING,
@@ -11,10 +15,7 @@ export const postAccountChangePassword = (formValues) => async (dispatch) => {
         loading: true,
       },
     });
-    const res = await PostDefaultServices(
-      "api/users/change-password",
-      formValues
-    );
+    const res = await PostDefaultServices("api/users/access-sync", formValues);
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -33,12 +34,6 @@ export const postAccountChangePassword = (formValues) => async (dispatch) => {
         .join("\n");
       message = formattedErrors;
     }
-    await swal(title, message, "error");
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
+    swal(title, message, "error");
   }
 };

@@ -425,6 +425,18 @@ let ViewQuotation = (props) => {
             </TableContainer>
           </Grid>
 
+          <Grid item xs={12} md={12}>
+            <Field
+              id="quotation_closing_letter"
+              name="quotation_closing_letter"
+              label="Closing Letter"
+              component={InputField}
+              required={true}
+              disabled={true}
+              multiline={true}
+            />
+          </Grid>
+
           {selected_data?.signatories.length > 0 && (
             <Grid item xs={12} sm={12} md={12} lg={12}>
               <TableContainer
@@ -462,18 +474,6 @@ let ViewQuotation = (props) => {
               </TableContainer>
             </Grid>
           )}
-
-          <Grid item xs={12} md={12}>
-            <Field
-              id="quotation_closing_letter"
-              name="quotation_closing_letter"
-              label="Closing Letter"
-              component={InputField}
-              required={true}
-              disabled={true}
-              multiline={true}
-            />
-          </Grid>
         </Grid>
       </form>
     </React.Fragment>

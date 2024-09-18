@@ -48,7 +48,7 @@ class SalesQuotationRequestController extends Controller
             'representative_nickname' => 'required',
             'notes' => 'required|array|min:1',
             'product_list' => 'required|array|min:1',
-            // 'signatories' => 'required|array',
+            'signatories' => 'array',
             'quotation_opening_letter' => 'required',
             'quotation_closing_letter' => 'required',
             'request_date' => 'required',

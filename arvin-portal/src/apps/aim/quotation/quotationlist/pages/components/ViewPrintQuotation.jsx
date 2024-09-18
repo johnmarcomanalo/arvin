@@ -219,7 +219,7 @@ const ProductTable = (props) => {
               styles.poppins_bold_italic,
             ]}
           >
-            Price per Unit
+            {"Price per Unit " + "(" + param.currency_type + ")"}
           </Text>
         )}
         {param.products[0].tax_code !== "" && (
@@ -237,7 +237,6 @@ const ProductTable = (props) => {
       </View>
 
       {param.products.map((value, index) => {
-        console.log(value);
         return (
           <View style={styles.row} wrap={false}>
             <Text
@@ -297,7 +296,7 @@ const ProductTable = (props) => {
                   styles.poppins_regular,
                 ]}
               >
-                {value.pickup_price + " " + value.pickup_price_unit}
+                {value.pickup_price + " / " + value.pickup_price_unit}
               </Text>
             )}
             {param.products[0].price_unit !== "" && (
@@ -309,7 +308,7 @@ const ProductTable = (props) => {
                   styles.poppins_regular,
                 ]}
               >
-                {value.price_per_unit + " " + value.price_unit}
+                {value.price_per_unit + " / " + value.price_unit}
               </Text>
             )}
             {param.products[0].tax_code !== "" && (
@@ -430,7 +429,10 @@ export default function ViewPrintQuotation(props) {
               {data.quotation_opening_letter}
             </Text>
           </View>
-          <ProductTable products={data.products} />
+          <ProductTable
+            products={data.products}
+            currency_type={data.currency_type}
+          />
           <Notes notes={data.notes} />
           <View style={{ display: "flex", flexDirection: "column" }}>
             <Text

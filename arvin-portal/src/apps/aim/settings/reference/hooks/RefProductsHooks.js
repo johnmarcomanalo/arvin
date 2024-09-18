@@ -26,7 +26,7 @@ const RefProductsHooks = (props) => {
   ];
   const [state, setState] = React.useState({
     debounceTimer: null,
-    debounceDelay: 2000,
+    debounceDelay: 1000,
   });
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("pg") != null ? searchParams.get("pg") : 1;
@@ -119,10 +119,16 @@ const RefProductsHooks = (props) => {
       },
     });
   };
+  const debounce = (func, delay) => {
+    clearTimeout(state.debounceTimer);
+    state.debounceTimer = setTimeout(func, delay);
+  };
   const getProducts = async () => {
     try {
       const data = getListParam();
-      await dispatch(getRefProducts(data));
+      await debounce(() => {
+        dispatch(getRefProducts(data));
+      }, state.debounceDelay);
     } catch (error) {
       await console.error(error);
     }

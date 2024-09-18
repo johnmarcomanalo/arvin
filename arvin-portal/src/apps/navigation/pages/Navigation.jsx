@@ -18,6 +18,8 @@ import * as React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import configure from "../../configure/configure.json";
 import NavigationHooks from "../hooks/NavigationHooks";
+import SyncAccess from "./components/SyncAccess";
+import Modal from "../../../components/modal/Modal";
 const drawerWidth = 250;
 const ListItemTxt = styled(ListItemText)(({ theme }) => ({
   color: configure.primary_color,
@@ -280,6 +282,16 @@ export default function Navigation(props) {
       >
         <ChangePasswordForm />
       </Modal> */}
+      <Modal
+        open={navigation_param.sync_access_modal}
+        fullScreen={false}
+        title={"Syncronize Account Access"}
+        size={"xs"}
+        action={undefined}
+        handleClose={navigation_param.onCloseSyncAccessModal}
+      >
+        <SyncAccess />
+      </Modal>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -329,6 +341,22 @@ export default function Navigation(props) {
             <ListItemButton href={"/"} underline="none">
               <ListItemText
                 primary={"Home"}
+                sx={{
+                  color: configure.primary_color,
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
+          <Divider />
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => {
+                navigation_param.onOpenSyncAccessModal();
+              }}
+              underline="none"
+            >
+              <ListItemText
+                primary={"Sync Access"}
                 sx={{
                   color: configure.primary_color,
                 }}

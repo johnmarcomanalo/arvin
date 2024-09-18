@@ -72,7 +72,7 @@ class SalesQuotationRequestForApprovalsController extends Controller
             ->where('status','Pending')
             ->first();
             
-            $sales_quotation_request_hierarchy = json_decode($sales_quotation_request->request_hierarchy);
+             $sales_quotation_request_hierarchy = json_decode($sales_quotation_request->request_hierarchy);
             $sales_quotation_request_hierarchy_count = count($sales_quotation_request_hierarchy);
 
             foreach ($sales_quotation_request_hierarchy as  $sales_quotation_request_hierarchy_value) {
