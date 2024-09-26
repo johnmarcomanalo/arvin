@@ -16,9 +16,12 @@ import Page from "../../../../../components/pagination/Pagination";
 import Table from "../../../../../components/table/Table";
 import { Constants } from "../../../../../reducer/Contants";
 import configure from "../../../../configure/configure.json";
-import { postReferenceValueAddedTax } from "../actions/ReferenceActions";
-import RefValueAddedTax from "../hooks/RefValueAddedTaxHooks";
-const title_page = "Value Added Tax";
+import {
+  postReferenceTruckTypes,
+  postReferenceValueAddedTax,
+} from "../actions/ReferenceActions";
+import RefTruckTypesHooks from "../hooks/RefTruckTypesHooks";
+const title_page = "Truck Types";
 const breadCrumbArray = [
   {
     name: "Home",
@@ -73,10 +76,10 @@ const breadCrumbArray = [
     ),
   },
 ];
-const formName = "RefValueAddedTax";
+const formName = "RefTruckTypes";
 const submit = async (values, dispatch, props) => {
   try {
-    const response = await dispatch(postReferenceValueAddedTax(values));
+    const response = await dispatch(postReferenceTruckTypes(values));
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -94,8 +97,8 @@ const submit = async (values, dispatch, props) => {
     console.log(error);
   }
 };
-let IndexRefValueAddedTax = (props) => {
-  const { ...refValueAddedTax } = RefValueAddedTax(props);
+let IndexRefTruckTypes = (props) => {
+  const { ...refTruckTypes } = RefTruckTypesHooks(props);
   return (
     <React.Fragment>
       <Grid container spacing={2}>
@@ -125,7 +128,7 @@ let IndexRefValueAddedTax = (props) => {
                   gutterBottom
                   sx={{ color: configure.dark_gray_color, fontSize: 12 }}
                 >
-                  System Parameter for Reference Value Added Tax
+                  System Parameter for Reference Truck Types
                 </Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={12}>
@@ -133,6 +136,16 @@ let IndexRefValueAddedTax = (props) => {
                       id="description"
                       name="description"
                       label="Description"
+                      component={InputField}
+                      required={true}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={12}>
+                    <Field
+                      id="capacity"
+                      name="capacity"
+                      label="Capacity (kg)"
+                      type="number"
                       component={InputField}
                       required={true}
                     />
@@ -166,25 +179,25 @@ let IndexRefValueAddedTax = (props) => {
             spacing={2}
             sx={{ margin: 1 }}
           >
-            <SearchField onChange={refValueAddedTax.onChangeSearch} />
+            <SearchField onChange={refTruckTypes.onChangeSearch} />
             <Page
-              page={refValueAddedTax?.page}
-              limit={refValueAddedTax?.dataListCount}
+              page={refTruckTypes?.page}
+              limit={refTruckTypes?.dataListCount}
               status={""}
-              onHandleChange={refValueAddedTax.handleChangePage}
+              onHandleChange={refTruckTypes.handleChangePage}
             />
           </Stack>
           <Table
-            columns={refValueAddedTax.columns}
-            dataList={refValueAddedTax.dataList}
-            page={refValueAddedTax.page}
-            rowsPerPage={refValueAddedTax.rowsPerPage}
-            handleChangePage={refValueAddedTax.handleChangePage}
-            handleChangeRowsPerPage={refValueAddedTax.handleChangeRowsPerPage}
-            onSelectItem={refValueAddedTax.onSelectItem}
+            columns={refTruckTypes.columns}
+            dataList={refTruckTypes.dataList}
+            page={refTruckTypes.page}
+            rowsPerPage={refTruckTypes.rowsPerPage}
+            handleChangePage={refTruckTypes.handleChangePage}
+            handleChangeRowsPerPage={refTruckTypes.handleChangeRowsPerPage}
+            onSelectItem={refTruckTypes.onSelectItem}
             id={"home_attendance"}
             localStorage={""}
-            rowCount={refValueAddedTax.dataListCount}
+            rowCount={refTruckTypes.dataListCount}
             actionShow={false}
             paginationShow={false}
             action={(row) => {
@@ -199,7 +212,7 @@ let IndexRefValueAddedTax = (props) => {
 const ReduxFormComponent = reduxForm({
   form: formName,
   onSubmit: submit,
-})(IndexRefValueAddedTax);
+})(IndexRefTruckTypes);
 const selector = formValueSelector(formName);
 export default connect((state) => {
   const refresh = state.ReferenceReducer.refresh;

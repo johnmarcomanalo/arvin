@@ -17,6 +17,7 @@ class CreateSalesQuotationRequestProductsTable extends Migration
             $table->id();
             $table->bigInteger('code')->unique();
             $table->string('sales_quotation_request_code');
+            $table->string('product_code');
             $table->string('product_description');
             $table->string('product_weight');
             $table->string('product_tax_code');

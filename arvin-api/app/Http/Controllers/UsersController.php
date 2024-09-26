@@ -82,18 +82,19 @@ class UsersController extends Controller
             ];
             return response($response,200);
         }
-       $query = User::whereNull('deleted_at');
+        
+        $query = User::whereNull('deleted_at');
 
         if (isset($search)) {
-            $query->where(DB::raw("first_name + ' ' + last_name"), 'like', '%' . $search . '%');
+            $query->where(DB::raw("UPPER(first_name + ' ' + last_name)"), 'like', '%' . strtoupper($search) . '%');
         }
 
         $dataList = $query->select([
                 'code', 
-                'username', 
-                DB::raw("first_name + ' ' + last_name AS full_name")
-            ])
-            ->paginate($limit);
+                 DB::raw("UPPER(first_name + ' ' + last_name) AS full_name"),
+                'position'
+        ])
+        ->paginate($limit);
 
         $dataList = $dataList->toArray();
         $response = [

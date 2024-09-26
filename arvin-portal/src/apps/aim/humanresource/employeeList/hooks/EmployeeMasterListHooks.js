@@ -5,12 +5,13 @@ import {
   getEmployeeList,
   getUserEmployeeList,
 } from "../actions/EmployeeListActions";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useDebounce } from "../../../../../utils/HelperUtils";
 import { getEmployeeOrganizationAccessList } from "../../../settings/accessrights/organizationrights/actions/OrganizationRightsActions";
 import { getEmployeePageAccessList } from "../../../settings/accessrights/pagerights/actions/PageRightsActions";
 import { getEmployeeCustomerAccessList } from "../../../settings/accessrights/customerrights/actions/CustomerRightsActions";
 const EmployeeMasterListHooks = (props) => {
+  const navigate = useNavigate();
   const refresh = useSelector((state) => state.HumanResourceReducer.refresh);
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -54,12 +55,13 @@ const EmployeeMasterListHooks = (props) => {
     { id: "position", label: "Position", align: "left" },
   ];
 
-  const handleChangePage = (event, newPage) => {
-    dispatch({
-      type: Constants.ACTION_HOME,
-      payload: {
-        page: newPage,
-      },
+  const handleChangePage = (event, page) => {
+    setSearchParams({
+      p: page,
+      q: search,
+      l: String(rowsPerPage),
+      f: filterQuery,
+      u: account_details?.code,
     });
   };
   const handleChangeRowsPerPage = (event) => {
@@ -71,7 +73,7 @@ const EmployeeMasterListHooks = (props) => {
     });
   };
   const onSelectItem = async (data) => {
-    await console.log(data);
+    await navigate("/Modules/HumanResource/Employee/EmployeeDetails");
   };
   const onDeleteDeduction = (data) => {
     console.log(data);

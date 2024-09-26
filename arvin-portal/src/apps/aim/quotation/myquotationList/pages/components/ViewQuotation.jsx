@@ -223,6 +223,14 @@ let ViewQuotation = (props) => {
                         color: configure.primary_table_text_color,
                       }}
                     >
+                      PRODUCT CODE
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        backgroundColor: configure.primary_table_color,
+                        color: configure.primary_table_text_color,
+                      }}
+                    >
                       PRODUCT DESCRIPTION
                     </TableCell>
 
@@ -287,6 +295,7 @@ let ViewQuotation = (props) => {
                   {selected_data?.products?.map((value, index) => {
                     return (
                       <TableRow>
+                        <TableCell>{value.product_code}</TableCell>
                         <TableCell>{value.product_description}</TableCell>
                         <TableCell>
                           {value.projected_quantity +

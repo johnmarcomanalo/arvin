@@ -116,6 +116,7 @@ class SalesQuotationRequestController extends Controller
                 SalesQuotationRequestProducts::create([
                     'code' => $sales_quotation_request_products_code,
                     'sales_quotation_request_code' => $sales_quotation_request_code,
+                    'product_code' => $product->code,
                     'product_description' => $product->product_description,
                     'product_weight' => $product->product_weight,
                     'product_tax_code' => $product->product_tax_code,
@@ -210,21 +211,50 @@ class SalesQuotationRequestController extends Controller
     public function show($id)
     {
         // Retrieve the SalesQuotationRequest by code
-         $sales_quotation_request = SalesQuotationRequest::join('users', 'sales_quotation_requests.requested_by', '=', 'users.code')
+        $awarded_quotation = [];
+        $sales_quotation_request = SalesQuotationRequest::join('users', 'sales_quotation_requests.requested_by', '=', 'users.code')
         ->where('sales_quotation_requests.code', $id)
         ->first([
             DB::raw("users.first_name + ' ' + users.last_name as requestor_name",), // Using CONCAT for string concatenation
             'sales_quotation_requests.*',
             "users.position as requestor_position"
         ]);
+
+        $view_awarded_quotation_raw = DB::table('vw_sales_quotation_request_awarded')->where('code',$id)->get();
+
         if ($sales_quotation_request) {
             $sales_quotation_request->date_requested = Carbon::parse($sales_quotation_request->created_at)->format('F j, Y');
             $sales_quotation_request->request_date = Carbon::parse($sales_quotation_request->request_date)->format('F j, Y');
-        }
-
+        } 
+        
+        foreach ($view_awarded_quotation_raw as $value) {
+            $awarded_quantity = $value->Quantity;
+            $projected_quantity = $value->projected_quantity;
+            if($awarded_quantity == null){
+                $awarded_quantity = 0;
+                $unawarded_quantity =  $value->projected_quantity;
+            }
+            if ($projected_quantity == null || $projected_quantity == 0) { // Check for null or zero
+                $awarded_percentage = 0; // Set percentage to 0 to avoid division by zero
+                $unawarded_percentage = 100; // Set percentage to 0 to avoid division by zero
+            } else {
+                $awarded_percentage = ($awarded_quantity / $projected_quantity) * 100;
+                $unawarded_percentage = (($projected_quantity - $awarded_quantity)/$projected_quantity) * 100;
+                $unawarded_quantity =$projected_quantity - $awarded_quantity;
+            }
+            $awarded_quotation[]= [
+                'product_code' => $value->product_code,
+                'product_description' => $value->product_description,
+                'projected_quantity' => $projected_quantity.' '.$value->projected_quantity_unit,
+                'awarded_percentage' => $awarded_percentage.' %',
+                'unawarded_percentage' => $unawarded_percentage.' %',
+                'awarded_quantity' => $awarded_quantity.' '.$value->projected_quantity_unit,
+                'unawarded_quantity' => $unawarded_quantity,
+            ];                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+        }  
 
         // Check if the request exists
-        if (!$sales_quotation_request) {
+        if (!$sales_quotation_request ) {
             $response = [
                 'result' => false,
                 'status' => 'error',
@@ -252,14 +282,13 @@ class SalesQuotationRequestController extends Controller
             ->get(['sales_quotation_request_signatories.*','users.position as signatory_position']);
         
         
-        
-        
         // Combine the request with its related products and notes
         $sales_quotation_request->products = $sale_request_products_for_approval;
         $sales_quotation_request->notes = $sale_request_notes_for_approval;
         $sales_quotation_request->noted_by = $sale_request_signatories_noted_by_for_approval;
         $sales_quotation_request->approved_by = $sale_request_signatories_approved_by_for_approval;
         $sales_quotation_request->signatories = $sale_request_signatories;
+        $sales_quotation_request->awarded = $awarded_quotation;
         
         // Prepare the response
         $response = [

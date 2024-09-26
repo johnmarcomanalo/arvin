@@ -34,6 +34,9 @@ const QuotationListHooks = (props) => {
   const refresh = useSelector((state) => state.QuotationReducer.refresh);
   const viewModal = useSelector((state) => state.QuotationReducer.viewModal);
   const printModal = useSelector((state) => state.QuotationReducer.printModal);
+  const reportModal = useSelector(
+    (state) => state.QuotationReducer.reportModal
+  );
   const dataList = useSelector((state) => state.QuotationReducer.dataList);
   const [searchParams, setSearchParams] = useSearchParams();
   const search =
@@ -76,6 +79,14 @@ const QuotationListHooks = (props) => {
     { id: "requestor_name", label: "Requestor", align: "left" },
   ];
 
+  const awarded_columns = [
+    { id: "product_code", label: "Product Code", align: "left" },
+    { id: "product_description", label: "Customer", align: "left" },
+    { id: "projected_quantity", label: "Status", align: "left" },
+    { id: "awarded_quantity", label: "Awarded Quantity", align: "left" },
+    { id: "awarded_percentage", label: "Awarded Percentage", align: "left" },
+    { id: "unawarded_percentage", label: "Unawarded Quantity", align: "left" },
+  ];
   const onClickSubmit = (status) => {
     props.dispatch(change("ForApprovalQuotation", "status", status));
   };
@@ -234,6 +245,22 @@ const QuotationListHooks = (props) => {
       u: account_details?.code,
     });
   };
+  const onClickOpenReportModal = () => {
+    dispatch({
+      type: Constants.ACTION_QUOTATION,
+      payload: {
+        reportModal: true,
+      },
+    });
+  };
+  const onClickCloseReportModal = () => {
+    dispatch({
+      type: Constants.ACTION_QUOTATION,
+      payload: {
+        reportModal: false,
+      },
+    });
+  };
   return {
     state,
     columns,
@@ -242,6 +269,8 @@ const QuotationListHooks = (props) => {
     viewModal,
     selectedDataList,
     printModal,
+    reportModal,
+    awarded_columns,
     onSelectRow,
     onClickSubmit,
     onResetSelectedDataList,
@@ -253,6 +282,8 @@ const QuotationListHooks = (props) => {
     onChangeFilterStart,
     onChangeFilterEnd,
     onChangeFilterStatus,
+    onClickOpenReportModal,
+    onClickCloseReportModal,
   };
 };
 

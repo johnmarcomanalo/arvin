@@ -58,7 +58,7 @@ let ChangePassword = (props) => {
         justifyContent="center"
         alignItems="center"
       >
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} sm={12} md={6}>
           <Grid
             container
             style={{
@@ -74,7 +74,9 @@ let ChangePassword = (props) => {
               spacing={2}
             >
               <Box>
-                <Typography sx={{ fontWeight: 900, fontSize: 80 }}>
+                <Typography
+                  sx={{ fontWeight: 900, fontSize: { xs: 50, sm: 50, md: 80 } }}
+                >
                   Change your
                 </Typography>
               </Box>
@@ -82,7 +84,7 @@ let ChangePassword = (props) => {
                 <Typography
                   sx={{
                     fontWeight: 900,
-                    fontSize: 100,
+                    fontSize: { xs: 50, sm: 50, md: 80 },
                     color: configure.primary_color,
                   }}
                 >

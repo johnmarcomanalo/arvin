@@ -26,6 +26,35 @@ class RefSubSectionsController extends Controller
      */
     public function store(Request $request)
     {
+        $fields = $request->validate([
+            'section_code' => 'required',
+            'description' => 'required',
+            'type' => 'required',
+            'added_by' => 'required',
+            'modified_by' => 'required',
+        ]);
+        $existingRecord = RefSubSections::where('section_code', $fields['section_code'])
+            ->where('description', $fields['description'])
+            ->where('type', $fields['type'])
+            ->first();
+
+        if ($existingRecord) {
+            return response([
+                'result' => true,
+                'status' => 'error',
+                'title' => 'Error',
+                'message' => 'Subsection  already exists.'
+            ], 409);
+        } else {
+            $fields['code'] = $this->generate_code();
+            RefSubSections::create($fields);
+            return response([
+                    'result' => true,
+                    'status' => 'success',
+                    'title' => 'Success',
+                    'message' => 'Subsection  added successfully.'
+            ], 201);
+        }
     }
 
     /**
@@ -81,6 +110,16 @@ class RefSubSectionsController extends Controller
          $data = array();
         }
         return Crypt::encryptString($data);
+    }
+
+    public function generate_code(){
+        $code = 1;
+        $current_date = date('Y-m-d');
+        $latest_code = RefSubSections::latest('code')->first('code')->code ?? NULL;
+        if(!empty($latest_code)){
+            $code = $latest_code + 1;
+        }
+        return $code;
     }
 
 }

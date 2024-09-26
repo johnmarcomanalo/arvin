@@ -15,6 +15,7 @@ import ViewRequestQuotation from "./components/ViewQuotation";
 import InputField from "../../../../../components/inputFIeld/InputField";
 import moment from "moment";
 import ComboBox from "../../../../../components/autoComplete/AutoComplete";
+import ViewAwardedQuotation from "./components/ViewAwardedQuotation";
 const formName = "QuotationList";
 const submit = async (values, dispatch, props, hook) => {
   try {
@@ -39,13 +40,18 @@ let QuotationList = (props) => {
     <React.Fragment>
       <Modal
         open={quotationList?.viewModal}
-        fullScreen={matches ? false : true}
+        // fullScreen={matches ? false : true}
         title={"Quotation Details"}
-        size={"lg"}
+        fullScreen={true}
+        // size={"lg"}
         action={undefined}
         handleClose={quotationList.onClickCloseViewModal}
       >
-        <ViewRequestQuotation selected_data={quotationList.selectedDataList} />
+        <ViewRequestQuotation
+          onClickOpenModal={quotationList.onClickOpenReportModal}
+          selected_data={quotationList.selectedDataList}
+          awarded_columns={quotationList.awarded_columns}
+        />
       </Modal>
       <Modal
         open={quotationList?.printModal}
@@ -58,7 +64,16 @@ let QuotationList = (props) => {
       >
         <ViewPrintQuotation selected_data={quotationList.selectedDataList} />
       </Modal>
-
+      <Modal
+        open={quotationList?.reportModal}
+        fullScreen={matches ? false : true}
+        title={"Award Details"}
+        size={"md"}
+        action={undefined}
+        handleClose={quotationList.onClickCloseReportModal}
+      >
+        <ViewAwardedQuotation selected_data={quotationList.selectedDataList} />
+      </Modal>
       <form onSubmit={props.handleSubmit(onSubmit)}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={12} md={12} lg={12}>

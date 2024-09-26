@@ -90,6 +90,21 @@ const NavigationHooks = (props) => {
       },
     });
   };
+  // React.useEffect(() => {
+  //   const handleBeforeUnload = (event) => {
+  //     event.preventDefault();
+  //     event.returnValue = ""; // Required for Chrome, Firefox, and others
+  //     return ""; // Safari requires this
+  //   };
+
+  //   // Add event listener for beforeunload
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+
+  //   // Cleanup the event listener on component unmount
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //   };
+  // }, []);
   return {
     request_modal,
     setting_modal,

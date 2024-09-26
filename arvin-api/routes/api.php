@@ -19,6 +19,7 @@ use App\Http\Controllers\RefCurrenciesController;
 use App\Http\Controllers\RefValueAddedTaxController;
 use App\Http\Controllers\RefRequestHierarchiesController;
 use App\Http\Controllers\RefSalutationsController;
+use App\Http\Controllers\RefTruckTypesController;
 
 
 use App\Http\Controllers\UsersController;
@@ -107,6 +108,8 @@ use Illuminate\Support\Facades\Route;
         Route::apiResource('reference/system_settings/access_rights/request_rights_access_list',UserAccessRequestRightsController::class)->middleware(['light_decryption']);
         Route::apiResource('reference/ref_salutations',RefSalutationsController::class)->middleware(['light_decryption']);
         Route::get('reference/get_ref_salutations',[RefSalutationsController::class,'get_ref_salutations']);
+        Route::apiResource('reference/ref_truck_types',RefTruckTypesController::class)->middleware(['light_decryption']);
+        Route::get('reference/get_ref_truck_types',[RefTruckTypesController::class,'get_ref_truck_types']);
         // REFERENCE END
 
 

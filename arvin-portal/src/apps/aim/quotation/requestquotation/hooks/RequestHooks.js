@@ -15,6 +15,7 @@ import {
   getAllRefValueAddedTax,
   getEmployeeCustomerAccessDetails,
 } from "../../../settings/reference/actions/ReferenceActions";
+import swal from "sweetalert";
 
 const RequestHooks = (props) => {
   const refresh = useSelector((state) => state.QuotationReducer.refresh);
@@ -302,6 +303,7 @@ const RequestHooks = (props) => {
     setState((prev) => ({
       ...prev,
     }));
+    swal("Success", "Product added successfully", "success");
   };
   const onClickRemoveItemProductList = () => {
     state.product_list.splice(state.product_list.length - 1, 1);

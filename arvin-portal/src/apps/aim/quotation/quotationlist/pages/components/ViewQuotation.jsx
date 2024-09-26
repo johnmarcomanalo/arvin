@@ -35,6 +35,7 @@ import ButtonComponent from "../../../../../../components/button/Button";
 import { cancelRequest } from "../../../../../../api/api";
 import swal from "sweetalert";
 import { Constants } from "../../../../../../reducer/Contants";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 const formName = "ViewQuotation";
 const Demo = styled("div")(({ theme }) => ({
   backgroundColor: configure.primary_color,
@@ -199,6 +200,15 @@ let ViewQuotation = (props) => {
                   Request Hierarchy Status
                 </Button>
               </NoMaxWidthTooltip>
+              <Button
+                sx={configure.default_button}
+                onClick={() => {
+                  param.onClickOpenModal();
+                }}
+                startIcon={<EmojiEventsIcon />}
+              >
+                Awarded Details
+              </Button>
             </Stack>
           </Grid>
           <Grid item xs={12} md={6}>
@@ -301,6 +311,14 @@ let ViewQuotation = (props) => {
                         color: configure.primary_table_text_color,
                       }}
                     >
+                      PRODUCT CODE
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        backgroundColor: configure.primary_table_color,
+                        color: configure.primary_table_text_color,
+                      }}
+                    >
                       PRODUCT DESCRIPTION
                     </TableCell>
 
@@ -365,6 +383,7 @@ let ViewQuotation = (props) => {
                   {selected_data?.products?.map((value, index) => {
                     return (
                       <TableRow>
+                        <TableCell>{value.product_code}</TableCell>
                         <TableCell>{value.product_description}</TableCell>
                         <TableCell>
                           {value.projected_quantity +

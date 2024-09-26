@@ -59,6 +59,9 @@ const IndexMyQuotationList = lazy(() =>
 const IndexEmployeeMasterList = lazy(() =>
   import("./apps/aim/humanresource/employeeList/pages/IndexEmployeeMasterList")
 );
+const IndexEmployeeDetails = lazy(() =>
+  import("./apps/aim/humanresource/employeeDetails/pages/IndexEmployeeDetails")
+);
 // HUMAN RESOURCE END
 
 //ACCESS RIGHTS START
@@ -118,6 +121,9 @@ const IndexRefRequestHierarchy = lazy(() =>
 const IndexRefSalutations = lazy(() =>
   import("./apps/aim/settings/reference/pages/IndexRefSalutations")
 );
+const IndexRefTruckTypes = lazy(() =>
+  import("./apps/aim/settings/reference/pages/IndexRefTruckTypes")
+);
 // REFERENCE END
 
 const theme = createTheme({
@@ -145,13 +151,15 @@ const RequireAuth = ({ children }) => {
 
 function App() {
   const access = useSelector((state) => state.AuthenticationReducer.access);
-  const hasAccess = (module, component, subComponent) => {
+  const hasAccess = (module, component, subComponent, subOnly) => {
     const moduleAccess = access.user_access_module_rights.some(
       (item) => item.description === module
     );
-    const componentAccess = access.user_access_component_rights.some(
-      (item) => item.description === component
-    );
+    const componentAccess = subOnly
+      ? true
+      : access.user_access_component_rights.some(
+          (item) => item.description === component
+        );
     let subComponentAccess = true; // Default to true if no subcomponent is provided
     if (subComponent) {
       subComponentAccess = access.user_access_sub_component_rights.some(
@@ -162,8 +170,8 @@ function App() {
   };
 
   const getAccessChecker = (routeInfo) => () => {
-    const { module, component, subComponent } = routeInfo;
-    return hasAccess(module, component, subComponent);
+    const { module, component, subComponent, subOnly = false } = routeInfo;
+    return hasAccess(module, component, subComponent, subOnly);
   };
   return (
     <div className="App">
@@ -343,6 +351,22 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+                  <Route
+                    path="/Modules/HumanResource/Employee/EmployeeDetails"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Human Resource",
+                          component: "Employee",
+                          subComponent: "Employee Details",
+                          subOnly: true,
+                        })}
+                      >
+                        <IndexEmployeeDetails />
+                      </PrivateRoute>
+                    }
+                  />
+
                   {/* HUMAN RESOURCE END */}
                   {/* SYSTEM SETTINGS START */}
                   {/* ACCESS RIGHTS START */}
@@ -527,6 +551,20 @@ function App() {
                         })}
                       >
                         <IndexRefSalutations />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/SystemSettings/References/TruckTypes"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Settings",
+                          component: "References",
+                          subComponent: "Truck Types",
+                        })}
+                      >
+                        <IndexRefTruckTypes />
                       </PrivateRoute>
                     }
                   />

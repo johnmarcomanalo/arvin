@@ -18,6 +18,7 @@ const initialState = {
   target_annual_quota: null,
   target_month_quota: null,
   target_day_quota: null,
+  reportModal: false,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
