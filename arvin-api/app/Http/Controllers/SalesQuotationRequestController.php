@@ -228,7 +228,7 @@ class SalesQuotationRequestController extends Controller
         } 
         
         foreach ($view_awarded_quotation_raw as $value) {
-            $awarded_quantity = $value->Quantity;
+            $awarded_quantity = $value->awarded_qty;
             $projected_quantity = $value->projected_quantity;
             if($awarded_quantity == null){
                 $awarded_quantity = 0;
@@ -248,7 +248,7 @@ class SalesQuotationRequestController extends Controller
                 'projected_quantity' => $projected_quantity.' '.$value->projected_quantity_unit,
                 'awarded_percentage' => $awarded_percentage.' %',
                 'unawarded_percentage' => $unawarded_percentage.' %',
-                'awarded_quantity' => $awarded_quantity.' '.$value->projected_quantity_unit,
+                'awarded_quantity' => $awarded_quantity.' '.$value->awarded_qty_unit,
                 'unawarded_quantity' => $unawarded_quantity,
             ];                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
         }  
