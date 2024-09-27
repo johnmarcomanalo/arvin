@@ -80,12 +80,25 @@ const QuotationListHooks = (props) => {
   ];
 
   const awarded_columns = [
-    { id: "product_code", label: "Product Code", align: "left" },
-    { id: "product_description", label: "Customer", align: "left" },
-    { id: "projected_quantity", label: "Status", align: "left" },
+    { id: "product_request_code", label: "Code", align: "left" },
+    { id: "status", label: "Status", align: "left" },
+    { id: "os_number", label: "OS Number", align: "left" },
+    { id: "customer_description", label: "Customer", align: "left" },
+    { id: "product_description", label: "Product Description", align: "left" },
+    { id: "projected_quantity", label: "Project Quantity", align: "left" },
     { id: "awarded_quantity", label: "Awarded Quantity", align: "left" },
+    { id: "unawarded_quantity", label: "Unawarded Quantity", align: "left" },
     { id: "awarded_percentage", label: "Awarded Percentage", align: "left" },
-    { id: "unawarded_percentage", label: "Unawarded Quantity", align: "left" },
+    {
+      id: "unawarded_percentage",
+      label: "Unawarded Percentage",
+      align: "left",
+    },
+    {
+      id: "request_date",
+      label: "Request Date",
+      align: "left",
+    },
   ];
   const onClickSubmit = (status) => {
     props.dispatch(change("ForApprovalQuotation", "status", status));

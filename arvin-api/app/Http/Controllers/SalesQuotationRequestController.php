@@ -228,8 +228,9 @@ class SalesQuotationRequestController extends Controller
         } 
         
         foreach ($view_awarded_quotation_raw as $value) {
-            $awarded_quantity = $value->awarded_qty;
-            $projected_quantity = $value->projected_quantity;
+            $awarded_quantity = $value->awarded_qty ?? 0;
+            $projected_quantity = $value->projected_quantity ?? 0;
+            $os_number =  $value->os_number ?? '--';
             if($awarded_quantity == null){
                 $awarded_quantity = 0;
                 $unawarded_quantity =  $value->projected_quantity;
@@ -245,11 +246,17 @@ class SalesQuotationRequestController extends Controller
             $awarded_quotation[]= [
                 'product_code' => $value->product_code,
                 'product_description' => $value->product_description,
-                'projected_quantity' => $projected_quantity.' '.$value->projected_quantity_unit,
-                'awarded_percentage' => $awarded_percentage.' %',
-                'unawarded_percentage' => $unawarded_percentage.' %',
-                'awarded_quantity' => $awarded_quantity.' '.$value->awarded_qty_unit,
+                'projected_quantity' => $projected_quantity . ' ' . $value->projected_quantity_unit,
+                'awarded_percentage' => $awarded_percentage . ' %',
+                'unawarded_percentage' => $unawarded_percentage . ' %',
+                'awarded_quantity' => $awarded_quantity . ' ' . $value->awarded_qty_unit,
                 'unawarded_quantity' => $unawarded_quantity,
+                'os_number' => $os_number,
+                'request_quotation_code' => $value->code,
+                'customer_description' => $value->customer_description,
+                'product_request_code' => $value->product_request_code,
+                'status'=>$value->status,
+                'request_date'=>Carbon::parse($value->request_date)->format('F j, Y'),
             ];                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
         }  
 

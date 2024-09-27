@@ -53,6 +53,9 @@ const IndexForApprovalQuotation = lazy(() =>
 const IndexMyQuotationList = lazy(() =>
   import("./apps/aim/quotation/myquotationList/pages/IndexMyQuotationList")
 );
+const IndexQuotedProducts = lazy(() =>
+  import("./apps/aim/quotation/report/quotedproducts/pages/IndexQuotedProducts")
+);
 // QUOTATION END
 
 // HUMAN RESOURCE START
@@ -335,6 +338,21 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+                  <Route
+                    path="/Modules/Quotation/Reports/QuotedProducts"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Quotation",
+                          component: "Reports",
+                          subComponent: "Quoted Products",
+                        })}
+                      >
+                        <IndexQuotedProducts />
+                      </PrivateRoute>
+                    }
+                  />
+
                   {/* QUOTATION END */}
                   {/* HUMAN RESOURCE START */}
                   <Route
@@ -366,7 +384,6 @@ function App() {
                       </PrivateRoute>
                     }
                   />
-
                   {/* HUMAN RESOURCE END */}
                   {/* SYSTEM SETTINGS START */}
                   {/* ACCESS RIGHTS START */}

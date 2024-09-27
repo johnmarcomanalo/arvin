@@ -21,7 +21,6 @@ use App\Http\Controllers\RefRequestHierarchiesController;
 use App\Http\Controllers\RefSalutationsController;
 use App\Http\Controllers\RefTruckTypesController;
 
-
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UserAccessCustomerRightsController;
 use App\Http\Controllers\UserAccessOrganizationRightsController;
@@ -37,6 +36,9 @@ use App\Http\Controllers\SalesDailyOutReportSalesSummaryController;
 
 use App\Http\Controllers\SalesQuotationRequestController;
 use App\Http\Controllers\SalesQuotationRequestForApprovalsController;
+use App\Http\Controllers\SalesQuotationReportQuotedProducts;
+
+
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -145,7 +147,12 @@ use Illuminate\Support\Facades\Route;
         Route::apiResource('quotation/request',SalesQuotationRequestController::class)->middleware(['light_decryption']);
         Route::get('quotation/for_approval_quotation/get_request_for_approval',[SalesQuotationRequestForApprovalsController::class,'get_request_for_approval']);
         Route::apiResource('quotation/for_approval_quotation',SalesQuotationRequestForApprovalsController::class)->middleware(['light_decryption']);
+        Route::get('quotation/report/quoted_products/get_report_quoted_products',[SalesQuotationReportQuotedProducts::class,'get_report_quoted_products']);
         // QUOTATION END
+
+
+
+
 
         // HUMAN RESOURCE START
         Route::get('humanresource/employee_list',[UsersController::class, 'employee_list']);

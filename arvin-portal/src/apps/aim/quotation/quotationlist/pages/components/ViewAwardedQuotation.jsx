@@ -46,7 +46,7 @@ let ViewAwardedQuotation = (props) => {
                         color: configure.primary_table_text_color,
                       }}
                     >
-                      Product Code
+                      Code
                     </TableCell>
                     <TableCell
                       style={{
@@ -54,7 +54,7 @@ let ViewAwardedQuotation = (props) => {
                         color: configure.primary_table_text_color,
                       }}
                     >
-                      Description
+                      Status
                     </TableCell>
                     <TableCell
                       style={{
@@ -62,7 +62,31 @@ let ViewAwardedQuotation = (props) => {
                         color: configure.primary_table_text_color,
                       }}
                     >
-                      Projected Quantity
+                      OS Number
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        backgroundColor: configure.primary_table_color,
+                        color: configure.primary_table_text_color,
+                      }}
+                    >
+                      Customer
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        backgroundColor: configure.primary_table_color,
+                        color: configure.primary_table_text_color,
+                      }}
+                    >
+                      Product Description
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        backgroundColor: configure.primary_table_color,
+                        color: configure.primary_table_text_color,
+                      }}
+                    >
+                      Project Quantity
                     </TableCell>
                     <TableCell
                       style={{
@@ -78,7 +102,7 @@ let ViewAwardedQuotation = (props) => {
                         color: configure.primary_table_text_color,
                       }}
                     >
-                      Awarded Percentage
+                      Unawarded Quantity
                     </TableCell>
                     <TableCell
                       style={{
@@ -86,7 +110,7 @@ let ViewAwardedQuotation = (props) => {
                         color: configure.primary_table_text_color,
                       }}
                     >
-                      Unawarded Quantity
+                      Awarded Percentage
                     </TableCell>
                     <TableCell
                       style={{
@@ -96,6 +120,14 @@ let ViewAwardedQuotation = (props) => {
                     >
                       Unawarded Percentage
                     </TableCell>
+                    <TableCell
+                      style={{
+                        backgroundColor: configure.primary_table_color,
+                        color: configure.primary_table_text_color,
+                      }}
+                    >
+                      Request Date
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -103,12 +135,16 @@ let ViewAwardedQuotation = (props) => {
                     return (
                       <TableRow key={index}>
                         <TableCell>{value.product_code}</TableCell>
+                        <TableCell>{value.status}</TableCell>
+                        <TableCell>{value.os_number}</TableCell>
+                        <TableCell>{value.customer_description}</TableCell>
                         <TableCell>{value.product_description}</TableCell>
                         <TableCell>{value.projected_quantity}</TableCell>
                         <TableCell>{value.awarded_quantity}</TableCell>
-                        <TableCell>{value.awarded_percentage}</TableCell>
                         <TableCell>{value.unawarded_quantity}</TableCell>
+                        <TableCell>{value.awarded_percentage}</TableCell>
                         <TableCell>{value.unawarded_percentage}</TableCell>
+                        <TableCell>{value.request_date}</TableCell>
                       </TableRow>
                     );
                   })}
