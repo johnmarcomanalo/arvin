@@ -113,7 +113,6 @@ class UpdateSalesTracker extends Command
                 }
             }
         }
-                    return $results;
 
         DB::transaction(function() use ($results, $subSections) {
             $currentDate = Carbon::now()->format('Y-m-d');
