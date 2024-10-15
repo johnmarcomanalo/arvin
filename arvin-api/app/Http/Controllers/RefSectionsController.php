@@ -15,7 +15,7 @@ class RefSectionsController extends Controller
      */
     public function index()
     {
-        //
+        return Crypt::encryptString(RefSections::whereNull('deleted_at')->get());
     }
 
     /**

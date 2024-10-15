@@ -20,12 +20,14 @@ use App\Http\Controllers\RefValueAddedTaxController;
 use App\Http\Controllers\RefRequestHierarchiesController;
 use App\Http\Controllers\RefSalutationsController;
 use App\Http\Controllers\RefTruckTypesController;
+use App\Http\Controllers\RefProductGroupsController;
 
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UserAccessCustomerRightsController;
 use App\Http\Controllers\UserAccessOrganizationRightsController;
 use App\Http\Controllers\UserAccessPageRightsController;
 use App\Http\Controllers\UserAccessRequestRightsController;
+use App\Http\Controllers\UserAccessProductGroupRightsController;
 
 
 use App\Http\Controllers\SalesDailyOutAnnualSettingsSalesController;
@@ -33,6 +35,8 @@ use App\Http\Controllers\SalesDailyOutsController;
 use App\Http\Controllers\SalesDailyOutAnnualSalesRankingController;
 use App\Http\Controllers\SalesDailyOutAnnualSalesRankingDetailsController;
 use App\Http\Controllers\SalesDailyOutReportSalesSummaryController;
+use App\Http\Controllers\SalesDailyOutSettingsAnnualQuotaController;
+use App\Http\Controllers\SalesDailyOutTrackersController;
 
 use App\Http\Controllers\SalesQuotationRequestController;
 use App\Http\Controllers\SalesQuotationRequestForApprovalsController;
@@ -60,7 +64,7 @@ use Illuminate\Support\Facades\Route;
     
     //MODULE SALES DAILY OUT START
 
-    Route::group(['middleware' => ['auth:sanctum']], function () {
+    // Route::group(['middleware' => ['auth:sanctum']], function () {
         //REFERENCE
         // Route::apiResource('reference/companies',RefCompaniesController::class)->middleware(['light_decryption']);
 
@@ -112,6 +116,12 @@ use Illuminate\Support\Facades\Route;
         Route::get('reference/get_ref_salutations',[RefSalutationsController::class,'get_ref_salutations']);
         Route::apiResource('reference/ref_truck_types',RefTruckTypesController::class)->middleware(['light_decryption']);
         Route::get('reference/get_ref_truck_types',[RefTruckTypesController::class,'get_ref_truck_types']);
+        Route::apiResource('reference/ref_product_groups',RefProductGroupsController::class)->middleware(['light_decryption']);
+        Route::get('reference/get_ref_product_groups_sap',[RefProductGroupsController::class,'get_ref_product_groups_sap']);
+        Route::get('reference/get_ref_product_groups',[RefProductGroupsController::class,'get_ref_product_groups']);
+        Route::get('reference/system_settings/access_rights/product_group_rights/get_product_group_right_access_list/{id}',[UserAccessProductGroupRightsController::class,'get_product_group_right_access_list']);
+        Route::apiResource('reference/system_settings/access_rights/product_group_rights',UserAccessProductGroupRightsController::class)->middleware(['light_decryption']);
+      
         // REFERENCE END
 
 
@@ -140,6 +150,22 @@ use Illuminate\Support\Facades\Route;
         Route::get('salesdailyout/report/get_report_sales_summary',[SalesDailyOutReportSalesSummaryController::class,'getReportSalesSummary']);
         // Sales Daily Out Annual Report End
 
+        // Sales Daily Out Settings Annual Quota START
+        Route::get('salesdailyout/settings_annual_quota/get_sales_annual_settings',[SalesDailyOutSettingsAnnualQuotaController::class,'get_sales_annual_settings']);//for pagination
+        Route::get('salesdailyout/settings_annual_quota/get_annual_monthly_daily_target_sales_by_section_subsection_product_group/{id}/{year}/{pg}',[SalesDailyOutSettingsAnnualQuotaController::class, 'get_annual_monthly_daily_target_sales_by_section_subsection_product_group'])->middleware(['light_decryption']);
+        Route::apiResource('salesdailyout/settings_annual_quota',SalesDailyOutSettingsAnnualQuotaController::class)->middleware(['light_decryption']);
+        // Sales Daily Out Settings Annual Quota END 
+
+        // Sales Tracker START
+
+        Route::get('salesdailyout/sales_tracker/get_five_days_sales_daily_out_by_current_date',[SalesDailyOutTrackersController::class,'getFiveDaysSalesDailyOutbyCurrentDate']);
+        Route::get('salesdailyout/sales_tracker/getFiveDaysSalesTrackerbyCurrentDate',[SalesDailyOutTrackersController::class, 'getFiveDaysSalesTrackerbyCurrentDate']);
+        Route::get('salesdailyout/sales_tracker/get_sales_tracker',[SalesDailyOutTrackersController::class, 'get_sales_tracker']);
+        Route::apiResource('salesdailyout/sales_tracker',SalesDailyOutTrackersController::class)->middleware(['light_decryption']);
+        Route::get('salesdailyout/sales_tracker/insert_sap_sales_daily_out/{product_groups_description}/{year_sales_target}/{ref_sub_section_type}/{settings_annual_quota_code}',[SalesDailyOutTrackersController::class, 'insert_sap_sales_daily_out'])->middleware(['light_decryption']);
+        // Sales Tracker END 
+
+
         //MODULE SALES DAILY OUT END 
 
         // QUOTATION START
@@ -162,7 +188,7 @@ use Illuminate\Support\Facades\Route;
 
 
 
-    });
+    // });
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return $request->user();
     });

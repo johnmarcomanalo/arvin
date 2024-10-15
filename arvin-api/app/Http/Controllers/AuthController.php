@@ -19,6 +19,7 @@ use App\Models\UserAccessComponentRights;
 use App\Models\UserAccessSubComponentRights;
 use App\Models\UserAccessCustomerRights;
 use App\Models\UserAccessOrganizationRights;
+use App\Models\UserAccessProductGroupRights;
 
 use Illuminate\Support\Facades\Crypt;
 
@@ -125,12 +126,20 @@ class AuthController extends Controller
         ->where('access_rights',1)
         ->get(['ref_sub_sections.type','ref_sub_sections.code','ref_sub_sections.description']);
 
+         $user_access_product_group_rights = UserAccessProductGroupRights::
+        join('ref_product_groups', 'user_access_product_group_rights.ref_product_groups_code', '=', 'ref_product_groups.code')
+        ->where('user_id',$user_id)
+        ->where('access_rights',1)
+        ->get(['ref_product_groups.code','ref_product_groups.description','ref_product_groups.unit_conversion']);
+
+
         $response = [
              'user_access_module_rights' => $user_access_module_rights,
              'user_access_component_rights' => $user_access_component_rights,
              'user_access_sub_component_rights' => $user_access_sub_component_rights,
              'user_access_customer_rights' => $user_access_customer_rights,
              'user_access_organization_rights' => $user_access_organization_rights,
+             'user_access_product_group_rights' => $user_access_product_group_rights,
         ];
         return Crypt::encryptString(json_encode($response));
     }

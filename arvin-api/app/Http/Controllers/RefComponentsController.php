@@ -92,9 +92,34 @@ class RefComponentsController extends Controller
      * @param  \App\Models\RefComponents  $refComponents
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, RefComponents $refComponents)
+    public function update(Request $request, $id)
     {
-        //
+        $fields = $request->validate([
+            'modified_by' => 'required',
+            'code' => 'required',
+            'description' => 'required',
+        ]);
+        $data = RefComponents::where('code','=',$id)->first();
+        if(empty($data)){
+            $response = [
+                'result' => false,
+                'icon' => 'error',
+                'message' => 'No data found!',
+            ];
+            return response($response, 404);
+        }
+
+        $data->update([
+            'modified_by' => $fields['modified_by'],
+            'description' => $fields['description'],
+        ]);
+        $response = [
+            'message' => '',
+            'result' => true,
+            'icon' => 'success',
+            'title' => 'Successfully Updated!',
+        ];
+        return response($response, 200);
     }
 
     /**
