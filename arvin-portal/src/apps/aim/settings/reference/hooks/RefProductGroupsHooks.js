@@ -4,31 +4,34 @@ import { useSearchParams } from "react-router-dom";
 import { cancelRequest } from "../../../../../api/api";
 import { Constants } from "../../../../../reducer/Contants";
 import {
-  getAllRefModules,
-  getReferenceComponents,
+  getAllRefUnitOfMeasurements,
+  getReferenceProductGroups,
+  getReferenceProductGroupsSAP,
 } from "../actions/ReferenceActions";
-const RefComponentsHooks = (props) => {
+const RefUnitOfMeasurementsHooks = (props) => {
   const dispatch = useDispatch();
   const account_details = useSelector(
     (state) => state.AuthenticationReducer.account_details
   );
   const refresh = useSelector((state) => state.ReferenceReducer.refresh);
-  const modules = useSelector((state) => state.ReferenceReducer.modules);
+  const selected_ref = useSelector(
+    (state) => state.ReferenceReducer.selected_ref
+  );
   const dataList = useSelector((state) => state.ReferenceReducer.dataList);
   const dataListCount = useSelector(
     (state) => state.ReferenceReducer.dataListCount
   );
-  const selected_ref = useSelector(
-    (state) => state.ReferenceReducer.selected_ref
+  const product_group_category_sap = useSelector(
+    (state) => state.ReferenceReducer.product_group_category_sap
   );
-  const updateModal = useSelector(
-    (state) => state.ReferenceReducer.updateModal
+  const unit_of_measurements = useSelector(
+    (state) => state.ReferenceReducer.unit_of_measurements
   );
   const columns = [
     { id: "code", label: "Code", align: "left" },
-    { id: "module_description", label: "Module", align: "left" },
     { id: "description", label: "Description", align: "left" },
-    { id: "link", label: "Link", align: "left" },
+    { id: "unit_conversion", label: "Unit Conversion (KG)", align: "left" },
+    { id: "uom_description", label: "UoM Quota", align: "left" },
   ];
   const [state, setState] = React.useState({
     debounceTimer: null,
@@ -42,6 +45,9 @@ const RefComponentsHooks = (props) => {
     searchParams.get("q") != null ? String(searchParams.get("q")) : "";
   const filterQuery =
     searchParams.get("f") != null ? String(searchParams.get("f")) : "";
+  const updateModal = useSelector(
+    (state) => state.ReferenceReducer.updateModal
+  );
   const onChangeSearch = (event) => {
     // SEARCH DATA
     const search = event.target.value;
@@ -58,7 +64,6 @@ const RefComponentsHooks = (props) => {
       q: search,
       l: rowsPerPage,
       f: filterQuery,
-      u: account_details?.code,
     };
     return data;
   };
@@ -69,7 +74,6 @@ const RefComponentsHooks = (props) => {
       p: "1",
       l: String(rowsPerPage),
       f: filter,
-      u: account_details?.code,
     });
   };
   const handleChangePage = (event, page) => {
@@ -88,10 +92,17 @@ const RefComponentsHooks = (props) => {
       },
     });
   };
-  const getComponents = async () => {
+  const getRefProductGroups = async () => {
     try {
       const data = getListParam();
-      await dispatch(getReferenceComponents(data));
+      await dispatch(getReferenceProductGroups(data));
+    } catch (error) {
+      await console.error(error);
+    }
+  };
+  const getRefProductGroupsSAP = async () => {
+    try {
+      await dispatch(getReferenceProductGroupsSAP());
     } catch (error) {
       await console.error(error);
     }
@@ -101,14 +112,32 @@ const RefComponentsHooks = (props) => {
       added_by: account_details?.code,
       modified_by: account_details?.code,
     });
-    dispatch(getAllRefModules());
     return () => cancelRequest();
   }, [refresh]);
+
   React.useEffect(() => {
-    getComponents();
+    getRefProductGroups();
+    getRefProductGroupsSAP();
+    dispatch(getAllRefUnitOfMeasurements());
     return () => cancelRequest();
   }, [refresh, filterQuery, search, page]);
 
+  const onClickOpenUpdateModal = () => {
+    dispatch({
+      type: Constants.ACTION_REFERENCE,
+      payload: {
+        updateModal: true,
+      },
+    });
+  };
+  const onClickCloseUpdateModal = () => {
+    dispatch({
+      type: Constants.ACTION_REFERENCE,
+      payload: {
+        updateModal: false,
+      },
+    });
+  };
   const onSelectItem = (data) => {
     dispatch({
       type: Constants.ACTION_REFERENCE,
@@ -126,16 +155,19 @@ const RefComponentsHooks = (props) => {
     dataListCount,
     columns,
     rowsPerPage,
-    modules,
-    selected_ref,
     updateModal,
+    selected_ref,
+    product_group_category_sap,
+    unit_of_measurements,
     onChangeSearch,
     getListParam,
     onChangeFilter,
     handleChangePage,
     handleChangeRowsPerPage,
+    onClickOpenUpdateModal,
+    onClickCloseUpdateModal,
     onSelectItem,
   };
 };
 
-export default RefComponentsHooks;
+export default RefUnitOfMeasurementsHooks;

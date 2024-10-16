@@ -6,6 +6,7 @@ import {
 } from "../services/referenceServices";
 import { decryptaes, encryptaes } from "../../../../../utils/LightSecurity";
 import {
+  GetDefaultServices,
   GetSpecificDefaultServices,
   PostDefaultServices,
   PutDefaultServices,
@@ -23,12 +24,6 @@ export const getRefCompanies = () => async (dispatch) => {
     });
     const response = AuthGetReferences("api/reference/companies");
     response.then((res) => {
-      dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: false,
-        },
-      });
       dispatch({
         type: Constants.ACTION_REFERENCE,
         payload: {
@@ -48,6 +43,7 @@ export const getRefCompanies = () => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -68,12 +64,6 @@ export const getRefBusinessUnits = (id) => async (dispatch) => {
     const response = AuthGetReferencesChild("api/reference/business_units", id);
     response.then((res) => {
       dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: false,
-        },
-      });
-      dispatch({
         type: Constants.ACTION_REFERENCE,
         payload: {
           business_units: decryptaes(res.data),
@@ -92,6 +82,7 @@ export const getRefBusinessUnits = (id) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -112,12 +103,6 @@ export const getRefTeams = (id) => async (dispatch) => {
     const response = AuthGetReferencesChild("api/reference/teams", id);
     response.then((res) => {
       dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: false,
-        },
-      });
-      dispatch({
         type: Constants.ACTION_REFERENCE,
         payload: {
           teams: decryptaes(res.data),
@@ -136,6 +121,7 @@ export const getRefTeams = (id) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -156,12 +142,6 @@ export const getRefDepartments = (id) => async (dispatch) => {
     const response = AuthGetReferencesChild("api/reference/departments", id);
     response.then((res) => {
       dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: false,
-        },
-      });
-      dispatch({
         type: Constants.ACTION_REFERENCE,
         payload: {
           departments: decryptaes(res.data),
@@ -180,6 +160,7 @@ export const getRefDepartments = (id) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -200,11 +181,44 @@ export const getRefSections = (id) => async (dispatch) => {
     const response = AuthGetReferencesChild("api/reference/sections", id);
     response.then((res) => {
       dispatch({
-        type: Constants.ACTION_LOADING,
+        type: Constants.ACTION_REFERENCE,
         payload: {
-          loading: false,
+          sections: decryptaes(res.data),
         },
       });
+    });
+  } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
+export const getAllRefSections = () => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = AuthGetReferences("api/reference/sections");
+    response.then((res) => {
       dispatch({
         type: Constants.ACTION_REFERENCE,
         payload: {
@@ -224,6 +238,7 @@ export const getRefSections = (id) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -244,12 +259,6 @@ export const getRefSubSections = (id) => async (dispatch) => {
     const response = AuthGetReferencesChild("api/reference/subsections", id);
     response.then((res) => {
       dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: false,
-        },
-      });
-      dispatch({
         type: Constants.ACTION_REFERENCE,
         payload: {
           subsections: decryptaes(res.data),
@@ -268,6 +277,7 @@ export const getRefSubSections = (id) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -291,12 +301,6 @@ export const getSpecificRefSubSection = (id) => async (dispatch) => {
     );
     response.then((res) => {
       dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: false,
-        },
-      });
-      dispatch({
         type: Constants.ACTION_REFERENCE,
         payload: {
           selected_subsection: decryptaes(res.data),
@@ -315,6 +319,7 @@ export const getSpecificRefSubSection = (id) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -361,6 +366,13 @@ export const getRefSalesRanking = () => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -422,6 +434,13 @@ export const getReferenceModule = (values) => async (dispatch) => {
         loading: false,
       },
     });
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -453,6 +472,13 @@ export const postReferenceModule = (formValues) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -503,6 +529,13 @@ export const getAllRefModules = () => async (dispatch) => {
         loading: false,
       },
     });
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -537,6 +570,13 @@ export const postReferenceComponent = (formValues) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -598,6 +638,13 @@ export const getReferenceComponents = (values) => async (dispatch) => {
         loading: false,
       },
     });
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -637,6 +684,13 @@ export const getAllRefComponents = (id) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -698,6 +752,13 @@ export const getReferenceSubcomponents = (values) => async (dispatch) => {
         loading: false,
       },
     });
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -732,6 +793,13 @@ export const postReferenceSubcomponent = (formValues) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -773,6 +841,13 @@ export const getEmployeeCustomerAccessDetails =
         message = formattedErrors;
       }
       await swal(title, message, "error");
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+    } finally {
       await dispatch({
         type: Constants.ACTION_LOADING,
         payload: {
@@ -842,6 +917,13 @@ export const getRefProducts = (values) => async (dispatch) => {
         loading: false,
       },
     });
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -897,6 +979,13 @@ export const getReferenceRequestTypes = (values) => async (dispatch) => {
         loading: false,
       },
     });
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -931,6 +1020,13 @@ export const postReferenceRequestType = (formValues) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -982,6 +1078,13 @@ export const getAllRefRequestTypes = () => async (dispatch) => {
         loading: false,
       },
     });
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -1017,6 +1120,13 @@ export const putRefRequestTypes = (formValues) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -1078,6 +1188,13 @@ export const getReferenceUnitOfMeasurements = (values) => async (dispatch) => {
         loading: false,
       },
     });
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -1113,6 +1230,13 @@ export const postReferenceUnitOfMeasurements =
         message = formattedErrors;
       }
       await swal(title, message, "error");
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+    } finally {
       await dispatch({
         type: Constants.ACTION_LOADING,
         payload: {
@@ -1163,6 +1287,13 @@ export const getAllRefUnitOfMeasurements = () => async (dispatch) => {
         loading: false,
       },
     });
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -1198,6 +1329,13 @@ export const putRefUnitOfMeasurements = (formValues) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -1259,6 +1397,13 @@ export const getReferenceCurrencies = (values) => async (dispatch) => {
         loading: false,
       },
     });
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -1293,6 +1438,13 @@ export const postReferenceCurrencies = (formValues) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -1343,6 +1495,13 @@ export const getAllRefCurrencies = () => async (dispatch) => {
         loading: false,
       },
     });
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -1378,6 +1537,13 @@ export const putRefCurrencies = (formValues) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -1439,6 +1605,13 @@ export const getReferenceValueAddedTax = (values) => async (dispatch) => {
         loading: false,
       },
     });
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -1473,6 +1646,13 @@ export const postReferenceValueAddedTax = (formValues) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -1517,6 +1697,13 @@ export const getAllRefValueAddedTax = () => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -1572,6 +1759,13 @@ export const getReferenceRequestHierarchy = (values) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -1657,6 +1851,7 @@ export const getAllRefRequestHierarchy = () => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -2000,46 +2195,45 @@ export const getReferenceTruckTypes = (values) => async (dispatch) => {
   }
 };
 
-export const postReferenceTruckTypes =
-  (formValues) => async (dispatch) => {
-    try {
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: true,
-        },
-      });
-      const res = await PostDefaultServices(
-        "api/reference/ref_truck_types",
-        formValues
-      );
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: false,
-        },
-      });
-      return res;
-    } catch (error) {
-      var title = configure.error_message.default;
-      var message = "";
-      if (typeof error.response.data.message !== "undefined")
-        title = error.response.data.message;
-      if (typeof error.response.data.errors !== "undefined") {
-        const formattedErrors = Object.entries(error.response.data.errors)
-          .map(([key, value]) => `${value.join(", ")}`)
-          .join("\n");
-        message = formattedErrors;
-      }
-      await swal(title, message, "error");
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: false,
-        },
-      });
+export const postReferenceTruckTypes = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PostDefaultServices(
+      "api/reference/ref_truck_types",
+      formValues
+    );
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+    return res;
+  } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
     }
-  };
+    await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
 
 export const getAllRefTruckTypes = () => async (dispatch) => {
   try {
@@ -2105,6 +2299,247 @@ export const putRefTruckTypes = (formValues) => async (dispatch) => {
       },
     });
     return res;
+  } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
+export const getReferenceProductGroupsSAP = () => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = AuthGetReferences(
+      "api/reference/get_ref_product_groups_sap"
+    );
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          product_group_category_sap: decryptaes(res.data),
+        },
+      });
+    });
+  } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
+export const postReferenceProductGroups = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PostDefaultServices(
+      "api/reference/ref_product_groups",
+      formValues
+    );
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+    return res;
+  } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
+export const getReferenceProductGroups = (values) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = GetSpecificDefaultServices(
+      "api/reference/get_ref_product_groups?page=" +
+        values.p +
+        "&limit=" +
+        values.l +
+        "&q=" +
+        values.q +
+        "&f=" +
+        values.f
+    );
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      let decrypted = decryptaes(res.data);
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          dataList: decrypted.dataList.data,
+          dataListCount: decrypted.dataList.total,
+        },
+      });
+    });
+  } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
+export const putRefProductGroups = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PutDefaultServices(
+      "api/reference/ref_product_groups/",
+      formValues.code,
+      formValues
+    );
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+    return res;
+  } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
+export const getRefProductGroups = () => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = AuthGetReferences("api/reference/ref_product_groups");
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      let decrypted = decryptaes(res.data);
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          product_group_category: decrypted,
+        },
+      });
+    });
   } catch (error) {
     var title = configure.error_message.default;
     var message = "";

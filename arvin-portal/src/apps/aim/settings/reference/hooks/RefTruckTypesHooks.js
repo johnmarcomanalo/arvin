@@ -15,6 +15,8 @@ const RefTruckTypesHooks = (props) => {
   const dataListCount = useSelector(
     (state) => state.ReferenceReducer.dataListCount
   );
+  const selected_ref = useSelector((state) => state.ReferenceReducer.selected_ref);
+  const updateModal = useSelector((state) => state.ReferenceReducer.updateModal);
   const columns = [
     { id: "code", label: "Code", align: "left" },
     { id: "description", label: "Description", align: "left" },
@@ -96,6 +98,16 @@ const RefTruckTypesHooks = (props) => {
     getRefUnitOfMeasurements();
     return () => cancelRequest();
   }, [refresh, filterQuery, search, page]);
+
+  const onSelectItem = (data) => {
+    dispatch({
+      type: Constants.ACTION_REFERENCE,
+      payload: {
+        selected_ref: data,
+        updateModal: true,
+      },
+    });
+  };
   return {
     account_details,
     search,
@@ -104,11 +116,14 @@ const RefTruckTypesHooks = (props) => {
     dataListCount,
     columns,
     rowsPerPage,
+    selected_ref,
+    updateModal,
     onChangeSearch,
     getListParam,
     onChangeFilter,
     handleChangePage,
     handleChangeRowsPerPage,
+    onSelectItem,
   };
 };
 

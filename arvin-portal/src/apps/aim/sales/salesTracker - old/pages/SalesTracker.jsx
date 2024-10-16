@@ -299,7 +299,6 @@ let SalesTracker = (props) => {
             subtitle={"ANNUAL TARGET SALE"}
             value={salesTracker.annual_sales_target}
             subvalue={"this is sub value"}
-            unit={salesTracker.product_group_unit_of_measure_type}
           />
         </Grid>
         <Grid item xs={12} sm={12} md={3}>
@@ -318,7 +317,6 @@ let SalesTracker = (props) => {
             subtitle={"MONTH TARGET SALE"}
             value={salesTracker.monthly_sales_target}
             subvalue={"this is sub value"}
-            unit={salesTracker.product_group_unit_of_measure_type}
           />
         </Grid>
         <Grid item xs={12} sm={12} md={3}>
@@ -337,7 +335,6 @@ let SalesTracker = (props) => {
             subtitle={"DAY TARGET SALE"}
             value={salesTracker.daily_sales_target}
             subvalue={"this is sub value"}
-            unit={salesTracker.product_group_unit_of_measure_type}
           />
         </Grid>
         <Grid item xs={12} sm={12} md={3}>
@@ -385,7 +382,6 @@ let SalesTracker = (props) => {
                 : 0
             }
             subvalue={"this is sub value"}
-            unit={salesTracker.product_group_unit_of_measure_type}
           />
         </Grid>
         <Grid item xs={12} sm={12} md={2}>
@@ -401,7 +397,7 @@ let SalesTracker = (props) => {
             title={"Day"}
             icon_color={configure.primary_color}
             icon_bg_color={"white"}
-            subtitle={"TOTAL OUT SALES" }
+            subtitle={"TOTAL OUT SALES"}
             value={
               typeof report_data?.total_daily_out_amount !== "undefined"
                 ? report_data?.total_daily_out_amount
@@ -409,7 +405,6 @@ let SalesTracker = (props) => {
             }
             subvalue={"this is sub value"}
             changeColorValue={true}
-            unit={salesTracker.product_group_unit_of_measure_type}
           />
         </Grid>
         <Grid item xs={12} sm={12} md={2}>
@@ -533,7 +528,7 @@ let SalesTracker = (props) => {
             </Stack>
           </Grid>
         </Grid>
-        <Grid item xs={12} sm={12} md={8} lg={8}>
+        <Grid item xs={12} sm={12} md={6} lg={6}>
           <form onSubmit={props.handleSubmit}>
             <Stack
               direction="row"
@@ -570,7 +565,7 @@ let SalesTracker = (props) => {
                 getOptionLabel={(option) =>
                   option?.description ? option?.description : ""
                 }
-                // disable={active_page.generate == "1" ? false : true}
+                disable={active_page.generate == "1" ? false : true}
                 component={ComboBox}
                 onChangeHandle={(e, newValue) => {
                   if (newValue?.description) {
@@ -578,26 +573,10 @@ let SalesTracker = (props) => {
                   }
                 }}
               />
-              <Field
-                id="product_group"
-                name="product_group"
-                label="Product"
-                options={salesTracker?.user_access_product_group_rights}
-                getOptionLabel={(option) =>
-                  option?.description ? option?.description : ""
-                }
-                // disable={active_page.generate == "1" ? false : true}
-                component={ComboBox}
-                onChangeHandle={(e, newValue) => {
-                  if (newValue?.description) {
-                    salesTracker.filterProductGroups(newValue);
-                  }
-                }}
-              />
             </Stack>
           </form>
         </Grid>
-        <Grid item xs={6} sm={6} md={4} lg={4}>
+        <Grid item xs={6} sm={6} md={6} lg={6}>
           <Stack
             direction="row"
             justifyContent={matches ? "flex-end" : "center"}

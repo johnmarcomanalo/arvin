@@ -35,6 +35,12 @@ const initialState = {
   request_hierarchies: [],
   salutations: [],
   printModal: false,
+  product_group_category: [],
+  product_group_category_sap: [],
+  reference_employee_product_group_access: [],
+  search_reference_employee_product_group_access: [],
+  product_group_unit_of_measure: null,
+  product_group_unit_of_measure_type: null,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -112,6 +118,28 @@ const dataReducer = (state = initialState, action) => {
         ...state,
         search_reference_request_type_page_access: search_request_type,
       };
+
+    case "search_reference_employee_product_group_access":
+      let search_product_group_type =
+        state.reference_employee_product_group_access.filter((files) => {
+          return (
+            files.module_description
+              .toLowerCase()
+              .indexOf(action.data.toLocaleLowerCase()) !== -1 ||
+            files.component_description
+              .toLowerCase()
+              .indexOf(action.data.toLocaleLowerCase()) !== -1 ||
+            files.sub_component_description
+              .toLowerCase()
+              .indexOf(action.data.toLocaleLowerCase()) !== -1
+          );
+        });
+      return {
+        ...state,
+        search_reference_employee_product_group_access:
+          search_product_group_type,
+      };
+
     default:
       return state;
   }

@@ -2,7 +2,14 @@ import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import HomeIcon from "@mui/icons-material/Home";
 import SettingsIcon from "@mui/icons-material/Settings";
 import WidgetsIcon from "@mui/icons-material/Widgets";
-import { Card, CardContent, Grid, Stack, Typography } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Grid,
+  Stack,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
@@ -21,6 +28,8 @@ import {
   postReferenceValueAddedTax,
 } from "../actions/ReferenceActions";
 import RefTruckTypesHooks from "../hooks/RefTruckTypesHooks";
+import Modal from "../../../../../components/modal/Modal";
+import UpdateRefTruckTypes from "./components/UpdateRefTruckTypes";
 const title_page = "Truck Types";
 const breadCrumbArray = [
   {
@@ -98,9 +107,23 @@ const submit = async (values, dispatch, props) => {
   }
 };
 let IndexRefTruckTypes = (props) => {
+  const matches = useMediaQuery("(min-width:600px)");
   const { ...refTruckTypes } = RefTruckTypesHooks(props);
   return (
     <React.Fragment>
+      <Modal
+        open={refTruckTypes.updateModal}
+        fullScreen={matches ? false : true}
+        title={"Update Unit of Measurement"}
+        size={"xs"}
+        action={undefined}
+        handleClose={refTruckTypes.onClickCloseUpdateModal}
+      >
+        <UpdateRefTruckTypes
+          account_details={refTruckTypes.account_details}
+          selected_ref={refTruckTypes.selected_ref}
+        />
+      </Modal>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <BreadCrumbs breadCrumbs={breadCrumbArray} />
@@ -198,7 +221,7 @@ let IndexRefTruckTypes = (props) => {
             id={"home_attendance"}
             localStorage={""}
             rowCount={refTruckTypes.dataListCount}
-            actionShow={false}
+            actionshow={true}
             paginationShow={false}
             action={(row) => {
               return null;

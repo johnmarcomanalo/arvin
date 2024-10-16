@@ -30,6 +30,7 @@ const CardComponent = (props) => {
     fontSizeValue = "0.875rem",
     changeColorValue = false,
     enableSubHeaderVariant = true,
+    unit,
   } = props;
   const [expanded, setExpanded] = React.useState(false);
 
@@ -86,7 +87,8 @@ const CardComponent = (props) => {
                 fontSize: fontSizeValue,
               }}
             >
-              {ViewAmountFormatingDecimals(value, 2)}
+              {ViewAmountFormatingDecimals(value, 2) +
+                (unit ? " (" + unit + ")" : "")}
             </Typography>
           }
           subheader={

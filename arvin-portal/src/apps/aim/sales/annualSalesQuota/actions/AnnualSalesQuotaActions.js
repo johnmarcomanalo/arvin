@@ -79,7 +79,7 @@ export const getMonthlyAndDailyQoutaByTargetAnnualSales =
     }
   };
 
-export const postAnnualTargetSales = (formValues) => async (dispatch) => {
+export const postSettingsAnnualQuota = (formValues) => async (dispatch) => {
   try {
     await dispatch({
       type: Constants.ACTION_LOADING,
@@ -88,7 +88,7 @@ export const postAnnualTargetSales = (formValues) => async (dispatch) => {
       },
     });
     const res = await PostDefaultServices(
-      "api/salesdailyout/annual_settings_sales",
+      "api/salesdailyout/settings_annual_quota",
       formValues
     );
     await dispatch({
@@ -128,7 +128,7 @@ export const getAnnualSettingSale = (values) => async (dispatch) => {
       },
     });
     const response = GetSpecificDefaultServices(
-      "api/salesdailyout/annual_settings_sales/get_sales_annual_settings?page=" +
+      "api/salesdailyout/settings_annual_quota/get_sales_annual_settings?page=" +
         values.p +
         "&limit=" +
         values.l +
@@ -177,7 +177,7 @@ export const getAnnualSettingSale = (values) => async (dispatch) => {
 };
 
 export const getAnnualMonthlyDailyTargetSalesBySectionSubsection =
-  (id, year, pg) => async (dispatch) => {
+  (id, year) => async (dispatch) => {
     try {
       await dispatch({
         type: Constants.ACTION_LOADING,
@@ -186,8 +186,8 @@ export const getAnnualMonthlyDailyTargetSalesBySectionSubsection =
         },
       });
       const response = GetMultiSpecificDefaultServices(
-        "api/salesdailyout/settings_annual_quota/get_annual_monthly_daily_target_sales_by_section_subsection_product_group",
-        [id, year, pg]
+        "api/salesdailyout/annual_settings_sales/get_annual_monthly_daily_target_sales_by_section_subsection",
+        [id, year]
       );
       response.then((res) => {
         let decypted = decryptaes(res.data);
@@ -201,10 +201,6 @@ export const getAnnualMonthlyDailyTargetSalesBySectionSubsection =
             year_sales_target: decypted.year_sales_target,
             sales_daily_out_annual_settings_sales_code:
               decypted.sales_daily_out_annual_settings_sales_code,
-            product_group_unit_of_measure:
-              decypted.product_group_unit_of_measure,
-            product_group_unit_of_measure_type:
-              decypted.product_group_unit_of_measure_type,
           },
         });
 

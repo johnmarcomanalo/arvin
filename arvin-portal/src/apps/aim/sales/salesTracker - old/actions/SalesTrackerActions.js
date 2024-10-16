@@ -18,7 +18,7 @@ export const getSalesDailyOut = (values) => async (dispatch) => {
     });
 
     const response = GetSpecificDefaultServices(
-      "api/salesdailyout/sales_tracker/get_sales_tracker/?page=" +
+      "api/salesdailyout/daily_out/get_sales_daily_out/?page=" +
         values.p +
         "&limit=" +
         values.l +
@@ -29,9 +29,7 @@ export const getSalesDailyOut = (values) => async (dispatch) => {
         "&uid=" +
         values.u +
         "&sc=" +
-        values.sc +
-        "&pg=" +
-        values.pg
+        values.sc
     );
     response.then((res) => {
       try {

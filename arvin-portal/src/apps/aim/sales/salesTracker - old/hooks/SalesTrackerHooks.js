@@ -31,8 +31,6 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       : moment(new Date()).format("YYYY-MM-DD");
   const filterSubComponent =
     searchParams.get("sc") != null ? String(searchParams.get("sc")) : "";
-  const filterProductGroup =
-    searchParams.get("pg") != null ? String(searchParams.get("pg")) : "";
   const debounceSearch = useDebounce(searchParams, 500);
   //filtering,search,page,limit end
 
@@ -93,15 +91,6 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   );
   const user_access_organization_rights =
     access?.user_access_organization_rights;
-
-  const user_access_product_group_rights =
-    access?.user_access_product_group_rights;
-  const product_group_unit_of_measure = useSelector(
-    (state) => state.SalesDailyOutReducer.product_group_unit_of_measure
-  );
-  const product_group_unit_of_measure_type = useSelector(
-    (state) => state.SalesDailyOutReducer.product_group_unit_of_measure_type
-  );
   const columns = [
     { id: "sales_date", label: "Date", align: "left" },
     { id: "sales_daily_qouta", label: "Daily Quota", align: "left" },
@@ -141,7 +130,6 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       l: String(rowsPerPage),
       f: filterQuery,
       sc: filterSubComponent,
-      pg: filterProductGroup,
     });
   };
   const handleChangeRowsPerPage = (event) => {
@@ -168,7 +156,6 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       l: String(rowsPerPage),
       f: filterQuery,
       sc: filterSubComponent,
-      pg: filterProductGroup,
     });
   };
   const debounce = (func, delay) => {
@@ -201,7 +188,6 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       l: String(rowsPerPage),
       f: selected_date,
       sc: filterSubComponent,
-      pg: filterProductGroup,
     });
     dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
@@ -222,7 +208,6 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
         filterSubComponent == ""
           ? account_details?.subsection_code
           : filterSubComponent,
-      pg: filterProductGroup,
     };
     return data;
   };
@@ -241,8 +226,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
           filterSubComponent == ""
             ? account_details?.subsection_code
             : filterSubComponent,
-          moment(filterQuery).format("YYYY-MM"),
-          filterProductGroup
+          moment(filterQuery).format("YYYY-MM")
         )
       );
     } catch (error) {
@@ -297,24 +281,11 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       l: rowsPerPage,
       f: filterQuery,
       sc: filterSubComponent,
-      pg: filterProductGroup,
     });
     setState((prev) => ({
       ...prev,
       active_subsections: data.description, // Update the state to trigger re-render
     }));
-  };
-
-  const filterProductGroups = (data) => {
-    let filterProductGroup = data.description;
-    setSearchParams({
-      p: page == null ? 1 : page,
-      q: search,
-      l: rowsPerPage,
-      f: filterQuery,
-      sc: filterSubComponent,
-      pg: filterProductGroup,
-    });
   };
   return {
     search,
@@ -340,9 +311,6 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     filterModal,
     state,
     active_page,
-    user_access_product_group_rights,
-    product_group_unit_of_measure,
-    product_group_unit_of_measure_type,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,
@@ -357,7 +325,6 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     onClickOpenFilterModal,
     onClickCloseFilterModal,
     filterSubComponents,
-    filterProductGroups,
   };
 };
 

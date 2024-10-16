@@ -321,6 +321,7 @@ const RequestHooks = (props) => {
       added_by: account_details?.code,
       modified_by: account_details?.code,
       request_type: "Sales Quotation",
+      request_date: moment(new Date()).format("YYYY-MM-DD"),
     });
     return () => cancelRequest();
   }, []);

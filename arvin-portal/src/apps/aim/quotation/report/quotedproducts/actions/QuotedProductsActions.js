@@ -12,7 +12,7 @@ export const getSalesQoutedProducts = (values) => async (dispatch) => {
         loading: true,
       },
     });
-    const response = GetSpecificDefaultServices(
+    const response = await GetSpecificDefaultServices(
       "api/quotation/report/quoted_products/get_report_quoted_products?p=" +
         values.p +
         "&l=" +
@@ -22,15 +22,13 @@ export const getSalesQoutedProducts = (values) => async (dispatch) => {
         "&u=" +
         values.u
     );
-    response.then((res) => {
-      let decrypted = decryptaes(res.data);
-      dispatch({
-        type: Constants.ACTION_QUOTATION,
-        payload: {
-          dataList: decrypted.dataList,
-          dataListCount: decrypted.dataListCount,
-        },
-      });
+    let decrypted = decryptaes(response.data);
+    await dispatch({
+      type: Constants.ACTION_QUOTATION,
+      payload: {
+        dataList: decrypted.dataList,
+        dataListCount: decrypted.dataListCount,
+      },
     });
   } catch (error) {
     var title = configure.error_message.default;

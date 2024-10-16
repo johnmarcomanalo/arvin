@@ -36,6 +36,12 @@ const IndexSalesQouta = lazy(() =>
 const SalesTracker = lazy(() =>
   import("./apps/aim/sales/salesTracker/pages/IndexSalesTracker")
 );
+const IndexAnnualSalesQuota = lazy(() =>
+  import("./apps/aim/sales/annualSalesQuota/pages/IndexAnnualSalesQuota")
+);
+const IndexSalesTracker = lazy(() =>
+  import("./apps/aim/sales/salesTracker/pages/IndexSalesTracker")
+);
 // SALES END
 
 // QUOTATION START
@@ -86,6 +92,11 @@ const IndexRequestRights = lazy(() =>
     "./apps/aim/settings/accessrights/requestrights/pages/IndexRequestRights"
   )
 );
+const IndexProductGroupRights = lazy(() =>
+  import(
+    "./apps/aim/settings/accessrights/productgrouprights/pages/IndexProductGroupRights"
+  )
+);
 //ACCESS RIGHTS END
 
 // ACCOUNT SETTINGS START
@@ -126,6 +137,9 @@ const IndexRefSalutations = lazy(() =>
 );
 const IndexRefTruckTypes = lazy(() =>
   import("./apps/aim/settings/reference/pages/IndexRefTruckTypes")
+);
+const IndexRefProductGroups = lazy(() =>
+  import("./apps/aim/settings/reference/pages/IndexRefProductGroups")
 );
 // REFERENCE END
 
@@ -220,7 +234,7 @@ function App() {
                           subComponent: null,
                         })}
                       >
-                        <SalesTracker />
+                        <IndexSalesTracker />
                       </PrivateRoute>
                     }
                   />
@@ -277,6 +291,20 @@ function App() {
                         })}
                       >
                         <IndexSelectedSalesSummary />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/Sales/Configuration/AnnualSalesQuota"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Sales",
+                          component: "Configuration",
+                          subComponent: "Annual Sales Quota",
+                        })}
+                      >
+                        <IndexAnnualSalesQuota />
                       </PrivateRoute>
                     }
                   />
@@ -352,7 +380,6 @@ function App() {
                       </PrivateRoute>
                     }
                   />
-
                   {/* QUOTATION END */}
                   {/* HUMAN RESOURCE START */}
                   <Route
@@ -443,6 +470,21 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+                  <Route
+                    path="/Modules/SystemSettings/AccessRights/ProductGroupRights"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Settings",
+                          component: "Access Rights",
+                          subComponent: "Product Group Rights",
+                        })}
+                      >
+                        <IndexProductGroupRights />
+                      </PrivateRoute>
+                    }
+                  />
+
                   {/* ACCESS RIGHTS END */}
                   {/* REFENRECE START */}
                   <Route
@@ -582,6 +624,20 @@ function App() {
                         })}
                       >
                         <IndexRefTruckTypes />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/SystemSettings/References/ProductGroups"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Settings",
+                          component: "References",
+                          subComponent: "Product Groups",
+                        })}
+                      >
+                        <IndexRefProductGroups />
                       </PrivateRoute>
                     }
                   />
