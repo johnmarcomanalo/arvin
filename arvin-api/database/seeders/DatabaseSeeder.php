@@ -19,12 +19,12 @@ class DatabaseSeeder extends Seeder
         // $this->call(RefBusinessUnitContactNumbersSeeder::class);
         // $this->call(RefTeamsSeeder::class);
         // $this->call(RefDivisionsSeeder::class);
-        $this->call(RefDepartmentsSeeder::class);
+        // $this->call(RefDepartmentsSeeder::class);
         // $this->call(RefTeamDivisionsSeeder::class);
         // $this->call(RefPositionLevelsSeeder::class);
         // $this->call(RefGendersSeeder::class);
 
-        $this->call(RefSectionsSeeder::class);
+        // $this->call(RefSectionsSeeder::class);
         $this->call(RefSubSectionsSeeder::class);
         // $this->call(RefLocationsSeeder::class);
         // $this->call(RefPositionsSeeder::class);

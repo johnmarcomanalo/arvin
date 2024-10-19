@@ -50,7 +50,7 @@ let SalesTracker = (props) => {
   const report_data = salesTracker.report_data;
   const present_mtd_data = salesTracker.present_mtd_data;
   const previous_mtd_data = salesTracker.previous_mtd_data;
-  const final_mtd_data = salesTracker.final_mtd_data;
+  const final_ytd_data = salesTracker.final_ytd_data;
   const dateFilter = salesTracker.dateFilter;
   const selected_subsection = salesTracker?.selected_subsection;
   const active_page = salesTracker?.active_page;
@@ -152,8 +152,8 @@ let SalesTracker = (props) => {
                     "FINAL YTD (" + moment(dateFilter).format("YYYY") + ")"
                   }
                   value={
-                    typeof final_mtd_data !== "undefined"
-                      ? parseFloat(final_mtd_data).toFixed(2)
+                    typeof final_ytd_data !== "undefined"
+                      ? parseFloat(final_ytd_data).toFixed(2)
                       : 0
                   }
                   fontSizeValue={30}
@@ -352,8 +352,8 @@ let SalesTracker = (props) => {
             icon_bg_color={"white"}
             subtitle={"FINAL YTD"}
             value={
-              typeof final_mtd_data !== "undefined"
-                ? parseFloat(final_mtd_data).toFixed(2)
+              typeof final_ytd_data !== "undefined"
+                ? parseFloat(final_ytd_data).toFixed(2)
                 : 0
             }
             fontSizeValue={18}

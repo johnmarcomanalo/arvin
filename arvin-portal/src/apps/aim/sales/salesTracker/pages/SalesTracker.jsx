@@ -5,11 +5,15 @@ import FlagCircleOutlinedIcon from "@mui/icons-material/FlagCircleOutlined";
 import IsoIcon from "@mui/icons-material/Iso";
 import PercentIcon from "@mui/icons-material/Percent";
 import {
+  Card,
+  CardContent,
+  CardHeader,
   Grid,
   Stack,
   TableCell,
   TableRow,
   Tooltip,
+  Typography,
   useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
@@ -50,7 +54,7 @@ let SalesTracker = (props) => {
   const report_data = salesTracker.report_data;
   const present_mtd_data = salesTracker.present_mtd_data;
   const previous_mtd_data = salesTracker.previous_mtd_data;
-  const final_mtd_data = salesTracker.final_mtd_data;
+  const final_ytd_data = salesTracker.final_ytd_data;
   const dateFilter = salesTracker.dateFilter;
   const selected_subsection = salesTracker?.selected_subsection;
   const active_page = salesTracker?.active_page;
@@ -58,7 +62,7 @@ let SalesTracker = (props) => {
   const theme = useTheme();
   const matches = useMediaQuery("(min-width:600px)");
   const [open, setOpen] = React.useState(false);
-
+  const today_data = salesTracker?.today_data;
   const handleClickOpen = async () => {
     await setOpen(true);
     await alert("Press 'esc' to exit view mode");
@@ -152,8 +156,8 @@ let SalesTracker = (props) => {
                     "FINAL YTD (" + moment(dateFilter).format("YYYY") + ")"
                   }
                   value={
-                    typeof final_mtd_data !== "undefined"
-                      ? parseFloat(final_mtd_data).toFixed(2)
+                    typeof final_ytd_data !== "undefined"
+                      ? parseFloat(final_ytd_data).toFixed(2)
                       : 0
                   }
                   fontSizeValue={30}
@@ -277,9 +281,12 @@ let SalesTracker = (props) => {
           <PageTitle
             title={"Sales Tracker"}
             subtitle={
-              state?.active_subsections == null
+              (state?.active_subsections == null
                 ? selected_subsection.description
-                : state?.active_subsections
+                : state?.active_subsections) +
+              (salesTracker.filterProductGroup == ""
+                ? ""
+                : " - " + salesTracker.filterProductGroup)
             }
           />
         </Grid>
@@ -355,8 +362,8 @@ let SalesTracker = (props) => {
             icon_bg_color={"white"}
             subtitle={"FINAL YTD"}
             value={
-              typeof final_mtd_data !== "undefined"
-                ? parseFloat(final_mtd_data).toFixed(2)
+              typeof final_ytd_data !== "undefined"
+                ? parseFloat(final_ytd_data).toFixed(2)
                 : 0
             }
             fontSizeValue={18}
@@ -401,7 +408,7 @@ let SalesTracker = (props) => {
             title={"Day"}
             icon_color={configure.primary_color}
             icon_bg_color={"white"}
-            subtitle={"TOTAL OUT SALES" }
+            subtitle={"TOTAL OUT SALES"}
             value={
               typeof report_data?.total_daily_out_amount !== "undefined"
                 ? report_data?.total_daily_out_amount
@@ -459,7 +466,6 @@ let SalesTracker = (props) => {
             changeColorValue={true}
           />
         </Grid>
-
         <Grid item xs={12} sm={12} md={2}>
           <CardComponent
             icon={
@@ -483,7 +489,6 @@ let SalesTracker = (props) => {
             changeColorValue={true}
           />
         </Grid>
-
         <Grid item xs={12} sm={12} md={2}>
           <CardComponent
             icon={
@@ -511,6 +516,275 @@ let SalesTracker = (props) => {
           />
         </Grid>
       </Grid>
+      {/* <Grid container spacing={2}>
+        <Grid item xs={12} sm={12} md={12} lg={12}>
+          <PageTitle
+            title={"Sales Tracker"}
+            subtitle={
+              (state?.active_subsections == null
+                ? selected_subsection.description
+                : state?.active_subsections) +
+              (salesTracker.filterProductGroup == ""
+                ? ""
+                : " - " + salesTracker.filterProductGroup)
+            }
+          />
+        </Grid>
+        <Grid item xs={12} sm={12} md={4} lg={4}>
+          <Card sx={{ boxShadow: configure.box_shadow }}>
+            <CardHeader
+              title="Annual Performance"
+              subheader="YEAR 2024"
+              titleTypographyProps={{
+                sx: { fontWeight: "bold", color: configure.primary_color }, // Custom title styles
+              }}
+              subheaderTypographyProps={{
+                sx: { fontSize: "1rem", color: configure.secondary_color }, // Custom subheader styles
+              }}
+            />
+            <CardContent>
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography>ANNUAL TARGET:</Typography>
+                <Typography>
+                  {ViewAmountFormatingDecimals(
+                    salesTracker.annual_sales_target,
+                    2
+                  ) +
+                    " (" +
+                    salesTracker.product_group_unit_of_measure_type +
+                    ")"}
+                </Typography>
+              </Stack>
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography>YTD QUOTA:</Typography>
+                <Typography>
+                  {ViewAmountFormatingDecimals(
+                    salesTracker.ytdTotalDailyQoutaAmount,
+                    2
+                  ) +
+                    " (" +
+                    salesTracker.product_group_unit_of_measure_type +
+                    ")"}
+                </Typography>
+              </Stack>
+
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography>YTD SALES OUTPUT</Typography>
+                <Typography>
+                  {ViewAmountFormatingDecimals(
+                    salesTracker.ytdTotalDailyOutAmount,
+                    2
+                  ) +
+                    " (" +
+                    salesTracker.product_group_unit_of_measure_type +
+                    ")"}
+                </Typography>
+              </Stack>
+
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography>FINAL YTD</Typography>
+                <Typography>
+                  {ViewAmountFormatingDecimals(final_ytd_data, 2)}
+                </Typography>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={12} md={4} lg={4}>
+          <Card sx={{ boxShadow: configure.box_shadow }}>
+            <CardHeader
+              title="Monthly Performance"
+              subheader="Month of October"
+              titleTypographyProps={{
+                sx: { fontWeight: "bold", color: configure.primary_color }, // Custom title styles
+              }}
+              subheaderTypographyProps={{
+                sx: { fontSize: "1rem", color: configure.secondary_color }, // Custom subheader styles
+              }}
+            />
+            <CardContent>
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography>MONTHLY TARGET:</Typography>
+                <Typography>
+                  {ViewAmountFormatingDecimals(
+                    salesTracker.monthly_sales_target,
+                    2
+                  ) +
+                    " (" +
+                    salesTracker.product_group_unit_of_measure_type +
+                    ")"}
+                </Typography>
+              </Stack>
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography>MTD QUOTA:</Typography>
+                <Typography>
+                  {ViewAmountFormatingDecimals(
+                    report_data.total_target_daily_quota_amount,
+                    2
+                  ) +
+                    " (" +
+                    salesTracker.product_group_unit_of_measure_type +
+                    ")"}
+                </Typography>
+              </Stack>
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography>MTD SALES OUTPUT</Typography>
+                <Typography>
+                  {ViewAmountFormatingDecimals(
+                    report_data.total_daily_out_amount,
+                    2
+                  ) +
+                    " (" +
+                    salesTracker.product_group_unit_of_measure_type +
+                    ")"}
+                </Typography>
+              </Stack>
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography>FINAL MTD</Typography>
+                <Typography>
+                  {ViewAmountFormatingDecimals(present_mtd_data.mtdFinal, 2)}
+                </Typography>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={12} md={4} lg={4}>
+          <Card sx={{ boxShadow: configure.box_shadow }}>
+            <CardHeader
+              title="Daily Performance"
+              subheader="18th of October"
+              titleTypographyProps={{
+                sx: { fontWeight: "bold", color: configure.primary_color }, // Custom title styles
+              }}
+              subheaderTypographyProps={{
+                sx: { fontSize: "1rem", color: configure.secondary_color }, // Custom subheader styles
+              }}
+            />
+            <CardContent>
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography>DAILY TARGET:</Typography>
+                <Typography>
+                  {ViewAmountFormatingDecimals(
+                    salesTracker.daily_sales_target,
+                    2
+                  ) +
+                    " (" +
+                    salesTracker.product_group_unit_of_measure_type +
+                    ")"}
+                </Typography>
+              </Stack>
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography>TODAY SALES OUTPUT</Typography>
+                <Typography>
+                  {ViewAmountFormatingDecimals(today_data.sales_daily_out, 2) +
+                    " (" +
+                    salesTracker.product_group_unit_of_measure_type +
+                    ")"}
+                </Typography>
+              </Stack>
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography>FINAL DTD</Typography>
+                <Typography>
+                  {ViewAmountFormatingDecimals(
+                    today_data.daily_sales_target_percentage,
+                    2
+                  )}
+                </Typography>
+              </Stack>
+
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  visibility: "hidden",
+                }}
+              >
+                <Typography>0</Typography>
+                <Typography>0</Typography>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid> */}
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -679,5 +953,9 @@ const ReduxFormComponent = reduxForm({
 })(SalesTracker);
 const selector = formValueSelector(formName);
 export default connect((state) => {
-  return {};
+  const sales_date = selector(state, "sales_date");
+
+  return {
+    sales_date,
+  };
 }, {})(ReduxFormComponent);

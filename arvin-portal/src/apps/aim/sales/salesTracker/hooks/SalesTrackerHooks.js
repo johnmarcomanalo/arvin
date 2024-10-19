@@ -19,6 +19,9 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     year: moment(new Date()).format("YYYY"),
     active_subsections: null,
   });
+  const account_details = useSelector(
+    (state) => state.AuthenticationReducer.account_details
+  );
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("p") != undefined ? searchParams.get("p") : 1;
   const rowsPerPage =
@@ -30,7 +33,9 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       ? String(searchParams.get("f"))
       : moment(new Date()).format("YYYY-MM-DD");
   const filterSubComponent =
-    searchParams.get("sc") != null ? String(searchParams.get("sc")) : "";
+    searchParams.get("sc") != null
+      ? String(searchParams.get("sc"))
+      : account_details.subsection_code;
   const filterProductGroup =
     searchParams.get("pg") != null ? String(searchParams.get("pg")) : "";
   const debounceSearch = useDebounce(searchParams, 500);
@@ -55,9 +60,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   const report_data = useSelector(
     (state) => state.SalesDailyOutReducer.report_data
   );
-  const account_details = useSelector(
-    (state) => state.AuthenticationReducer.account_details
-  );
+
   const dataListCount = useSelector(
     (state) => state.SalesDailyOutReducer.dataListCount
   );
@@ -82,8 +85,8 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   const daily_sales_target = useSelector(
     (state) => state.SalesDailyOutReducer.daily_sales_target
   );
-  const final_mtd_data = useSelector(
-    (state) => state.SalesDailyOutReducer.final_mtd_data
+  const final_ytd_data = useSelector(
+    (state) => state.SalesDailyOutReducer.final_ytd_data
   );
   const dateFilter = useSelector(
     (state) => state.SalesDailyOutReducer.dateFilter
@@ -101,6 +104,15 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   );
   const product_group_unit_of_measure_type = useSelector(
     (state) => state.SalesDailyOutReducer.product_group_unit_of_measure_type
+  );
+  const ytdTotalDailyOutAmount = useSelector(
+    (state) => state.SalesDailyOutReducer.ytdTotalDailyOutAmount
+  );
+  const ytdTotalDailyQoutaAmount = useSelector(
+    (state) => state.SalesDailyOutReducer.ytdTotalDailyQoutaAmount
+  );
+  const today_data = useSelector(
+    (state) => state.SalesDailyOutReducer.today_data
   );
   const columns = [
     { id: "sales_date", label: "Date", align: "left" },
@@ -333,7 +345,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     daily_sales_target,
     present_mtd_data,
     previous_mtd_data,
-    final_mtd_data,
+    final_ytd_data,
     selected_subsection,
     dateFilter,
     user_access_organization_rights,
@@ -343,6 +355,11 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     user_access_product_group_rights,
     product_group_unit_of_measure,
     product_group_unit_of_measure_type,
+    filterProductGroup,
+    filterQuery,
+    ytdTotalDailyOutAmount,
+    ytdTotalDailyQoutaAmount,
+    today_data,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,

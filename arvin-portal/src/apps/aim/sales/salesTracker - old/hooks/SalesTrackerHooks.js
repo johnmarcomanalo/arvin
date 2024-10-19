@@ -80,8 +80,8 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   const daily_sales_target = useSelector(
     (state) => state.SalesDailyOutReducer.daily_sales_target
   );
-  const final_mtd_data = useSelector(
-    (state) => state.SalesDailyOutReducer.final_mtd_data
+  const final_ytd_data = useSelector(
+    (state) => state.SalesDailyOutReducer.final_ytd_data
   );
   const dateFilter = useSelector(
     (state) => state.SalesDailyOutReducer.dateFilter
@@ -304,7 +304,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     daily_sales_target,
     present_mtd_data,
     previous_mtd_data,
-    final_mtd_data,
+    final_ytd_data,
     selected_subsection,
     dateFilter,
     user_access_organization_rights,

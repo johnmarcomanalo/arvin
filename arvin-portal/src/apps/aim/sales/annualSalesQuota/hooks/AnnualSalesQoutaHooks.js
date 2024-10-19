@@ -164,7 +164,7 @@ const AnnualSalesQoutaHooks = (props) => {
   React.useEffect(() => {
     GetAnnualSettingSaleList();
     return () => cancelRequest();
-  }, [refresh, filterQuery, search]);
+  }, [refresh, filterQuery, search, page]);
 
   React.useEffect(() => {
     dispatch(getAllRefSections());
@@ -173,7 +173,7 @@ const AnnualSalesQoutaHooks = (props) => {
       date_effectiveness: moment(new Date()).format("YYYY-01-01"),
       added_by: account_details?.code,
       modified_by: account_details?.code,
-      monthly_sales_target: ''
+      monthly_sales_target: "",
     });
     return () => cancelRequest();
   }, []);

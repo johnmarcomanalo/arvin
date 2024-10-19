@@ -30,7 +30,7 @@ const initialState = {
   target_point: 0,
   addModal3: false,
   addModal4: false,
-  final_mtd_data: 0,
+  final_ytd_data: 0,
   showTableCards: false,
   annual_sales_mtd_ytd_subsections: [],
   annual_sales_out_summary: [],
@@ -42,6 +42,9 @@ const initialState = {
   annual_set_total_count_subsections: 0,
   annual_set_subsections: [],
   filterModal: false,
+  ytdTotalDailyOutAmount: 0,
+  ytdTotalDailyQoutaAmount: 0,
+  today_data: [],
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

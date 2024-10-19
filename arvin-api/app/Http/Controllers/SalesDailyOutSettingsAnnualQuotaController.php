@@ -179,19 +179,15 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
                 $queryBuilder->where('year_sales_target', $filter);
         }
         if (!empty($query)) {
-            $salesData = $queryBuilder->where(function ($queryBuilder) use ($query) {
-                    $queryBuilder->where('section', 'like', '%' . $query . '%')
-                    ->orWhere('subsection', 'like', '%' . $query . '%');
-            })->paginate($limit);
-        } else {
-            $salesData = $queryBuilder->paginate($limit);
-        }
-
-        $dataList = $salesData->toArray();
-        $dataListCount = $salesData->count();
+            $queryBuilder = $queryBuilder->where(function ($queryBuilder) use ($query) {
+                    $queryBuilder->where('ref_sub_sections.description', 'like', '%' . $query . '%');
+            });
+        } 
+ 
+        $data_list = $queryBuilder->paginate($limit, ['*'], 'page', $page);
 
         $response = [   
-            'dataList' => $dataList,
+            'dataList' => $data_list,
             'result' => true,
             'title'=>'Success',
             'status'=>'success',

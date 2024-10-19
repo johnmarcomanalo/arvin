@@ -42,7 +42,7 @@ export const getSalesDailyOut = (values) => async (dispatch) => {
             report_data: decrypted.report_data,
             present_mtd_data: decrypted.present_mtd_data,
             previous_mtd_data: decrypted.previous_mtd_data,
-            final_mtd_data: decrypted.final_mtd_data,
+            final_ytd_data: decrypted.final_ytd_data,
           },
         });
       } catch (error) {

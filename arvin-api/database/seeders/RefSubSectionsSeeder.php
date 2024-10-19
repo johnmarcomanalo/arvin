@@ -234,13 +234,29 @@ class RefSubSectionsSeeder extends Seeder
             // 'type' => 'SALE',
             // 'added_by' => env('DEFAULT_USER'),
             // 'modified_by' => env('DEFAULT_USER')],
-             [
-            'code'=> '32',
-            'section_code'=> '27',
-            'description' => 'Executive',
-            'type' => 'EXEC',
-            'added_by' => env('DEFAULT_USER'),
-            'modified_by' => env('DEFAULT_USER')],
+            //  [
+            // 'code'=> '32',
+            // 'section_code'=> '27',
+            // 'description' => 'Executive',
+            // 'type' => 'EXEC',
+            // 'added_by' => env('DEFAULT_USER'),
+            // 'modified_by' => env('DEFAULT_USER')],
+
+            // [
+            // 'code'=> '33',
+            // 'section_code'=> '24',
+            // 'description' => 'Dumaguete',
+            // 'type' => 'DUM',
+            // 'added_by' => env('DEFAULT_USER'),
+            // 'modified_by' => env('DEFAULT_USER')],
+
+            // [
+            // 'code'=> '34',
+            // 'section_code'=> '25',
+            // 'description' => 'Surigao',
+            // 'type' => 'SUR',
+            // 'added_by' => env('DEFAULT_USER'),
+            // 'modified_by' => env('DEFAULT_USER')],
         ]);
     }
 }

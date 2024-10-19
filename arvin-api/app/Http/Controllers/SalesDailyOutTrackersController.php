@@ -214,6 +214,10 @@ class SalesDailyOutTrackersController extends Controller
         $date_month = MainController::formatSingleDigitMonthOnly($filter); //format date to single digit month without the zero (0)
         $date_year = MainController::formatYearOnly($filter); //format date to year
 
+        $startOfMonth = Carbon::create($date_year, $date_month, 1)->startOfMonth()->toDateString();
+        $current_month =  MainController::formatSingleDigitMonthOnly(date('Y-m-d'));
+        $current_date = Carbon::now()->toDateString();
+
         if(empty($user_id)){
                 $response = [
                     'result' => false,
@@ -270,9 +274,7 @@ class SalesDailyOutTrackersController extends Controller
                 return $item;
             });
 
-        $startOfMonth = Carbon::create($date_year, $date_month, 1)->startOfMonth()->toDateString();
-        $current_month =  MainController::formatSingleDigitMonthOnly(date('Y-m-d'));
-        $current_date = Carbon::now()->toDateString();
+        
         //get all data for dashboard cards for display
         $query = SalesDailyOutTrackers::where('subsection_code',$user_data["subsection_code"])
             ->where('ref_product_groups_description',$product_group)
@@ -289,6 +291,11 @@ class SalesDailyOutTrackersController extends Controller
         // Get the result
         $dashboard_data_list = $query->get();
        
+        $today_data = SalesDailyOutTrackers::where('subsection_code',$user_data["subsection_code"])
+                ->where('year_sales_target',$date_year)
+                ->where('ref_product_groups_description',$product_group)
+                ->where('sales_date', $current_date)
+                ->first();
        
 
        foreach ($dashboard_data_list as  $value) {
@@ -325,7 +332,7 @@ class SalesDailyOutTrackersController extends Controller
             $mtd_date_previous_month = $this->get_previous_mtd($date_year,$date_month,$user_data,$product_group);
             
 
-            $mtd_final_mtd = $this->get_final_mtd($date_year,$date_month,$user_data,$date_month,$product_group);
+            $ytd_final_mtd = $this->get_final_ytd($date_year,$date_month,$user_data,$date_month,$product_group);
 
 
             $report_data = [
@@ -335,12 +342,15 @@ class SalesDailyOutTrackersController extends Controller
                 "total_percentage_daily_target"=>$averagePercentageDailyTarget,
             ];
 
-             $response = [
+            $response = [
                 "dataList"=>$data_list,
                 "report_data"=>$report_data,
                 "present_mtd_data"=>$mtd_date_selected_month,
                 "previous_mtd_data"=>$mtd_date_previous_month,
-                "final_mtd_data"=>$mtd_final_mtd,
+                "final_ytd_data"=>$ytd_final_mtd['ytdFinal'],
+                "ytdTotalDailyOutAmount"=>$ytd_final_mtd['ytdTotalDailyOutAmount'],
+                "ytdTotalDailyQoutaAmount"=>$ytd_final_mtd['ytdTotalDailyQoutaAmount'], 
+                "today_data"=> $today_data,
                 'result'=>True,
                 'title'=>'Success',
                 'status'=>'success',
@@ -452,11 +462,11 @@ class SalesDailyOutTrackersController extends Controller
             ];
         }
 
-        public function get_final_mtd($date_year, $date_month,$user_data,$sales_date_start,$product_group){
-            $mtdTotalDailyQoutaAmount = 0;
-            $mtdTotalDailyOutAmount = 0;
+        public function get_final_ytd($date_year, $date_month,$user_data,$sales_date_start,$product_group){
+            $ytdTotalDailyQoutaAmount = 0;
+            $ytdTotalDailyOutAmount = 0;
             $mtdTotalStatusDailyTarget = 0;
-            $mtdFinal = 0;
+            $ytdFinal = 0;
 
             $januaryFirst = Carbon::create($date_year, 1, 1)->startOfDay();
             $firstDayOfMonth = Carbon::createFromDate($date_year, $sales_date_start)->startOfMonth();
@@ -480,22 +490,26 @@ class SalesDailyOutTrackersController extends Controller
                 $salesDailyTarget = (float)$value["sales_daily_target"];
 
                 if (!is_nan($salesDailyQuota)) {
-                $mtdTotalDailyQoutaAmount += $salesDailyQuota;
+                $ytdTotalDailyQoutaAmount += $salesDailyQuota;
                 }
                 
                 if (!is_nan($salesDailyOut)) {
-                $mtdTotalDailyOutAmount += $salesDailyOut;
+                $ytdTotalDailyOutAmount += $salesDailyOut;
                 }
 
                  if (!is_nan($salesDailyOut)) {
                 $mtdTotalStatusDailyTarget += $salesDailyTarget;
                 }
             }
-            if($mtdTotalDailyQoutaAmount > 0){
-                $mtdFinal = ((round((float)$mtdTotalDailyOutAmount, 2)) / (round((float)$mtdTotalDailyQoutaAmount, 2)) - 1) * 100; 
+            if($ytdTotalDailyQoutaAmount > 0){
+                $ytdFinal = ((round((float)$ytdTotalDailyOutAmount, 2)) / (round((float)$ytdTotalDailyQoutaAmount, 2)) - 1) * 100; 
             }
-            
-            return $mtdFinal;
+            $response = [
+                'ytdFinal'=> $ytdFinal,
+                'ytdTotalDailyOutAmount'=> round((float)$ytdTotalDailyOutAmount, 2),
+                'ytdTotalDailyQoutaAmount'=> round((float)$ytdTotalDailyQoutaAmount, 2),
+            ];
+            return $response;
         }
 
 

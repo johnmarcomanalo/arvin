@@ -15,7 +15,7 @@ class CreateSalesDailyOutSettingsAnnualQuotasTable extends Migration
     {
         Schema::create('sales_daily_out_settings_annual_quotas', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique();
+            $table->bigInteger('code')->unique();
             $table->string('subsection_code')->nullable();
             $table->string('year_sales_target');
             $table->decimal('annual_sales_target',15,2); 
