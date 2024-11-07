@@ -49,6 +49,7 @@ const EmployeeMasterListHooks = (props) => {
   const uploadModal = useSelector(
     (state) => state.HumanResourceReducer.uploadModal
   );
+  const addModal = useSelector((state) => state.HumanResourceReducer.addModal);
   const columns = [
     { id: "code", label: "User Code", align: "left" },
     { id: "full_name", label: "Complete Name", align: "left" },
@@ -144,6 +145,23 @@ const EmployeeMasterListHooks = (props) => {
       },
     });
   };
+  const onClickOpenAddModal = () => {
+    dispatch({
+      type: Constants.ACTION_HUMAN_RESOURCE,
+      payload: {
+        addModal: true,
+      },
+    });
+  };
+  const onClickCloseAddModal = () => {
+    dispatch({
+      type: Constants.ACTION_HUMAN_RESOURCE,
+      payload: {
+        addModal: false,
+      },
+    });
+  };
+
   return {
     search,
     page,
@@ -157,6 +175,7 @@ const EmployeeMasterListHooks = (props) => {
     account_details,
     viewModal,
     uploadModal,
+    addModal,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,
@@ -166,6 +185,8 @@ const EmployeeMasterListHooks = (props) => {
     onChangeSearch,
     onClickOpenUploadModal,
     onClickCloseUploadModal,
+    onClickOpenAddModal,
+    onClickCloseAddModal,
   };
 };
 

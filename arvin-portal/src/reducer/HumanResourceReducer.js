@@ -1,5 +1,6 @@
 import { Constants } from "./Contants";
 const initialState = {
+  addModal: false,
   viewModal: false,
   uploadModal: false,
   refresh: false,

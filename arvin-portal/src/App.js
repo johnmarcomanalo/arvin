@@ -25,7 +25,7 @@ const IndexSalesRankingPoints = lazy(() =>
   import("./apps/aim/sales/rankingPoints/pages/IndexSalesRankingPoints")
 );
 const IndexSalesSummary = lazy(() =>
-  import("./apps/aim/sales/salesSummary/pages/IndexSalesSummary")
+  import("./apps/aim/sales/report/salesTrackerSummary/pages/IndexSalesSummary")
 );
 const IndexSelectedSalesSummary = lazy(() =>
   import("./apps/aim/sales/salesSummary/pages/IndexSelectedSalesSummary")

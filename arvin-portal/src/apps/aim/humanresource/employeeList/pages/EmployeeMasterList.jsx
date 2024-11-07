@@ -10,6 +10,7 @@ import configure from "../../../../configure/configure.json";
 import EmployeeMasterListHooks from "../hooks/EmployeeMasterListHooks";
 import Modal from "../../../../../components/modal/Modal";
 import UploadEmployee from "./components/UploadEmployee";
+import AddEmployee from "./components/AddEmployee";
 export default function EmployeeMasterList(props) {
   const { ...employeeMasterList } = EmployeeMasterListHooks(props);
   const theme = useTheme();
@@ -25,6 +26,16 @@ export default function EmployeeMasterList(props) {
         handleClose={employeeMasterList.onClickCloseUploadModal}
       >
         <UploadEmployee />
+      </Modal>
+      <Modal
+        open={employeeMasterList?.addModal}
+        fullScreen={matches ? false : true}
+        title={"Add Employee"}
+        size={"xs"}
+        action={undefined}
+        handleClose={employeeMasterList.onClickCloseAddModal}
+      >
+        <AddEmployee />
       </Modal>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -42,6 +53,14 @@ export default function EmployeeMasterList(props) {
               fullWidth={true}
               children={"Upload Employee"}
               click={employeeMasterList.onClickOpenUploadModal}
+            />
+            <ButtonComponent
+              stx={configure.default_button}
+              iconType="add"
+              type="button"
+              fullWidth={true}
+              children={"Add Employee"}
+              click={employeeMasterList.onClickOpenAddModal}
             />
           </Stack>
         </Grid>

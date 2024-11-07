@@ -37,6 +37,7 @@ use App\Http\Controllers\SalesDailyOutAnnualSalesRankingDetailsController;
 use App\Http\Controllers\SalesDailyOutReportSalesSummaryController;
 use App\Http\Controllers\SalesDailyOutSettingsAnnualQuotaController;
 use App\Http\Controllers\SalesDailyOutTrackersController;
+use App\Http\Controllers\SalesDailyOutReportSalesTrackerSummaryController;
 
 use App\Http\Controllers\SalesQuotationRequestController;
 use App\Http\Controllers\SalesQuotationRequestForApprovalsController;
@@ -148,6 +149,7 @@ use Illuminate\Support\Facades\Route;
         
         // Sales Daily Out Annual Report START
         Route::get('salesdailyout/report/get_report_sales_summary',[SalesDailyOutReportSalesSummaryController::class,'getReportSalesSummary']);
+        Route::get('salesdailyout/sales_tracker/report/get_report_sales_summary',[SalesDailyOutReportSalesTrackerSummaryController::class,'getReportSalesSummary']);
         // Sales Daily Out Annual Report End
 
         // Sales Daily Out Settings Annual Quota START
@@ -177,15 +179,11 @@ use Illuminate\Support\Facades\Route;
         // QUOTATION END
 
 
-
-
-
         // HUMAN RESOURCE START
         Route::get('humanresource/employee_list',[UsersController::class, 'employee_list']);
         Route::get('humanresource/fast_create',[UsersController::class, 'fast_create']);
+        Route::apiResource('humanresource/employee',UsersController::class)->middleware(['light_decryption']);
         // HUMAN RESOURCE END
-
-
 
 
     // });

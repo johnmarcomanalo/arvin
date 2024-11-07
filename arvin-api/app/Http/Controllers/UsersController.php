@@ -29,7 +29,43 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $fields = $request->validate([
+            'username' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'company_code' => 'required',
+            'business_unit_code' => 'required',
+            'team_code' => 'required',
+            'department_code' => 'required',
+            'section_code' => 'required',
+            'subsection_code' => 'required',
+            'added_by' => 'required',
+            'modified_by' => 'required',
+        ]); 
+
+        $existingRecord = User::where('username', $fields['username'])
+            ->where('first_name', $fields['first_name'])
+            ->where('last_name', $fields['last_name'])
+            ->first();
+
+        if ($existingRecord) {
+                return response([
+                    'result' => false,
+                    'status' => 'error',
+                    'title' => 'Error',
+                    'message' => 'Employee already exist.'
+                ], 409);
+        } else {
+                $fields['code'] = MainController::generate_code('App\Models\User',"code");
+                $fields['password'] = bcrypt("welcome123");
+                User::create($fields);
+                return response([
+                        'result' => true,
+                        'status' => 'success',
+                        'title' => 'Success',
+                        'message' => 'Employee added successfully.'
+                ], 201);
+        }
     }
 
     /**

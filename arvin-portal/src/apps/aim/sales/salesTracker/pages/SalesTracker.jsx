@@ -17,6 +17,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import OutputOutlinedIcon from "@mui/icons-material/OutputOutlined";
 import moment from "moment";
 import * as React from "react";
 import { connect } from "react-redux";
@@ -26,8 +27,9 @@ import CardComponent from "../../../../../components/card/CardComponent";
 import InputMonthYearPicker from "../../../../../components/inputFIeld/InputMonthYearPicker";
 import Modal from "../../../../../components/modal/Modal";
 import Page from "../../../../../components/pagination/Pagination";
+import ExposureOutlinedIcon from "@mui/icons-material/ExposureOutlined";
 import ComponentTable from "../../../../../components/table/Table";
-
+import DateRangeOutlinedIcon from "@mui/icons-material/DateRangeOutlined";
 import configure from "../../../../configure/configure.json";
 import SalesTrackerHooks from "../hooks/SalesTrackerHooks";
 import AddSales from "./components/AddSales";
@@ -38,6 +40,8 @@ import { ViewAmountFormatingDecimals } from "../../../../../utils/AccountingUtil
 import FilterSales from "./components/FilterSales";
 import PageTitle from "../../../../../components/pageTItle/PageTitle";
 import ComboBox from "../../../../../components/autoComplete/AutoComplete";
+import CardWithTitleValueIcon from "../../../../../components/card/CardWithTitleValueIcon";
+import CardGradient from "../../../../../components/card/CardGradient";
 const formName = "SalesTracker";
 const submit = async (values, dispatch, props) => {
   try {
@@ -67,11 +71,17 @@ let SalesTracker = (props) => {
     await setOpen(true);
     await alert("Press 'esc' to exit view mode");
   };
-
   const handleClose = () => {
     setOpen(false);
   };
+  const product_group_unit_of_measure_type =
+    typeof salesTracker.product_group_unit_of_measure_type !== "undefined"
+      ? salesTracker.product_group_unit_of_measure_type
+      : "unit";
 
+  const else_color = (first, second) => {
+    return first < second;
+  };
   return (
     <React.Fragment>
       <Modal
@@ -276,7 +286,7 @@ let SalesTracker = (props) => {
         </Grid>
       </Dialog>
 
-      <Grid container spacing={2}>
+      {/* <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <PageTitle
             title={"Sales Tracker"}
@@ -306,7 +316,7 @@ let SalesTracker = (props) => {
             subtitle={"ANNUAL TARGET SALE"}
             value={salesTracker.annual_sales_target}
             subvalue={"this is sub value"}
-            unit={salesTracker.product_group_unit_of_measure_type}
+            unit={product_group_unit_of_measure_type}
           />
         </Grid>
         <Grid item xs={12} sm={12} md={3}>
@@ -325,7 +335,7 @@ let SalesTracker = (props) => {
             subtitle={"MONTH TARGET SALE"}
             value={salesTracker.monthly_sales_target}
             subvalue={"this is sub value"}
-            unit={salesTracker.product_group_unit_of_measure_type}
+            unit={product_group_unit_of_measure_type}
           />
         </Grid>
         <Grid item xs={12} sm={12} md={3}>
@@ -344,7 +354,7 @@ let SalesTracker = (props) => {
             subtitle={"DAY TARGET SALE"}
             value={salesTracker.daily_sales_target}
             subvalue={"this is sub value"}
-            unit={salesTracker.product_group_unit_of_measure_type}
+            unit={product_group_unit_of_measure_type}
           />
         </Grid>
         <Grid item xs={12} sm={12} md={3}>
@@ -392,7 +402,7 @@ let SalesTracker = (props) => {
                 : 0
             }
             subvalue={"this is sub value"}
-            unit={salesTracker.product_group_unit_of_measure_type}
+            unit={product_group_unit_of_measure_type}
           />
         </Grid>
         <Grid item xs={12} sm={12} md={2}>
@@ -416,7 +426,7 @@ let SalesTracker = (props) => {
             }
             subvalue={"this is sub value"}
             changeColorValue={true}
-            unit={salesTracker.product_group_unit_of_measure_type}
+            unit={product_group_unit_of_measure_type}
           />
         </Grid>
         <Grid item xs={12} sm={12} md={2}>
@@ -515,8 +525,8 @@ let SalesTracker = (props) => {
             changeColorValue={true}
           />
         </Grid>
-      </Grid>
-      {/* <Grid container spacing={2}>
+      </Grid> */}
+      <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <PageTitle
             title={"Sales Tracker"}
@@ -530,261 +540,362 @@ let SalesTracker = (props) => {
             }
           />
         </Grid>
-        <Grid item xs={12} sm={12} md={4} lg={4}>
+        <Grid item xs={12} sm={12} md={6} lg={6}>
+          <CardGradient
+            child={
+              <>
+                <CardHeader
+                  title={
+                    moment(salesTracker.filterQuery).format("YYYY") +
+                    " Annual Performance Review"
+                  }
+                  titleTypographyProps={{
+                    sx: {
+                      fontSize: "1rem",
+                      fontWeight: "bold",
+                      color: configure.primary_color,
+                    }, // Custom title styles
+                  }}
+                />
+                <CardContent>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={12} md={6} lg={6}>
+                      {" "}
+                      <CardWithTitleValueIcon
+                        icon={
+                          <FlagCircleOutlinedIcon
+                            sx={{
+                              color: configure.tertiary_color,
+                            }}
+                          />
+                        }
+                        icon_color={configure.primary_color}
+                        icon_bg_color={"white"}
+                        title={"Year"}
+                        subtitle={"ANNUAL TARGET"}
+                        value={salesTracker.annual_sales_target}
+                        subvalue={"this is sub value"}
+                        unit={product_group_unit_of_measure_type}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={6} lg={6}>
+                      <CardWithTitleValueIcon
+                        icon={
+                          <DateRangeOutlinedIcon
+                            sx={{
+                              color: configure.tertiary_color,
+                            }}
+                          />
+                        }
+                        icon_color={configure.primary_color}
+                        icon_bg_color={"white"}
+                        title={"Year"}
+                        subtitle={"YTD QUOTA"}
+                        value={salesTracker.ytdTotalDailyQoutaAmount}
+                        subvalue={"this is sub value"}
+                        unit={product_group_unit_of_measure_type}
+                        changeColorValue={true}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={6} lg={6}>
+                      {" "}
+                      <CardWithTitleValueIcon
+                        icon={
+                          <OutputOutlinedIcon
+                            sx={{
+                              color: configure.tertiary_color,
+                            }}
+                          />
+                        }
+                        icon_color={configure.primary_color}
+                        icon_bg_color={"white"}
+                        title={"Year"}
+                        subtitle={"YTD SALES OUTPUT"}
+                        value={salesTracker.ytdTotalDailyOutAmount}
+                        subvalue={"this is sub value"}
+                        unit={product_group_unit_of_measure_type}
+                        changeColorValue={true}
+                        else_color={else_color(
+                          parseInt(salesTracker?.ytdTotalDailyOutAmount),
+                          parseInt(salesTracker?.ytdTotalDailyQoutaAmount)
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={6} lg={6}>
+                      {" "}
+                      <CardWithTitleValueIcon
+                        icon={
+                          <PercentIcon
+                            sx={{
+                              color: configure.tertiary_color,
+                            }}
+                          />
+                        }
+                        icon_color={configure.primary_color}
+                        icon_bg_color={"white"}
+                        title={"Year"}
+                        subtitle={"FINAL YTD"}
+                        value={final_ytd_data}
+                        subvalue={"this is sub value"}
+                        changeColorValue={true}
+                      />
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </>
+            }
+          />
+        </Grid>
+        <Grid item xs={12} sm={12} md={6} lg={6}>
+          <CardGradient
+            child={
+              <>
+                <CardHeader
+                  title={
+                    moment(salesTracker.filterQuery).format("MMMM") +
+                    " Performance Review"
+                  }
+                  titleTypographyProps={{
+                    sx: {
+                      fontSize: "1rem",
+                      fontWeight: "bold",
+                      color: configure.primary_color,
+                    }, // Custom title styles
+                  }}
+                />
+                <CardContent>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6} sm={6} md={6} lg={6}>
+                      {" "}
+                      <CardWithTitleValueIcon
+                        icon={
+                          <FlagCircleOutlinedIcon
+                            sx={{
+                              color: configure.tertiary_color,
+                            }}
+                          />
+                        }
+                        icon_color={configure.primary_color}
+                        icon_bg_color={"white"}
+                        title={"Year"}
+                        subtitle={"MONTHLY TARGET"}
+                        value={salesTracker.monthly_sales_target}
+                        subvalue={"this is sub value"}
+                        unit={product_group_unit_of_measure_type}
+                      />
+                    </Grid>
+                    <Grid item xs={6} sm={6} md={6} lg={6}>
+                      {" "}
+                      <CardWithTitleValueIcon
+                        icon={
+                          <DateRangeOutlinedIcon
+                            sx={{
+                              color: configure.tertiary_color,
+                            }}
+                          />
+                        }
+                        icon_color={configure.primary_color}
+                        icon_bg_color={"white"}
+                        title={"Year"}
+                        subtitle={"MTD QUOTA"}
+                        value={report_data?.total_target_daily_quota_amount}
+                        subvalue={"this is sub value"}
+                        unit={product_group_unit_of_measure_type}
+                        changeColorValue={true}
+                      />
+                    </Grid>
+                    <Grid item xs={6} sm={6} md={6} lg={6}>
+                      <CardWithTitleValueIcon
+                        icon={
+                          <OutputOutlinedIcon
+                            sx={{
+                              color: configure.tertiary_color,
+                            }}
+                          />
+                        }
+                        icon_color={configure.primary_color}
+                        icon_bg_color={"white"}
+                        title={"Year"}
+                        subtitle={"MTD SALES OUTPUT"}
+                        value={report_data?.total_daily_out_amount}
+                        subvalue={"this is sub value"}
+                        unit={product_group_unit_of_measure_type}
+                        changeColorValue={true}
+                        else_color={else_color(
+                          parseInt(report_data?.total_daily_out_amount),
+                          parseInt(report_data?.total_target_daily_quota_amount)
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={6} sm={6} md={6} lg={6}>
+                      <CardWithTitleValueIcon
+                        icon={
+                          <PercentIcon
+                            sx={{
+                              color: configure.tertiary_color,
+                            }}
+                          />
+                        }
+                        icon_color={configure.primary_color}
+                        icon_bg_color={"white"}
+                        title={"Year"}
+                        subtitle={"FINAL MTD"}
+                        value={present_mtd_data?.mtdFinal}
+                        subvalue={"this is sub value"}
+                        changeColorValue={true}
+                      />
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </>
+            }
+          />
+        </Grid>
+        <Grid item xs={12} sm={12} md={6} lg={6}>
           <Card sx={{ boxShadow: configure.box_shadow }}>
             <CardHeader
-              title="Annual Performance"
-              subheader="YEAR 2024"
+              title={
+                moment(today_data?.sales_date).format("MMMM Do") +
+                " Performance Review"
+              }
               titleTypographyProps={{
-                sx: { fontWeight: "bold", color: configure.primary_color }, // Custom title styles
+                sx: {
+                  fontSize: "1rem",
+                  fontWeight: "bold",
+                  color: configure.primary_color,
+                }, // Custom title styles
+              }}
+            />
+            <CardContent>
+              <Grid container spacing={2}>
+                <Grid item xs={6} sm={6} md={6} lg={6}>
+                  {" "}
+                  <CardWithTitleValueIcon
+                    icon={
+                      <FlagCircleOutlinedIcon
+                        sx={{
+                          color: configure.tertiary_color,
+                        }}
+                      />
+                    }
+                    icon_color={configure.primary_color}
+                    icon_bg_color={"white"}
+                    title={"Year"}
+                    subtitle={"DAILY TARGET"}
+                    value={salesTracker.daily_sales_target}
+                    subvalue={"this is sub value"}
+                    unit={product_group_unit_of_measure_type}
+                  />
+                </Grid>
+                <Grid item xs={6} sm={6} md={6} lg={6}>
+                  <CardWithTitleValueIcon
+                    icon={
+                      <OutputOutlinedIcon
+                        sx={{
+                          color: configure.tertiary_color,
+                        }}
+                      />
+                    }
+                    icon_color={configure.primary_color}
+                    icon_bg_color={"white"}
+                    title={"Year"}
+                    subtitle={"TODAY SALES OUTPUT"}
+                    value={today_data?.sales_daily_out}
+                    subvalue={"this is sub value"}
+                    unit={product_group_unit_of_measure_type}
+                    changeColorValue={true}
+                    else_color={else_color(
+                      parseInt(today_data?.sales_daily_out),
+                      parseInt(salesTracker?.daily_sales_target)
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={12} lg={12}>
+                  <CardWithTitleValueIcon
+                    icon={
+                      <PercentIcon
+                        sx={{
+                          color: configure.tertiary_color,
+                        }}
+                      />
+                    }
+                    icon_color={configure.primary_color}
+                    icon_bg_color={"white"}
+                    title={"Year"}
+                    rf
+                    subtitle={"FINAL DTD"}
+                    value={today_data?.daily_sales_target_percentage}
+                    subvalue={"this is sub value"}
+                    changeColorValue={true}
+                  />
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={12} md={6} lg={6}>
+          <Card sx={{ boxShadow: configure.box_shadow }}>
+            <CardHeader
+              title={
+                moment(salesTracker.filterQuery)
+                  .subtract(1, "months")
+                  .format("MMMM") + " Performance Review"
+              }
+              titleTypographyProps={{
+                sx: {
+                  fontSize: "1rem",
+                  fontWeight: "bold",
+                  color: configure.primary_color,
+                }, // Custom title styles
               }}
               subheaderTypographyProps={{
                 sx: { fontSize: "1rem", color: configure.secondary_color }, // Custom subheader styles
               }}
             />
             <CardContent>
-              <Stack
-                direction="row"
-                spacing={2}
-                sx={{
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography>ANNUAL TARGET:</Typography>
-                <Typography>
-                  {ViewAmountFormatingDecimals(
-                    salesTracker.annual_sales_target,
-                    2
-                  ) +
-                    " (" +
-                    salesTracker.product_group_unit_of_measure_type +
-                    ")"}
-                </Typography>
-              </Stack>
-              <Stack
-                direction="row"
-                spacing={2}
-                sx={{
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography>YTD QUOTA:</Typography>
-                <Typography>
-                  {ViewAmountFormatingDecimals(
-                    salesTracker.ytdTotalDailyQoutaAmount,
-                    2
-                  ) +
-                    " (" +
-                    salesTracker.product_group_unit_of_measure_type +
-                    ")"}
-                </Typography>
-              </Stack>
-
-              <Stack
-                direction="row"
-                spacing={2}
-                sx={{
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography>YTD SALES OUTPUT</Typography>
-                <Typography>
-                  {ViewAmountFormatingDecimals(
-                    salesTracker.ytdTotalDailyOutAmount,
-                    2
-                  ) +
-                    " (" +
-                    salesTracker.product_group_unit_of_measure_type +
-                    ")"}
-                </Typography>
-              </Stack>
-
-              <Stack
-                direction="row"
-                spacing={2}
-                sx={{
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography>FINAL YTD</Typography>
-                <Typography>
-                  {ViewAmountFormatingDecimals(final_ytd_data, 2)}
-                </Typography>
-              </Stack>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={12} md={12} lg={12}>
+                  <CardWithTitleValueIcon
+                    icon={
+                      <ExposureOutlinedIcon
+                        sx={{
+                          color: configure.tertiary_color,
+                        }}
+                      />
+                    }
+                    icon_color={configure.primary_color}
+                    icon_bg_color={"white"}
+                    title={"Year"}
+                    subtitle={"LOSS/EXCESS (PREV MO):"}
+                    value={previous_mtd_data?.mtdTotalStatusDailyTarget}
+                    subvalue={"this is sub value"}
+                    unit={product_group_unit_of_measure_type}
+                    changeColorValue={true}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={12} lg={12}>
+                  <CardWithTitleValueIcon
+                    icon={
+                      <PercentIcon
+                        sx={{
+                          color: configure.tertiary_color,
+                        }}
+                      />
+                    }
+                    icon_color={configure.primary_color}
+                    icon_bg_color={"white"}
+                    title={"Year"}
+                    subtitle={"PREV MTD"}
+                    value={previous_mtd_data?.mtdFinal}
+                    subvalue={"this is sub value"}
+                    changeColorValue={true}
+                  />
+                </Grid>
+              </Grid>
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={12} md={4} lg={4}>
-          <Card sx={{ boxShadow: configure.box_shadow }}>
-            <CardHeader
-              title="Monthly Performance"
-              subheader="Month of October"
-              titleTypographyProps={{
-                sx: { fontWeight: "bold", color: configure.primary_color }, // Custom title styles
-              }}
-              subheaderTypographyProps={{
-                sx: { fontSize: "1rem", color: configure.secondary_color }, // Custom subheader styles
-              }}
-            />
-            <CardContent>
-              <Stack
-                direction="row"
-                spacing={2}
-                sx={{
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography>MONTHLY TARGET:</Typography>
-                <Typography>
-                  {ViewAmountFormatingDecimals(
-                    salesTracker.monthly_sales_target,
-                    2
-                  ) +
-                    " (" +
-                    salesTracker.product_group_unit_of_measure_type +
-                    ")"}
-                </Typography>
-              </Stack>
-              <Stack
-                direction="row"
-                spacing={2}
-                sx={{
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography>MTD QUOTA:</Typography>
-                <Typography>
-                  {ViewAmountFormatingDecimals(
-                    report_data.total_target_daily_quota_amount,
-                    2
-                  ) +
-                    " (" +
-                    salesTracker.product_group_unit_of_measure_type +
-                    ")"}
-                </Typography>
-              </Stack>
-              <Stack
-                direction="row"
-                spacing={2}
-                sx={{
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography>MTD SALES OUTPUT</Typography>
-                <Typography>
-                  {ViewAmountFormatingDecimals(
-                    report_data.total_daily_out_amount,
-                    2
-                  ) +
-                    " (" +
-                    salesTracker.product_group_unit_of_measure_type +
-                    ")"}
-                </Typography>
-              </Stack>
-              <Stack
-                direction="row"
-                spacing={2}
-                sx={{
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography>FINAL MTD</Typography>
-                <Typography>
-                  {ViewAmountFormatingDecimals(present_mtd_data.mtdFinal, 2)}
-                </Typography>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={12} md={4} lg={4}>
-          <Card sx={{ boxShadow: configure.box_shadow }}>
-            <CardHeader
-              title="Daily Performance"
-              subheader="18th of October"
-              titleTypographyProps={{
-                sx: { fontWeight: "bold", color: configure.primary_color }, // Custom title styles
-              }}
-              subheaderTypographyProps={{
-                sx: { fontSize: "1rem", color: configure.secondary_color }, // Custom subheader styles
-              }}
-            />
-            <CardContent>
-              <Stack
-                direction="row"
-                spacing={2}
-                sx={{
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography>DAILY TARGET:</Typography>
-                <Typography>
-                  {ViewAmountFormatingDecimals(
-                    salesTracker.daily_sales_target,
-                    2
-                  ) +
-                    " (" +
-                    salesTracker.product_group_unit_of_measure_type +
-                    ")"}
-                </Typography>
-              </Stack>
-              <Stack
-                direction="row"
-                spacing={2}
-                sx={{
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography>TODAY SALES OUTPUT</Typography>
-                <Typography>
-                  {ViewAmountFormatingDecimals(today_data.sales_daily_out, 2) +
-                    " (" +
-                    salesTracker.product_group_unit_of_measure_type +
-                    ")"}
-                </Typography>
-              </Stack>
-              <Stack
-                direction="row"
-                spacing={2}
-                sx={{
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography>FINAL DTD</Typography>
-                <Typography>
-                  {ViewAmountFormatingDecimals(
-                    today_data.daily_sales_target_percentage,
-                    2
-                  )}
-                </Typography>
-              </Stack>
-
-              <Stack
-                direction="row"
-                spacing={2}
-                sx={{
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  visibility: "hidden",
-                }}
-              >
-                <Typography>0</Typography>
-                <Typography>0</Typography>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid> */}
+      </Grid>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Grid item xs={12} sm={12} md={12} lg={12}>
