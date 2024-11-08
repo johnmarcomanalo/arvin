@@ -12,8 +12,8 @@ class Kernel extends ConsoleKernel
 
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('update:sales-daily-out')
-             ->withoutOverlapping();
+        // $schedule->command('update:sales-daily-out')
+        //      ->withoutOverlapping();
         
         $schedule->command('update:sales-tracker')
              ->withoutOverlapping();
