@@ -37,10 +37,13 @@ const SalesTracker = lazy(() =>
   import("./apps/aim/sales/salesTracker/pages/IndexSalesTracker")
 );
 const IndexAnnualSalesQuota = lazy(() =>
-  import("./apps/aim/sales/annualSalesQuota/pages/IndexAnnualSalesQuota")
+  import("./apps/aim/sales/annualSalesQuotaDev/pages/IndexAnnualSalesQuota")
 );
 const IndexSalesTracker = lazy(() =>
   import("./apps/aim/sales/salesTracker/pages/IndexSalesTracker")
+);
+const IndexHolidayExclusion = lazy(() =>
+  import("./apps/aim/sales/holidayExclusion/pages/IndexHolidayExclusion")
 );
 // SALES END
 
@@ -140,6 +143,9 @@ const IndexRefTruckTypes = lazy(() =>
 );
 const IndexRefProductGroups = lazy(() =>
   import("./apps/aim/settings/reference/pages/IndexRefProductGroups")
+);
+const IndexRefHolidays = lazy(() =>
+  import("./apps/aim/settings/reference/pages/IndexRefHolidays")
 );
 // REFERENCE END
 
@@ -308,6 +314,21 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+                  <Route
+                    path="/Modules/Sales/Configuration/HolidayExclusions"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Sales",
+                          component: "Configuration",
+                          subComponent: "Holiday Exclusions",
+                        })}
+                      >
+                        <IndexHolidayExclusion />
+                      </PrivateRoute>
+                    }
+                  />
+
                   {/* SALES END */}
                   {/* QUOTATION START */}
                   <Route
@@ -484,7 +505,6 @@ function App() {
                       </PrivateRoute>
                     }
                   />
-
                   {/* ACCESS RIGHTS END */}
                   {/* REFENRECE START */}
                   <Route
@@ -638,6 +658,20 @@ function App() {
                         })}
                       >
                         <IndexRefProductGroups />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/SystemSettings/References/Holidays"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Settings",
+                          component: "References",
+                          subComponent: "Holidays",
+                        })}
+                      >
+                        <IndexRefHolidays />
                       </PrivateRoute>
                     }
                   />

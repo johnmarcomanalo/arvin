@@ -665,7 +665,7 @@ let SalesTracker = (props) => {
                 />
                 <CardContent>
                   <Grid container spacing={2}>
-                    <Grid item xs={6} sm={6} md={6} lg={6}>
+                    <Grid item xs={12} sm={12} md={6} lg={6}>
                       {" "}
                       <CardWithTitleValueIcon
                         icon={
@@ -684,7 +684,7 @@ let SalesTracker = (props) => {
                         unit={product_group_unit_of_measure_type}
                       />
                     </Grid>
-                    <Grid item xs={6} sm={6} md={6} lg={6}>
+                    <Grid item xs={12} sm={12} md={6} lg={6}>
                       {" "}
                       <CardWithTitleValueIcon
                         icon={
@@ -704,7 +704,7 @@ let SalesTracker = (props) => {
                         changeColorValue={true}
                       />
                     </Grid>
-                    <Grid item xs={6} sm={6} md={6} lg={6}>
+                    <Grid item xs={12} sm={12} md={6} lg={6}>
                       <CardWithTitleValueIcon
                         icon={
                           <OutputOutlinedIcon
@@ -727,7 +727,7 @@ let SalesTracker = (props) => {
                         )}
                       />
                     </Grid>
-                    <Grid item xs={6} sm={6} md={6} lg={6}>
+                    <Grid item xs={12} sm={12} md={6} lg={6}>
                       <CardWithTitleValueIcon
                         icon={
                           <PercentIcon
@@ -768,7 +768,7 @@ let SalesTracker = (props) => {
             />
             <CardContent>
               <Grid container spacing={2}>
-                <Grid item xs={6} sm={6} md={6} lg={6}>
+                <Grid item xs={12} sm={12} md={6} lg={6}>
                   {" "}
                   <CardWithTitleValueIcon
                     icon={
@@ -787,7 +787,7 @@ let SalesTracker = (props) => {
                     unit={product_group_unit_of_measure_type}
                   />
                 </Grid>
-                <Grid item xs={6} sm={6} md={6} lg={6}>
+                <Grid item xs={12} sm={12} md={6} lg={6}>
                   <CardWithTitleValueIcon
                     icon={
                       <OutputOutlinedIcon

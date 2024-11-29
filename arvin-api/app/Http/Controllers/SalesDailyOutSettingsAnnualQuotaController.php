@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
 use App\Models\RefProductGroups;
+use App\Models\SalesDailyOutSettingsAnnualQuotaLogs;
 
 class SalesDailyOutSettingsAnnualQuotaController extends Controller
 {
@@ -77,6 +78,18 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
             'year_sales_target' => $fields["year_sales_target"],
             'annual_sales_target' => $fields["annual_sales_target"],
             'monthly_sales_target' => $fields["monthly_sales_target"],
+            'january_sales_target' => $fields["monthly_sales_target"],
+            'february_sales_target' => $fields["monthly_sales_target"],+
+            'march_sales_target' => $fields["monthly_sales_target"],
+            'april_sales_target' => $fields["monthly_sales_target"],
+            'may_sales_target' => $fields["monthly_sales_target"],
+            'june_sales_target' => $fields["monthly_sales_target"],
+            'july_sales_target' => $fields["monthly_sales_target"],
+            'august_sales_target' => $fields["monthly_sales_target"],
+            'september_sales_target' => $fields["monthly_sales_target"],
+            'october_sales_target' => $fields["monthly_sales_target"],
+            'november_sales_target' => $fields["monthly_sales_target"],
+            'december_sales_target' => $fields["monthly_sales_target"],     
             'ref_product_groups_code' => $fields["ref_product_groups_code"],
             'date_effectiveness' => $fields["date_effectiveness"],
             'added_by' => $fields["added_by"],
@@ -123,9 +136,9 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
      * @param  \App\Models\SalesDailyOutSettingsAnnualQuota  $salesDailyOutSettingsAnnualQuota
      * @return \Illuminate\Http\Response
      */
-    public function show(SalesDailyOutSettingsAnnualQuota $salesDailyOutSettingsAnnualQuota)
+    public function show($id)
     {
-        //
+        return Crypt::encryptString($this->do_show($id));
     }
 
     /**
@@ -239,5 +252,98 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
         ];
 
         return Crypt::encryptString(json_encode($response));
+    }
+
+    public function do_show($id = null) {
+        if (isset($id)) {
+            $data = SalesDailyOutSettingsAnnualQuota::join('ref_sub_sections', 'sales_daily_out_settings_annual_quotas.subsection_code', '=', 'ref_sub_sections.code')
+        -> join('ref_product_groups', 'sales_daily_out_settings_annual_quotas.ref_product_groups_code', '=', 'ref_product_groups.code')
+        ->select([
+            'ref_sub_sections.description as sub_section','sales_daily_out_settings_annual_quotas.*','ref_product_groups.description as ref_product_groups_description'
+        ])
+        ->where('sales_daily_out_settings_annual_quotas.code', $id)->first();
+        } else {
+            $data = SalesDailyOutSettingsAnnualQuota::all();
+        }
+
+        if (empty($data)) {
+            $data = array();
+        }
+
+        return $data;
+    }
+
+    public function update_quota(Request $request) {
+        $fields = $request->validate([
+            'code' => 'required',
+            'month' => 'required',
+            'year_sales_target' => 'required',
+            'month_description' => 'required',
+            'previous_monthly_sales_target' => 'required',
+            'monthly_sales_target' => 'required',
+            'added_by' => 'required',
+            'modified_by' => 'required',
+        ]);
+        
+        $monthNumber = Carbon::createFromFormat('F', $fields["month_description"])->month;
+        $month =  Carbon::create($fields["year_sales_target"], $monthNumber, 1);
+        $log_code = MainController::generate_code('App\Models\SalesDailyOutSettingsAnnualQuotaLogs',"code");
+        $salesDailyOutTrackersController = new SalesDailyOutTrackersController();
+        $updateColumn = $fields['month']; 
+
+        SalesDailyOutSettingsAnnualQuotaLogs::create([
+            'code' => $log_code,
+            'sales_daily_out_annual_settings_sales_code'=> $fields["code"],
+            'month' => $month,
+            'previous_monthly_sales_target' => $fields["previous_monthly_sales_target"],
+            'monthly_sales_target' => $fields["monthly_sales_target"],
+            'added_by' => $fields["added_by"],
+            'modified_by' => $fields["modified_by"],
+        ]);
+
+        SalesDailyOutSettingsAnnualQuota::where('code', $fields['code'])->update(
+            [
+               $updateColumn => $fields["monthly_sales_target"],
+            ]
+        );
+
+        // Fetching data based on conditions
+        $datalist = SalesDailyOutTrackers::where('sales_daily_out_annual_settings_sales_code', $fields['code'])
+                    ->whereRaw('MONTH(sales_date) = ?', [$monthNumber])
+                    ->whereNull('deleted_at')
+                    ->get();
+
+        // Ensure we have data to avoid division by zero
+        $count_datalist = $datalist->count();
+
+        $new_daily_quota = $fields["monthly_sales_target"] / $count_datalist;
+
+       
+        if($count_datalist > 0){
+            foreach ($datalist as  $value) {
+                $quota_computation = $salesDailyOutTrackersController->get_status_daily_target_and_percentage_daily_target_by_daily_out(
+                    $value['sales_daily_out'],
+                    $new_daily_quota
+
+                );
+                SalesDailyOutTrackers::where('code', $value['code'])->update(
+                [
+                    'sales_daily_qouta' => $new_daily_quota,
+                    'sales_daily_target' => $quota_computation['status_daily_target'],
+                    'daily_sales_target_percentage' => $quota_computation['percentage_daily_target'],
+                    'modified_by' => $fields['modified_by'],
+                ]
+            );
+            }
+        }
+
+        $response = [
+            'message' => '',
+            'result' => true,
+            'icon' => 'success',
+            'title' => 'Successfully Updated!',
+        ];
+        return response($response, 200);
+
     }
 }

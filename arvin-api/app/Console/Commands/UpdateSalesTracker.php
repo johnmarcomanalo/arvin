@@ -129,7 +129,7 @@ class UpdateSalesTracker extends Command
                                             ->whereDate('sales_date', $create_date)
                                             ->first();
                     if ($datalist && ($datalist->sales_daily_out < $sales_daily_out || $currentDate == $create_date)) {
-                         $computation = $this->get_status_daily_target_and_percentage_daily_target_by_daily_out($sales_daily_out, $datalist->sales_daily_qouta);
+                        $computation = $this->get_status_daily_target_and_percentage_daily_target_by_daily_out($sales_daily_out, $datalist->sales_daily_qouta);
 
                         $datalist->update([
                             'sales_daily_out' => $sales_daily_out,

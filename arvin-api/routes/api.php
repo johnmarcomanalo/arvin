@@ -21,6 +21,7 @@ use App\Http\Controllers\RefRequestHierarchiesController;
 use App\Http\Controllers\RefSalutationsController;
 use App\Http\Controllers\RefTruckTypesController;
 use App\Http\Controllers\RefProductGroupsController;
+use App\Http\Controllers\RefHolidaysController;
 
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UserAccessCustomerRightsController;
@@ -28,7 +29,6 @@ use App\Http\Controllers\UserAccessOrganizationRightsController;
 use App\Http\Controllers\UserAccessPageRightsController;
 use App\Http\Controllers\UserAccessRequestRightsController;
 use App\Http\Controllers\UserAccessProductGroupRightsController;
-
 
 use App\Http\Controllers\SalesDailyOutAnnualSettingsSalesController;
 use App\Http\Controllers\SalesDailyOutsController;
@@ -38,12 +38,11 @@ use App\Http\Controllers\SalesDailyOutReportSalesSummaryController;
 use App\Http\Controllers\SalesDailyOutSettingsAnnualQuotaController;
 use App\Http\Controllers\SalesDailyOutTrackersController;
 use App\Http\Controllers\SalesDailyOutReportSalesTrackerSummaryController;
+use App\Http\Controllers\SalesDailyOutHolidayExclusionsController;
 
 use App\Http\Controllers\SalesQuotationRequestController;
 use App\Http\Controllers\SalesQuotationRequestForApprovalsController;
 use App\Http\Controllers\SalesQuotationReportQuotedProducts;
-
-
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -122,7 +121,8 @@ use Illuminate\Support\Facades\Route;
         Route::get('reference/get_ref_product_groups',[RefProductGroupsController::class,'get_ref_product_groups']);
         Route::get('reference/system_settings/access_rights/product_group_rights/get_product_group_right_access_list/{id}',[UserAccessProductGroupRightsController::class,'get_product_group_right_access_list']);
         Route::apiResource('reference/system_settings/access_rights/product_group_rights',UserAccessProductGroupRightsController::class)->middleware(['light_decryption']);
-      
+        Route::apiResource('reference/ref_holidays',RefHolidaysController::class)->middleware(['light_decryption']);
+        Route::get('reference/get_ref_holidays',[RefHolidaysController::class,'get_ref_holidays']);
         // REFERENCE END
 
 
@@ -156,18 +156,25 @@ use Illuminate\Support\Facades\Route;
         Route::get('salesdailyout/settings_annual_quota/get_sales_annual_settings',[SalesDailyOutSettingsAnnualQuotaController::class,'get_sales_annual_settings']);//for pagination
         Route::get('salesdailyout/settings_annual_quota/get_annual_monthly_daily_target_sales_by_section_subsection_product_group/{id}/{year}/{pg}',[SalesDailyOutSettingsAnnualQuotaController::class, 'get_annual_monthly_daily_target_sales_by_section_subsection_product_group'])->middleware(['light_decryption']);
         Route::apiResource('salesdailyout/settings_annual_quota',SalesDailyOutSettingsAnnualQuotaController::class)->middleware(['light_decryption']);
+        Route::post('salesdailyout/settings_annual_quota/update_quota',[SalesDailyOutSettingsAnnualQuotaController::class, 'update_quota'])->middleware(['light_decryption']);
         // Sales Daily Out Settings Annual Quota END 
 
-        // Sales Tracker START
+        // Sales Holiday Exclusions START
+        Route::apiResource('salesdailyout/holiday_exclusions',SalesDailyOutHolidayExclusionsController::class)->middleware(['light_decryption']);
+        Route::post('salesdailyout/holiday_exclusions/move_sales_per_day',[SalesDailyOutHolidayExclusionsController::class, 'move_sales_per_day'])->middleware(['light_decryption']);
+        
+        // Sales Holiday Exclusions END  
 
+        // Sales Tracker START
+        Route::get('salesdailyout/sales_tracker/get_sales_tracker_by_date_subsection_product',[SalesDailyOutTrackersController::class, 'get_sales_tracker_by_date_subsection_product']);
         Route::get('salesdailyout/sales_tracker/get_five_days_sales_daily_out_by_current_date',[SalesDailyOutTrackersController::class,'getFiveDaysSalesDailyOutbyCurrentDate']);
         Route::get('salesdailyout/sales_tracker/getFiveDaysSalesTrackerbyCurrentDate',[SalesDailyOutTrackersController::class, 'getFiveDaysSalesTrackerbyCurrentDate']);
         Route::get('salesdailyout/sales_tracker/get_sales_tracker',[SalesDailyOutTrackersController::class, 'get_sales_tracker']);
-        Route::apiResource('salesdailyout/sales_tracker',SalesDailyOutTrackersController::class)->middleware(['light_decryption']);
         Route::get('salesdailyout/sales_tracker/insert_sap_sales_daily_out/{product_groups_description}/{year_sales_target}/{ref_sub_section_type}/{settings_annual_quota_code}',[SalesDailyOutTrackersController::class, 'insert_sap_sales_daily_out'])->middleware(['light_decryption']);
+        Route::get('salesdailyout/sales_tracker/get_sales_daily_out_per_day/{sales_date}/{settings_sales_code}',[SalesDailyOutTrackersController::class, 'get_sales_daily_out_per_day'])->middleware(['light_decryption']);
+        Route::get('salesdailyout/sales_tracker/get_status_daily_target_and_percentage_daily_target_by_daily_out/{daily_out}/{daily_quota}',[SalesDailyOutTrackersController::class, 'get_status_daily_target_and_percentage_daily_target_by_daily_out'])->middleware(['light_decryption']);
+        Route::apiResource('salesdailyout/sales_tracker',SalesDailyOutTrackersController::class)->middleware(['light_decryption']);
         // Sales Tracker END 
-
-
         //MODULE SALES DAILY OUT END 
 
         // QUOTATION START

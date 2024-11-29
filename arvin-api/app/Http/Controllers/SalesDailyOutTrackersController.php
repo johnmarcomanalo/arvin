@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
 use App\Models\RefSubSections;
 use App\Models\SalesDailyOutSettingsAnnualQuota;
+use App\Models\SalesDailyOutHolidayExclusionLogs;
 
 
 class SalesDailyOutTrackersController extends Controller
@@ -20,33 +21,38 @@ class SalesDailyOutTrackersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
+    public function index(){
         //
     }
-
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
+    public function store(Request $request){
         //
     }
-
     /**
      * Display the specified resource.
      *
      * @param  \App\Models\SalesDailyOutTrackers  $salesDailyOutTrackers
      * @return \Illuminate\Http\Response
      */
-    public function show(SalesDailyOutTrackers $salesDailyOutTrackers)
-    {
-        //
-    }
+    public function show($id){
+        if (isset($id)) {
+            $data = SalesDailyOutTrackers::join('ref_sub_sections', 'sales_daily_out_trackers.subsection_code', '=', 'ref_sub_sections.code')
+                ->where('sales_daily_out_trackers.code',$id)
+                ->whereNull('sales_daily_out_trackers.deleted_at')
+                ->first(['sales_daily_out_trackers.*','ref_sub_sections.description as ref_sub_sections_description']);
+        } 
 
+        if (empty($data)) {
+            $data = [];
+        }
+
+        return Crypt::encryptString($data);
+    }
     /**
      * Update the specified resource in storage.
      *
@@ -54,23 +60,18 @@ class SalesDailyOutTrackersController extends Controller
      * @param  \App\Models\SalesDailyOutTrackers  $salesDailyOutTrackers
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, SalesDailyOutTrackers $salesDailyOutTrackers)
-    {
+    public function update(Request $request, SalesDailyOutTrackers $salesDailyOutTrackers){
         //
     }
-
     /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\SalesDailyOutTrackers  $salesDailyOutTrackers
      * @return \Illuminate\Http\Response
      */
-    public function destroy(SalesDailyOutTrackers $salesDailyOutTrackers)
-    {
+    public function destroy(SalesDailyOutTrackers $salesDailyOutTrackers){
         //
     }
-
-
     public function insert_sap_sales_daily_out($product_groups_description,$year_sales_target,$ref_sub_section_type,$settings_annual_quota_code) { 
         $salesDailyOutsController = new SalesDailyOutsController();
         $sub_section = RefSubSections::where('type', $ref_sub_section_type)->first();
@@ -80,6 +81,7 @@ class SalesDailyOutTrackersController extends Controller
             ->where('year_sales_target', $year_sales_target)
             ->where('ref_product_groups_description',$product_groups_description)
             ->where('sales_daily_out_annual_settings_sales_code',$settings_annual_quota_code)
+            ->whereNull('deleted_at')
             ->get();
 
         $records = collect(DB::select("exec dbo.sp_sales_daily_out_delivery_return_cm ?,?,?",array($product_groups_description,$year_sales_target,$ref_sub_section_type)));
@@ -122,7 +124,6 @@ class SalesDailyOutTrackersController extends Controller
                 ];
             }
         }
-        
         foreach ($datalist as $value) {
             $sales_daily_qouta = $value['sales_daily_qouta'];
             $sales_daily_out = $value['sales_daily_out'];
@@ -168,7 +169,6 @@ class SalesDailyOutTrackersController extends Controller
         }
 
     }
-
     public function get_status_daily_target_and_percentage_daily_target_by_daily_out($daily_out,$daily_quota){
         if (!is_numeric($daily_out)) {
             $daily_out = 0; // Set $daily_out to zero if it's not a number
@@ -183,8 +183,6 @@ class SalesDailyOutTrackersController extends Controller
         // return Crypt::encryptString(json_encode($response));
         return $response;
     }
-
-
     public function get_sales_tracker(Request $request){
         $page = $request->query('page');
         $limit = $request->query('limit');
@@ -243,6 +241,7 @@ class SalesDailyOutTrackersController extends Controller
             ->where('ref_product_groups_description',$product_group)
             ->whereYear('sales_date', $date_year)
             ->whereMonth('sales_date', $date_month)
+            ->whereNull('deleted_at')
             ->count();
 
         if($data_count == 0){
@@ -263,6 +262,7 @@ class SalesDailyOutTrackersController extends Controller
                 ->where('ref_product_groups_description',$product_group)
                 ->whereYear('sales_date', $date_year)
                 ->whereMonth('sales_date', $date_month)
+                ->whereNull('deleted_at')
                 ->paginate($limit);
 
         $data_list->getCollection()->transform(function ($item) {
@@ -279,7 +279,8 @@ class SalesDailyOutTrackersController extends Controller
         $query = SalesDailyOutTrackers::where('subsection_code',$user_data["subsection_code"])
             ->where('ref_product_groups_description',$product_group)
             ->where('year_sales_target',$date_year)
-            ->whereYear('sales_date', $date_year);
+            ->whereYear('sales_date', $date_year)
+            ->whereNull('deleted_at');
 
             // Add condition based on current month
         if ($current_month == $date_month) {
@@ -295,6 +296,7 @@ class SalesDailyOutTrackersController extends Controller
                 ->where('year_sales_target',$date_year)
                 ->where('ref_product_groups_description',$product_group)
                 ->where('sales_date', $current_date)
+                ->whereNull('deleted_at')
                 ->first();
        
 
@@ -359,7 +361,6 @@ class SalesDailyOutTrackersController extends Controller
 
         return Crypt::encryptString(json_encode($response));
     }
-
     public function get_mtd($date_year, $date_month,$user_data,$sales_date_start,$product_group){
             $mtdTotalDailyQoutaAmount = 0;
             $mtdTotalDailyOutAmount = 0;
@@ -380,6 +381,7 @@ class SalesDailyOutTrackersController extends Controller
                 ->where('ref_product_groups_description',$product_group)
                 ->whereDate('sales_date','>=', $firstDayOfMonth)
                 ->whereDate('sales_date','<=',$LastOrCurrentDateOfTheMonth)
+                ->whereNull('deleted_at')
                 ->get();
             foreach ($mtd_data_list as $value) {
                 $salesDailyQuota = (float)$value["sales_daily_qouta"];
@@ -408,112 +410,109 @@ class SalesDailyOutTrackersController extends Controller
                'mtdFinal' => $mtdFinal,
             //    'mtd_data_list' => $mtd_data_list
             ];
+    }
+    public function get_previous_mtd($date_year, $date_month,$user_data,$product_group){
+        $mtdTotalDailyQoutaAmount = 0;
+        $mtdTotalDailyOutAmount = 0;
+        $mtdTotalStatusDailyTarget = 0;
+        $mtd_previous_final = 0;
+        $previous_date_month = 1;
+
+        if($date_month >= 2){
+            $previous_date_month = $date_month - 1;
         }
+        $first_day_of_previous_month = Carbon::createFromDate($date_year, $previous_date_month)->startOfMonth();
+        $last_day_Of_previous_month = Carbon::createFromDate($date_year, $previous_date_month)->endOfMonth();
 
 
-        public function get_previous_mtd($date_year, $date_month,$user_data,$product_group){
-            $mtdTotalDailyQoutaAmount = 0;
-            $mtdTotalDailyOutAmount = 0;
-            $mtdTotalStatusDailyTarget = 0;
-            $mtd_previous_final = 0;
-            $previous_date_month = 1;
-
-            if($date_month >= 2){
-                $previous_date_month = $date_month - 1;
-            }
-            $first_day_of_previous_month = Carbon::createFromDate($date_year, $previous_date_month)->startOfMonth();
-            $last_day_Of_previous_month = Carbon::createFromDate($date_year, $previous_date_month)->endOfMonth();
-
-
-            $mtd_data_previous_list = SalesDailyOutTrackers::where('subsection_code',$user_data["subsection_code"])
-                ->where('year_sales_target',$date_year)
-                ->where('ref_product_groups_description',$product_group)
-                ->whereDate('sales_date','>=', $first_day_of_previous_month)
-                ->whereDate('sales_date','<=',$last_day_Of_previous_month)
-                ->get();
-            if($date_month != 1){
-                foreach ($mtd_data_previous_list as $value) {
-                    $salesDailyQuota = (float)$value["sales_daily_qouta"];
-                    $salesDailyOut = (float)$value["sales_daily_out"];
-                    $salesDailyTarget = (float)$value["sales_daily_target"];
-
-                    if (!is_nan($salesDailyQuota)) {
-                    $mtdTotalDailyQoutaAmount += $salesDailyQuota;
-                    }
-                    
-                    if (!is_nan($salesDailyOut)) {
-                    $mtdTotalDailyOutAmount += $salesDailyOut;
-                    }
-
-                    if (!is_nan($salesDailyOut)) {
-                    $mtdTotalStatusDailyTarget += $salesDailyTarget;
-                    }
-                    $mtd_previous_final = (($mtdTotalDailyOutAmount / $mtdTotalDailyQoutaAmount) - 1) * 100; 
-                } 
-            }    
-            
-            
-            return $reponse = [
-               'mtdTotalDailyQoutaAmount' => $mtdTotalDailyQoutaAmount,
-               'mtdTotalDailyOutAmount' => $mtdTotalDailyOutAmount,
-               'mtdTotalStatusDailyTarget' => $mtdTotalStatusDailyTarget,
-               'mtdFinal' => $mtd_previous_final,
-            //    'mtd_data_list' => $mtd_data_previous_list
-            ];
-        }
-
-        public function get_final_ytd($date_year, $date_month,$user_data,$sales_date_start,$product_group){
-            $ytdTotalDailyQoutaAmount = 0;
-            $ytdTotalDailyOutAmount = 0;
-            $mtdTotalStatusDailyTarget = 0;
-            $ytdFinal = 0;
-
-            $januaryFirst = Carbon::create($date_year, 1, 1)->startOfDay();
-            $firstDayOfMonth = Carbon::createFromDate($date_year, $sales_date_start)->startOfMonth();
-            $lastDayOfMonth = Carbon::createFromDate($date_year, $date_month)->endOfMonth();
-            $currentDateTime =  MainController::formatSingleDigitMonthOnly(date('Y-m-d'));
-            $LastMonthDate =  MainController::formatSingleDigitMonthOnly($lastDayOfMonth);
-            $LastOrCurrentDateOfTheMonth = $lastDayOfMonth;
-            if($currentDateTime == $LastMonthDate){
-                $LastOrCurrentDateOfTheMonth = Carbon::now();
-            }
-            $mtd_data_list = SalesDailyOutTrackers::where('subsection_code',$user_data["subsection_code"])
-                ->where('year_sales_target',$date_year)
-                ->where('ref_product_groups_description',$product_group)
-                ->whereDate('sales_date','>=', $januaryFirst)
-                ->whereDate('sales_date','<=',$LastOrCurrentDateOfTheMonth)
-                ->get();
-
-            foreach ($mtd_data_list as $value) {
+        $mtd_data_previous_list = SalesDailyOutTrackers::where('subsection_code',$user_data["subsection_code"])
+            ->where('year_sales_target',$date_year)
+            ->where('ref_product_groups_description',$product_group)
+            ->whereDate('sales_date','>=', $first_day_of_previous_month)
+            ->whereDate('sales_date','<=',$last_day_Of_previous_month)
+            ->whereNull('deleted_at')
+            ->get();
+        if($date_month != 1){
+            foreach ($mtd_data_previous_list as $value) {
                 $salesDailyQuota = (float)$value["sales_daily_qouta"];
                 $salesDailyOut = (float)$value["sales_daily_out"];
                 $salesDailyTarget = (float)$value["sales_daily_target"];
 
                 if (!is_nan($salesDailyQuota)) {
-                $ytdTotalDailyQoutaAmount += $salesDailyQuota;
+                $mtdTotalDailyQoutaAmount += $salesDailyQuota;
                 }
                 
                 if (!is_nan($salesDailyOut)) {
-                $ytdTotalDailyOutAmount += $salesDailyOut;
+                $mtdTotalDailyOutAmount += $salesDailyOut;
                 }
 
-                 if (!is_nan($salesDailyOut)) {
+                if (!is_nan($salesDailyOut)) {
                 $mtdTotalStatusDailyTarget += $salesDailyTarget;
                 }
-            }
-            if($ytdTotalDailyQoutaAmount > 0){
-                $ytdFinal = ((round((float)$ytdTotalDailyOutAmount, 2)) / (round((float)$ytdTotalDailyQoutaAmount, 2)) - 1) * 100; 
-            }
-            $response = [
-                'ytdFinal'=> $ytdFinal,
-                'ytdTotalDailyOutAmount'=> round((float)$ytdTotalDailyOutAmount, 2),
-                'ytdTotalDailyQoutaAmount'=> round((float)$ytdTotalDailyQoutaAmount, 2),
-            ];
-            return $response;
+                $mtd_previous_final = (($mtdTotalDailyOutAmount / $mtdTotalDailyQoutaAmount) - 1) * 100; 
+            } 
+        }    
+        
+        
+        return $reponse = [
+            'mtdTotalDailyQoutaAmount' => $mtdTotalDailyQoutaAmount,
+            'mtdTotalDailyOutAmount' => $mtdTotalDailyOutAmount,
+            'mtdTotalStatusDailyTarget' => $mtdTotalStatusDailyTarget,
+            'mtdFinal' => $mtd_previous_final,
+        //    'mtd_data_list' => $mtd_data_previous_list
+        ];
+    }
+    public function get_final_ytd($date_year, $date_month,$user_data,$sales_date_start,$product_group){
+        $ytdTotalDailyQoutaAmount = 0;
+        $ytdTotalDailyOutAmount = 0;
+        $mtdTotalStatusDailyTarget = 0;
+        $ytdFinal = 0;
+
+        $januaryFirst = Carbon::create($date_year, 1, 1)->startOfDay();
+        $firstDayOfMonth = Carbon::createFromDate($date_year, $sales_date_start)->startOfMonth();
+        $lastDayOfMonth = Carbon::createFromDate($date_year, $date_month)->endOfMonth();
+        $currentDateTime =  MainController::formatSingleDigitMonthOnly(date('Y-m-d'));
+        $LastMonthDate =  MainController::formatSingleDigitMonthOnly($lastDayOfMonth);
+        $LastOrCurrentDateOfTheMonth = $lastDayOfMonth;
+        if($currentDateTime == $LastMonthDate){
+            $LastOrCurrentDateOfTheMonth = Carbon::now();
         }
+        $mtd_data_list = SalesDailyOutTrackers::where('subsection_code',$user_data["subsection_code"])
+            ->where('year_sales_target',$date_year)
+            ->where('ref_product_groups_description',$product_group)
+            ->whereDate('sales_date','>=', $januaryFirst)
+            ->whereDate('sales_date','<=',$LastOrCurrentDateOfTheMonth)
+            ->whereNull('deleted_at')
+            ->get();
 
+        foreach ($mtd_data_list as $value) {
+            $salesDailyQuota = (float)$value["sales_daily_qouta"];
+            $salesDailyOut = (float)$value["sales_daily_out"];
+            $salesDailyTarget = (float)$value["sales_daily_target"];
 
-        public function getFiveDaysSalesTrackerbyCurrentDate() {
+            if (!is_nan($salesDailyQuota)) {
+            $ytdTotalDailyQoutaAmount += $salesDailyQuota;
+            }
+            
+            if (!is_nan($salesDailyOut)) {
+            $ytdTotalDailyOutAmount += $salesDailyOut;
+            }
+
+                if (!is_nan($salesDailyOut)) {
+            $mtdTotalStatusDailyTarget += $salesDailyTarget;
+            }
+        }
+        if($ytdTotalDailyQoutaAmount > 0){
+            $ytdFinal = ((round((float)$ytdTotalDailyOutAmount, 2)) / (round((float)$ytdTotalDailyQoutaAmount, 2)) - 1) * 100; 
+        }
+        $response = [
+            'ytdFinal'=> $ytdFinal,
+            'ytdTotalDailyOutAmount'=> round((float)$ytdTotalDailyOutAmount, 2),
+            'ytdTotalDailyQoutaAmount'=> round((float)$ytdTotalDailyQoutaAmount, 2),
+        ];
+        return $response;
+    }
+    public function getFiveDaysSalesTrackerbyCurrentDate() {
         $records = [];
         DB::table('vw_sales_daily_out_delivery_return_cm_latest_five_days')
             ->select('warehouse', 'createdate','u_groupcategory', 'QtyInKg') // Select only necessary columns
@@ -525,7 +524,7 @@ class SalesDailyOutTrackersController extends Controller
             });
         
         // Convert $records array to a Collection
-         $recordsCollection = collect($records);
+        $recordsCollection = collect($records);
 
         $subSections = RefSubSections::whereIn('type', $recordsCollection->pluck('warehouse'))->get()->keyBy('type');
         $recordsByDateAndWarehouse = [];
@@ -594,9 +593,10 @@ class SalesDailyOutTrackersController extends Controller
                     $datalist = SalesDailyOutTrackers::where('subsection_code', $sub_section_code)
                                             ->where('ref_product_groups_description', $ref_product_groups_description)
                                             ->whereDate('sales_date', $create_date)
+                                            ->whereNull('deleted_at')
                                             ->first();
                     if ($datalist && ($datalist->sales_daily_out < $sales_daily_out || $currentDate == $create_date)) {
-                         $computation = $this->get_status_daily_target_and_percentage_daily_target_by_daily_out($sales_daily_out, $datalist->sales_daily_qouta);
+                        $computation = $this->get_status_daily_target_and_percentage_daily_target_by_daily_out($sales_daily_out, $datalist->sales_daily_qouta);
 
                         $datalist->update([
                             'sales_daily_out' => $sales_daily_out,
@@ -609,5 +609,72 @@ class SalesDailyOutTrackersController extends Controller
             }
         });
     }
+    public function get_sales_tracker_by_date_subsection_product(Request $request){
+        $selected_date = $request->query('fd');
+        $subsection_code = $request->query('fs');
 
+        // Validate the date input
+        if (!$selected_date || !strtotime($selected_date)) {
+            return response()->json([
+                'result' => false,
+                'title' => 'Error',
+                'status' => 'error',
+                'message' => 'Invalid date format provided.',
+            ], 400); // Bad Request
+        }
+
+        // Parse the date safely
+        try {
+            $date = Carbon::parse($selected_date)->format('Y-m-d');
+        } catch (\Exception $e) {
+            return response()->json([
+                'result' => false,
+                'title' => 'Error',
+                'status' => 'error',
+                'message' => 'Failed to parse the provided date.',
+            ], 400);
+        }
+
+        // Validate subsection code
+        if (!$subsection_code || !is_numeric($subsection_code)) {
+            return response()->json([
+                'result' => false,
+                'title' => 'Error',
+                'status' => 'error',
+                'message' => 'Invalid subsection code provided.',
+            ], 400);
+        }
+
+        
+        $data_list = SalesDailyOutTrackers::join('ref_sub_sections', 'sales_daily_out_trackers.subsection_code', '=', 'ref_sub_sections.code')
+            ->where('sales_daily_out_trackers.subsection_code', $subsection_code)
+            ->where('sales_date', $date)
+            ->whereNull('sales_daily_out_trackers.deleted_at')
+            ->get(['sales_daily_out_trackers.*','ref_sub_sections.description as ref_sub_sections_description']);
+        
+            $response = [
+                "dataList"=>$data_list,
+                'result'=>True,
+                'title'=>'Success',
+                'status'=>'success',
+                'message'=> '',
+        ];
+        return Crypt::encryptString(json_encode($response));
+    }
+    public function get_sales_daily_out_per_day($sales_date,$sales_daily_out_annual_settings_sales_code){
+        if (isset($sales_date) || isset($sales_daily_out_annual_settings_sales_code)) {
+            $data = SalesDailyOutTrackers::join('ref_sub_sections', 'sales_daily_out_trackers.subsection_code', '=', 'ref_sub_sections.code')
+                ->where('sales_daily_out_trackers.sales_daily_out_annual_settings_sales_code',$sales_daily_out_annual_settings_sales_code)
+                ->where('sales_daily_out_trackers.sales_date',$sales_date)
+                ->whereNull('sales_daily_out_trackers.deleted_at')
+                ->first(['sales_daily_out_trackers.*','ref_sub_sections.description as ref_sub_sections_description']);
+        } 
+
+        if (empty($data)) {
+            $data = [];
+        }
+
+        return Crypt::encryptString($data);
+    }
+    
 }

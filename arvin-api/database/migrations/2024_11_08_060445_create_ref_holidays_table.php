@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRefProductGroupsTable extends Migration
+class CreateRefHolidaysTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,12 @@ class CreateRefProductGroupsTable extends Migration
      */
     public function up()
     {
-        Schema::create('ref_product_groups', function (Blueprint $table) {
+        Schema::create('ref_holidays', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique();
+            $table->bigInteger('code')->unique();
             $table->string('description');
-            
-            $table->decimal('unit_conversion', 9, 2); 
-            $table->string('ref_unit_of_measurements_code');
+            $table->string('type');
+            $table->dateTime('holiday_date');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->timestamp('deleted_at')->nullable();
@@ -35,6 +34,6 @@ class CreateRefProductGroupsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ref_product_groups');
+        Schema::dropIfExists('ref_holidays');
     }
 }

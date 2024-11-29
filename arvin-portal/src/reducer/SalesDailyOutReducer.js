@@ -45,6 +45,7 @@ const initialState = {
   ytdTotalDailyOutAmount: 0,
   ytdTotalDailyQoutaAmount: 0,
   today_data: [],
+  editModal: false,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

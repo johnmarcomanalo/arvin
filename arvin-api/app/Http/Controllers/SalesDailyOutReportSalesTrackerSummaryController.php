@@ -101,6 +101,7 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
         $query_last_year = SalesDailyOutTrackers::selectRaw('MONTH(sales_date) as month, SUM(sales_daily_out) as sales')
             ->whereBetween('sales_date', [$selectedPreviousYearStart, $selectedPreviousYearEnd])
             ->where('ref_product_groups_description', $product_group)
+            ->whereNull('deleted_at')
             ->when(isset($subsection_code), function ($query) use ($subsection_code) {
                 return $query->where('subsection_code', $subsection_code);
             })
@@ -111,6 +112,7 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
         // Get sales data for the current year
          $query_current_year = SalesDailyOutTrackers::selectRaw('MONTH(sales_date) as month, SUM(sales_daily_out) as sales')
             ->where('ref_product_groups_description', $product_group)
+            ->whereNull('deleted_at')
             ->when(isset($subsection_code), function ($query) use ($subsection_code) {
                 return $query->where('subsection_code', $subsection_code);
             }, function ($qry) use ($access_subsection_codes) {
@@ -146,6 +148,7 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
 
         $query_current_year = SalesDailyOutTrackers::join('ref_sub_sections', 'sales_daily_out_trackers.subsection_code', '=', 'ref_sub_sections.code')
         ->where('ref_product_groups_description', $product_group)
+        ->whereNull('sales_daily_out_trackers.deleted_at')
         ->select(
             'ref_sub_sections.description',
               'ref_sub_sections.type',
@@ -246,6 +249,7 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
                 return $qry->whereIn('subsection_code', $access_subsection_codes);
             })
             ->where('ref_product_groups_description', $product_group)
+            ->whereNull('deleted_at')
             ->orderBy('sales_date')
             ->get();
 

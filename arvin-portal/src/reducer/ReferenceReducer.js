@@ -41,6 +41,7 @@ const initialState = {
   search_reference_employee_product_group_access: [],
   product_group_unit_of_measure: null,
   product_group_unit_of_measure_type: null,
+  holidays: [],
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
