@@ -8,11 +8,18 @@ import InputField from "../../../../../../components/inputFIeld/InputField";
 import configure from "../../../../../configure/configure.json";
 import MoveSaleQuotaHooks from "../../hooks/MoveSaleQuotaHooks";
 import { postMoveSalePerDay } from "../../../salesTracker/actions/SalesTrackerActions";
+import { Constants } from "../../../../../../reducer/Contants";
 const formName = "MoveSaleQuota";
 const submit = async (values, dispatch, props) => {
   try {
     const res = await dispatch(postMoveSalePerDay(values));
     swal(res.data.title, res.data.message, res.data.icon);
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        refresh: !props.refresh,
+      },
+    });
     reset();
   } catch (error) {
     console.log(error);

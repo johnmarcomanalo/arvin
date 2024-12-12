@@ -147,6 +147,9 @@ const IndexRefProductGroups = lazy(() =>
 const IndexRefHolidays = lazy(() =>
   import("./apps/aim/settings/reference/pages/IndexRefHolidays")
 );
+const IndexRefSubSections = lazy(() =>
+  import("./apps/aim/settings/reference/pages/IndexRefSubSections")
+);
 // REFERENCE END
 
 const theme = createTheme({
@@ -328,7 +331,6 @@ function App() {
                       </PrivateRoute>
                     }
                   />
-
                   {/* SALES END */}
                   {/* QUOTATION START */}
                   <Route
@@ -675,6 +677,21 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+                  <Route
+                    path="/Modules/SystemSettings/References/Subsections"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Settings",
+                          component: "References",
+                          subComponent: "Subsections",
+                        })}
+                      >
+                        <IndexRefSubSections />
+                      </PrivateRoute>
+                    }
+                  />
+
                   {/* REFENRECE END */}
                   {/* SYSTEM SETTINGS END */}
                 </Route>

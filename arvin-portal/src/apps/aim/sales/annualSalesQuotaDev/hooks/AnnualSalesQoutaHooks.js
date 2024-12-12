@@ -81,7 +81,7 @@ const AnnualSalesQoutaHooks = (props) => {
     { id: "september_sales_target", label: "September Quota", align: "left" },
     { id: "october_sales_target", label: "October Quota", align: "left" },
     { id: "november_sales_target", label: "November Quota", align: "left" },
-    { id: "december_sales_target]", label: "December Quota", align: "left" },
+    { id: "december_sales_target", label: "December Quota", align: "left" },
   ];
   const json_active_page = useSelector(
     (state) => state.AuthenticationReducer.active_page

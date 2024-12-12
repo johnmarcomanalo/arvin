@@ -80,6 +80,7 @@ use Illuminate\Support\Facades\Route;
         Route::apiResource('reference/departments',RefDepartmentsController::class)->middleware(['light_decryption']);
         Route::apiResource('reference/sections',RefSectionsController::class)->middleware(['light_decryption']);
         Route::apiResource('reference/subsections',RefSubSectionsController::class)->middleware(['light_decryption']);
+        Route::get('reference/ref_subsections',[RefSubSectionsController::class,'get_refence_subsections']);
         Route::get('reference/sales_ranking/get_ref_sales_ranking',[RefSalesRankingController::class,'get_ref_sales_ranking']);
         Route::get('reference/sales_ranking_list',[RefSalesRankingController::class,'get_ref_sales_ranking']);
         Route::apiResource('reference/sales_ranking',RefSalesRankingController::class)->middleware(['light_decryption']);

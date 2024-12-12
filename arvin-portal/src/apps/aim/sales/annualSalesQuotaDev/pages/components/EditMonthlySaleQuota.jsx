@@ -9,12 +9,20 @@ import InputField from "../../../../../../components/inputFIeld/InputField";
 import configure from "../../../../../configure/configure.json";
 import { postUpdateQuotaPerMonth } from "../../actions/AnnualSalesQuotaActions";
 import EditMonthlySalesQoutaHooks from "../../hooks/EditMonthlySalesQoutaHooks";
+import { Constants } from "../../../../../../reducer/Contants";
 const formName = "EditMonthlySaleQuota";
 const submit = async (values, dispatch, props) => {
   try {
     const res = await dispatch(postUpdateQuotaPerMonth(values));
     swal(res.data.title, res.data.message, res.data.icon);
     reset();
+    await dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        refresh: !props.refresh,
+        editModal: false,
+      },
+    });
   } catch (error) {
     console.log(error);
   }

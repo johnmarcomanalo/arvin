@@ -29,7 +29,7 @@ const RefSubSectionsHooks = () => {
       console.error(error);
     }
   };
-
+  
   return {
     subsections,
     GetReferenceSubSections,

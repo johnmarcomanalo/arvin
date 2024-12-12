@@ -2,11 +2,18 @@ import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import HomeIcon from "@mui/icons-material/Home";
 import SettingsIcon from "@mui/icons-material/Settings";
 import WidgetsIcon from "@mui/icons-material/Widgets";
-import { Card, CardContent, Grid, Stack, Typography, useMediaQuery } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Grid,
+  Stack,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import * as React from "react";
 import swal from "sweetalert";
 import { connect } from "react-redux";
-import { Field, formValueSelector, reduxForm } from "redux-form";
+import { Field, formValueSelector, reduxForm, reset } from "redux-form";
 import ComboBox from "../../../../../components/autoComplete/AutoComplete";
 import BreadCrumbs from "../../../../../components/breadCrumb/BreadCrumbs";
 import ButtonComponent from "../../../../../components/button/Button";
@@ -17,10 +24,13 @@ import Page from "../../../../../components/pagination/Pagination";
 import Table from "../../../../../components/table/Table";
 import { Constants } from "../../../../../reducer/Contants";
 import configure from "../../../../configure/configure.json";
-import { postReferenceComponent } from "../actions/ReferenceActions";
-import refsubsectionsHooks from "../hooks/refsubsectionsHooks";
+import {
+  postReferenceComponent,
+  postReferenceSubsection,
+} from "../actions/ReferenceActions";
+import RefSubSectionsFormHooks from "../hooks/RefSubSectionsFormHooks";
 import Modal from "../../../../../components/modal/Modal";
-import Updaterefsubsections from "./components/Updaterefsubsections";
+import UpdateRefSubsections from "./components/UpdateRefSubsections";
 const title_page = "Subsections";
 const breadCrumbArray = [
   {
@@ -79,7 +89,7 @@ const breadCrumbArray = [
 const formName = "Refsubsections";
 const submit = async (values, dispatch, props) => {
   try {
-    const response = await dispatch(postReferenceComponent(values));
+    const response = await dispatch(postReferenceSubsection(values));
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -93,16 +103,20 @@ const submit = async (values, dispatch, props) => {
       },
     });
     swal(response.data.title, response.data.message, response.data.status);
+    // dispatch(reset(formName));
+    props.resetForm();
   } catch (error) {
     console.log(error);
   }
 };
 let IndexRefsubsections = (props) => {
   const matches = useMediaQuery("(min-width:600px)");
-  const { ...refsubsections } = refsubsectionsHooks(props);
+  const { ...refsubsections } = RefSubSectionsFormHooks(props);
+  console.log(refsubsections.dataList);
+  let dataList = refsubsections.dataList ? refsubsections.dataList : [];
   return (
     <React.Fragment>
-      <Modal
+      {/* <Modal
         open={refsubsections.updateModal}
         fullScreen={matches ? false : true}
         title={"Update Unit of Measurement"}
@@ -110,11 +124,11 @@ let IndexRefsubsections = (props) => {
         action={undefined}
         handleClose={refsubsections.onClickCloseUpdateModal}
       >
-        <Updaterefsubsections
+        <UpdateRefSubsections
           account_details={refsubsections.account_details}
           selected_ref={refsubsections.selected_ref}
         />
-      </Modal>
+      </Modal> */}
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <BreadCrumbs breadCrumbs={breadCrumbArray} />
@@ -142,15 +156,15 @@ let IndexRefsubsections = (props) => {
                   gutterBottom
                   sx={{ color: configure.dark_gray_color, fontSize: 12 }}
                 >
-                  System Parameter for Reference Components
+                  System Parameter for Reference Subsections
                 </Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={12}>
                     <Field
-                      id="module_description"
-                      name="module_description"
-                      label="Module"
-                      options={refsubsections?.modules}
+                      id="section_description"
+                      name="section_description"
+                      label="Section"
+                      options={refsubsections?.sections}
                       getOptionLabel={(option) =>
                         option.description ? option.description : ""
                       }
@@ -158,7 +172,7 @@ let IndexRefsubsections = (props) => {
                       component={ComboBox}
                       onChangeHandle={(e, newValue) => {
                         if (newValue?.description) {
-                          props.change("module_code", newValue.code);
+                          props.change("section_code", newValue.code);
                         }
                       }}
                     />
@@ -170,9 +184,9 @@ let IndexRefsubsections = (props) => {
                       required={true}
                     />
                     <Field
-                      id="link"
-                      name="link"
-                      label="Link"
+                      id="type"
+                      name="type"
+                      label="Abbreviation"
                       component={InputField}
                       required={true}
                     />
@@ -206,7 +220,10 @@ let IndexRefsubsections = (props) => {
             spacing={2}
             sx={{ margin: 1 }}
           >
-            <SearchField onChange={refsubsections.onChangeSearch} />
+            <SearchField
+              value={refsubsections.search}
+              onChange={refsubsections.onChangeSearch}
+            />
             <Page
               page={refsubsections?.page}
               limit={refsubsections?.dataListCount}
@@ -225,7 +242,7 @@ let IndexRefsubsections = (props) => {
             id={"home_attendance"}
             localStorage={""}
             rowCount={refsubsections.dataListCount}
-            actionshow={true}
+            actionShow={false}
             paginationShow={false}
             action={(row) => {
               return null;

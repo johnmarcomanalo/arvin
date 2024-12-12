@@ -79,7 +79,7 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
             'annual_sales_target' => $fields["annual_sales_target"],
             'monthly_sales_target' => $fields["monthly_sales_target"],
             'january_sales_target' => $fields["monthly_sales_target"],
-            'february_sales_target' => $fields["monthly_sales_target"],+
+            'february_sales_target' => $fields["monthly_sales_target"],
             'march_sales_target' => $fields["monthly_sales_target"],
             'april_sales_target' => $fields["monthly_sales_target"],
             'may_sales_target' => $fields["monthly_sales_target"],
@@ -115,7 +115,7 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
             ]);
         }
 
-        $records = count(DB::select("exec dbo.sp_sales_daily_out_delivery_return_cm ?,?,?",array($fields["ref_product_groups_description"],$fields["year_sales_target"],$fields["sub_section_type"],$data->code)));
+        $records = count(DB::select("exec dbo.sp_sales_daily_out_delivery_return_cm_v2 ?,?,?",array($fields["ref_product_groups_description"],$fields["year_sales_target"],$fields["sub_section_type"],$data->code)));
 
         if(!empty($records)){
             $salesDailyOutTrackersController->insert_sap_sales_daily_out($fields["ref_product_groups_description"],$fields["year_sales_target"],$fields["sub_section_type"],$data->code);
@@ -213,9 +213,9 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
     public function get_annual_monthly_daily_target_sales_by_section_subsection_product_group($id,$date,$pg){
         $annual_settings_sales_controller = new SalesDailyOutAnnualSettingsSalesController();
         $carbonDate = Carbon::parse($date);
-        $month = $carbonDate->month;
+        $month = strtolower($carbonDate->format('F')).'_sales_target';
         $year = $carbonDate->year;
-        
+
         $product_group = RefProductGroups::join('ref_unit_of_measurements','ref_product_groups.ref_unit_of_measurements_code','=','ref_unit_of_measurements.code')
         ->where('ref_product_groups.description',$pg)
         ->first(["ref_product_groups.*","ref_unit_of_measurements.description as uom_description","ref_unit_of_measurements.type as uom_type"]);
@@ -240,11 +240,11 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
         }
         $annual_monthly_daily_target_sales_data = SalesDailyOutSettingsAnnualQuota::where('subsection_code',$id)->where("year_sales_target",$year)->where("ref_product_groups_code",$product_group['code'])->first();
         $daily_sales_target = $annual_settings_sales_controller->get_number_of_days_in_a_month_with_out_sunday($date.'-01',$annual_monthly_daily_target_sales_data->monthly_sales_target) ;
-       
+        
         $response = [
             "year_sales_target"=>$annual_monthly_daily_target_sales_data->year_sales_target,
             "annual_sales_target"=>$annual_monthly_daily_target_sales_data->annual_sales_target,
-            "monthly_sales_target"=>$annual_monthly_daily_target_sales_data->monthly_sales_target,
+            "monthly_sales_target"=>$annual_monthly_daily_target_sales_data->$month,
             "daily_sales_target"=>$daily_sales_target,
             "sales_daily_out_annual_settings_sales_code"=>$annual_monthly_daily_target_sales_data->code,
             "product_group_unit_of_measure"=>$product_group['uom_description'],
@@ -289,7 +289,7 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
         $month =  Carbon::create($fields["year_sales_target"], $monthNumber, 1);
         $log_code = MainController::generate_code('App\Models\SalesDailyOutSettingsAnnualQuotaLogs',"code");
         $salesDailyOutTrackersController = new SalesDailyOutTrackersController();
-        $updateColumn = $fields['month']; 
+        $updateColumn = $fields['month'];
 
         SalesDailyOutSettingsAnnualQuotaLogs::create([
             'code' => $log_code,
@@ -306,6 +306,27 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
                $updateColumn => $fields["monthly_sales_target"],
             ]
         );
+        $annual_quota_data = SalesDailyOutSettingsAnnualQuota::where('code', $fields['code'])->first();
+
+        if ($annual_quota_data) {
+            $annual_sales_target = $annual_quota_data->january_sales_target +
+                                $annual_quota_data->february_sales_target +
+                                $annual_quota_data->march_sales_target +
+                                $annual_quota_data->april_sales_target +
+                                $annual_quota_data->may_sales_target +
+                                $annual_quota_data->june_sales_target +
+                                $annual_quota_data->july_sales_target +
+                                $annual_quota_data->august_sales_target +
+                                $annual_quota_data->september_sales_target +
+                                $annual_quota_data->october_sales_target +
+                                $annual_quota_data->november_sales_target +
+                                $annual_quota_data->december_sales_target;
+
+            $annual_quota_data->update([
+                'annual_sales_target' => $annual_sales_target,
+                'modified_by' => $fields['modified_by']
+            ]);
+        }
 
         // Fetching data based on conditions
         $datalist = SalesDailyOutTrackers::where('sales_daily_out_annual_settings_sales_code', $fields['code'])

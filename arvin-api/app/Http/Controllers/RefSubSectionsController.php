@@ -13,8 +13,9 @@ class RefSubSectionsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id = null)
     {
+        return Crypt::encryptString($this->do_show($id));
         //
     }
 
@@ -63,7 +64,7 @@ class RefSubSectionsController extends Controller
      * @param  \App\Models\RefSubSections  $refSubSections
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id = null)
     {
         return Crypt::encryptString($this->do_show($id));
     }
@@ -92,9 +93,9 @@ class RefSubSectionsController extends Controller
     }
     public function do_show($id){
         if (isset($id)) {
-            $data = RefSubSections::where('section_code', '=', $id)->get();
+            $data = RefSubSections::where('section_code', '=', $id)->orderBy('description', 'asc')->get();
         } else {
-            $data = RefSubSections::all();
+            $data = RefSubSections::orderBy('description', 'asc')->get();
         }
 
         if ($data->isEmpty()) {
@@ -120,6 +121,37 @@ class RefSubSectionsController extends Controller
             $code = $latest_code + 1;
         }
         return $code;
+    }
+
+
+
+    public function get_refence_subsections(Request $request)
+    {
+        $page = $request->query('page', 1); // Default to page 1 if not provided
+        $limit = $request->query('limit', 10); // Default to 10 items per page if not provided
+        $query = $request->query('q');
+        $filter = $request->query('f');              
+
+        // Ensure the join is correct and the table names and column names are valid
+        $dataListQuery = RefSubSections::whereNull('deleted_at');
+
+        if (isset($query)) {
+            $dataListQuery->where(function($q) use ($query) {
+                $q->where('description', 'like', '%' . $query . '%');
+            });
+        }
+
+        $data_list = $dataListQuery->paginate($limit, [ '*' ], 'page', $page);
+
+        $response = [
+            "dataList" => $data_list,
+            'result' => true,
+            'title' => 'Success',
+            'status' => 'success',
+            'message' => '',
+        ];
+
+        return Crypt::encryptString(json_encode($response));
     }
 
 }

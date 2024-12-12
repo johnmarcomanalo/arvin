@@ -287,6 +287,56 @@ export const getRefSubSections = (id) => async (dispatch) => {
   }
 };
 
+export const getAllRefSubSections = (values) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = GetSpecificDefaultServices(
+      "api/reference/ref_subsections?page=" +
+        values.p +
+        "&limit=" +
+        values.l +
+        "&q=" +
+        values.q +
+        "&f=" +
+        values.f
+    );
+    response.then((res) => {
+      let decrypted = decryptaes(res.data);
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          dataList: decrypted.dataList.data,
+          dataListCount: decrypted.dataList.total,
+        },
+      });
+    });
+  } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
 export const getSpecificRefSubSection = (id) => async (dispatch) => {
   try {
     await dispatch({
@@ -319,6 +369,53 @@ export const getSpecificRefSubSection = (id) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
+export const postReferenceSubsection = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PostDefaultServices(
+      "api/reference/subsections",
+      formValues
+    );
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+    return res;
+  } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
@@ -2561,7 +2658,6 @@ export const getRefProductGroups = () => async (dispatch) => {
   }
 };
 
-
 export const getReferenceHolidays = (values) => async (dispatch) => {
   try {
     await dispatch({
@@ -2624,53 +2720,52 @@ export const getReferenceHolidays = (values) => async (dispatch) => {
   }
 };
 
-export const postReferenceHolidays =
-  (formValues) => async (dispatch) => {
-    try {
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: true,
-        },
-      });
-      const res = await PostDefaultServices(
-        "api/reference/ref_holidays",
-        formValues
-      );
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: false,
-        },
-      });
-      return res;
-    } catch (error) {
-      var title = configure.error_message.default;
-      var message = "";
-      if (typeof error.response.data.message !== "undefined")
-        title = error.response.data.message;
-      if (typeof error.response.data.errors !== "undefined") {
-        const formattedErrors = Object.entries(error.response.data.errors)
-          .map(([key, value]) => `${value.join(", ")}`)
-          .join("\n");
-        message = formattedErrors;
-      }
-      await swal(title, message, "error");
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: false,
-        },
-      });
-    } finally {
-      await dispatch({
-        type: Constants.ACTION_LOADING,
-        payload: {
-          loading: false,
-        },
-      });
+export const postReferenceHolidays = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PostDefaultServices(
+      "api/reference/ref_holidays",
+      formValues
+    );
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+    return res;
+  } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
     }
-  };
+    await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
 
 export const getAllRefHolidays = () => async (dispatch) => {
   try {

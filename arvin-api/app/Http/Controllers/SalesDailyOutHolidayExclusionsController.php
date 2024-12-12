@@ -295,9 +295,12 @@ class SalesDailyOutHolidayExclusionsController extends Controller
             'modified_by' => $fields['modified_by'],
         ];
 
-        if ($move_from_data_to_delete) {
-            $move_from_date_update_details['deleted_at'] = now();
+        if($fields["move_from_sales_date"] !== $fields["move_to_sales_date"]){
+            if ($move_from_data_to_delete) {
+                $move_from_date_update_details['deleted_at'] = now();
+            }   
         }
+        
 
         $move_from_date_details->update($move_from_date_update_details);
 

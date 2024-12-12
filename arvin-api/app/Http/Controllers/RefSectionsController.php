@@ -13,9 +13,10 @@ class RefSectionsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id = null)
     {
-        return Crypt::encryptString(RefSections::whereNull('deleted_at')->get());
+        return Crypt::encryptString($this->do_show($id));
+        // return Crypt::encryptString(RefSections::whereNull('deleted_at')->get());
     }
 
     /**
@@ -62,11 +63,11 @@ class RefSectionsController extends Controller
     {
         //
     }
-    public function do_show($id = null) {
+    public function do_show($id) {
         if (isset($id)) {
-            $data = RefSections::where('department_code', '=', $id)->get();
+            $data = RefSections::where('department_code', '=', $id)->orderBy('description', 'asc')->get();
         } else {
-            $data = RefSections::all();
+            $data = RefSections::orderBy('description', 'asc')->get();
         }
 
         if ($data->isEmpty()) {

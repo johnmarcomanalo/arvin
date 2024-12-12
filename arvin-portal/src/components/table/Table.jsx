@@ -15,7 +15,7 @@ import { Stack } from "@mui/material";
 const Tables = (props) => {
   const {
     columns,
-    dataList,
+    dataList = [],
     page,
     rowsPerPage,
     handleChangePage,
