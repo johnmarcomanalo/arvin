@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
         // $this->call(RefGendersSeeder::class);
 
         // $this->call(RefSectionsSeeder::class);
-        $this->call(RefSubSectionsSeeder::class);
+        // $this->call(RefSubSectionsSeeder::class);
         // $this->call(RefLocationsSeeder::class);
         // $this->call(RefPositionsSeeder::class);
         // $this->call(RefSalutationsSeeder::class); 
