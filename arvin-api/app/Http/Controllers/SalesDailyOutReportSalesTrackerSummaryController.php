@@ -140,14 +140,14 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
     public function getMonthlySalesofWarehouses($year=null,$code = null,$access_subsection_codes,$product_group) {
         $result = [];
         $year = (string) $year;
-        $selectedYear = Carbon::parse($year);
+         $selectedYear = Carbon::parse($year);
         $selected_Year = $selectedYear->copy()->format('Y');
         //get selected year start and end
         $selectedYearStart = $selectedYear->copy()->startOfYear()->format('Y-m-d');
         $selectedYearEnd = $selectedYear->copy()->endOfYear()->format('Y-m-d');
-
         $query_current_year = SalesDailyOutTrackers::join('ref_sub_sections', 'sales_daily_out_trackers.subsection_code', '=', 'ref_sub_sections.code')
         ->where('ref_product_groups_description', $product_group)
+        ->where('year_sales_target', $year)
         ->whereNull('sales_daily_out_trackers.deleted_at')
         ->select(
             'ref_sub_sections.description',
@@ -205,7 +205,7 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
         $page = $request->query('page');
         $limit = $request->query('limit');
         $query = $request->query('q');
-        $filter = $request->query('f');
+         $filter = $request->query('f');
         $product_group = $request->query('pg');
         $code = $request->query('id');
         $user_code = $request->query('user_code');
@@ -252,8 +252,10 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
             ->whereNull('deleted_at')
             ->orderBy('sales_date')
             ->get();
-
-        $annual_set_total_count_subsections = SalesDailyOutSettingsAnnualQuota::where('year_sales_target', $filter)->count();
+        $product = RefProductGroups::where('description',$product_group)->first();
+        
+        $annual_set_total_count_subsections = SalesDailyOutSettingsAnnualQuota::where('year_sales_target', $filter)
+        ->where('ref_product_groups_code', $product['code'])->count();
 
         $yearly_sales_line_chart_summary = $this->getYearlySalesByDateRange($filter,$code,$access_subsection_codes,$product_group);
         $annual_sales_out_summary = $this->getMonthlySalesofWarehouses($filter,$code,$access_subsection_codes,$product_group);
@@ -349,13 +351,15 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
         return array_values($result);
     }
 
+
     public function annualSalesMtdYtdSubSections($year=null,$code =null,$access_subsection_codes,$product_group) {
+        
         $salesDailyOutTrackersController = new SalesDailyOutTrackersController();
         $months = range(1, 12);
-        $dateYear = MainController::formatYearOnly($year); //format date to year
+        //  $dateYear = MainController::formatYearOnly($year); //format date to year
         $product = RefProductGroups::where('description',$product_group)->first();
         $subSectionsWithAnnualSalesQuota = SalesDailyOutSettingsAnnualQuota::join('ref_sub_sections', 'sales_daily_out_settings_annual_quotas.subsection_code', '=', 'ref_sub_sections.code')
-            ->where('year_sales_target', $dateYear)
+            ->where('year_sales_target', $year)
             ->where('ref_product_groups_code', $product['code'])
             ->when(isset($code), function ($query) use ($code) {
                 return $query->where('subsection_code', $code);
@@ -368,8 +372,8 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
         
         foreach ($subSectionsWithAnnualSalesQuota as $subSection) {
             foreach ($months as  $dateMonth) {
-                $currentMtdSummary = $salesDailyOutTrackersController->get_mtd($dateYear, $dateMonth, $subSection, $dateMonth,$product_group);
-                $ytdSummary = $salesDailyOutTrackersController->get_final_ytd($dateYear, $dateMonth, $subSection, $dateMonth,$product_group);
+                $currentMtdSummary = $salesDailyOutTrackersController->get_mtd($year, $dateMonth, $subSection, $dateMonth,$product_group);
+                $ytdSummary = $salesDailyOutTrackersController->get_final_ytd($year, $dateMonth, $subSection, $dateMonth,$product_group);
                 $monthName = strtolower(Carbon::create()->month($dateMonth)->format('F'));
                 $currentMtdSummary['subsection'] = $subSection['description'];
                 $currentMtdSummary['subsection_code'] = $subSection['subsection_code'];
