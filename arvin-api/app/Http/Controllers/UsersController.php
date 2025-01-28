@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Crypt;
 use App\Models\UserAccessModuleRights;
 use App\Models\UserAccessComponentRights;
 use App\Models\UserAccessSubComponentRights;
+use App\Models\UsersAccounts;
 
 class UsersController extends Controller
 {
@@ -32,6 +33,7 @@ class UsersController extends Controller
         $fields = $request->validate([
             'username' => 'required',
             'first_name' => 'required',
+            'middle_name' => 'string',
             'last_name' => 'required',
             'company_code' => 'required',
             'business_unit_code' => 'required',
@@ -39,33 +41,82 @@ class UsersController extends Controller
             'department_code' => 'required',
             'section_code' => 'required',
             'subsection_code' => 'required',
+            'position' => 'string',
+            'position_level' => 'string',
             'added_by' => 'required',
             'modified_by' => 'required',
         ]); 
 
-        $existingRecord = User::where('username', $fields['username'])
-            ->where('first_name', $fields['first_name'])
+        $existingUserRecord = User::where('first_name', $fields['first_name'])
+            ->where('middle_name', $fields['middle_name'])
             ->where('last_name', $fields['last_name'])
             ->first();
 
-        if ($existingRecord) {
+
+        $existingAccountRecord = User::where('username', $fields['username'])
+            ->where('company_code', $fields['company_code'])
+            ->where('business_unit_code', $fields['business_unit_code'])
+            ->where('team_code', $fields['team_code'])
+            ->where('department_code', $fields['department_code'])
+            ->where('section_code', $fields['section_code'])
+            ->where('subsection_code', $fields['subsection_code'])
+            ->first();
+
+        if ($existingUserRecord) {
                 return response([
                     'result' => false,
                     'status' => 'error',
                     'title' => 'Error',
-                    'message' => 'Employee already exist.'
+                    'message' => 'Employee Details already exist.'
                 ], 409);
-        } else {
-                $fields['code'] = MainController::generate_code('App\Models\User',"code");
-                $fields['password'] = bcrypt("welcome123");
-                User::create($fields);
-                return response([
-                        'result' => true,
-                        'status' => 'success',
-                        'title' => 'Success',
-                        'message' => 'Employee added successfully.'
-                ], 201);
         }
+        if ($existingAccountRecord) {
+                return response([
+                    'result' => false,
+                    'status' => 'error',
+                    'title' => 'Error',
+                    'message' => 'Employee Account already exist.'
+                ], 409);
+        }
+
+        
+        $fields['code'] = MainController::generate_code('App\Models\User',"code");
+        $fields['account_code'] = MainController::generate_code('App\Models\UsersAccounts',"code");
+        $fields['password'] = bcrypt("welcome123");
+        // User::create($fields);
+        User::create([
+            'code' => $fields['code'],
+            'first_name' => $fields['first_name'],
+            'middle_name' => $fields['middle_name'],
+            'last_name' => $fields['last_name'],
+            'added_by' => $fields['added_by'],
+            'modified_by' => $fields['modified_by'],
+        ]);
+
+        UsersAccounts::create([
+            'code' => $fields['account_code'],
+            'user_code' => $fields['code'],
+            'username' => $fields['username'],
+            'password' => $fields['password'],
+            'company_code' => $fields['company_code'],
+            'business_unit_code' => $fields['business_unit_code'],
+            'team_code' => $fields['team_code'],
+            'department_code' => $fields['department_code'],
+            'section_code' => $fields['section_code'],
+            'subsection_code' => $fields['subsection_code'],
+            'position' => $fields['position'],
+            'position_level' => $fields['position_level'],
+            'added_by' => $fields['added_by'],
+            'modified_by' => $fields['modified_by'],
+        ]);
+
+        return response([
+                'result' => true,
+                'status' => 'success',
+                'title' => 'Success',
+                'message' => 'Employee added successfully.'
+        ], 201);
+        
     }
 
     /**
@@ -74,7 +125,7 @@ class UsersController extends Controller
      * @param  \App\Models\Users  $users
      * @return \Illuminate\Http\Response
      */
-    public function show(Users $users)
+    public function show(User $users)
     {
         //
     }
@@ -86,7 +137,7 @@ class UsersController extends Controller
      * @param  \App\Models\Users  $users
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Users $users)
+    public function update(Request $request, User $users)
     {
         //
     }
@@ -97,7 +148,7 @@ class UsersController extends Controller
      * @param  \App\Models\Users  $users
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Users $users)
+    public function destroy(User $users)
     {
         //
     }
@@ -144,24 +195,44 @@ class UsersController extends Controller
     }
 
     public function fast_create(){
-         $user_code = MainController::generate_code('App\Models\User',"code");
-         $user_access_module_code = MainController::generate_code('App\Models\UserAccessModuleRights',"code");
-         $employee= User::create([
-            'code'=>$user_code,
-            'username'=>'g.garcia',
-            'first_name'=>'Ghenievy',
-            'last_name'=>'Garcia',
-            'company_code'=>'1',
-            'business_unit_code'=>'1',
-            'team_code'=>'1',
-            'department_code'=>'8',
-            'section_code'=>'26',
-            'subsection_code'=>'31',
-            'password'=> bcrypt("welcome123"),
-            'added_by'=>'1',
-            'modified_by'=> '1',
-        ]); 
-        return $employee;
+        // $user_code = MainController::generate_code('App\Models\User',"code");
+        // $user_access_module_code = MainController::generate_code('App\Models\UserAccessModuleRights',"code");
+        //  $employee= User::create([
+        //     'code'=>$user_code,
+        //     'username'=>'g.garcia',
+        //     'first_name'=>'Ghenievy',
+        //     'last_name'=>'Garcia',
+        //     'company_code'=>'1',
+        //     'business_unit_code'=>'1',
+        //     'team_code'=>'1',
+        //     'department_code'=>'8',
+        //     'section_code'=>'26',
+        //     'subsection_code'=>'31',
+        //     'password'=> bcrypt("welcome123"),
+        //     'added_by'=>'1',
+        //     'modified_by'=> '1',
+        // ]); 
+        // return $employee;
+
+            $account_code = MainController::generate_code('App\Models\UsersAccounts',"code");
+            return $password = bcrypt("welcome123");
+            UsersAccounts::create([
+            'code' => $account_code,
+            'user_code' => '1',
+            'username' => 'johnmarcomanalo10',
+            'password' => $password,
+            // 'company_code' => '1',
+            // 'business_unit_code' => '1',
+            // 'team_code' => '1',
+            // 'department_code' => '4',
+            // 'section_code' =>'12',
+            // 'subsection_code' => '12',
+            // 'position' => 'SENIOR PROGRAMMER',
+            // 'position_level' =>' ',
+            // 'added_by' => '2',
+            // 'modified_by' => '2',
+        ]);
+
 
     }
 }

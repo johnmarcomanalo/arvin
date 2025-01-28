@@ -49,13 +49,13 @@ const InputYearPicker = ({
   disableFuture = false,
 }) => {
   // Convert input value to a valid Date object using moment.js
-  const dateValue = input.value ? moment(input.value).toDate() : null;
+  // const dateValue = input.value ? moment(input.value).toDate() : null;
 
-  // Handle change event to convert the selected date to a string before passing it to Redux Form
-  const handleChange = (date) => {
-    const dateString = date ? moment(date).format("YYYY-MM-DD") : null;
-    input.onChange(dateString);
-  };
+  // // Handle change event to convert the selected date to a string before passing it to Redux Form
+  // const handleChange = (date) => {
+  //   const dateString = date ? moment(date).format("YYYY-MM-DD") : null;
+  //   input.onChange(dateString);
+  // };
 
   return (
     <div>
@@ -76,11 +76,13 @@ const InputYearPicker = ({
           dateFormat={"YYYY"}
           theme={theme}
           onChange={(date) => input.onChange(date)}
+          // value={moment(input.value, "YYYY").format("YYYY")}
           selected={
             input.value ? moment(input.value, "YYYY").format("YYYY") : null
           }
           views={["year"]}
           openTo="year"
+          yearsOrder="desc"
           disabledKeyboardNavigation
           placeholderText={placeholder}
           disableFuture={disableFuture}

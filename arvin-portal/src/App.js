@@ -33,9 +33,6 @@ const IndexSelectedSalesSummary = lazy(() =>
 const IndexSalesQouta = lazy(() =>
   import("./apps/aim/sales/salesQuota/pages/IndexSalesQuota")
 );
-const SalesTracker = lazy(() =>
-  import("./apps/aim/sales/salesTracker/pages/IndexSalesTracker")
-);
 const IndexAnnualSalesQuota = lazy(() =>
   import("./apps/aim/sales/annualSalesQuotaDev/pages/IndexAnnualSalesQuota")
 );
@@ -44,6 +41,9 @@ const IndexSalesTracker = lazy(() =>
 );
 const IndexHolidayExclusion = lazy(() =>
   import("./apps/aim/sales/holidayExclusion/pages/IndexHolidayExclusion")
+);
+const IndexClientGroups = lazy(() =>
+  import("./apps/aim/sales/clientGroups/pages/IndexClientGroups")
 );
 // SALES END
 
@@ -331,6 +331,21 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+                  <Route
+                    path="/Modules/Sales/Configuration/ClientGroups"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Sales",
+                          component: "Configuration",
+                          subComponent: "Client Groups",
+                        })}
+                      >
+                        <IndexClientGroups />
+                      </PrivateRoute>
+                    }
+                  />
+
                   {/* SALES END */}
                   {/* QUOTATION START */}
                   <Route
@@ -691,7 +706,6 @@ function App() {
                       </PrivateRoute>
                     }
                   />
-
                   {/* REFENRECE END */}
                   {/* SYSTEM SETTINGS END */}
                 </Route>

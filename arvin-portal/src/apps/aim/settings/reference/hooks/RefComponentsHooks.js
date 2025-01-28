@@ -118,6 +118,15 @@ const RefComponentsHooks = (props) => {
       },
     });
   };
+
+  const onClickCloseUpdateModal = () => {
+    dispatch({
+      type: Constants.ACTION_REFERENCE,
+      payload: {
+        updateModal: false,
+      },
+    });
+  };
   return {
     account_details,
     search,
@@ -135,6 +144,7 @@ const RefComponentsHooks = (props) => {
     handleChangePage,
     handleChangeRowsPerPage,
     onSelectItem,
+    onClickCloseUpdateModal,
   };
 };
 

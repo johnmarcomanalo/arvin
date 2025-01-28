@@ -516,6 +516,8 @@ class SalesDailyOutTrackersController extends Controller
         $records = [];
         DB::table('vw_sales_daily_out_delivery_return_cm_latest_five_days')
             ->select('warehouse', 'createdate','u_groupcategory', 'QtyInKg') // Select only necessary columns
+            // ->whereMonth('createdate', 6) // June
+            // ->whereYear('createdate', 2024)
             ->orderBy('createdate')
             ->chunk(1000, function ($chunk) use (&$records) {
                 foreach ($chunk as $record) {
@@ -524,7 +526,14 @@ class SalesDailyOutTrackersController extends Controller
             });
         
         // Convert $records array to a Collection
+        // $product_groups_description = "INDUSTRIAL SALT";
+        // $year_sales_target = 2025;
+        // $ref_sub_section_type = "GEN";
+
+        // $records = collect(DB::select("exec dbo.sp_sales_daily_out_delivery_return_cm_v2 ?,?,?",array($product_groups_description,$year_sales_target,$ref_sub_section_type)));
+
         $recordsCollection = collect($records);
+
 
         $subSections = RefSubSections::whereIn('type', $recordsCollection->pluck('warehouse'))->get()->keyBy('type');
         $recordsByDateAndWarehouse = [];
@@ -536,9 +545,9 @@ class SalesDailyOutTrackersController extends Controller
 
         foreach ($recordsByDateAndWarehouse as $date => $warehouseRecords) {
             $carbonDate = Carbon::parse($date);
-
             if ($carbonDate->isSunday()) {
                 // Find the corresponding Monday
+
                 $mondayDate = $carbonDate->addDay()->format('Y-m-d');
 
                 foreach ($warehouseRecords as $warehouse => $groupRecords) {
@@ -578,7 +587,6 @@ class SalesDailyOutTrackersController extends Controller
                 }
             }
         }
-                    return $results;
 
         DB::transaction(function() use ($results, $subSections) {
             $currentDate = Carbon::now()->format('Y-m-d');
@@ -676,5 +684,110 @@ class SalesDailyOutTrackersController extends Controller
 
         return Crypt::encryptString($data);
     }
-    
+    public function getFiveDaysSalesTrackerbyCurrentDateManila() {
+        $records = [];
+         DB::table('vw_DailySales_Manila_Latest_Five_Days')
+            ->select('warehouse', 'createdate','u_groupcategory', 'QtyInKg') // Select only necessary columns
+            // ->whereMonth('createdate', 6) // June
+            // ->whereYear('createdate', 2024)
+            ->orderBy('createdate')
+            ->chunk(1000, function ($chunk) use (&$records) {
+                foreach ($chunk as $record) {
+                    $records[] = $record;
+                }
+            });
+        
+        // Convert $records array to a Collection
+        // $product_groups_description = "INDUSTRIAL SALT";
+        // $year_sales_target = 2025;
+        // $ref_sub_section_type = "GEN";
+
+        // $records = collect(DB::select("exec dbo.sp_sales_daily_out_delivery_return_cm_v2 ?,?,?",array($product_groups_description,$year_sales_target,$ref_sub_section_type)));
+
+         $recordsCollection = collect($records);
+
+
+        $subSections = RefSubSections::whereIn('type', $recordsCollection->pluck('warehouse'))->get()->keyBy('type');
+        $recordsByDateAndWarehouse = [];
+
+        foreach ($recordsCollection as $record) {
+            $date = Carbon::parse($record->createdate)->format('Y-m-d');
+            $recordsByDateAndWarehouse[$date][$record->warehouse][$record->u_groupcategory] = $record;
+        }
+
+        foreach ($recordsByDateAndWarehouse as $date => $warehouseRecords) {
+            $carbonDate = Carbon::parse($date);
+            if ($carbonDate->isSunday()) {
+                // Find the corresponding Monday
+
+                $mondayDate = $carbonDate->addDay()->format('Y-m-d');
+
+                foreach ($warehouseRecords as $warehouse => $groupRecords) {
+                    foreach ($groupRecords as $u_groupcategory => $record) {
+                        // Check if Monday's record for the same warehouse and u_groupcategory exists
+                        if (!isset($recordsByDateAndWarehouse[$mondayDate][$warehouse][$u_groupcategory])) {
+                            // Initialize Monday's record if it doesn't exist
+                            $recordsByDateAndWarehouse[$mondayDate][$warehouse][$u_groupcategory] = (object)[
+                                'warehouse' => $warehouse,
+                                'createdate' => $mondayDate,
+                                'u_groupcategory' => $u_groupcategory,
+                                'QtyInKg' => 0
+                            ];
+                        }
+
+                        // Add Sunday's QtyInKg to Monday's QtyInKg for the same warehouse and u_groupcategory
+                        $sundayQty = (float) $record->QtyInKg;
+                        $recordsByDateAndWarehouse[$mondayDate][$warehouse][$u_groupcategory]->QtyInKg += $sundayQty;
+                    }
+                }
+            }
+        }
+        $results = [];
+
+        foreach ($recordsByDateAndWarehouse as $date => $warehouseRecords) {
+            $carbonDate = Carbon::parse($date);
+            if (!$carbonDate->isSunday()) {
+                foreach ($warehouseRecords as $warehouse => $groupRecords) {
+                    foreach ($groupRecords as $u_groupcategory => $record) {
+                        $results[] = [
+                            'warehouse' => $record->warehouse,
+                            'createdate' => $record->createdate,
+                            'ref_product_groups_description' => $record->u_groupcategory,
+                            'QtyInKg' => $record->QtyInKg
+                        ];
+                    }
+                }
+            }
+        }
+        // return $results;
+        DB::transaction(function() use ($results, $subSections) {
+            $currentDate = Carbon::now()->format('Y-m-d');
+            foreach ($results as $record) {
+                $ref_product_groups_description = $record['ref_product_groups_description'];
+                $warehouse = $record['warehouse'];
+                $create_date = Carbon::parse($record['createdate'])->format('Y-m-d');
+                $sales_daily_out = round($record['QtyInKg'], 4);
+                $sub_section_code = $subSections[$warehouse]->code ?? null;
+
+                if ($sub_section_code) {
+                    $datalist = SalesDailyOutTrackers::where('subsection_code', $sub_section_code)
+                                            ->where('ref_product_groups_description', $ref_product_groups_description)
+                                            ->whereDate('sales_date', $create_date)
+                                            ->whereNull('deleted_at')
+                                            ->first();
+                    if ($datalist && ($datalist->sales_daily_out < $sales_daily_out || $currentDate == $create_date)) {
+                        $computation = $this->get_status_daily_target_and_percentage_daily_target_by_daily_out($sales_daily_out, $datalist->sales_daily_qouta);
+
+                        $datalist->update([
+                            'sales_daily_out' => $sales_daily_out,
+                            'sales_daily_target' => $computation["status_daily_target"],
+                            'daily_sales_target_percentage' => $computation["percentage_daily_target"],
+                            'modified_by' => 'SAP',
+                        ]);
+                    }
+                }
+            }
+        });
+    }
+
 }

@@ -105,7 +105,7 @@ let IndexRefComponents = (props) => {
       <Modal
         open={refcomponents.updateModal}
         fullScreen={matches ? false : true}
-        title={"Update Unit of Measurement"}
+        title={"Update Reference Components"}
         size={"xs"}
         action={undefined}
         handleClose={refcomponents.onClickCloseUpdateModal}

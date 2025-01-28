@@ -93,6 +93,9 @@ const SalesSummaryHooks = (props) => {
   const access = useSelector((state) => state.AuthenticationReducer.access);
   const user_access_product_group_rights =
     access?.user_access_product_group_rights;
+  const get_today_sales = useSelector(
+    (state) => state.SalesDailyOutReducer.get_today_sales
+  );
   const columns = [
     { id: "description", label: "Description", align: "left" },
     { id: "january", label: "January", align: "left" },
@@ -166,6 +169,23 @@ const SalesSummaryHooks = (props) => {
     { label: "YTD" },
     { label: "MTD" },
     { label: "YTD" },
+  ];
+
+  const today_sales_columns = [
+    { id: "description", label: "Subsection", align: "left" },
+    {
+      id: "ref_product_groups_description",
+      label: "Product Group",
+      align: "left",
+    },
+    { id: "sales_daily_qouta", label: "Daily Quota", align: "left" },
+    { id: "sales_daily_out", label: "Daily Out", align: "left" },
+    { id: "sales_daily_target", label: "Daily Target", align: "left" },
+    {
+      id: "daily_sales_target_percentage",
+      label: "Daily Percentage",
+      align: "left",
+    },
   ];
   const onClickOpenAddModal = () => {
     dispatch({
@@ -284,7 +304,13 @@ const SalesSummaryHooks = (props) => {
       console.error(error);
     }
   };
-
+  React.useEffect(() => {
+    props?.initialize({
+      filter_year: filterQuery,
+      filter_type: search,
+      product_group: filterProductGroup,
+    });
+  }, []);
   React.useEffect(() => {
     GetSalesSummary();
     return () => cancelRequest();
@@ -332,6 +358,7 @@ const SalesSummaryHooks = (props) => {
       q: search,
       l: rowsPerPage,
       f: filterQuery,
+      pg: filterProductGroup,
       id: filter_id,
       user_code: account_details.code,
     });
@@ -344,6 +371,7 @@ const SalesSummaryHooks = (props) => {
       l: rowsPerPage,
       f: filterQuery,
       pg: filterProductGroup,
+      id: filter_id,
       user_code: account_details.code,
     });
   };
@@ -379,6 +407,9 @@ const SalesSummaryHooks = (props) => {
     annual_set_total_count_subsections,
     annual_set_subsections,
     user_access_product_group_rights,
+    filterQuery,
+    get_today_sales,
+    today_sales_columns,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,

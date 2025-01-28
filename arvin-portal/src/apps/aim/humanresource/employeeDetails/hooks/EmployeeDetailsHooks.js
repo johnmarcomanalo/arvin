@@ -20,6 +20,18 @@ const EmployeeDetailsHooks = (props) => {
       ),
     },
     {
+      id: "account",
+      label: "Account Details",
+      icon: (
+        <BadgeIcon
+          sx={{
+            fontSize: configure.bread_crumbs_font_size,
+            color: configure.primary_color,
+          }}
+        />
+      ),
+    },
+    {
       id: "employment",
       label: "Employment Info",
       icon: (

@@ -114,7 +114,7 @@ let IndexRefTruckTypes = (props) => {
       <Modal
         open={refTruckTypes.updateModal}
         fullScreen={matches ? false : true}
-        title={"Update Unit of Measurement"}
+        title={"Update Truck Types"}
         size={"xs"}
         action={undefined}
         handleClose={refTruckTypes.onClickCloseUpdateModal}

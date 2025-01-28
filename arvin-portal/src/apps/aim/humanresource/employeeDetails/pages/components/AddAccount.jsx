@@ -13,11 +13,11 @@ import RefDepartmentsHooks from "../../../../settings/reference/hooks/RefDepartm
 import RefSectionsHooks from "../../../../settings/reference/hooks/RefSectionsHooks";
 import RefSubSectionsHooks from "../../../../settings/reference/hooks/RefSubSectionsHooks";
 import RefTeamsHooks from "../../../../settings/reference/hooks/RefTeamsHooks";
-import { postAddEmployee } from "../../actions/AddEmployeeActions";
-import AddEmployeeHooks from "../../hooks/AddEmployeeHooks";
+import { postAddEmployee } from "../../actions/AddAccountActions";
+import AddAccountHooks from "../../hooks/AddAccountHooks";
 import swal from "sweetalert";
 
-const formName = "AddEmployee";
+const formName = "AddAccount";
 const submit = async (values, dispatch, props) => {
   try {
     const res = await dispatch(postAddEmployee(values));
@@ -35,17 +35,16 @@ const submit = async (values, dispatch, props) => {
   }
 };
 
-let AddEmployee = (props) => {
+let AddAccount = (props) => {
   const dispatch = useDispatch();
   const matches = useMediaQuery("(min-width:600px)");
-  const { ...addEmployee } = AddEmployeeHooks(props);
+  const { ...addAccount } = AddAccountHooks(props);
   const { ...refCompanies } = RefCompaniesHooks();
   const { ...refBusinessUnits } = RefBusinessUnitsHooks();
   const { ...refTeams } = RefTeamsHooks();
   const { ...refDepartments } = RefDepartmentsHooks();
   const { ...refSections } = RefSectionsHooks();
   const { ...refSubSections } = RefSubSectionsHooks();
-  const state = addEmployee?.state;
   return (
     <React.Fragment>
       <form onSubmit={props.handleSubmit}>
@@ -67,7 +66,7 @@ let AddEmployee = (props) => {
                 id="middle_name"
                 name="middle_name"
                 label="Middle Name"
-                required={false}
+                required={true}
                 component={InputField}
                 multiline={true}
               />
@@ -250,7 +249,7 @@ let AddEmployee = (props) => {
 const ReduxFormComponent = reduxForm({
   form: formName,
   onSubmit: submit,
-})(AddEmployee);
+})(AddAccount);
 const selector = formValueSelector(formName);
 export default connect((state) => {
   return {};

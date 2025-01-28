@@ -20,6 +20,7 @@ use App\Models\UserAccessSubComponentRights;
 use App\Models\UserAccessCustomerRights;
 use App\Models\UserAccessOrganizationRights;
 use App\Models\UserAccessProductGroupRights;
+use App\Models\UsersAccounts;
 
 use Illuminate\Support\Facades\Crypt;
 
@@ -33,7 +34,7 @@ class AuthController extends Controller
         ]);
         
         //check fields
-        $user = User::where('username',$fields['username'])->first();
+        $user = UsersAccounts::where('username',$fields['username'])->first();
         
         if(empty($user)){
             $response = [
@@ -42,7 +43,7 @@ class AuthController extends Controller
                 'result' => false,
                 'status' => 'warning',
                 'title' => 'Oppss!',
-                'message' => 'Invalid Username/Password!',
+                'message' => 'Username not found!',
             ];
             return Crypt::encryptString(json_encode($response));
 
@@ -50,14 +51,15 @@ class AuthController extends Controller
         //check password
         // if(!$user || !Hash::check($fields['password'], $user->password)){
         
-        if(!Auth::attempt($fields)){    
+        
+        if(!Hash::check($fields['password'], $user->password)){    
              $response = [
                 'user' => Crypt::encryptString(json_encode([])),
                 'token' => '',
                 'result' => false,
                 'status' => 'warning',
                 'title' => 'Oppss!',
-                'message' => 'Invalid Username/Password!',
+                'message' => 'Invalid Password!',
             ];
             return Crypt::encryptString(json_encode($response));
         }
@@ -70,17 +72,23 @@ class AuthController extends Controller
         //     ], 401); 
         // }
 
-
         //auth logs
         event(new Login("api",$user,1));
        
         $token = $user->createToken('myapptoken')->plainTextToken;
         // $request->session()->regenerate();
-        
-        $access = $this->get_user_access_right_by_id($user['code']);
-
+        $account_details = User::join('users_accounts', 'users.code', '=', 'users_accounts.user_code')
+            ->where('users_accounts.username', $fields['username'])
+            ->first([
+                'users.*',
+                'users_accounts.username as username',
+                'users.code as user_code',
+                'users_accounts.code as code'
+            ]);
+        $access = $this->get_user_access_right_by_id($account_details['code']);
+       
         $response = [
-            'user' => Crypt::encryptString(json_encode($user)),
+            'user' => Crypt::encryptString(json_encode($account_details)),
             'access' => $access,
             'token' => $token,
             'result' => true,
@@ -124,7 +132,7 @@ class AuthController extends Controller
         join('ref_sub_sections', 'user_access_organization_rights.subsection_code', '=', 'ref_sub_sections.code')
         ->where('user_id',$user_id)
         ->where('access_rights',1)
-        ->get(['ref_sub_sections.type','ref_sub_sections.code','ref_sub_sections.description']);
+        ->get(['ref_sub_sections.type','ref_sub_sections.code','ref_sub_sections.description','ref_sub_sections.section_code']);
 
          $user_access_product_group_rights = UserAccessProductGroupRights::
         join('ref_product_groups', 'user_access_product_group_rights.ref_product_groups_code', '=', 'ref_product_groups.code')

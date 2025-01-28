@@ -112,7 +112,7 @@ let IndexRefProductGroups = (props) => {
       <Modal
         open={refProductGroups.updateModal}
         fullScreen={matches ? false : true}
-        title={"Update Unit of Measurement"}
+        title={"Update Reference Product Groups"}
         size={"xs"}
         action={undefined}
         handleClose={refProductGroups.onClickCloseUpdateModal}

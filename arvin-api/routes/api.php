@@ -29,6 +29,7 @@ use App\Http\Controllers\UserAccessOrganizationRightsController;
 use App\Http\Controllers\UserAccessPageRightsController;
 use App\Http\Controllers\UserAccessRequestRightsController;
 use App\Http\Controllers\UserAccessProductGroupRightsController;
+use App\Http\Controllers\UsersAccountsController;
 
 use App\Http\Controllers\SalesDailyOutAnnualSettingsSalesController;
 use App\Http\Controllers\SalesDailyOutsController;
@@ -39,6 +40,7 @@ use App\Http\Controllers\SalesDailyOutSettingsAnnualQuotaController;
 use App\Http\Controllers\SalesDailyOutTrackersController;
 use App\Http\Controllers\SalesDailyOutReportSalesTrackerSummaryController;
 use App\Http\Controllers\SalesDailyOutHolidayExclusionsController;
+use App\Http\Controllers\SalesDailyOutSettingsClientGroupsController;
 
 use App\Http\Controllers\SalesQuotationRequestController;
 use App\Http\Controllers\SalesQuotationRequestForApprovalsController;
@@ -59,7 +61,7 @@ use Illuminate\Support\Facades\Route;
 |
 */  
     //AUTH START
-    Route::post('/login',[AuthController::class, 'login'])->middleware(['light_decryption']);
+        Route::post('/login',[AuthController::class, 'login'])->middleware(['light_decryption']);
    
     
     //MODULE SALES DAILY OUT START
@@ -67,7 +69,6 @@ use Illuminate\Support\Facades\Route;
     // Route::group(['middleware' => ['auth:sanctum']], function () {
         //REFERENCE
         // Route::apiResource('reference/companies',RefCompaniesController::class)->middleware(['light_decryption']);
-
          Route::post('/users/change-password',[AuthController::class, 'change_password'])->middleware(['light_decryption']);
          Route::post('/users/access-sync',[AuthController::class, 'sync_user_access_right_by_id'])->middleware(['light_decryption']);
 
@@ -170,12 +171,21 @@ use Illuminate\Support\Facades\Route;
         Route::get('salesdailyout/sales_tracker/get_sales_tracker_by_date_subsection_product',[SalesDailyOutTrackersController::class, 'get_sales_tracker_by_date_subsection_product']);
         Route::get('salesdailyout/sales_tracker/get_five_days_sales_daily_out_by_current_date',[SalesDailyOutTrackersController::class,'getFiveDaysSalesDailyOutbyCurrentDate']);
         Route::get('salesdailyout/sales_tracker/getFiveDaysSalesTrackerbyCurrentDate',[SalesDailyOutTrackersController::class, 'getFiveDaysSalesTrackerbyCurrentDate']);
+        Route::get('salesdailyout/sales_tracker/getFiveDaysSalesTrackerbyCurrentDateManila',[SalesDailyOutTrackersController::class, 'getFiveDaysSalesTrackerbyCurrentDateManila']);
         Route::get('salesdailyout/sales_tracker/get_sales_tracker',[SalesDailyOutTrackersController::class, 'get_sales_tracker']);
         Route::get('salesdailyout/sales_tracker/insert_sap_sales_daily_out/{product_groups_description}/{year_sales_target}/{ref_sub_section_type}/{settings_annual_quota_code}',[SalesDailyOutTrackersController::class, 'insert_sap_sales_daily_out'])->middleware(['light_decryption']);
         Route::get('salesdailyout/sales_tracker/get_sales_daily_out_per_day/{sales_date}/{settings_sales_code}',[SalesDailyOutTrackersController::class, 'get_sales_daily_out_per_day'])->middleware(['light_decryption']);
         Route::get('salesdailyout/sales_tracker/get_status_daily_target_and_percentage_daily_target_by_daily_out/{daily_out}/{daily_quota}',[SalesDailyOutTrackersController::class, 'get_status_daily_target_and_percentage_daily_target_by_daily_out'])->middleware(['light_decryption']);
         Route::apiResource('salesdailyout/sales_tracker',SalesDailyOutTrackersController::class)->middleware(['light_decryption']);
         // Sales Tracker END 
+
+
+        // Sales Client Group START
+        Route::get('salesdailyout/client_groups/get_group_clients',[SalesDailyOutSettingsClientGroupsController::class,'get_group_clients']);
+        Route::apiResource('salesdailyout/client_groups',SalesDailyOutSettingsClientGroupsController::class)->middleware(['light_decryption']);
+        // Sales Client Group END
+
+
         //MODULE SALES DAILY OUT END 
 
         // QUOTATION START
@@ -191,6 +201,10 @@ use Illuminate\Support\Facades\Route;
         Route::get('humanresource/employee_list',[UsersController::class, 'employee_list']);
         Route::get('humanresource/fast_create',[UsersController::class, 'fast_create']);
         Route::apiResource('humanresource/employee',UsersController::class)->middleware(['light_decryption']);
+
+        // HUMAN RESOURCE ACCOUNTS START
+        Route::apiResource('humanresource/accounts',UsersAccountsController::class)->middleware(['light_decryption']);
+        // HUMAN RESOURCE ACCOUNTS END
         // HUMAN RESOURCE END
 
 

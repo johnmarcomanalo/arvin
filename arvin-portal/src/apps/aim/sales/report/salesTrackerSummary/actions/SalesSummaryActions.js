@@ -45,6 +45,7 @@ export const getSalesSummaryData = (values) => async (dispatch) => {
             annual_set_total_count_subsections:
               decrypted.annual_set_total_count_subsections,
             annual_set_subsections: decrypted.annual_set_subsections,
+            get_today_sales: decrypted.get_today_sales,
           },
         });
       } catch (error) {

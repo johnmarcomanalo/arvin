@@ -261,6 +261,7 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
         $annual_sales_out_summary = $this->getMonthlySalesofWarehouses($filter,$code,$access_subsection_codes,$product_group);
         $annual_sales_mtd_ytd_subsections = $this->annualSalesMtdYtdSubSections($filter,$code,$access_subsection_codes,$product_group);
         $current_sales_mtd_ytd_subsections = $this->currentSalesMtdYtdSubSections($code,$access_subsection_codes,$product_group);
+         $get_today_sales = $this->get_today_sales($code,$access_subsection_codes,$product_group);
 
         foreach ($queryRawData as $value) {
             $salesDailyOut = (float)$value["sales_daily_out"];
@@ -269,7 +270,7 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
             }
         }
 
-         $response = [
+        $response = [
             "total_daily_out_amount"=>$totalDailyOutAmount,
             "yearly_sales_line_chart_summary"=>$yearly_sales_line_chart_summary,
             "annual_sales_out_summary"=>$annual_sales_out_summary,
@@ -277,6 +278,7 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
             "annual_sales_mtd_ytd_subsections"=>$annual_sales_mtd_ytd_subsections,
             "annual_set_total_count_subsections"=>$annual_set_total_count_subsections,
             "annual_set_subsections"=>$annual_set_subsections,
+            "get_today_sales"=>$get_today_sales,
         ];
         return Crypt::encryptString(json_encode($response));
         // return $response;
@@ -394,5 +396,67 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
         }
         $transformedData = $this->transformData($annualtSalesMtdYtdSummary);
         return $transformedData;
+    }
+
+    public function currentDaySalesSubSections($code = null,$access_subsection_codes,$product_group) {
+        $salesDailyOutTrackersController = new SalesDailyOutTrackersController();
+        $currentDate = Carbon::now();
+        $dateMonth = MainController::formatSingleDigitMonthOnly($currentDate); //format date to single digit month without the zero (0)
+        $dateYear = MainController::formatYearOnly($currentDate); //format date to year
+        $dateYear = MainController::formatYearOnly($currentDate); //format date to year
+        $product = RefProductGroups::where('description',$product_group)->first();
+        $subSectionsWithAnnualSalesQuota = SalesDailyOutSettingsAnnualQuota::join('ref_sub_sections', 'sales_daily_out_settings_annual_quotas.subsection_code', '=', 'ref_sub_sections.code')
+            ->where('year_sales_target', $dateYear)
+            ->where('ref_product_groups_code', $product['code'])
+            ->when(isset($code), function ($query) use ($code) {
+             return $query->where('subsection_code', $code);
+        }, function ($qry) use ($access_subsection_codes) {
+                return $qry->whereIn('subsection_code', $access_subsection_codes);
+            })
+        ->get();
+
+        $currentSalesMtdYtdSummary = [];
+        foreach ($subSectionsWithAnnualSalesQuota as $subSection) {
+            $currentMtdSummary = $salesDailyOutTrackersController->get_mtd($dateYear, $dateMonth, $subSection, $dateMonth,$product_group);
+            $ytdSummary = $salesDailyOutTrackersController->get_final_ytd($dateYear, $dateMonth, $subSection, $dateMonth,$product_group);
+
+            $currentMtdSummary['subsection'] = $subSection['description'];
+            $currentMtdSummary['subsection_code'] = $subSection['subsection_code'];
+            // $currentMtdSummary['product_group'] = $product_group;
+            $currentMtdSummary['current_mtd'] = number_format($currentMtdSummary['mtdFinal'],2);
+            $currentMtdSummary['current_ytd'] = number_format($ytdSummary['ytdFinal'],2);
+
+            if (isset($currentMtdSummary['mtd_data_list'])) {
+                unset($currentMtdSummary['mtd_data_list']);
+                unset($currentMtdSummary['mtdFinal']);
+                unset($currentMtdSummary['mtdTotalDailyQoutaAmount']);
+                unset($currentMtdSummary['mtdTotalDailyOutAmount']);
+                unset($currentMtdSummary['mtdTotalStatusDailyTarget']);
+            }
+
+            $currentSalesMtdYtdSummary[] = $currentMtdSummary;    
+
+        }
+        return $currentSalesMtdYtdSummary;
+    }
+
+
+
+
+    public function get_today_sales($code = null,$access_subsection_codes,$product_group) {
+        $currentDate = Carbon::now()->format('Y-m-d');
+        $today_sales = SalesDailyOutTrackers::join('ref_sub_sections', 'sales_daily_out_trackers.subsection_code', '=', 'ref_sub_sections.code')
+            ->where('sales_daily_out_trackers.ref_product_groups_description',$product_group)
+            ->where('sales_daily_out_trackers.sales_date',$currentDate)
+            ->whereNull('sales_daily_out_trackers.deleted_at')
+            ->when(isset($code), function ($query) use ($code) {
+             return $query->where('subsection_code', $code);
+        }, function ($qry) use ($access_subsection_codes) {
+                return $qry->whereIn('subsection_code', $access_subsection_codes);
+            })
+        ->get();
+
+        return $today_sales;
+
     }
 }

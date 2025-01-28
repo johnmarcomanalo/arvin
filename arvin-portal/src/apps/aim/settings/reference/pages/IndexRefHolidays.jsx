@@ -19,6 +19,7 @@ import configure from "../../../../configure/configure.json";
 import { postReferenceHolidays } from "../actions/ReferenceActions";
 import RefHolidaysHooks from "../hooks/RefHolidaysHooks";
 import ComboBox from "../../../../../components/autoComplete/AutoComplete";
+import RefSubSectionsFormHooks from "../hooks/RefSubSectionsFormHooks";
 const title_page = "Holidays";
 const breadCrumbArray = [
   {
@@ -97,6 +98,7 @@ const submit = async (values, dispatch, props) => {
 };
 let IndexRefHolidays = (props) => {
   const { ...refHolidays } = RefHolidaysHooks(props);
+  const access = refHolidays.access;
   return (
     <React.Fragment>
       <Grid container spacing={2}>
@@ -151,6 +153,25 @@ let IndexRefHolidays = (props) => {
                       type="date"
                       component={InputField}
                       required={true}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12} lg={12}>
+                    <Field
+                      id="subsection_description"
+                      name="subsection_description"
+                      label="Subsection"
+                      options={access?.user_access_organization_rights}
+                      getOptionLabel={(option) =>
+                        option.description ? option.description : ""
+                      }
+                      required={false}
+                      component={ComboBox}
+                      onChangeHandle={(e, newValue) => {
+                        if (newValue?.description) {
+                          props.change("section_code", newValue.section_code);
+                          props.change("subsection_code", newValue.code);
+                        }
+                      }}
                     />
                   </Grid>
                   <Grid item xs={12} md={12}>

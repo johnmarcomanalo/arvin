@@ -39,9 +39,10 @@ export const getEmployeeCustomerAccessList =
         dispatch({
           type: Constants.ACTION_REFERENCE,
           payload: {
+            dataList: data.dataList,
             reference_customer_page_access: data.dataList,
             search_reference_customer_page_access: data.dataList,
-            dataListCount: data.total,
+            dataListCount: data.total, 
           },
         });
       });

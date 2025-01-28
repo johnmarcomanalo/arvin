@@ -112,14 +112,13 @@ const submit = async (values, dispatch, props) => {
 let IndexRefsubsections = (props) => {
   const matches = useMediaQuery("(min-width:600px)");
   const { ...refsubsections } = RefSubSectionsFormHooks(props);
-  console.log(refsubsections.dataList);
   let dataList = refsubsections.dataList ? refsubsections.dataList : [];
   return (
     <React.Fragment>
       {/* <Modal
         open={refsubsections.updateModal}
         fullScreen={matches ? false : true}
-        title={"Update Unit of Measurement"}
+        title={"Update Subsections"}
         size={"xs"}
         action={undefined}
         handleClose={refsubsections.onClickCloseUpdateModal}

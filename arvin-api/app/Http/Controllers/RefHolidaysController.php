@@ -6,6 +6,8 @@ use App\Models\RefHolidays;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class RefHolidaysController extends Controller
 {
@@ -35,13 +37,23 @@ class RefHolidaysController extends Controller
             'description' => 'required',
             'type' => 'required',
             'holiday_date' => 'required',
+            'section_code' => 'required_if:type,SPECIAL',
+            'subsection_code' => 'required_if:type,SPECIAL',
             'added_by' => 'required',
             'modified_by' => 'required',
         ]);
-        $existingRecord = RefHolidays::where('type', $fields['type'])
+
+
+        $query = RefHolidays::where('type', $fields['type'])
             ->where('description', $fields['description'])
-            ->where('holiday_date', $fields['holiday_date'])
-            ->first();
+            ->where('holiday_date', $fields['holiday_date']);
+
+        if ($fields['type'] === 'SPECIAL') {
+            $query->where('section_code', $fields['section_code'])
+                ->where('subsection_code', $fields['subsection_code']);
+        }
+
+        $existingRecord = $query->first();
 
         if($existingRecord) {
             return response([
@@ -86,10 +98,17 @@ class RefHolidaysController extends Controller
             'modified_by' => 'required',
             'code' => 'required',
             'description' => 'required',
-            'type' => 'required',
-            'holiday_date' => 'required',
+            'type' => 'required|in:REGULAR,SPECIAL',
+            'holiday_date' => 'required|date',
+            'section_code' => 'required_if:type,SPECIAL',
+            'subsection_code' => 'required_if:type,SPECIAL',
+        ], [
+            'section_code.required_if' => 'The section is required when the type is special.',
+            'subsection_code.required_if' => 'The subsection is required when the type is special.',
         ]);
+
         $data = RefHolidays::where('code','=',$id)->first();
+
         if(empty($data)){
             $response = [
                 'result' => false,
@@ -98,12 +117,33 @@ class RefHolidaysController extends Controller
             ];
             return response($response, 404);
         }
-        $data->update([
+
+        $query = RefHolidays::where('type', $fields['type'])
+            ->where('description', $fields['description'])
+            ->where('holiday_date', $fields['holiday_date']);
+
+        if ($fields['type'] === 'SPECIAL') {
+            $query->where('section_code', $fields['section_code'])
+                ->where('subsection_code', $fields['subsection_code']);
+        }
+
+        $existingRecord = $query->first();
+
+        if($existingRecord) {
+            return response([
+                'result' => true,
+                'status' => 'error',
+                'title' => 'Error',
+                'message' => 'Holiday already exists.'
+            ], 409);
+        } else {
+            $data->update([
             'modified_by' => $fields['modified_by'],
             'description' => $fields['description'],
             'type' => $fields['type'],
             'holiday_date' => $fields['holiday_date'],
-        ]);
+            ]);
+        }
         $response = [
             'message' => '',
             'result' => true,
@@ -133,7 +173,15 @@ class RefHolidaysController extends Controller
         $filter = $request->query('f');              
 
         // Ensure the join is correct and the table names and column names are valid
-        $dataListQuery = RefHolidays::whereNull('deleted_at');
+        $dataListQuery = RefHolidays::
+            leftJoin('ref_sub_sections', 'ref_holidays.subsection_code', '=', 'ref_sub_sections.code')
+            ->leftJoin('ref_sections', 'ref_sub_sections.section_code', '=', 'ref_sections.code')
+            ->select(
+                'ref_holidays.*',
+                DB::raw("COALESCE(ref_sub_sections.description, '--') as subsection_description"),
+                DB::raw("COALESCE(ref_sections.description, '--') as section_description")
+            )
+            ->whereNull('ref_holidays.deleted_at');
 
         if (isset($query)) {
             $dataListQuery->where(function($q) use ($query) {

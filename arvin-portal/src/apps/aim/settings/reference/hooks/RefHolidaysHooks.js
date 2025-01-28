@@ -10,6 +10,7 @@ const RefHolidaysHooks = (props) => {
   const account_details = useSelector(
     (state) => state.AuthenticationReducer.account_details
   );
+  const access = useSelector((state) => state.AuthenticationReducer.access);
   const refresh = useSelector((state) => state.ReferenceReducer.refresh);
   const selected_ref = useSelector(
     (state) => state.ReferenceReducer.selected_ref
@@ -22,7 +23,9 @@ const RefHolidaysHooks = (props) => {
     { id: "code", label: "Code", align: "left" },
     { id: "description", label: "Description", align: "left" },
     { id: "type", label: "Type", align: "left" },
+    { id: "subsection_description", label: "Subsection", align: "left" },
     { id: "holiday_date", label: "Date", align: "left" },
+    ,
   ];
   const [state, setState] = React.useState({
     debounceTimer: null,
@@ -139,6 +142,7 @@ const RefHolidaysHooks = (props) => {
     rowsPerPage,
     updateModal,
     selected_ref,
+    access,
     onChangeSearch,
     getListParam,
     onChangeFilter,
