@@ -1,6 +1,9 @@
 <?php
 //reference
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EPayCheckCheckDetailsController;
+use App\Http\Controllers\EPayCheckCheckSalesInvoiceDetailsController;
+use App\Http\Controllers\RefBankAccountsController;
 use App\Http\Controllers\RefCompaniesController;
 use App\Http\Controllers\RefBusinessUnitsController;
 use App\Http\Controllers\RefTeamsController;
@@ -47,7 +50,7 @@ use App\Http\Controllers\SalesDailyOutReportDavaotksController;
 use App\Http\Controllers\SalesQuotationRequestController;
 use App\Http\Controllers\SalesQuotationRequestForApprovalsController;
 use App\Http\Controllers\SalesQuotationReportQuotedProducts;
-
+use App\Models\RefBankAccounts;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -68,7 +71,7 @@ use Illuminate\Support\Facades\Route;
     
     //MODULE SALES DAILY OUT START
 
-    // Route::group(['middleware' => ['auth:sanctum']], function () {
+     Route::group(['middleware' => ['auth:sanctum']], function () {
         //REFERENCE
         // Route::apiResource('reference/companies',RefCompaniesController::class)->middleware(['light_decryption']);
          Route::post('/users/change-password',[AuthController::class, 'change_password'])->middleware(['light_decryption']);
@@ -127,6 +130,8 @@ use Illuminate\Support\Facades\Route;
         Route::apiResource('reference/system_settings/access_rights/product_group_rights',UserAccessProductGroupRightsController::class)->middleware(['light_decryption']);
         Route::apiResource('reference/ref_holidays',RefHolidaysController::class)->middleware(['light_decryption']);
         Route::get('reference/get_ref_holidays',[RefHolidaysController::class,'get_ref_holidays']);
+        Route::apiResource('reference/ref_bank_accounts',RefBankAccountsController::class)->middleware(['light_decryption']);
+        Route::get('reference/get_ref_bank_accounts',[RefBankAccountsController::class,'get_ref_bank_accounts']);
         // REFERENCE END
 
 
@@ -219,8 +224,14 @@ use Illuminate\Support\Facades\Route;
         // HUMAN RESOURCE ACCOUNTS END
         // HUMAN RESOURCE END
 
+        // EPAYCHECK START
+        Route::get('epaycheck/get_sales_invoice_list',[EPayCheckCheckSalesInvoiceDetailsController::class,'get_sales_invoice_list']);
+        Route::get('epaycheck/get_check_details',[EPayCheckCheckDetailsController::class,'get_check_details']);
+        Route::get('epaycheck/check_details/get_weekly_check_counter_data',[EPayCheckCheckDetailsController::class,'get_weekly_check_counter_data']);
+        Route::apiResource('epaycheck/check_details',EPayCheckCheckDetailsController::class)->middleware(['light_decryption']);
+        // EPAYCHECK END
 
-    // });
+    });
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return $request->user();
     });

@@ -7,6 +7,8 @@ import "./App.css";
 import configure from "./apps/configure/configure.json";
 import PrivateRoute from "./security/PrivateRoute";
 import { Start } from "@mui/icons-material";
+import IndexRefBankAccounts from "./apps/aim/settings/reference/pages/IndexRefBankAccounts";
+
 const Loader = lazy(() => import("./components/loading/Loading"));
 const Navigation = lazy(() => import("./apps/navigation/pages/Navigation"));
 const IndexLogin = lazy(() => import("./apps/auth/login/pages/IndexLogin"));
@@ -160,6 +162,18 @@ const IndexRefSubSections = lazy(() =>
   import("./apps/aim/settings/reference/pages/IndexRefSubSections")
 );
 // REFERENCE END
+
+//EPAYCHECK START
+const IndexCheckCollection = lazy(() =>
+  import("./apps/aim/epaycheck/checkCollection/pages/IndexCheckCollection") 
+);
+const  IndexCheckMonitoring = lazy(() =>
+  import("./apps/aim/epaycheck/checkMonitoring/pages/IndexCheckMonitoring")
+);
+const  IndexWeeklyCheckCounter = lazy(() =>
+  import("./apps/aim/epaycheck/report/weeklyCheckCounter/pages/IndexWeeklyCheckCounter")
+);
+//EPAYCHECK END
 
 const theme = createTheme({
   typography: {
@@ -743,7 +757,70 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+                   <Route
+                    path="/Modules/SystemSettings/References/BankAccounts"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Settings",
+                          component: "References",
+                          subComponent: "Bank Accounts",
+                        })}
+                      >
+                        <IndexRefBankAccounts />
+                      </PrivateRoute>
+                    }
+                  />
+
                   {/* REFENRECE END */}
+
+                  {/* EPAYCHECK START */}
+                    <Route
+                      path="/Modules/E-PayCheck/CheckCollection"
+                      element={
+                        <PrivateRoute
+                            accessChecker={getAccessChecker({
+                              module: "E-Pay Check",
+                              component: "Check Collection",
+                              subComponent:null, 
+                            })}
+                        >
+                          <IndexCheckCollection />
+                        </PrivateRoute>
+                      }
+                    />
+
+                     <Route
+                      path="/Modules/E-PayCheck/CheckMonitoring"
+                      element={
+                        <PrivateRoute
+                            accessChecker={getAccessChecker({
+                              module: "E-Pay Check",
+                              component: "Check Monitoring",
+                              subComponent:null, 
+                            })}
+                        >
+                          <IndexCheckMonitoring />
+                        </PrivateRoute>
+                      }
+                    />
+
+                    <Route
+                      path="/Modules/E-PayCheck/Reports/WeeklyCheckCounter"
+                      element={
+                        <PrivateRoute
+                          accessChecker={getAccessChecker({
+                            module: "E-Pay Check",
+                            component: "Reports",
+                            subComponent: "Weekly Check Counter",
+                          })}
+                        >
+                          <IndexWeeklyCheckCounter />
+                        </PrivateRoute>
+                      }
+                    />
+                  {/* EPAYCHECK END */}
+
                   {/* SYSTEM SETTINGS END */}
                 </Route>
               )}

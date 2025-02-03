@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEPayCheckCheckDetailLogsTable extends Migration
+class CreateEPayCheckDepositedTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,12 @@ class CreateEPayCheckCheckDetailLogsTable extends Migration
      */
     public function up()
     {
-        Schema::create('e_pay_check_check_detail_logs', function (Blueprint $table) {
+        Schema::create('e_pay_check_deposited', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('code')->unique();
-            $table->string('check_details_code');
-            $table->string('check_status');
+            $table->string('check_details_code',50);
             $table->string('bank_deposited')->nullable(); // For deposited status
             $table->dateTime('deposit_date')->nullable(); // For deposited status
-            $table->timestamp('received_at')->nullable(); // For transmitted status
-            $table->string('received_by_transmitted')->nullable(); // For transmitted status
-            $table->string('transmitted_by')->nullable(); // For transmitted status
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->timestamp('deleted_at')->nullable();
@@ -38,6 +34,6 @@ class CreateEPayCheckCheckDetailLogsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('e_pay_check_check_detail_logs');
+        Schema::dropIfExists('e_pay_check_deposited');
     }
 }
