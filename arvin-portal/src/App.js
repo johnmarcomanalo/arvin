@@ -45,6 +45,15 @@ const IndexHolidayExclusion = lazy(() =>
 const IndexClientGroups = lazy(() =>
   import("./apps/aim/sales/clientGroups/pages/IndexClientGroups")
 );
+const IndexAnnualSalesQoutaClientGroups = lazy(() =>
+  import(
+    "./apps/aim/sales/annualSalesQuotaClientGroups/pages/IndexAnnualSalesQoutaClientGroups"
+  )
+);
+const IndexDavaoTKS = lazy(() =>
+  import("./apps/aim/sales/report/davaoTSK/pages/IndexDavaoTKS")
+);
+
 // SALES END
 
 // QUOTATION START
@@ -345,7 +354,35 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+                  <Route
+                    path="/Modules/Sales/Configuration/AnnualSalesQuotaClientGroups"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Sales",
+                          component: "Configuration",
+                          subComponent: "Annual Sales Quota Client Groups",
+                        })}
+                      >
+                        <IndexAnnualSalesQoutaClientGroups />
+                      </PrivateRoute>
+                    }
+                  />
 
+                  <Route
+                    path="/Modules/Sales/Reports/DavaoTKS"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Sales",
+                          component: "Reports",
+                          subComponent: "Davao TKS",
+                        })}
+                      >
+                        <IndexDavaoTKS />
+                      </PrivateRoute>
+                    }
+                  />
                   {/* SALES END */}
                   {/* QUOTATION START */}
                   <Route

@@ -104,7 +104,6 @@ const CustomersHooks = (props) => {
   const GetCustomerList = async () => {
     try {
       const data = getListParam();
-      console.log(data);
       await debounce(() => {
         dispatch(getEmployeeCustomerAccessList(data));
       }, state.debounceDelay);

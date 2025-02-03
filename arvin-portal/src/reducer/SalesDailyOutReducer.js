@@ -47,6 +47,9 @@ const initialState = {
   today_data: [],
   editModal: false,
   get_today_sales: [],
+  client_groups: [],
+  showprovTable: true,
+  showbdoTable: false,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

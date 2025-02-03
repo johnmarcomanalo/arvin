@@ -16,9 +16,11 @@ class SalesDailyOutSettingsClientGroupsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id = null)
     {
         //
+        return Crypt::encryptString($this->do_show($id));
+
     }
 
     /**
@@ -80,6 +82,8 @@ class SalesDailyOutSettingsClientGroupsController extends Controller
                 'code' => $code,
                 'sales_daily_out_settings_client_groups_code' => $code_group,
                 'customer_code' => $value->customer_code,
+                'description' => $value->description,
+                'type' => $value->type,
                 'added_by' => $fields["added_by"],
                 'modified_by' => $fields["modified_by"],
             ]);
@@ -100,7 +104,7 @@ class SalesDailyOutSettingsClientGroupsController extends Controller
      * @param  \App\Models\SalesDailyOutSettingsClientGroups  $salesDailyOutSettingsClientGroups
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id = null)
     {
         return Crypt::encryptString($this->do_show($id));
     }
@@ -132,7 +136,15 @@ class SalesDailyOutSettingsClientGroupsController extends Controller
         if (isset($id)) {
             $data = SalesDailyOutSettingsClientGroups::whereNull('deleted_at')->first();
         } else {
-            $data = SalesDailyOutSettingsClientGroups::whereNull('deleted_at')->get();
+            $data = SalesDailyOutSettingsClientGroups::whereNull('deleted_at')->get(['code','description']);
+            $data->transform(function ($item) {
+            $subgroupData = SalesDailyOutSettingsClientSubGroups::where('sales_daily_out_settings_client_groups_code', $item->code)
+                ->whereNull('deleted_at')
+                ->get(['code','sales_daily_out_settings_client_groups_code','customer_code','description','type']);
+            $item->subgroup = $subgroupData; // Add the subgroup to the object
+            return $item;
+        });
+
         }
         if (empty($data)) {
             $data = array();

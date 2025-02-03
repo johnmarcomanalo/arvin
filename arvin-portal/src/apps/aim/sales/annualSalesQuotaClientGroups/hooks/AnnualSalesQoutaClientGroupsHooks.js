@@ -5,16 +5,13 @@ import { useSearchParams } from "react-router-dom";
 import { cancelRequest } from "../../../../../api/api";
 import { Constants } from "../../../../../reducer/Contants";
 import { useDebounce } from "../../../../../utils/HelperUtils";
-import {
-  getAllRefSections,
-  getRefProductGroups,
-} from "../../../settings/reference/actions/ReferenceActions";
+import { decryptaes } from "../../../../../utils/LightSecurity";
 import {
   getAnnualSettingSale,
   getMonthlyAndDailyQoutaByTargetAnnualSales,
   ViewSalesQuota,
-} from "../actions/AnnualSalesQuotaActions";
-import { decryptaes } from "../../../../../utils/LightSecurity";
+  getAnnualSettingSaleClientGroups,
+} from "../actions/AnnualSalesQoutaClientGroupsActions";
 const AnnualSalesQoutaHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
   const [state, setState] = React.useState({
@@ -63,7 +60,7 @@ const AnnualSalesQoutaHooks = (props) => {
   const columns = [
     { id: "code", label: "Code", align: "left" },
     { id: "year_sales_target", label: "Year", align: "left" },
-    { id: "sub_section", label: "Subsection", align: "left" },
+    { id: "group_description", label: "Group Name", align: "left" },
     {
       id: "ref_product_groups_description",
       label: "Product Group",
@@ -166,7 +163,7 @@ const AnnualSalesQoutaHooks = (props) => {
   const GetAnnualSettingSaleList = async () => {
     try {
       const data = getListParam();
-      await dispatch(getAnnualSettingSale(data));
+      await dispatch(getAnnualSettingSaleClientGroups(data));
     } catch (error) {
       console.error(error);
     }
@@ -186,17 +183,17 @@ const AnnualSalesQoutaHooks = (props) => {
     return () => cancelRequest();
   }, [refresh, filterQuery, search, page]);
 
-  React.useEffect(() => {
-    dispatch(getAllRefSections());
-    dispatch(getRefProductGroups());
-    props.initialize({
-      date_effectiveness: moment(new Date()).format("YYYY-01-01"),
-      added_by: account_details?.code,
-      modified_by: account_details?.code,
-      monthly_sales_target: "",
-    });
-    return () => cancelRequest();
-  }, []);
+  // React.useEffect(() => {
+  //   dispatch(getAllRefSections());
+  //   dispatch(getRefProductGroups());
+  //   props.initialize({
+  //     date_effectiveness: moment(new Date()).format("YYYY-01-01"),
+  //     added_by: account_details?.code,
+  //     modified_by: account_details?.code,
+  //     monthly_sales_target: "",
+  //   });
+  //   return () => cancelRequest();
+  // }, []);
 
   const onClickOpenEditModal = (data) => {
     const response = dispatch(ViewSalesQuota(data.code));

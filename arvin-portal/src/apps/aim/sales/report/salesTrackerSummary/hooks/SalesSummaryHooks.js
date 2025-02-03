@@ -96,6 +96,25 @@ const SalesSummaryHooks = (props) => {
   const get_today_sales = useSelector(
     (state) => state.SalesDailyOutReducer.get_today_sales
   );
+  const showbdoTable = useSelector(
+    (state) => state.SalesDailyOutReducer.showbdoTable
+  );
+  const showprovTable = useSelector(
+    (state) => state.SalesDailyOutReducer.showprovTable
+  );
+  const bdoSales = get_today_sales?.filter((item) =>
+    item?.description?.includes("BDO")
+  );
+  const otherSales = get_today_sales?.filter(
+    (item) => !item?.description?.includes("BDO")
+  );
+  const bdoMTDYTDSales = current_sales_mtd_ytd_subsections?.filter((item) =>
+    item?.subsection?.includes("BDO")
+  );
+  const otherMTDYTDSales = current_sales_mtd_ytd_subsections?.filter(
+    (item) => !item?.subsection?.includes("BDO")
+  );
+  console.log(current_sales_mtd_ytd_subsections);
   const columns = [
     { id: "description", label: "Description", align: "left" },
     { id: "january", label: "January", align: "left" },
@@ -353,6 +372,7 @@ const SalesSummaryHooks = (props) => {
   const onChangeFilter = (date) => {
     // SEARCH DATA
     const filterQuery = date;
+    console.log(filterQuery);
     setSearchParams({
       p: page == null ? 1 : page,
       q: search,
@@ -373,6 +393,24 @@ const SalesSummaryHooks = (props) => {
       pg: filterProductGroup,
       id: filter_id,
       user_code: account_details.code,
+    });
+  };
+  const onClickShowBDOSalesTable = () => {
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        showprovTable: true,
+        showbdoTable: false,
+      },
+    });
+  };
+  const onClickShowProvSalesTable = () => {
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        showprovTable: false,
+        showbdoTable: true,
+      },
     });
   };
   return {
@@ -410,6 +448,12 @@ const SalesSummaryHooks = (props) => {
     filterQuery,
     get_today_sales,
     today_sales_columns,
+    bdoSales,
+    otherSales,
+    showbdoTable,
+    showprovTable,
+    bdoMTDYTDSales,
+    otherMTDYTDSales,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,
@@ -427,6 +471,8 @@ const SalesSummaryHooks = (props) => {
     onChangeFilter,
     onChangeSubsectionCode,
     filterProductGroups,
+    onClickShowBDOSalesTable,
+    onClickShowProvSalesTable,
   };
 };
 

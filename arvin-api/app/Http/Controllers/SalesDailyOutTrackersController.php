@@ -84,7 +84,7 @@ class SalesDailyOutTrackersController extends Controller
             ->whereNull('deleted_at')
             ->get();
 
-        $records = collect(DB::select("exec dbo.sp_sales_daily_out_delivery_return_cm_v2 ?,?,?",array($product_groups_description,$year_sales_target,$ref_sub_section_type)));
+        $records = collect(DB::select("exec dbo.sp_sales_daily_out_delivery_return_cm_v3 ?,?,?",array($product_groups_description,$year_sales_target,$ref_sub_section_type)));
         // Step 2: Process records to add Sunday's QtyInKg to Monday's QtyInKg
        
         $recordsByDate = [];

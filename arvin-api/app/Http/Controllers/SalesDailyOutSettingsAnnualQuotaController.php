@@ -115,7 +115,7 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
             ]);
         }
 
-        $records = count(DB::select("exec dbo.sp_sales_daily_out_delivery_return_cm_v2 ?,?,?",array($fields["ref_product_groups_description"],$fields["year_sales_target"],$fields["sub_section_type"],$data->code)));
+        $records = count(DB::select("exec dbo.sp_sales_daily_out_delivery_return_cm_v3 ?,?,?",array($fields["ref_product_groups_description"],$fields["year_sales_target"],$fields["sub_section_type"],$data->code)));
 
         if(!empty($records)){
             $salesDailyOutTrackersController->insert_sap_sales_daily_out($fields["ref_product_groups_description"],$fields["year_sales_target"],$fields["sub_section_type"],$data->code);

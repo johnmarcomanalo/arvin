@@ -1,39 +1,34 @@
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import UpgradeIcon from "@mui/icons-material/Upgrade";
 import {
   Grid,
   Paper,
   Stack,
-  Table as Tbl,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  Table as Tbl,
   Tooltip,
   useMediaQuery,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 import * as React from "react";
 import ButtonComponent from "../../../../../../components/button/Button";
-import SearchField from "../../../../../../components/inputFIeld/SearchField";
-import Page from "../../../../../../components/pagination/Pagination";
+import CardDashComponent from "../../../../../../components/card/CardDashComponent";
+import CardGraphComponent from "../../../../../../components/card/CardGraphComponent";
 import Table from "../../../../../../components/table/Table";
 import configure from "../../../../../configure/configure.json";
 import AnnualSalesChart from "./charts/AnnualSalesChart";
 import WarehouseSalesChart from "./charts/WarehouseSalesChart";
-import CardDashComponent from "../../../../../../components/card/CardDashComponent";
-import CardGraphComponent from "../../../../../../components/card/CardGraphComponent";
-import Modal from "../../../../../../components/modal/Modal";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 // import FilterSalesSummary from "./components/FilterSalesSummary";
-import InputMonthYearPicker from "../../../../../../components/inputFIeld/InputMonthYearPicker";
-import { Field, formValueSelector, reduxForm } from "redux-form";
-import { connect } from "react-redux";
 import moment from "moment";
-import ComponentTitle from "../../../../../../components/componentTitle/componentTitle";
-import { ViewAmountFormatingDecimals } from "../../../../../../utils/AccountingUtils";
-import InputYearPicker from "../../../../../../components/inputFIeld/InputYearPicker";
+import { connect } from "react-redux";
+import { Field, formValueSelector, reduxForm } from "redux-form";
 import ComboBox from "../../../../../../components/autoComplete/AutoComplete";
+import ComponentTitle from "../../../../../../components/componentTitle/componentTitle";
+import InputYearPicker from "../../../../../../components/inputFIeld/InputYearPicker";
+import { ViewAmountFormatingDecimals } from "../../../../../../utils/AccountingUtils";
 import SalesSummaryHooks from "../hooks/SalesSummaryHooks";
 const formName = "SalesSummary";
 const submit = async (values, dispatch, props) => {
@@ -51,6 +46,8 @@ let SalesSummary = (props) => {
   const annual_sales_mtd_ytd_subsections =
     salesSummary.annual_sales_mtd_ytd_subsections;
   const showMTDTable = salesSummary.showMTDTable;
+  const showbdoTable = salesSummary.showbdoTable;
+  const showprovTable = salesSummary.showprovTable;
   const total_daily_out_amount = salesSummary.total_daily_out_amount;
   const annual_set_subsections = salesSummary?.annual_set_subsections;
   const matches = useMediaQuery("(min-width:600px)");
@@ -85,15 +82,15 @@ let SalesSummary = (props) => {
                 value={salesSummary.filterQuery}
                 component={InputYearPicker}
                 placeholder="Select Year"
-                // onChange={(date) => {
-                //   let selectedDate = new Date();
-                //   if (date !== null) {
-                //     selectedDate = date;
-                //   }
-                //   salesSummary.onChangeFilter(
-                //     moment(selectedDate).format("YYYY")
-                //   );
-                // }}
+                onChange={(date) => {
+                  let selectedDate = new Date();
+                  if (date !== null) {
+                    selectedDate = date;
+                  }
+                  salesSummary.onChangeFilter(
+                    moment(selectedDate).format("YYYY")
+                  );
+                }}
               />
               <Field
                 id="product_group"
@@ -157,42 +154,101 @@ let SalesSummary = (props) => {
               justifyContent={matches ? "flex-start" : "center"}
               alignItems={matches ? "flex-start" : "center"}
               flexDirection={matches ? "row" : "column"}
+            ></Stack>
+          </Grid>
+          <Grid item xs={6} sm={6} md={12} lg={12}>
+            <Stack
+              direction="row"
+              justifyContent={"space-between"}
+              alignItems={"center"}
+              flexDirection={matches ? "row" : "column"}
+              spacing={2}
             >
               <ComponentTitle
-                title="Today Summary"
+                title={
+                  "Today Summary" +
+                  (showbdoTable === true ? " Manila" : " Province")
+                }
                 subtitle={moment(new Date()).format("MMMM DD, YYYY")}
+              />
+              <ButtonComponent
+                stx={configure.default_button}
+                iconType="view2"
+                type="button"
+                fullWidth={true}
+                children={
+                  showbdoTable === true ? "Province View" : "Manila View"
+                }
+                click={() =>
+                  showbdoTable === true
+                    ? salesSummary.onClickShowBDOSalesTable()
+                    : salesSummary.onClickShowProvSalesTable()
+                }
               />
             </Stack>
           </Grid>
-          <Grid item xs={12} sm={12} md={12} lg={12}>
-            <Table
-              columns={salesSummary.today_sales_columns}
-              dataList={salesSummary.get_today_sales}
-              page={salesSummary.page}
-              rowsPerPage={salesSummary.rowsPerPage}
-              handleChangePage={salesSummary.handleChangePage}
-              handleChangeRowsPerPage={salesSummary.handleChangeRowsPerPage}
-              onSelectItem={salesSummary.onSelectItem}
-              id={"home_attendance"}
-              localStorage={""}
-              rowCount={salesSummary.get_today_sales?.length}
-              actionshow={false}
-              paginationShow={false}
-              action={(row) => {
-                return (
-                  <Tooltip title="Update">
-                    <UpgradeIcon
-                      onClick={() => salesSummary.onSelectItemtoUpdate(row)}
-                      style={{
-                        color: "#009197",
-                        cursor: "pointer",
-                      }}
-                    />
-                  </Tooltip>
-                );
-              }}
-            />
-          </Grid>
+          {showprovTable === true ? (
+            <Grid item xs={12} sm={12} md={12} lg={12}>
+              <Table
+                columns={salesSummary.today_sales_columns}
+                dataList={salesSummary.otherSales}
+                page={salesSummary.page}
+                rowsPerPage={salesSummary.rowsPerPage}
+                handleChangePage={salesSummary.handleChangePage}
+                handleChangeRowsPerPage={salesSummary.handleChangeRowsPerPage}
+                onSelectItem={salesSummary.onSelectItem}
+                id={"home_attendance"}
+                localStorage={""}
+                rowCount={salesSummary.otherSales?.length}
+                actionshow={false}
+                paginationShow={false}
+                action={(row) => {
+                  return (
+                    <Tooltip title="Update">
+                      <UpgradeIcon
+                        onClick={() => salesSummary.onSelectItemtoUpdate(row)}
+                        style={{
+                          color: "#009197",
+                          cursor: "pointer",
+                        }}
+                      />
+                    </Tooltip>
+                  );
+                }}
+              />
+            </Grid>
+          ) : (
+            <Grid item xs={12} sm={12} md={12} lg={12}>
+              <Table
+                columns={salesSummary.today_sales_columns}
+                dataList={salesSummary.bdoSales}
+                page={salesSummary.page}
+                rowsPerPage={salesSummary.rowsPerPage}
+                handleChangePage={salesSummary.handleChangePage}
+                handleChangeRowsPerPage={salesSummary.handleChangeRowsPerPage}
+                onSelectItem={salesSummary.onSelectItem}
+                id={"home_attendance"}
+                localStorage={""}
+                rowCount={salesSummary.bdoSales?.length}
+                actionshow={false}
+                paginationShow={false}
+                action={(row) => {
+                  return (
+                    <Tooltip title="Update">
+                      <UpgradeIcon
+                        onClick={() => salesSummary.onSelectItemtoUpdate(row)}
+                        style={{
+                          color: "#009197",
+                          cursor: "pointer",
+                        }}
+                      />
+                    </Tooltip>
+                  );
+                }}
+              />
+            </Grid>
+          )}
+
           <Grid item xs={12} sm={12} md={12} lg={12}>
             <Stack
               direction="row"
@@ -206,10 +262,15 @@ let SalesSummary = (props) => {
               />
             </Stack>
           </Grid>
+
           <Grid item xs={12} sm={12} md={12} lg={12}>
             <Table
               columns={salesSummary.current_sales_mtd_ytd_subsections_columns}
-              dataList={salesSummary.current_sales_mtd_ytd_subsections}
+              dataList={
+                showprovTable
+                  ? salesSummary.otherMTDYTDSales
+                  : salesSummary.bdoMTDYTDSales
+              }
               page={salesSummary.page}
               rowsPerPage={salesSummary.rowsPerPage}
               handleChangePage={salesSummary.handleChangePage}
@@ -217,7 +278,11 @@ let SalesSummary = (props) => {
               onSelectItem={salesSummary.onSelectItem}
               id={"home_attendance"}
               localStorage={""}
-              rowCount={salesSummary.current_sales_mtd_ytd_subsections?.length}
+              rowCount={
+                showprovTable
+                  ? salesSummary.otherMTDYTDSales?.length
+                  : salesSummary.bdoMTDYTDSales?.length
+              }
               actionshow={false}
               paginationShow={false}
               action={(row) => {

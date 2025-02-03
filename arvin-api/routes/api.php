@@ -41,6 +41,8 @@ use App\Http\Controllers\SalesDailyOutTrackersController;
 use App\Http\Controllers\SalesDailyOutReportSalesTrackerSummaryController;
 use App\Http\Controllers\SalesDailyOutHolidayExclusionsController;
 use App\Http\Controllers\SalesDailyOutSettingsClientGroupsController;
+use App\Http\Controllers\SalesDailyOutSettingsAnnualQuotaClientGroupsController;
+use App\Http\Controllers\SalesDailyOutReportDavaotksController;
 
 use App\Http\Controllers\SalesQuotationRequestController;
 use App\Http\Controllers\SalesQuotationRequestForApprovalsController;
@@ -179,12 +181,22 @@ use Illuminate\Support\Facades\Route;
         Route::apiResource('salesdailyout/sales_tracker',SalesDailyOutTrackersController::class)->middleware(['light_decryption']);
         // Sales Tracker END 
 
+        // // Sales Daily Out DAVAO TKS Report START
+        Route::get('salesdailyout/report/getDavaoTKSSummaryReport',[SalesDailyOutReportDavaotksController::class,'getDavaoTKSSummaryReport']);
+        // // Sales Daily Out DAVAO TKS Report END
+
 
         // Sales Client Group START
         Route::get('salesdailyout/client_groups/get_group_clients',[SalesDailyOutSettingsClientGroupsController::class,'get_group_clients']);
         Route::apiResource('salesdailyout/client_groups',SalesDailyOutSettingsClientGroupsController::class)->middleware(['light_decryption']);
         // Sales Client Group END
 
+        // Sales Daily Out Settings Annual Quota Client Groups START
+        Route::get('salesdailyout/settings_quota_groups/annual_quota_client_groups',[SalesDailyOutSettingsAnnualQuotaClientGroupsController::class,'annual_quota_client_groups']);//for pagination
+        Route::apiResource('salesdailyout/settings_quota_groups',SalesDailyOutSettingsAnnualQuotaClientGroupsController::class)->middleware(['light_decryption']);
+        // Sales Daily Out Settings Annual Quota Client Groups END
+
+       
 
         //MODULE SALES DAILY OUT END 
 

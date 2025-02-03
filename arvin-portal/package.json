@@ -23,6 +23,7 @@
     "@types/redux-form": "^8.3.9",
     "axios": "^1.6.8",
     "crypto-js": "^4.2.0",
+    "file-saver": "^2.0.5",
     "firebase": "^10.10.0",
     "js-cookie": "^3.0.1",
     "json-form-data": "^1.7.2",
@@ -45,7 +46,8 @@
     "sweetalert": "^2.1.2",
     "sweetalert2": "^11.1.9",
     "universal-cookie": "^6.1.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",

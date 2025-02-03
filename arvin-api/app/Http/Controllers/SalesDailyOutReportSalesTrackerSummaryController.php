@@ -205,7 +205,7 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
         $page = $request->query('page');
         $limit = $request->query('limit');
         $query = $request->query('q');
-         $filter = $request->query('f');
+        $filter = $request->query('f');
         $product_group = $request->query('pg');
         $code = $request->query('id');
         $user_code = $request->query('user_code');
@@ -261,7 +261,7 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
         $annual_sales_out_summary = $this->getMonthlySalesofWarehouses($filter,$code,$access_subsection_codes,$product_group);
         $annual_sales_mtd_ytd_subsections = $this->annualSalesMtdYtdSubSections($filter,$code,$access_subsection_codes,$product_group);
         $current_sales_mtd_ytd_subsections = $this->currentSalesMtdYtdSubSections($code,$access_subsection_codes,$product_group);
-         $get_today_sales = $this->get_today_sales($code,$access_subsection_codes,$product_group);
+        $get_today_sales = $this->get_today_sales($code,$access_subsection_codes,$product_group);
 
         foreach ($queryRawData as $value) {
             $salesDailyOut = (float)$value["sales_daily_out"];
@@ -352,6 +352,7 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
         }
         return array_values($result);
     }
+
 
 
     public function annualSalesMtdYtdSubSections($year=null,$code =null,$access_subsection_codes,$product_group) {
