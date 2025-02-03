@@ -8,6 +8,7 @@ import ReferenceReducer from "./ReferenceReducer";
 import AuthenticationReducer from "./AuthenticationReducer";
 import SalesDailyOutReducer from "./SalesDailyOutReducer";
 import HumanResourceReducer from "./HumanResourceReducer";
+import EpayCheckReducer from "./EpayCheckReducer";
 
 export default combineReducers({
   HumanResourceReducer: HumanResourceReducer,
@@ -18,5 +19,6 @@ export default combineReducers({
   LoadingReducer: LoadingReducer,
   AuthenticationReducer: AuthenticationReducer,
   SalesDailyOutReducer: SalesDailyOutReducer,
+  EpayCheckReducer: EpayCheckReducer,
   form: formReducer,
 });

@@ -61,4 +61,6 @@ class EPayCheckCheckDetailLogsController extends Controller
     {
         //
     }
+
+   
 }

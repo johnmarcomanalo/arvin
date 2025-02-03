@@ -42,6 +42,7 @@ const initialState = {
   product_group_unit_of_measure: null,
   product_group_unit_of_measure_type: null,
   holidays: [],
+  bank_accounts: [],
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

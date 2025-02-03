@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class EPayCheckCheckDetailLogs extends Model
+class RefBankAccounts extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $guarded = ['id'];
     
     protected static function boot()
     {
@@ -27,15 +27,4 @@ class EPayCheckCheckDetailLogs extends Model
             $model->modified_by = Auth::id();
         });
     }
-
-    public static function generate_code(){
-        $code = 1;
-        $current_date = date('Y-m-d');
-         $latest_code = Static::latest('code')->first('code')->code ?? NULL;
-        if(!empty($latest_code)){
-            $code = $latest_code + 1;
-        }
-        return $code;
-    }
-
 }

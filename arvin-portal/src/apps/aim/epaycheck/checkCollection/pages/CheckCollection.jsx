@@ -1,0 +1,326 @@
+import { 
+  ButtonGroup,
+  CardContent,
+  Card,
+  Divider,
+  Grid, 
+  IconButton, 
+  Input, 
+  Stack,  
+  Tab,  
+  Table,  
+  TableBody,  
+  TableCell,  
+  TableContainer,  
+  TableFooter,  
+  TableHead,  
+  TableRow,  
+  Tooltip,  
+  Typography,  
+  useMediaQuery,
+  Box,
+} from "@mui/material"; 
+import { useTheme } from "@mui/material/styles";
+import * as React from "react";  
+import { connect } from "react-redux";
+import { change, Field, formValueSelector, reduxForm, reset } from "redux-form"; 
+//component
+import ButtonComponent from "../../../../../components/button/Button";
+import ComboBox from "../../../../../components/autoComplete/AutoComplete";
+import Modal from "../../../../../components/modal/Modal";  
+import InputField from "../../../../../components/inputFIeld/InputField";
+
+//hoooks and other  configuration
+import CheckCollectionHooks from "../hooks/CheckCollectionHooks";
+import configure from "../../../../configure/configure.json";
+import InvoiceList from "../pages/components/InvoiceList";
+let formName = "CheckCollection";
+
+let CheckCollection = (props) => {
+  const { ...check }    = CheckCollectionHooks(props);
+  const state           = check.state;
+  const account_details = check.account_details;
+  const amount          = check.state.invoice_list.reduce((a, b) => a + parseFloat(b.doctotal), null)
+  const access          = check.access;
+  const matches         = useMediaQuery("(min-width:600px)"); 
+  props.dispatch(change(formName, "invoice_list", state?.invoice_list));
+  props.dispatch(change(formName, "subsection_code", account_details.subsection_code));
+  props.dispatch(change(formName, "amount", amount));
+  return (
+    <React.Fragment>
+        <Modal
+            open={check.viewModal}
+            fullScreen={matches ? false : true}
+            title={"Invoice Search"}
+            size={"lg"}
+            action={undefined}
+            handleClose={check.onClickCloseViewModal}
+          >
+           <InvoiceList onSelectItem={check.onSelectItem} />
+        </Modal>
+        <form onSubmit={props.handleSubmit(check.submit)} autoComplete="off">
+        <Card
+              sx={{
+                boxShadow: configure.box_shadow,
+              }}
+            >
+            <CardContent >
+                <Typography
+                  variant="h6"
+                  align="left"
+                  sx={{ color: configure.primary_color }}
+                >
+                  Check Details
+                </Typography>
+                <Typography
+                  align="left"
+                  gutterBottom
+                  sx={{ color: configure.dark_gray_color, fontSize: 12 }}
+                >
+                  Ensure all the required fields are correctly filled out
+                </Typography>
+                <Grid container spacing={2}>  
+                  <Grid item xs={12} sm={12} md={6} lg={6}>
+                      <Field
+                        id="check_number"
+                        name="check_number"
+                        label="Check Number"
+                        type="number"
+                        component={InputField}
+                        required={true}
+                      />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={6}>
+                      <Field
+                        id="check_date"
+                        name="check_date"
+                        label="Check Date"
+                        type="date"
+                        component={InputField}
+                        required={true}
+                      />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={6}>
+                      <Field
+                        id="check_amount"
+                        name="check_amount"
+                        label="Amount"
+                        type="number"
+                        component={InputField}
+                        required={true}
+                      />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={6}>
+                      <Field
+                        id="bank_description"
+                        name="bank_description"
+                        label="Bank"
+                        type="text"
+                        component={InputField}
+                        required={true}
+                      />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={6}>
+                      <Field
+                        id="bank_branch"
+                        name="bank_branch"
+                        label="Branch"
+                        type="text"
+                        component={InputField}
+                        required={true}
+                      />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={6}>
+                      <Field
+                        id="bank_address"
+                        name="bank_address"
+                        label="Bank Address"
+                        type="text"
+                        component={InputField}
+                        required={true}
+                      />
+                  </Grid>
+                 
+                  <Grid item xs={12} sm={12} md={6} lg={6}>
+                        <Field
+                            id="advance_payment"
+                            name="advance_payment"
+                            label="Advance Payment"
+                            options={check.epay_selection}
+                            getOptionLabel={(option) =>
+                            option?.description ? option?.description: ""
+                            } 
+                            required={true}
+                            component={ComboBox}
+                            onChangeHandle={(e, newValue) => { 
+                             
+                            }}
+                        />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={6}>
+                        <Field
+                            id="crpr"
+                            name="crpr"
+                            label="Document (CR/PR)"
+                            type="text"
+                            component={InputField}
+                            required={true}
+                        />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={6}> 
+                      <Field
+                            id="card_name"
+                            name="card_name"
+                            label="Customer"
+                            options={access?.user_access_customer_rights}
+                            getOptionLabel={(option) =>
+                              option?.description ? option?.description : (props.customerDetails?.description?props.customerDetails?.description: "")
+                            }
+                            required={true}
+                            component={ComboBox}
+                            onChangeHandle={(e, newValue) => {
+                              if (newValue?.description) {
+                                check.GetCustomerDetails(newValue);
+                                props.change("card_code", newValue.customer_code);
+                              }
+                            }}
+                        /> 
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={6}>
+                        <Field
+                            id="card_code"
+                            name="card_code"
+                            label="Customer Code"
+                            type="text"
+                            component={InputField}
+                            required={true}
+                            readOnly={true}
+                        />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12} lg={12}>
+                      <Typography
+                        align="left"
+                        gutterBottom
+                        sx={{ color: configure.primary_color }}
+                      >
+                        Selected Invoice
+                      </Typography>
+                      <Typography
+                  align="left"
+                  gutterBottom
+                  sx={{ color: configure.dark_gray_color, fontSize: 12 }}
+                >
+                 Ensure all invoice details are correct before submission
+                </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12} lg={12}>  
+                      
+                      <TableContainer
+                        sx={{
+                          // maxHeight: screenHeight - 300,
+                          whiteSpace: "nowrap",
+                          overflowX: "auto",
+                        
+                        }}
+                      >
+                        <Table size="small">
+                          <TableHead>
+                            <TableRow> 
+                                <TableCell style={{ backgroundColor: configure.primary_table_color, color: configure.primary_table_text_color, }}>  DOCUMENT NUMBER </TableCell> 
+                                <TableCell style={{ backgroundColor: configure.primary_table_color, color: configure.primary_table_text_color, }}>  DOCUMENT DATE </TableCell> 
+                                <TableCell style={{ backgroundColor: configure.primary_table_color, color: configure.primary_table_text_color, }}>  SI NUMBER </TableCell> 
+                                <TableCell style={{ backgroundColor: configure.primary_table_color, color: configure.primary_table_text_color, }}>  DR NUMBER </TableCell> 
+                                <TableCell style={{ backgroundColor: configure.primary_table_color, color: configure.primary_table_text_color, }}>  VAT </TableCell> 
+                                <TableCell style={{ backgroundColor: configure.primary_table_color, color: configure.primary_table_text_color, }}>  TOTAL INVOICE </TableCell>
+                            </TableRow> 
+                          </TableHead>
+                          <TableBody>
+                            {check?.state.invoice_list?.length > 0 ? (
+                              check.state.invoice_list.map((row, index) => (
+                                <TableRow key={index}>
+                                  <TableCell>{row?.docno}</TableCell>
+                                  <TableCell>{row?.docdate}</TableCell>
+                                  <TableCell>{row?.sino}</TableCell>
+                                  <TableCell>{row?.drno}</TableCell>
+                                  <TableCell>{row?.vatsum}</TableCell>
+                                  <TableCell>{row?.doctotal}</TableCell>
+                                </TableRow>
+                              )) 
+                            ) : (
+                              <TableRow>
+                                <TableCell colSpan={6} align="center">Data not available</TableCell>
+                              </TableRow>
+                            )} 
+                            {/* <TableRow>
+                              <TableCell colSpan={4}></TableCell>
+                              <TableCell  align="left">TOTAL</TableCell>
+                              <TableCell align="left">{amount}</TableCell>
+                            </TableRow> */}
+                          </TableBody> 
+                        </Table> 
+                      </TableContainer> 
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12} lg={12}>  
+                    <Stack
+                      direction="row"
+                      justifyContent="flex-end"
+                      alignItems="flex-end" 
+                    >
+                      <ButtonGroup
+                        disableElevation
+                        aria-label="Disabled button group"
+                      >
+                          <ButtonComponent
+                            stx={configure.default_button }
+                            iconType="add"
+                            type="button"
+                            fullWidth={true}
+                            children={"Add Invoice"}
+                            click={check.onClickOpenViewModal}
+                          />
+                          <ButtonComponent  
+                            stx={configure.default_button }
+                            iconType="delete"
+                            type="button"
+                            fullWidth={true}
+                            children={"Remove"}
+                            click={check.onClickRemoveInvoiceList}
+                          />
+                        </ButtonGroup>
+                    </Stack>
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12} lg={12}>
+                      <Stack
+                        direction="row"
+                        justifyContent="flex-end"
+                        alignItems="flex-end"
+                        spacing={2}
+                      >
+                        <ButtonComponent
+                          stx={configure.default_button}
+                          iconType="submit"
+                          type="submit"
+                          fullWidth={true}
+                          children={"Submit"}
+                        />
+                      </Stack>
+                    </Grid>
+                </Grid>
+            </CardContent>
+          </Card> 
+        </form>
+    </React.Fragment>
+  );
+  }
+
+  const ReduxFormComponent = reduxForm({
+    form: formName,
+  })(CheckCollection);
+  const selector = formValueSelector(formName);
+  export default connect((state) => {
+    const refresh = state.EpayCheckReducer.refresh;
+    const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
+    return { refresh, customerDetails };
+  }, {})(ReduxFormComponent);
+  
+  

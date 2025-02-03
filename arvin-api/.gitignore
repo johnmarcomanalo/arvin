@@ -4,6 +4,7 @@
 /storage/*.key
 /vendor
 .env.backup
+.env
 .phpunit.result.cache
 docker-compose.override.yml
 Homestead.json
@@ -12,3 +13,5 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
+# Ignore specific config file
+/config/sanctum.php
