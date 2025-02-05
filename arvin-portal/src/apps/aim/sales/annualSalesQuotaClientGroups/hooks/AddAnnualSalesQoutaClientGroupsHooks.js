@@ -18,6 +18,9 @@ const AddAnnualSalesQoutaClientGroupsHooks = (props) => {
     (state) => state.ReferenceReducer.product_group_category
   );
   const viewModal = useSelector((state) => state.ReferenceReducer.viewModal);
+  const employeeModal = useSelector(
+    (state) => state.HumanResourceReducer.viewModal
+  );
 
   const [state, setState] = React.useState({
     debounceTimer: null,
@@ -95,6 +98,22 @@ const AddAnnualSalesQoutaClientGroupsHooks = (props) => {
     });
   };
 
+  const onClickOpenEmployeeViewModal = () => {
+    dispatch({
+      type: Constants.ACTION_HUMAN_RESOURCE,
+      payload: {
+        viewModal: true,
+      },
+    });
+  };
+  const onClickCloseEmployeeViewModal = () => {
+    dispatch({
+      type: Constants.ACTION_HUMAN_RESOURCE,
+      payload: {
+        viewModal: false,
+      },
+    });
+  };
   const onClickSelectClientList = (data) => {
     let client = {
       customer_code: data.customer_code,
@@ -124,6 +143,17 @@ const AddAnnualSalesQoutaClientGroupsHooks = (props) => {
     );
     swal("Success", "Client added successfully", "success");
   };
+
+  const onClickSelectEmployee = (data) => {
+    console.log(data);
+    props.dispatch(
+      change("AddAnnualSalesQoutaClientGroups", "bdo", data.username)
+    );
+    props.dispatch(
+      change("AddAnnualSalesQoutaClientGroups", "bdo_name", data.full_name)
+    );
+    swal("Success", "BDO added successfully", "success");
+  };
   return {
     state,
     columns,
@@ -131,10 +161,14 @@ const AddAnnualSalesQoutaClientGroupsHooks = (props) => {
     account_details,
     client_groups,
     viewModal,
+    employeeModal,
     GetMonthlyAndDailyQoutaByAnnualQouta,
     onClickOpenViewModal,
     onClickCloseViewModal,
     onClickSelectClientList,
+    onClickOpenEmployeeViewModal,
+    onClickCloseEmployeeViewModal,
+    onClickSelectEmployee,
   };
 };
 

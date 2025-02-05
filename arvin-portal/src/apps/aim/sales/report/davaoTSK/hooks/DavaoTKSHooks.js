@@ -58,19 +58,20 @@ const DavaoTKSHooks = (props) => {
     { id: "delivery_date", label: "Delivery Date", align: "left" },
     { id: "dr_number", label: "DR Number", align: "left" },
     { id: "si_number", label: "SI Number", align: "left" },
-    { id: "card_name", label: "Card Name", align: "left" },
+    { id: "card_name", label: "BP Name", align: "left" },
     { id: "client_name", label: "Client Name", align: "left" },
-    { id: "terms", label: "Payment Group", align: "left" },
-    { id: "payment_mode", label: "Mode Payment", align: "left" },
-    { id: "description", label: "Description", align: "left" },
+    { id: "terms", label: "BP Terms", align: "left" },
+    { id: "payment_mode", label: "BP Payment Terms", align: "left" },
+
+    { id: "description", label: "Item Name", align: "left" },
     { id: "quantity", label: "Quantity", align: "left" },
-    { id: "price_after_vat", label: "Price after VAT", align: "left" },
-    { id: "line_amount", label: "Line Amount", align: "left" },
-    { id: "doc_total", label: "Doc Total", align: "left" },
-    { id: "applied_amount", label: "Applied Amount", align: "left" },
+    { id: "price_after_vat", label: "Unit Price", align: "left" },
+    { id: "line_amount", label: "Total", align: "left" },
+    { id: "doc_total", label: "Amount Due", align: "left" },
+    { id: "applied_amount", label: "Payment", align: "left" },
     {
       id: "actual_mode_payment",
-      label: "Actual Mode of Payment",
+      label: "Actual Payment Terms",
       align: "left",
     },
   ];
@@ -149,8 +150,41 @@ const DavaoTKSHooks = (props) => {
   }, [refresh, filterStartQuery, filterEndQuery, search, filterType]);
 
   const exportToExcel = (dataList, fileName = "data.xlsx") => {
-    // Convert JSON to worksheet
-    const worksheet = XLSX.utils.json_to_sheet(dataList);
+    if (!dataList || dataList.length === 0) {
+      console.warn("No data to export.");
+      return;
+    }
+
+    // Define column mappings based on the `columns` array
+    const columnMappings = {
+      create_date: "Create Date",
+      delivery_date: "Delivery Date",
+      dr_number: "DR Number",
+      si_number: "SI Number",
+      card_name: "BP Name",
+      client_name: "Client Name",
+      terms: "BP Terms",
+      payment_mode: "BP Payment Terms",
+      description: "Item Name",
+      quantity: "Quantity",
+      price_after_vat: "Unit Price",
+      line_amount: "Total",
+      doc_total: "Amount Due",
+      applied_amount: "Payment",
+      actual_mode_payment: "Actual Payment Terms",
+    };
+
+    // Convert data to new format with renamed keys
+    const formattedData = dataList.map((item) => {
+      let newItem = {};
+      Object.keys(columnMappings).forEach((key) => {
+        newItem[columnMappings[key]] = item[key]; // Use mapped column name
+      });
+      return newItem;
+    });
+
+    // Convert JSON to worksheet with renamed headers
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
 
     // Create a workbook and append the worksheet
     const workbook = XLSX.utils.book_new();

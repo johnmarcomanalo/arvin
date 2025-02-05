@@ -1,9 +1,9 @@
 import moment from "moment";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Constants } from "../../../../../reducer/Contants";
-import { getAnnualMonthlyDailyTargetSalesBySectionSubsection } from "../../salesQuota/actions/SalesQuotaActions";
-import { getStatusDailyTargetAndPercentageDailyTargetByDailyOut } from "../actions/SalesTrackerActions";
+import { Constants } from "../../../../../../reducer/Contants";
+import { getAnnualMonthlyDailyTargetSalesBySectionSubsection } from "../../../salesQuota/actions/SalesQuotaActions";
+import { getStatusDailyTargetAndPercentageDailyTargetByDailyOut } from "../actions/WarehouseSalesActions";
 const SalesDailyOutComponentAddSalesDailyOutHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
   const [state, setState] = React.useState({

@@ -7,7 +7,7 @@ import moment from "moment";
 import {
   getSalesDailyOutbyID,
   getSalesTrackerByDateSubsectionProduct,
-} from "../../salesTracker/actions/SalesTrackerActions";
+} from "../../salesTracker/warehouseSales/actions/WarehouseSalesActions";
 import { Constants } from "../../../../../reducer/Contants";
 import { decryptaes } from "../../../../../utils/LightSecurity";
 const HolidayExclusionHooks = (props) => {

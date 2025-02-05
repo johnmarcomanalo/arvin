@@ -55,16 +55,18 @@ const EmployeeListHooks = (props) => {
     (state) => state.HumanResourceReducer.viewModal
   );
   const columns = [
-    { id: "code", label: "User Code", align: "left" },
+    { id: "code", label: "Account Code", align: "left" },
     { id: "full_name", label: "Complete Name", align: "left" },
+    { id: "username", label: "Username", align: "left" },
   ];
 
   const handleChangePage = (event, newPage) => {
-    dispatch({
-      type: Constants.ACTION_HOME,
-      payload: {
-        page: newPage,
-      },
+    setSearchParams({
+      p: newPage,
+      q: search,
+      l: String(rowsPerPage),
+      f: filterQuery,
+      u: account_details?.code,
     });
   };
   const handleChangeRowsPerPage = (event) => {

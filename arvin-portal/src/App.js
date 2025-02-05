@@ -36,10 +36,7 @@ const IndexSalesQouta = lazy(() =>
   import("./apps/aim/sales/salesQuota/pages/IndexSalesQuota")
 );
 const IndexAnnualSalesQuota = lazy(() =>
-  import("./apps/aim/sales/annualSalesQuotaDev/pages/IndexAnnualSalesQuota")
-);
-const IndexSalesTracker = lazy(() =>
-  import("./apps/aim/sales/salesTracker/pages/IndexSalesTracker")
+  import("./apps/aim/sales/annualSalesQuota/pages/IndexAnnualSalesQuota")
 );
 const IndexHolidayExclusion = lazy(() =>
   import("./apps/aim/sales/holidayExclusion/pages/IndexHolidayExclusion")
@@ -54,6 +51,14 @@ const IndexAnnualSalesQoutaClientGroups = lazy(() =>
 );
 const IndexDavaoTKS = lazy(() =>
   import("./apps/aim/sales/report/davaoTSK/pages/IndexDavaoTKS")
+);
+const IndexClientSales = lazy(() =>
+  import("./apps/aim/sales/salesTracker/clientSales/pages/IndexClientSales")
+);
+const IndexWarehouseSales = lazy(() =>
+  import(
+    "./apps/aim/sales/salesTracker/warehouseSales/pages/IndexWarehouseSales"
+  )
 );
 
 // SALES END
@@ -165,13 +170,15 @@ const IndexRefSubSections = lazy(() =>
 
 //EPAYCHECK START
 const IndexCheckCollection = lazy(() =>
-  import("./apps/aim/epaycheck/checkCollection/pages/IndexCheckCollection") 
+  import("./apps/aim/epaycheck/checkCollection/pages/IndexCheckCollection")
 );
-const  IndexCheckMonitoring = lazy(() =>
+const IndexCheckMonitoring = lazy(() =>
   import("./apps/aim/epaycheck/checkMonitoring/pages/IndexCheckMonitoring")
 );
-const  IndexWeeklyCheckCounter = lazy(() =>
-  import("./apps/aim/epaycheck/report/weeklyCheckCounter/pages/IndexWeeklyCheckCounter")
+const IndexWeeklyCheckCounter = lazy(() =>
+  import(
+    "./apps/aim/epaycheck/report/weeklyCheckCounter/pages/IndexWeeklyCheckCounter"
+  )
 );
 //EPAYCHECK END
 
@@ -252,21 +259,6 @@ function App() {
                         })}
                       >
                         <IndexSalesQouta />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    exact
-                    path="/Modules/Sales/SalesTracker"
-                    element={
-                      <PrivateRoute
-                        accessChecker={getAccessChecker({
-                          module: "Sales",
-                          component: "Sales Tracker",
-                          subComponent: null,
-                        })}
-                      >
-                        <IndexSalesTracker />
                       </PrivateRoute>
                     }
                   />
@@ -382,7 +374,6 @@ function App() {
                       </PrivateRoute>
                     }
                   />
-
                   <Route
                     path="/Modules/Sales/Reports/DavaoTKS"
                     element={
@@ -397,6 +388,35 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+                  <Route
+                    path="/Modules/Sales/SalesTracker/ClientSales"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Sales",
+                          component: "Sales Tracker",
+                          subComponent: "Client Sales",
+                        })}
+                      >
+                        <IndexClientSales />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/Sales/SalesTracker/WarehouseSales"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Sales",
+                          component: "Sales Tracker",
+                          subComponent: "Warehouse Sales",
+                        })}
+                      >
+                        <IndexWarehouseSales />
+                      </PrivateRoute>
+                    }
+                  />
+
                   {/* SALES END */}
                   {/* QUOTATION START */}
                   <Route
@@ -757,7 +777,7 @@ function App() {
                       </PrivateRoute>
                     }
                   />
-                   <Route
+                  <Route
                     path="/Modules/SystemSettings/References/BankAccounts"
                     element={
                       <PrivateRoute
@@ -771,56 +791,51 @@ function App() {
                       </PrivateRoute>
                     }
                   />
-
                   {/* REFENRECE END */}
-
                   {/* EPAYCHECK START */}
-                    <Route
-                      path="/Modules/E-PayCheck/CheckCollection"
-                      element={
-                        <PrivateRoute
-                            accessChecker={getAccessChecker({
-                              module: "E-Pay Check",
-                              component: "Check Collection",
-                              subComponent:null, 
-                            })}
-                        >
-                          <IndexCheckCollection />
-                        </PrivateRoute>
-                      }
-                    />
-
-                     <Route
-                      path="/Modules/E-PayCheck/CheckMonitoring"
-                      element={
-                        <PrivateRoute
-                            accessChecker={getAccessChecker({
-                              module: "E-Pay Check",
-                              component: "Check Monitoring",
-                              subComponent:null, 
-                            })}
-                        >
-                          <IndexCheckMonitoring />
-                        </PrivateRoute>
-                      }
-                    />
-
-                    <Route
-                      path="/Modules/E-PayCheck/Reports/WeeklyCheckCounter"
-                      element={
-                        <PrivateRoute
-                          accessChecker={getAccessChecker({
-                            module: "E-Pay Check",
-                            component: "Reports",
-                            subComponent: "Weekly Check Counter",
-                          })}
-                        >
-                          <IndexWeeklyCheckCounter />
-                        </PrivateRoute>
-                      }
-                    />
+                  <Route
+                    path="/Modules/E-PayCheck/CheckCollection"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "E-Pay Check",
+                          component: "Check Collection",
+                          subComponent: null,
+                        })}
+                      >
+                        <IndexCheckCollection />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/E-PayCheck/CheckMonitoring"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "E-Pay Check",
+                          component: "Check Monitoring",
+                          subComponent: null,
+                        })}
+                      >
+                        <IndexCheckMonitoring />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/E-PayCheck/Reports/WeeklyCheckCounter"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "E-Pay Check",
+                          component: "Reports",
+                          subComponent: "Weekly Check Counter",
+                        })}
+                      >
+                        <IndexWeeklyCheckCounter />
+                      </PrivateRoute>
+                    }
+                  />
                   {/* EPAYCHECK END */}
-
                   {/* SYSTEM SETTINGS END */}
                 </Route>
               )}

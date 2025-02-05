@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Carbon\Carbon;
 
 use Illuminate\Http\Request;
 
@@ -78,12 +79,36 @@ class MainController extends Controller
 
     public static function generate_code($modelClassName,$column){
         $code = 1;
-        $current_date = date('Y-m-d');
         $model = new $modelClassName;
         $latest_code = $model::latest($column)->first($column)->code ?? NULL;
         if(!empty($latest_code)){
             $code = $latest_code + 1;
         }
         return $code;
+    }
+
+
+    public static function get_dates_in_selected_year($year) {
+            $dates = [];
+
+            // Loop through each month of the year
+            for ($month = 1; $month <= 12; $month++) {
+                // Create a Carbon instance for the first day of the month
+                $date = Carbon::create($year, $month, 1);
+
+                // Get the number of days in the month
+                $daysInMonth = $date->daysInMonth;
+
+                // Loop through each day of the month
+                for ($day = 1; $day <= $daysInMonth; $day++) {
+                    // Create a Carbon instance for the current day
+                    $currentDate = $date->copy()->setDay($day);
+
+                    // Add the current date to the array (including Sundays)
+                    $dates[] = $currentDate->format('Y-m-d');
+                }
+            }
+
+            return $dates;
     }
 }

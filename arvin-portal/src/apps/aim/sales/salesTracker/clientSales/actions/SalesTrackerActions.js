@@ -1,13 +1,14 @@
-import { Constants } from "../../../../../reducer/Contants";
+import { Constants } from "../../../../../../reducer/Contants";
 import {
   GetDefaultServices,
   GetMultiSpecificDefaultServices,
   GetSpecificDefaultServices,
   PostDefaultServices,
-} from "../../../../../services/apiService";
+} from "../../../../../../services/apiService";
 import swal from "sweetalert";
-import configure from "../../../../configure/configure.json";
-import { decryptaes } from "../../../../../utils/LightSecurity";
+import configure from "../../../../../configure/configure.json";
+import { decryptaes } from "../../../../../../utils/LightSecurity";
+import { AuthGetReferencesChild } from "../../../../settings/reference/services/referenceServices";
 export const getSalesDailyOut = (values) => async (dispatch) => {
   try {
     await dispatch({
@@ -18,7 +19,7 @@ export const getSalesDailyOut = (values) => async (dispatch) => {
     });
 
     const response = GetSpecificDefaultServices(
-      "api/salesdailyout/daily_out/get_sales_daily_out/?page=" +
+      "api/salesdailyout/sales_tracker/get_sales_tracker/?page=" +
         values.p +
         "&limit=" +
         values.l +
@@ -29,7 +30,9 @@ export const getSalesDailyOut = (values) => async (dispatch) => {
         "&uid=" +
         values.u +
         "&sc=" +
-        values.sc
+        values.sc +
+        "&pg=" +
+        values.pg
     );
     response.then((res) => {
       try {
@@ -43,6 +46,9 @@ export const getSalesDailyOut = (values) => async (dispatch) => {
             present_mtd_data: decrypted.present_mtd_data,
             previous_mtd_data: decrypted.previous_mtd_data,
             final_ytd_data: decrypted.final_ytd_data,
+            ytdTotalDailyOutAmount: decrypted.ytdTotalDailyOutAmount,
+            ytdTotalDailyQoutaAmount: decrypted.ytdTotalDailyQoutaAmount,
+            today_data: decrypted.today_data,
           },
         });
       } catch (error) {
@@ -210,23 +216,64 @@ export const getStatusDailyTargetAndPercentageDailyTargetByDailyOut =
         },
       });
       const response = GetMultiSpecificDefaultServices(
-        "api/salesdailyout/daily_out/get_status_daily_target_and_percentage_daily_target_by_daily_out",
+        "api/salesdailyout/sales_tracker/get_status_daily_target_and_percentage_daily_target_by_daily_out",
         [daily_out, daily_quota]
+      );
+      // response.then((res) => {
+      //   // let decypted = decryptaes(res.data);
+      //   dispatch({
+      //     type: Constants.ACTION_SALES_DAILY_OUT,
+      //     payload: {
+      //       status_daily_target: res.status_daily_target,
+      //       percentage_daily_target: res.percentage_daily_target,
+      //     },
+      //   });
+      return response;
+
+      // });
+    } catch (error) {
+      var title = configure.error_message.default;
+      var message = "";
+      if (typeof error.response.data.message !== "undefined")
+        title = error.response.data.message;
+      if (typeof error.response.data.errors !== "undefined") {
+        const formattedErrors = Object.entries(error.response.data.errors)
+          .map(([key, value]) => `${value.join(", ")}`)
+          .join("\n");
+        message = formattedErrors;
+      }
+      await swal(title, message, "error");
+    } finally {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+    }
+  };
+
+export const getSalesTrackerByDateSubsectionProduct =
+  (formValues) => async (dispatch) => {
+    try {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: true,
+        },
+      });
+      const response = GetSpecificDefaultServices(
+        "api/salesdailyout/sales_tracker/get_sales_tracker_by_date_subsection_product/?fd=" +
+          formValues.fd +
+          "&fs=" +
+          formValues.fs
       );
       response.then((res) => {
         let decypted = decryptaes(res.data);
         dispatch({
           type: Constants.ACTION_SALES_DAILY_OUT,
           payload: {
-            status_daily_target: decypted.status_daily_target,
-            percentage_daily_target: decypted.percentage_daily_target,
-          },
-        });
-
-        dispatch({
-          type: Constants.ACTION_LOADING,
-          payload: {
-            loading: false,
+            dataList: decypted.dataList,
           },
         });
       });
@@ -248,5 +295,95 @@ export const getStatusDailyTargetAndPercentageDailyTargetByDailyOut =
           loading: false,
         },
       });
+    } finally {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
     }
   };
+
+export const getSalesDailyOutbyID = (values) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = await GetMultiSpecificDefaultServices(
+      "api/salesdailyout/sales_tracker/get_sales_daily_out_per_day",
+      [values.sales_date, values.sales_daily_out_annual_settings_sales_code]
+    );
+    return response;
+  } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
+export const postMoveSalePerDay = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PostDefaultServices(
+      "api/salesdailyout/holiday_exclusions/move_sales_per_day",
+      formValues
+    );
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        addModal: false,
+      },
+    });
+    return res;
+  } catch (error) {
+    dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+    var title = configure.error_message.default;
+    var message = "";
+    if (error.response && error.response.data) {
+      if (error.response.data.message) title = error.response.data.message;
+      if (error.response.data.errors) {
+        const formattedErrors = Object.entries(error.response.data.errors)
+          .map(([key, value]) => `${value.join(", ")}`)
+          .join("\n");
+        message = formattedErrors;
+      }
+    }
+    await swal(title, message, "error");
+  } finally {
+    dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};

@@ -7,7 +7,7 @@ import ButtonComponent from "../../../../../../components/button/Button";
 import InputField from "../../../../../../components/inputFIeld/InputField";
 import configure from "../../../../../configure/configure.json";
 import MoveSaleQuotaHooks from "../../hooks/MoveSaleQuotaHooks";
-import { postMoveSalePerDay } from "../../../salesTracker/actions/SalesTrackerActions";
+import { postMoveSalePerDay } from "../../../salesTracker/warehouseSales/actions/WarehouseSalesActions";
 import { Constants } from "../../../../../../reducer/Contants";
 const formName = "MoveSaleQuota";
 const submit = async (values, dispatch, props) => {

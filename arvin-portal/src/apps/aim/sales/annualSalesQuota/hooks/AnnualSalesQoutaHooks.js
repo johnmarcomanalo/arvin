@@ -12,7 +12,9 @@ import {
 import {
   getAnnualSettingSale,
   getMonthlyAndDailyQoutaByTargetAnnualSales,
+  ViewSalesQuota,
 } from "../actions/AnnualSalesQuotaActions";
+import { decryptaes } from "../../../../../utils/LightSecurity";
 const AnnualSalesQoutaHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
   const [state, setState] = React.useState({
@@ -34,6 +36,9 @@ const AnnualSalesQoutaHooks = (props) => {
 
   const dispatch = useDispatch();
   const addModal = useSelector((state) => state.SalesDailyOutReducer.addModal);
+  const editModal = useSelector(
+    (state) => state.SalesDailyOutReducer.editModal
+  );
   const dataList = useSelector((state) => state.SalesDailyOutReducer.dataList);
   const dataListCount = useSelector(
     (state) => state.SalesDailyOutReducer.dataListCount
@@ -65,9 +70,24 @@ const AnnualSalesQoutaHooks = (props) => {
       align: "left",
     },
     { id: "annual_sales_target", label: "Annual Quota", align: "left" },
-    { id: "monthly_sales_target", label: "Monthly Quota", align: "left" },
-    // { id: "daily_sales_target", label: "Daily Quota", align: "left" },
+    { id: "january_sales_target", label: "January Quota", align: "left" },
+    { id: "february_sales_target", label: "February Quota", align: "left" },
+    { id: "march_sales_target", label: "March Quota", align: "left" },
+    { id: "april_sales_target", label: "April Quota", align: "left" },
+    { id: "may_sales_target", label: "May Quota", align: "left" },
+    { id: "june_sales_target", label: "June Quota", align: "left" },
+    { id: "july_sales_target", label: "July Quota", align: "left" },
+    { id: "august_sales_target", label: "August Quota", align: "left" },
+    { id: "september_sales_target", label: "September Quota", align: "left" },
+    { id: "october_sales_target", label: "October Quota", align: "left" },
+    { id: "november_sales_target", label: "November Quota", align: "left" },
+    { id: "december_sales_target", label: "December Quota", align: "left" },
   ];
+  const json_active_page = useSelector(
+    (state) => state.AuthenticationReducer.active_page
+  );
+  const active_page = JSON.parse(json_active_page);
+
   const onClickOpenAddModal = () => {
     dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
@@ -177,6 +197,28 @@ const AnnualSalesQoutaHooks = (props) => {
     });
     return () => cancelRequest();
   }, []);
+
+  const onClickOpenEditModal = (data) => {
+    const response = dispatch(ViewSalesQuota(data.code));
+    response.then((res) => {
+      let sales_date = decryptaes(res.data);
+      dispatch({
+        type: Constants.ACTION_SALES_DAILY_OUT,
+        payload: {
+          selectedDataList: sales_date,
+          editModal: true,
+        },
+      });
+    });
+  };
+  const onClickCloseEditModal = () => {
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        editModal: false,
+      },
+    });
+  };
   return {
     search,
     page,
@@ -191,6 +233,8 @@ const AnnualSalesQoutaHooks = (props) => {
     account_details,
     product_group_category,
     sections,
+    editModal,
+    active_page,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,
@@ -200,6 +244,8 @@ const AnnualSalesQoutaHooks = (props) => {
     onClickCloseAddModal,
     GetMonthlyAndDailyQoutaByAnnualQouta,
     onChangeFilter,
+    onClickOpenEditModal,
+    onClickCloseEditModal,
   };
 };
 

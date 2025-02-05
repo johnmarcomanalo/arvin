@@ -2,15 +2,15 @@ import moment from "moment";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { Constants } from "../../../../../reducer/Contants";
-import { useDebounce } from "../../../../../utils/HelperUtils";
-import { getAnnualMonthlyDailyTargetSalesBySectionSubsection } from "../../salesQuota/actions/SalesQuotaActions";
+import { Constants } from "../../../../../../reducer/Contants";
+import { useDebounce } from "../../../../../../utils/HelperUtils";
+import { getAnnualMonthlyDailyTargetSalesBySectionSubsection } from "../../../salesQuota/actions/SalesQuotaActions";
 import {
   getSalesDailyOut,
   getStatusDailyTargetAndPercentageDailyTargetByDailyOut,
-} from "../actions/SalesTrackerActions";
-import { getSpecificRefSubSection } from "../../../settings/reference/actions/ReferenceActions";
-import { getEmployeeOrganizationAccessList } from "../../../settings/accessrights/organizationrights/actions/OrganizationRightsActions";
+} from "../actions/WarehouseSalesActions";
+import { getSpecificRefSubSection } from "../../../../settings/reference/actions/ReferenceActions";
+import { getEmployeeOrganizationAccessList } from "../../../../settings/accessrights/organizationrights/actions/OrganizationRightsActions";
 const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
   const [state, setState] = React.useState({
@@ -19,6 +19,9 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     year: moment(new Date()).format("YYYY"),
     active_subsections: null,
   });
+  const account_details = useSelector(
+    (state) => state.AuthenticationReducer.account_details
+  );
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("p") != undefined ? searchParams.get("p") : 1;
   const rowsPerPage =
@@ -30,7 +33,11 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       ? String(searchParams.get("f"))
       : moment(new Date()).format("YYYY-MM-DD");
   const filterSubComponent =
-    searchParams.get("sc") != null ? String(searchParams.get("sc")) : "";
+    searchParams.get("sc") != null
+      ? String(searchParams.get("sc"))
+      : account_details.subsection_code;
+  const filterProductGroup =
+    searchParams.get("pg") != null ? String(searchParams.get("pg")) : "";
   const debounceSearch = useDebounce(searchParams, 500);
   //filtering,search,page,limit end
 
@@ -53,9 +60,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   const report_data = useSelector(
     (state) => state.SalesDailyOutReducer.report_data
   );
-  const account_details = useSelector(
-    (state) => state.AuthenticationReducer.account_details
-  );
+
   const dataListCount = useSelector(
     (state) => state.SalesDailyOutReducer.dataListCount
   );
@@ -91,6 +96,24 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   );
   const user_access_organization_rights =
     access?.user_access_organization_rights;
+
+  const user_access_product_group_rights =
+    access?.user_access_product_group_rights;
+  const product_group_unit_of_measure = useSelector(
+    (state) => state.SalesDailyOutReducer.product_group_unit_of_measure
+  );
+  const product_group_unit_of_measure_type = useSelector(
+    (state) => state.SalesDailyOutReducer.product_group_unit_of_measure_type
+  );
+  const ytdTotalDailyOutAmount = useSelector(
+    (state) => state.SalesDailyOutReducer.ytdTotalDailyOutAmount
+  );
+  const ytdTotalDailyQoutaAmount = useSelector(
+    (state) => state.SalesDailyOutReducer.ytdTotalDailyQoutaAmount
+  );
+  const today_data = useSelector(
+    (state) => state.SalesDailyOutReducer.today_data
+  );
   const columns = [
     { id: "sales_date", label: "Date", align: "left" },
     { id: "sales_daily_qouta", label: "Daily Quota", align: "left" },
@@ -130,6 +153,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       l: String(rowsPerPage),
       f: filterQuery,
       sc: filterSubComponent,
+      pg: filterProductGroup,
     });
   };
   const handleChangeRowsPerPage = (event) => {
@@ -156,6 +180,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       l: String(rowsPerPage),
       f: filterQuery,
       sc: filterSubComponent,
+      pg: filterProductGroup,
     });
   };
   const debounce = (func, delay) => {
@@ -188,6 +213,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       l: String(rowsPerPage),
       f: selected_date,
       sc: filterSubComponent,
+      pg: filterProductGroup,
     });
     dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
@@ -208,6 +234,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
         filterSubComponent == ""
           ? account_details?.subsection_code
           : filterSubComponent,
+      pg: filterProductGroup,
     };
     return data;
   };
@@ -226,7 +253,8 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
           filterSubComponent == ""
             ? account_details?.subsection_code
             : filterSubComponent,
-          moment(filterQuery).format("YYYY-MM")
+          moment(filterQuery).format("YYYY-MM"),
+          filterProductGroup
         )
       );
     } catch (error) {
@@ -281,11 +309,24 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       l: rowsPerPage,
       f: filterQuery,
       sc: filterSubComponent,
+      pg: filterProductGroup,
     });
     setState((prev) => ({
       ...prev,
       active_subsections: data.description, // Update the state to trigger re-render
     }));
+  };
+
+  const filterProductGroups = (data) => {
+    let filterProductGroup = data.description;
+    setSearchParams({
+      p: page == null ? 1 : page,
+      q: search,
+      l: rowsPerPage,
+      f: filterQuery,
+      sc: filterSubComponent,
+      pg: filterProductGroup,
+    });
   };
   return {
     search,
@@ -311,6 +352,14 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     filterModal,
     state,
     active_page,
+    user_access_product_group_rights,
+    product_group_unit_of_measure,
+    product_group_unit_of_measure_type,
+    filterProductGroup,
+    filterQuery,
+    ytdTotalDailyOutAmount,
+    ytdTotalDailyQoutaAmount,
+    today_data,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,
@@ -325,6 +374,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     onClickOpenFilterModal,
     onClickCloseFilterModal,
     filterSubComponents,
+    filterProductGroups,
   };
 };
 

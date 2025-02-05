@@ -4,12 +4,12 @@ import * as React from "react";
 import { connect, useDispatch } from "react-redux";
 import { Field, change, formValueSelector, reduxForm, reset } from "redux-form";
 import swal from "sweetalert";
-import ButtonComponent from "../../../../../../components/button/Button";
-import InputField from "../../../../../../components/inputFIeld/InputField";
-import { Constants } from "../../../../../../reducer/Contants";
-import configure from "../../../../../configure/configure.json";
-import { postSalesDailyOut } from "../../actions/SalesTrackerActions";
-import SalesTrackerAddSalesHooks from "../../hooks/SalesTrackerAddSalesHooks";
+import ButtonComponent from "../../../../../../../components/button/Button";
+import InputField from "../../../../../../../components/inputFIeld/InputField";
+import { Constants } from "../../../../../../../reducer/Contants";
+import configure from "../../../../../../configure/configure.json";
+import { postSalesDailyOut } from "../../actions/WarehouseSalesActions";
+import WarehouseSalesAddSalesHooks from "../../hooks/WarehouseSalesAddSalesHooks";
 const formName = "AddSales";
 const submit = async (values, dispatch, props) => {
   try {
@@ -38,7 +38,7 @@ const submit = async (values, dispatch, props) => {
 
 let AddSales = (props) => {
   const dispatch = useDispatch();
-  const { ...salesTrackerAddSales } = SalesTrackerAddSalesHooks(props);
+  const { ...salesTrackerAddSales } = WarehouseSalesAddSalesHooks(props);
 
   props.dispatch(
     change(formName, "sales_daily_qouta", props.daily_sales_target)

@@ -8,6 +8,7 @@ import InputField from "../../../../../../components/inputFIeld/InputField";
 import EmployeeListHooks from "../../hooks/EmployeeListHooks";
 import Table from "../../../../../../components/table/Table";
 import SearchField from "../../../../../../components/inputFIeld/SearchField";
+import Page from "../../../../../../components/pagination/Pagination";
 const formName = "EmployeeList";
 const submit = async (values, dispatch, props) => {
   try {
@@ -26,14 +27,20 @@ let EmployeeList = (props) => {
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Stack
             direction="row"
-            justifyContent={matches ? "flex-start" : "center"}
-            alignItems={matches ? "flex-start" : "center"}
+            justifyContent={matches ? "space-between" : "center"}
+            alignItems={matches ? "space-between" : "center"}
             flexDirection={matches ? "row" : "column"}
             spacing={2}
           >
             <SearchField
               value={employeeList.search}
               onChange={employeeList.onChangeSearch}
+            />
+            <Page
+              page={employeeList?.page}
+              limit={employeeList?.searchdataListCount}
+              status={""}
+              onHandleChange={employeeList.handleChangePage}
             />
           </Stack>
         </Grid>
@@ -49,6 +56,7 @@ let EmployeeList = (props) => {
             id={"home_attendance"}
             localStorage={""}
             rowCount={employeeList.searchdataListCount}
+            paginationShow={false}
             action={(row) => {
               return null;
             }}

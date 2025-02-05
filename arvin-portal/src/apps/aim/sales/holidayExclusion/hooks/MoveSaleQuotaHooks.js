@@ -7,7 +7,7 @@ import { decryptaes } from "../../../../../utils/LightSecurity";
 import {
   getSalesDailyOutbyID,
   getStatusDailyTargetAndPercentageDailyTargetByDailyOut,
-} from "../../salesTracker/actions/SalesTrackerActions";
+} from "../../salesTracker/warehouseSales/actions/WarehouseSalesActions";
 const MoveSaleQuotaHooks = (props) => {
   const dispatch = useDispatch();
   const [state, setState] = React.useState({

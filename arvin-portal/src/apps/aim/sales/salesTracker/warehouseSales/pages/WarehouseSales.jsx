@@ -1,8 +1,8 @@
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import DateRangeOutlinedIcon from "@mui/icons-material/DateRangeOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import ExposureOutlinedIcon from "@mui/icons-material/ExposureOutlined";
 import FlagCircleOutlinedIcon from "@mui/icons-material/FlagCircleOutlined";
-import IsoIcon from "@mui/icons-material/Iso";
+import OutputOutlinedIcon from "@mui/icons-material/OutputOutlined";
 import PercentIcon from "@mui/icons-material/Percent";
 import {
   Card,
@@ -13,36 +13,30 @@ import {
   TableCell,
   TableRow,
   Tooltip,
-  Typography,
   useMediaQuery,
 } from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import Slide from "@mui/material/Slide";
 import { useTheme } from "@mui/material/styles";
-import OutputOutlinedIcon from "@mui/icons-material/OutputOutlined";
 import moment from "moment";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
-import ButtonComponent from "../../../../../components/button/Button";
-import CardComponent from "../../../../../components/card/CardComponent";
-import InputMonthYearPicker from "../../../../../components/inputFIeld/InputMonthYearPicker";
-import Modal from "../../../../../components/modal/Modal";
-import Page from "../../../../../components/pagination/Pagination";
-import ExposureOutlinedIcon from "@mui/icons-material/ExposureOutlined";
-import ComponentTable from "../../../../../components/table/Table";
-import DateRangeOutlinedIcon from "@mui/icons-material/DateRangeOutlined";
-import configure from "../../../../configure/configure.json";
-import SalesTrackerHooks from "../hooks/SalesTrackerHooks";
+import ComboBox from "../../../../../../components/autoComplete/AutoComplete";
+import ButtonComponent from "../../../../../../components/button/Button";
+import CardComponent from "../../../../../../components/card/CardComponent";
+import CardGradient from "../../../../../../components/card/CardGradient";
+import CardWithTitleValueIcon from "../../../../../../components/card/CardWithTitleValueIcon";
+import InputMonthYearPicker from "../../../../../../components/inputFIeld/InputMonthYearPicker";
+import Modal from "../../../../../../components/modal/Modal";
+import PageTitle from "../../../../../../components/pageTItle/PageTitle";
+import ComponentTable from "../../../../../../components/table/Table";
+import { ViewAmountFormatingDecimals } from "../../../../../../utils/AccountingUtils";
+import configure from "../../../../../configure/configure.json";
+import WarehouseSalesHooks from "../hooks/WarehouseSalesHooks";
 import AddSales from "./components/AddSales";
-import Slide from "@mui/material/Slide";
-import CloseIcon from "@mui/icons-material/Close";
-import Dialog from "@mui/material/Dialog";
-import { ViewAmountFormatingDecimals } from "../../../../../utils/AccountingUtils";
 import FilterSales from "./components/FilterSales";
-import PageTitle from "../../../../../components/pageTItle/PageTitle";
-import ComboBox from "../../../../../components/autoComplete/AutoComplete";
-import CardWithTitleValueIcon from "../../../../../components/card/CardWithTitleValueIcon";
-import CardGradient from "../../../../../components/card/CardGradient";
-const formName = "SalesTracker";
+const formName = "WarehouseSales";
 const submit = async (values, dispatch, props) => {
   try {
     await console.log(values);
@@ -53,8 +47,8 @@ const submit = async (values, dispatch, props) => {
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-let SalesTracker = (props) => {
-  const { ...salesTracker } = SalesTrackerHooks(props);
+let WarehouseSales = (props) => {
+  const { ...salesTracker } = WarehouseSalesHooks(props);
   const report_data = salesTracker.report_data;
   const present_mtd_data = salesTracker.present_mtd_data;
   const previous_mtd_data = salesTracker.previous_mtd_data;
@@ -285,247 +279,6 @@ let SalesTracker = (props) => {
           <Grid item xs={12} sm={12} md={4}></Grid>
         </Grid>
       </Dialog>
-
-      {/* <Grid container spacing={2}>
-        <Grid item xs={12} sm={12} md={12} lg={12}>
-          <PageTitle
-            title={"Sales Tracker"}
-            subtitle={
-              (state?.active_subsections == null
-                ? selected_subsection.description
-                : state?.active_subsections) +
-              (salesTracker.filterProductGroup == ""
-                ? ""
-                : " - " + salesTracker.filterProductGroup)
-            }
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={3}>
-          <CardComponent
-            icon={
-              <FlagCircleOutlinedIcon
-                sx={{
-                  backgroundColor: "white",
-                  color: configure.primary_color,
-                }}
-              />
-            }
-            icon_color={configure.primary_color}
-            icon_bg_color={"white"}
-            title={"Year"}
-            subtitle={"ANNUAL TARGET SALE"}
-            value={salesTracker.annual_sales_target}
-            subvalue={"this is sub value"}
-            unit={product_group_unit_of_measure_type}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={3}>
-          <CardComponent
-            icon={
-              <FlagCircleOutlinedIcon
-                sx={{
-                  backgroundColor: "white",
-                  color: configure.primary_color,
-                }}
-              />
-            }
-            title={"Month"}
-            icon_color={configure.primary_color}
-            icon_bg_color={"white"}
-            subtitle={"MONTH TARGET SALE"}
-            value={salesTracker.monthly_sales_target}
-            subvalue={"this is sub value"}
-            unit={product_group_unit_of_measure_type}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={3}>
-          <CardComponent
-            icon={
-              <FlagCircleOutlinedIcon
-                sx={{
-                  backgroundColor: "white",
-                  color: configure.primary_color,
-                }}
-              />
-            }
-            title={"Day"}
-            icon_color={configure.primary_color}
-            icon_bg_color={"white"}
-            subtitle={"DAY TARGET SALE"}
-            value={salesTracker.daily_sales_target}
-            subvalue={"this is sub value"}
-            unit={product_group_unit_of_measure_type}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={3}>
-          <CardComponent
-            icon={
-              <PercentIcon
-                sx={{
-                  backgroundColor: "white",
-                  color: configure.primary_color,
-                }}
-              />
-            }
-            title={"Day"}
-            icon_color={configure.primary_color}
-            icon_bg_color={"white"}
-            subtitle={"FINAL YTD"}
-            value={
-              typeof final_ytd_data !== "undefined"
-                ? parseFloat(final_ytd_data).toFixed(2)
-                : 0
-            }
-            fontSizeValue={18}
-            subvalue={"this is sub value"}
-            changeColorValue={true}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={2}>
-          <CardComponent
-            icon={
-              <AttachMoneyIcon
-                sx={{
-                  backgroundColor: "white",
-                  color: configure.primary_color,
-                }}
-              />
-            }
-            title={"Day"}
-            icon_color={configure.primary_color}
-            icon_bg_color={"white"}
-            subtitle={"TOTAL DAILY QOUTA"}
-            value={
-              typeof report_data?.total_target_daily_quota_amount !==
-              "undefined"
-                ? report_data?.total_target_daily_quota_amount
-                : 0
-            }
-            subvalue={"this is sub value"}
-            unit={product_group_unit_of_measure_type}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={2}>
-          <CardComponent
-            icon={
-              <AttachMoneyIcon
-                sx={{
-                  backgroundColor: "white",
-                  color: configure.primary_color,
-                }}
-              />
-            }
-            title={"Day"}
-            icon_color={configure.primary_color}
-            icon_bg_color={"white"}
-            subtitle={"TOTAL OUT SALES"}
-            value={
-              typeof report_data?.total_daily_out_amount !== "undefined"
-                ? report_data?.total_daily_out_amount
-                : 0
-            }
-            subvalue={"this is sub value"}
-            changeColorValue={true}
-            unit={product_group_unit_of_measure_type}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={2}>
-          <CardComponent
-            icon={
-              <CalendarTodayIcon
-                sx={{
-                  backgroundColor: "white",
-                  color: configure.primary_color,
-                }}
-              />
-            }
-            title={"Day"}
-            icon_color={configure.primary_color}
-            icon_bg_color={"white"}
-            subtitle={"TOTAL STATUS TARGET"}
-            value={
-              typeof report_data?.total_status_daily_target_amount !==
-              "undefined"
-                ? report_data?.total_status_daily_target_amount
-                : 0
-            }
-            subvalue={"this is sub value"}
-            changeColorValue={true}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={2}>
-          <CardComponent
-            icon={
-              <PercentIcon
-                sx={{
-                  backgroundColor: "white",
-                  color: configure.primary_color,
-                }}
-              />
-            }
-            title={"Day"}
-            icon_color={configure.primary_color}
-            icon_bg_color={"white"}
-            subtitle={"% MTD"}
-            value={
-              typeof present_mtd_data?.mtdFinal !== "undefined"
-                ? present_mtd_data?.mtdFinal
-                : 0
-            }
-            subvalue={"this is sub value"}
-            changeColorValue={true}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={2}>
-          <CardComponent
-            icon={
-              <PercentIcon
-                sx={{
-                  backgroundColor: "white",
-                  color: configure.primary_color,
-                }}
-              />
-            }
-            title={"Day"}
-            icon_color={configure.primary_color}
-            icon_bg_color={"white"}
-            subtitle={"% PREV MTD"}
-            value={
-              typeof previous_mtd_data?.mtdFinal !== "undefined"
-                ? parseFloat(previous_mtd_data?.mtdFinal).toFixed(2)
-                : 0
-            }
-            subvalue={"this is sub value"}
-            changeColorValue={true}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={2}>
-          <CardComponent
-            icon={
-              <IsoIcon
-                sx={{
-                  backgroundColor: "white",
-                  color: configure.primary_color,
-                }}
-              />
-            }
-            title={"Day"}
-            icon_color={configure.primary_color}
-            icon_bg_color={"white"}
-            subtitle={"LOSS/EXCESS (PREV MO):"}
-            value={
-              typeof previous_mtd_data?.mtdTotalStatusDailyTarget !==
-              "undefined"
-                ? parseFloat(
-                    previous_mtd_data?.mtdTotalStatusDailyTarget
-                  ).toFixed(2)
-                : 0
-            }
-            subvalue={"this is sub value"}
-            changeColorValue={true}
-          />
-        </Grid>
-      </Grid> */}
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <PageTitle
@@ -665,7 +418,7 @@ let SalesTracker = (props) => {
                 />
                 <CardContent>
                   <Grid container spacing={2}>
-                    <Grid item xs={12} sm={12} md={6} lg={6}> 
+                    <Grid item xs={12} sm={12} md={6} lg={6}>
                       {" "}
                       <CardWithTitleValueIcon
                         icon={
@@ -1061,7 +814,7 @@ let SalesTracker = (props) => {
 const ReduxFormComponent = reduxForm({
   form: formName,
   onSubmit: submit,
-})(SalesTracker);
+})(WarehouseSales);
 const selector = formValueSelector(formName);
 export default connect((state) => {
   const sales_date = selector(state, "sales_date");

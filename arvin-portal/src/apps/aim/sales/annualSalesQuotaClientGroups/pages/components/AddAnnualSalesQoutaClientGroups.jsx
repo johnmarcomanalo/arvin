@@ -25,6 +25,7 @@ import { postSettingsAnnualQuotaClientGroups } from "../../actions/AnnualSalesQo
 import AddAnnualSalesQoutaClientGroupsHooks from "../../hooks/AddAnnualSalesQoutaClientGroupsHooks";
 import Customers from "../../../../settings/accessrights/customerrights/pages/components/Customers";
 import Modal from "../../../../../../components/modal/Modal";
+import EmployeeList from "../../../../humanresource/employeeList/pages/components/EmployeeList";
 const formName = "AddAnnualSalesQoutaClientGroups";
 const submit = async (values, dispatch, props) => {
   try {
@@ -72,6 +73,20 @@ let AddAnnualSalesQoutaClientGroups = (props) => {
           }
         />
       </Modal>
+      <Modal
+        open={addAnnualSalesQoutaClientGroups.employeeModal}
+        fullScreen={matches ? false : true}
+        title={"Employee Search"}
+        size={"md"}
+        action={undefined}
+        handleClose={
+          addAnnualSalesQoutaClientGroups.onClickCloseEmployeeViewModal
+        }
+      >
+        <EmployeeList
+          onClickSelect={addAnnualSalesQoutaClientGroups.onClickSelectEmployee}
+        />
+      </Modal>
       <form onSubmit={props.handleSubmit}>
         {/* <CSRFToken /> */}
         <Grid container spacing={2}>
@@ -86,6 +101,10 @@ let AddAnnualSalesQoutaClientGroups = (props) => {
               }
               required={true}
               component={ComboBox}
+              onChangeHandle={(e, newValue) => {
+                props.change("subgroups", []);
+                props.change("type", newValue?.description);
+              }}
             />
           </Grid>
           {props.type === "GROUP" && (
@@ -127,15 +146,16 @@ let AddAnnualSalesQoutaClientGroups = (props) => {
               >
                 Selected Clients
               </Typography>
-
-              <ButtonComponent
-                stx={configure.default_button}
-                iconType="add"
-                type="button"
-                fullWidth={true}
-                children={"Add Client"}
-                click={addAnnualSalesQoutaClientGroups.onClickOpenViewModal}
-              />
+              {props.type === "SINGLE" && (
+                <ButtonComponent
+                  stx={configure.default_button}
+                  iconType="add"
+                  type="button"
+                  fullWidth={true}
+                  children={"Add Client"}
+                  click={addAnnualSalesQoutaClientGroups.onClickOpenViewModal}
+                />
+              )}
             </Stack>
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -246,17 +266,35 @@ let AddAnnualSalesQoutaClientGroups = (props) => {
               component={InputField}
             />
           </Grid>
-          {/* <Grid item xs={12} md={12}>
-              <Field
-                id="date_effectiveness"
-                name="date_effectiveness"
-                label="Date Effective"
-                type="date"
-                component={InputField}
-                required={true}
+          <Grid item xs={12} md={12}>
+            <Field
+              id="bdo_name"
+              name="bdo_name"
+              label={"BDO"}
+              required={true}
+              disabled={true}
+              component={InputField}
+            />
+          </Grid>
+          <Grid item xs={12} md={12}>
+            <Stack
+              direction="row"
+              justifyContent="flex-end"
+              alignItems="flex-end"
+              spacing={2}
+            >
+              <ButtonComponent
+                stx={configure.default_button}
+                iconType="add"
+                type="button"
+                fullWidth={true}
+                children={"Add BDO"}
+                click={
+                  addAnnualSalesQoutaClientGroups.onClickOpenEmployeeViewModal
+                }
               />
-            </Grid>
-          </Grid> */}
+            </Stack>
+          </Grid>
           <Grid item xs={12} md={12}>
             <Stack
               direction="row"

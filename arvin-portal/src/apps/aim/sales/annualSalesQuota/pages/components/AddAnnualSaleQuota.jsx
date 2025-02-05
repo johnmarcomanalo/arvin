@@ -18,8 +18,6 @@ const submit = async (values, dispatch, props) => {
   try {
     values.year_sales_target = moment(values.year_sales_target).format("YYYY");
     const res = await dispatch(postSettingsAnnualQuota(values));
-    swal(res.data.title, res.data.message, res.data.status);
-    reset();
     await dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {
@@ -27,6 +25,8 @@ const submit = async (values, dispatch, props) => {
         addModal: false,
       },
     });
+    swal(res.data.title, res.data.message, res.data.status);
+    reset();
   } catch (error) {
     console.log(error);
   }

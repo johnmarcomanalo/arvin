@@ -159,38 +159,48 @@ class UsersController extends Controller
         $filter = $request->query('f');
         $user_id = $request->query('uid'); 
 
-        //check if the user is valid and currently login
+        // Check if the user is valid and currently logged in
         if(empty($user_id)){
             $response = [
                 'result' => false,
                 'status' => 'warning',
                 'title' => 'Oppss!',
-                'message' => "Invalid request. Please login." ,
+                'message' => "Invalid request. Please login.",
             ];
-            return response($response,200);
+            return response($response, 200);
         }
-        
-        $query = User::whereNull('deleted_at');
+
+        // Query the users and join with the users_accounts table to get all accounts
+        $query = User::join('users_accounts', 'users.code', '=', 'users_accounts.user_code')
+            ->whereNull('users_accounts.deleted_at');
 
         if (isset($search)) {
-            $query->where(DB::raw("UPPER(first_name + ' ' + last_name)"), 'like', '%' . strtoupper($search) . '%');
+            $query->where(DB::raw("UPPER(users.first_name + ' ' + users.last_name)"), 'like', '%' . strtoupper($search) . '%');
         }
 
-        $dataList = $query->select([
-                'code', 
-                 DB::raw("UPPER(first_name + ' ' + last_name) AS full_name"),
-                'position'
-        ])
-        ->paginate($limit);
+        // $query->orderBy('users.first_name', 'asc');
 
+        // Select the necessary fields and get all accounts for the user
+        $dataList = $query->select([
+            'users_accounts.code',
+            DB::raw("UPPER(users.first_name + ' ' + users.last_name) AS full_name"),
+            'users_accounts.position',
+            'users_accounts.username'
+        ])
+        ->paginate($limit); // Use pagination to handle the results
+
+        // Convert to array to manipulate the response
         $dataList = $dataList->toArray();
+
         $response = [
-                'dataList' => $dataList,
-                'result' => true,
-                'title'=>'Success',
-                'status'=>'success',
-                'message'=> 'Authentication successful.',
-            ];
+            'dataList' => $dataList,
+            'result' => true,
+            'title' => 'Success',
+            'status' => 'success',
+            'message' => 'Authentication successful.',
+        ];
+
+        // Return encrypted response
         return Crypt::encryptString(json_encode($response));
     }
 

@@ -1,5 +1,5 @@
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { Grid, Stack, Tooltip, useMediaQuery } from "@mui/material";
+import { Grid, IconButton, Stack, Tooltip, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import * as React from "react";
 import ButtonComponent from "../../../../../components/button/Button";
@@ -7,17 +7,22 @@ import SearchField from "../../../../../components/inputFIeld/SearchField";
 import Modal from "../../../../../components/modal/Modal";
 import Page from "../../../../../components/pagination/Pagination";
 import Table from "../../../../../components/table/Table";
+import swal from "sweetalert";
 import configure from "../../../../configure/configure.json";
 import SalesQoutaHooks from "../hooks/AnnualSalesQoutaHooks";
 import AddAnnualSaleQuota from "./components/AddAnnualSaleQuota";
+import EditMonthlySaleQuota from "./components/EditMonthlySaleQuota";
 import InputYearPicker from "../../../../../components/inputFIeld/InputYearPicker";
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 import moment from "moment";
+import EditIcon from "@mui/icons-material/Edit";
 const formName = "AnnualSalesQuota";
 let AnnualSalesQuota = (props) => {
   const { ...annualSalesQuota } = SalesQoutaHooks(props);
   const matches = useMediaQuery("(min-width:600px)");
+  const active_page = annualSalesQuota?.active_page;
+
   return (
     <React.Fragment>
       <Modal
@@ -29,6 +34,16 @@ let AnnualSalesQuota = (props) => {
         handleClose={annualSalesQuota.onClickCloseAddModal}
       >
         <AddAnnualSaleQuota />
+      </Modal>
+      <Modal
+        open={annualSalesQuota?.editModal}
+        fullScreen={matches ? false : true}
+        title={"Edit Monthly Sale Quota"}
+        size={"xs"}
+        action={undefined}
+        handleClose={annualSalesQuota.onClickCloseEditModal}
+      >
+        <EditMonthlySaleQuota />
       </Modal>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -109,18 +124,22 @@ let AnnualSalesQuota = (props) => {
             id={"home_attendance"}
             localStorage={""}
             rowCount={annualSalesQuota.dataListCount}
-            actionShow={false}
+            actionshow={active_page.update === "1" ? true : false}
             paginationShow={false}
+            subAction1Show={false}
+            subAction2Show={active_page.update === "1" ? true : false}
             action={(row) => {
               return (
-                <Tooltip title="Delete">
-                  <DeleteOutlineIcon
-                    onClick={() => annualSalesQuota.onDeleteDeduction(row)}
-                    style={{
-                      color: "#009197",
-                      cursor: "pointer",
-                    }}
-                  />
+                <Tooltip title="Edit">
+                  <IconButton size="small">
+                    <EditIcon
+                      onClick={() => annualSalesQuota.onClickOpenEditModal(row)}
+                      style={{
+                        color: "#009197",
+                        cursor: "pointer",
+                      }}
+                    />
+                  </IconButton>
                 </Tooltip>
               );
             }}

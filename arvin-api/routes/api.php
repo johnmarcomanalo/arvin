@@ -46,6 +46,7 @@ use App\Http\Controllers\SalesDailyOutHolidayExclusionsController;
 use App\Http\Controllers\SalesDailyOutSettingsClientGroupsController;
 use App\Http\Controllers\SalesDailyOutSettingsAnnualQuotaClientGroupsController;
 use App\Http\Controllers\SalesDailyOutReportDavaotksController;
+use App\Http\Controllers\SalesDailyOutClientSalesTrackersController;
 
 use App\Http\Controllers\SalesQuotationRequestController;
 use App\Http\Controllers\SalesQuotationRequestForApprovalsController;
@@ -201,6 +202,11 @@ use Illuminate\Support\Facades\Route;
         Route::apiResource('salesdailyout/settings_quota_groups',SalesDailyOutSettingsAnnualQuotaClientGroupsController::class)->middleware(['light_decryption']);
         // Sales Daily Out Settings Annual Quota Client Groups END
 
+
+        // Client Sales Tracker START
+        Route::get('salesdailyout/sales_tracker/client/get_client_sales_tracker',[SalesDailyOutClientSalesTrackersController::class, 'get_client_sales_tracker']);
+        Route::get('salesdailyout/sales_tracker/client/insert_sap_client_sales_tracker',[SalesDailyOutClientSalesTrackersController::class, 'insert_sap_client_sales_tracker']);
+        // Client Sales Tracker END 
        
 
         //MODULE SALES DAILY OUT END 

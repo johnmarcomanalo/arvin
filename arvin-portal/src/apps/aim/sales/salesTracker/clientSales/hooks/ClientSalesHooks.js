@@ -2,15 +2,15 @@ import moment from "moment";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { Constants } from "../../../../../reducer/Contants";
-import { useDebounce } from "../../../../../utils/HelperUtils";
-import { getAnnualMonthlyDailyTargetSalesBySectionSubsection } from "../../salesQuota/actions/SalesQuotaActions";
+import { Constants } from "../../../../../../reducer/Contants";
+import { useDebounce } from "../../../../../../utils/HelperUtils";
+import { getAnnualMonthlyDailyTargetSalesBySectionSubsection } from "../../../salesQuota/actions/SalesQuotaActions";
 import {
   getSalesDailyOut,
   getStatusDailyTargetAndPercentageDailyTargetByDailyOut,
 } from "../actions/SalesTrackerActions";
-import { getSpecificRefSubSection } from "../../../settings/reference/actions/ReferenceActions";
-import { getEmployeeOrganizationAccessList } from "../../../settings/accessrights/organizationrights/actions/OrganizationRightsActions";
+import { getSpecificRefSubSection } from "../../../../settings/reference/actions/ReferenceActions";
+import { getEmployeeOrganizationAccessList } from "../../../../settings/accessrights/organizationrights/actions/OrganizationRightsActions";
 const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
   const [state, setState] = React.useState({
