@@ -76,18 +76,18 @@ export const postCheckDetailsStatus = (formValues) => async (dispatch) => {
         loading: true,
       },
     });
-    const res = await PutDefaultServices(
-      "api/epaycheck/check_details/",
-      formValues.code,
+    const res = await PostDefaultServices(
+      "api/epaycheck/check_details/update_check_status",
       formValues
-    );
-    
+    );  
+  
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
         loading: false,
       },
-    });
+    }); 
+    
     let decrypted = decryptaes(res?.data)
     return decrypted;
   } catch (error) {

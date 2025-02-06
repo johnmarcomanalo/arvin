@@ -1,4 +1,5 @@
 import {
+    ButtonGroup,
     Grid,
     Stack,
     useMediaQuery,
@@ -11,14 +12,16 @@ import {
     FormControl,
     InputLabel,
     MenuItem,
-    Select
+    Select,
+    Checkbox
   } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import * as React from "react";  
 import { change, Field, formValueSelector, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 //component
-import TableComponent from "../../../../../components/table/Table"; 
+import ButtonComponent from "../../../../../components/button/Button";
+import TableComponent from "../../../../../components/table/Table";
 import SearchField from "../../../../../components/inputFIeld/SearchField";
 import InputField from "../../../../../components/inputFIeld/InputField";
 import ComboBox from "../../../../../components/autoComplete/AutoComplete";
@@ -27,22 +30,23 @@ import Page from "../../../../../components/pagination/Pagination";
 import CheckMonitoringHooks from "../hooks/CheckMonitoringHooks"; 
 import moment from "moment";
 import configure from "../../../../configure/configure.json";
-import CheckDetails from "./components/CheckDetails";
+import Deposit from "./components/Deposit";
 let formName = "CheckMonitoring"
 const CheckMonitoring = (props) => {
-    const { ...check } = CheckMonitoringHooks(props);
+    const { ...check } = CheckMonitoringHooks(props); 
     const matches = useMediaQuery("(min-width:600px)");
+    const state = check.state
     return (
       <React.Fragment>
           <Modal
               open={check.viewModal}
               fullScreen={matches ? false : true}
-              title={"Check Details"}
+              title={"Deposit"}
               size={"sm"}
               action={undefined}
-              handleClose={check.onClickCloseViewModal}
+              handleClose={check.onClickCloseViewModalDeposit}
             >
-            <CheckDetails/>
+            <Deposit/>
           </Modal>
          <Grid container spacing={2}>  
             <Grid item xs={12} sm={12} md={12} lg={12}> 
@@ -55,7 +59,7 @@ const CheckMonitoring = (props) => {
                     <Grid item xs={12} sm={4} md={2} lg={2}>
                       <SearchField value={check.search} onChange={check.onChangeSearch} textHidden={false}/>
                     </Grid>
-                    <Grid item xs={12} sm={8} md={5} lg={5}>
+                    <Grid item xs={12} sm={8} md={6} lg={6}>
                       <Grid container spacing={2}>
                         <Grid item xs={12} sm={3} md={3} lg={3}>
                           <Field
@@ -140,16 +144,16 @@ const CheckMonitoring = (props) => {
                     rowsPerPage={check.rowsPerPage}
                     handleChangePage={check.handleChangePage}
                     handleChangeRowsPerPage={check.handleChangeRowsPerPage}
-                    onSelectItem={check.onClickOpenViewModal}
+                    // onSelectItem={check.onClickOpenViewModal}
                     id={"home_attendance"}
                     localStorage={""}
                     rowCount={check.dataListCount}
                     actionshow={true}
                     paginationShow={false}
-                    subAction1Show={true}
-                    subAction2Show={false}
+                    subAction1Show={false}
+                    subAction2Show={true}
                     action={(row, index) => {
-                      // let check_status = row?.check_status;
+                      let check_status = row?.check_status;
                       // return (
                       //   <FormControl size="small" fullWidth>
                       //     <InputLabel
@@ -182,9 +186,68 @@ const CheckMonitoring = (props) => {
                       //   </FormControl>
                       // );
 
+                      return (
+                        <Checkbox 
+                          // checked={check.selectedDataList?.includes(row.code) }
+                          onChange={async (e) => { 
+                              check.handleCheckboxChange(row,e.target.checked); 
+                          }}
+                          size="medium"
+                          sx={{ height: "25px", marginLeft: "-5px" }}
+                        />
+                      )
+
                     }}
                 /> 
-            </Grid>
+            </Grid> 
+                <Grid item xs={12} sm={12} md={12} lg={12}>
+                    <Stack
+                      direction="row"
+                      justifyContent="flex-end"
+                      alignItems="flex-end" 
+                    >
+                    {check.filterStatus === "ON-HAND" ? (
+                      <ButtonGroup disableElevation aria-label="Disabled button group">
+                          <ButtonComponent
+                            stx={configure.default_button}
+                            iconType="add"
+                            type="button"
+                            fullWidth={true}
+                            children={"Deposit"}
+                            click={check.onClickOpenViewModalDeposit}
+                          />
+                          <ButtonComponent
+                            stx={configure.default_button}
+                            iconType="add"
+                            type="button"
+                            fullWidth={true}
+                            children={"Transmit"}
+                            click={check.onClickTransmit}
+                          />
+                           <ButtonComponent
+                              stx={configure.default_button}
+                              iconType="add"
+                              type="button"
+                              fullWidth={true}
+                              children={"Reject"}
+                              click={check.reject}
+                            />
+                      </ButtonGroup>
+                    ) :  
+                    <ButtonGroup disableElevation aria-label="Disabled button group">
+                        <ButtonComponent
+                          stx={configure.default_button}
+                          iconType="delete"
+                          type="button"
+                          fullWidth={true}
+                          children={"Undo "+ check.filterStatus}
+                          click={check.onClickUndo}
+                        />
+                    </ButtonGroup>
+                    }
+                    </Stack>
+              </Grid>
+           
           </Grid>
       </React.Fragment>
     );
@@ -195,6 +258,6 @@ const CheckMonitoring = (props) => {
   })(CheckMonitoring);
   const selector = formValueSelector(formName);
   export default connect((state) => {
-    const refresh = true // state.QuotationReducer.refresh;
+    const refresh =  !state.EpayCheckReducer.refresh;
     return { refresh };
   }, {})(ReduxFormComponent);

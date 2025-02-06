@@ -47,8 +47,8 @@ import {
                     <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
-                        label="Age"
-                        value={check_details.check_status}
+                        label="Age" 
+                        // value={check_details.check_status}
                         // onChange={(e) => {
                         //   // check.onUpdateCheckDetails(
                         //   //   row,

@@ -229,6 +229,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('epaycheck/get_check_details',[EPayCheckCheckDetailsController::class,'get_check_details']);
         Route::get('epaycheck/check_details/get_weekly_check_counter_data',[EPayCheckCheckDetailsController::class,'get_weekly_check_counter_data']);
         Route::apiResource('epaycheck/check_details',EPayCheckCheckDetailsController::class)->middleware(['light_decryption']);
+        Route::post('epaycheck/check_details/update_check_status',[EPayCheckCheckDetailsController::class,'update_check_status'])->middleware(['light_decryption']);
         // EPAYCHECK END
 
     });

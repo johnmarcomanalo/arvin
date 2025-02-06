@@ -73,6 +73,12 @@ export const postCheckCollection = (formValues) => async (dispatch) => {
    
     return res;
   } catch (error) {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
     var title = configure.error_message.default;
     var message = "";
     if (typeof error.response.data.message !== "undefined")
@@ -83,12 +89,6 @@ export const postCheckCollection = (formValues) => async (dispatch) => {
         .join("\n");
       message = formattedErrors;
     }
-    await swal(title, message, "error");
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
+    await swal(title, message, "error"); 
   }
 };

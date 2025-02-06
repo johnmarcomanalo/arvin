@@ -8,6 +8,9 @@ import { Constants } from "../../../../../reducer/Contants";
 import { decryptaes } from "../../../../../utils/LightSecurity";
 import { cancelRequest } from "../../../../../api/api";
 import {
+  getAllRefBankAccounts,
+} from "../../../settings/reference/actions/ReferenceActions";
+import {
     getCheckDetails,
     postCheckDetailsStatus,
 } from "../actions/CheckMonitoringAction"
@@ -17,7 +20,7 @@ const CheckMonitoringHooks = (props) => {
     const navigate         = useNavigate();
     const dispatch         = useDispatch();
     const [searchParams, setSearchParams]   
-    = useSearchParams();
+                           = useSearchParams();
     const account_details  = useSelector((state) => state.AuthenticationReducer.account_details);
     const search           = searchParams.get("q")  != null ? String(searchParams.get("q")) : "";
     const page             = searchParams.get("p")  != null ? searchParams.get("p") : 1;
@@ -31,12 +34,15 @@ const CheckMonitoringHooks = (props) => {
     const dataList         = useSelector((state) => state.EpayCheckReducer.dataList);
     const dataListCount    = useSelector((state) => state.EpayCheckReducer.dataListCount);
     const viewModal        = useSelector((state) => state.EpayCheckReducer.viewModal); 
+    const bank_accounts    = useSelector((state) => state.ReferenceReducer.bank_accounts); 
     const refresh          = useSelector((state) => state.EpayCheckReducer.refresh);
+    const selectedDataList = useSelector((state) => state.EpayCheckReducer.selectedDataList); 
     const [state, setState]= React.useState({
         debounceTimer: null,
         debounceDelay: 1000, 
         selectedItem:{},
-    });  
+        selectedCheck:[]
+    }); 
     const columns = [
         { id:"card_name", label:"Customer", align:"left"},
         { id:"check_number", label:"Check Number", align:"left"},
@@ -74,6 +80,7 @@ const CheckMonitoringHooks = (props) => {
 
     const GetChequeList = async () => {
       try {
+        // alert('qwer')
         const data = getListParam();
          await debounce(() => { 
            dispatch(getCheckDetails(data));
@@ -90,73 +97,61 @@ const CheckMonitoringHooks = (props) => {
         filterStatus: filterStatus,
       });
        GetChequeList();
-         return () => cancelRequest();
-    }, [refresh, debounceSearch]);
-
-    const onChangeSearch = (event) => { 
-      const search = event.target.value;
-      setSearchParams({ 
-        q  : search,
-        p  : page,
-        df : filterStartQuery,
-        dt : filterEndQuery,
-        s  : filterStatus,
-        sc : filterSubSection
-      });
-    };
-
-    // ADD CHECK START FUNCTION AND PROCESS
-    const onClickOpenViewModal = (data) => {
-          setState((prev) => ({
-            ...prev,
-            selectedItem: {  
-                ...data,   
-            },
-        }));
-         
-        dispatch({
-            type: Constants.ACTION_EPAY_CHECK,
-            payload: {
-            viewModal: true,
-            selectedItem:{
-                ...data
-            }
-            },
-        });
-       
-    };
-    const onClickCloseViewModal = () => {
-        dispatch({
-            type: Constants.ACTION_EPAY_CHECK,
-            payload: {
-            viewModal: false,
-            selectedItem: {}
-            },
-        });
-    };
-
-    
-    const handleChangePage = (event, newPage) => {
-      setSearchParams({  
-        q  : search,
-        p  : page == null ? 1 : newPage,
-        df : filterStartQuery,
-        dt : filterEndQuery,
-        s  : filterStatus,
-        sc : filterSubSection
-      });
-    };
-
-    const onChangeFilterStart = (date) => {
-        const newdate = moment(date).format("YYYY-MM-DD");
-        setSearchParams({
-          q  : search, 
-          p  : page == null ? 1 : page,
-          df : newdate,
+         return () => cancelRequest(); 
+    }, [refresh,filterStartQuery,filterEndQuery,filterStatus,selectedDataList]);
+      
+      const onChangeSearch = (event) => { 
+        const search = event.target.value;
+        setSearchParams({ 
+          q  : search,
+          p  : page,
+          df : filterStartQuery,
           dt : filterEndQuery,
-          s  : filterStatus, 
+          s  : filterStatus,
           sc : filterSubSection
         });
+      };
+
+      // ADD CHECK START FUNCTION AND PROCESS
+      const onClickOpenViewModalDeposit = () => {
+          dispatch({
+              type: Constants.ACTION_EPAY_CHECK,
+              payload: {
+              viewModal: true,
+              },
+          }); 
+      };
+      const onClickCloseViewModalDeposit = () => {
+          dispatch({
+              type: Constants.ACTION_EPAY_CHECK,
+              payload: {
+              viewModal: false,
+              selectedItem: {}
+              },
+          });
+      };
+
+      const handleChangePage = (event, newPage) => {
+        setSearchParams({  
+          q  : search,
+          p  : page == null ? 1 : newPage,
+          df : filterStartQuery,
+          dt : filterEndQuery,
+          s  : filterStatus,
+          sc : filterSubSection
+        });
+      };
+
+      const onChangeFilterStart = (date) => {
+          const newdate = moment(date).format("YYYY-MM-DD");
+          setSearchParams({
+            q  : search, 
+            p  : page == null ? 1 : page,
+            df : newdate,
+            dt : filterEndQuery,
+            s  : filterStatus, 
+            sc : filterSubSection
+          });
       };
     
       const onChangeFilterEnd = (date) => {
@@ -180,6 +175,13 @@ const CheckMonitoringHooks = (props) => {
           s  : status, 
           sc : filterSubSection
         });
+        
+        dispatch({
+          type: Constants.ACTION_EPAY_CHECK,
+          payload: {
+            selectedDataList: [], 
+          },
+        })
       };
 
       const onChangeFilteSubsection = (subsection) => {
@@ -191,6 +193,12 @@ const CheckMonitoringHooks = (props) => {
           s  : filterStatus, 
           sc : subsection
         });
+        dispatch({
+          type: Constants.ACTION_EPAY_CHECK,
+          payload: {
+            selectedDataList: [], 
+          },
+        })
       };
 
       const onUpdateCheckDetails = async (data, values) => {
@@ -212,7 +220,85 @@ const CheckMonitoringHooks = (props) => {
         } catch (error) {
           console.log(error);
         }
-      }; 
+      };
+
+      const handleCheckboxChange = (row, checked) => {
+        if (checked) {
+          if (!selectedDataList.includes(row.code)) {
+            selectedDataList.push(row.code);
+          }
+        } else {
+          const index = selectedDataList.indexOf(row.code);
+          if (index > -1) {
+            selectedDataList.splice(index, 1);
+          }
+        }
+      };  
+      
+      const updateStatus = async (data,successMessage, errorMessage) => {
+        console.log("Selected Checks: updateStatus",selectedDataList);
+        // Check if any checks are selected
+        if (data.code.length === 0) {
+          await swal("Error", `Please select at least one check to ${data?.status.toLowerCase()}`, "error");
+          return;
+        }
+      
+        try {
+          // Ask for confirmation before proceeding
+          const isConfirm = await swal({
+            title: data?.status,
+            text: `Are you sure you want to proceed with ${data?.status}? `,
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+          });
+      
+          if (isConfirm) {
+            // Dispatch the action to update the status
+            const res = await dispatch(postCheckDetailsStatus(data));
+      
+            // Handle the response
+            if (res) {  
+              await swal(res.title, res.message, res.status); 
+              dispatch({
+                type: Constants.ACTION_EPAY_CHECK,
+                payload: {
+                  selectedDataList: [],
+                  refresh: !state.refresh,
+                  viewModal: false
+                },
+              })
+            }
+          } else {
+
+          }
+          
+          
+         
+        } catch (error) {
+          console.error("Error updating status:", error); // Use console.error for errors
+          swal("Oops!", errorMessage || "Something went wrong, please try again!", "error");
+        }
+      };
+      
+      const onClickTransmit = async () => {
+        const data = {
+          status: "TRANSMITTED",
+          code: selectedDataList,
+        }
+        await updateStatus(data, "Check(s) transmitted successfully!", "Failed to transmit check(s).");
+      };
+       
+
+      const onClickUndo = async () => {
+        const data = {
+          status: "UNDO",
+          code: selectedDataList, 
+        }
+        await updateStatus(data, "Check(s) deposited successfully!", "Failed to deposit check(s).");
+      };
+     
+      
    
     return {
         state,
@@ -227,15 +313,21 @@ const CheckMonitoringHooks = (props) => {
         search,  
         status,
         selectedItem,
+        bank_accounts,
+        filterStatus,
+        selectedDataList,
         onChangeSearch,
-        onClickOpenViewModal,
-        onClickCloseViewModal,
+        onClickOpenViewModalDeposit,
+        onClickCloseViewModalDeposit,
         handleChangePage,
         onChangeFilterStart,
         onChangeFilterEnd,
         onChangeFilterStatus,
         onChangeFilteSubsection,
         onUpdateCheckDetails, 
+        handleCheckboxChange,
+        onClickTransmit, 
+        onClickUndo
     };
 };
 

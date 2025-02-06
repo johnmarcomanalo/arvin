@@ -18,7 +18,7 @@ class CreateEPayCheckCheckDetailLogsTable extends Migration
             $table->bigInteger('code')->unique();
             $table->string('check_details_code');
             $table->string('check_status');
-            $table->string('bank_deposited')->nullable(); // For deposited status
+            $table->string('bank_description')->nullable(); // For deposited status
             $table->dateTime('deposit_date')->nullable(); // For deposited status
             $table->timestamp('received_at')->nullable(); // For transmitted status
             $table->string('received_by_transmitted')->nullable(); // For transmitted status

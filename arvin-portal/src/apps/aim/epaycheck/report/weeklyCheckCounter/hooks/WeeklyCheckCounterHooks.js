@@ -6,7 +6,7 @@ import { useDebounce } from "../../../../../../utils/HelperUtils";
 import { cancelRequest } from "../../../../../../api/api";
 import { Constants } from "../../../../../../reducer/Contants";
 import {
-  getWeeklyChecCounterkData, 
+  getWeeklyChecCounterData, 
 } from "../actions/WeeklyCheckCounterActions";
 import { ViewAmountFormatingDecimals } from "../../../../../../utils/AccountingUtils";
 const WeeklyCheckCounterHooks = (props) => {
@@ -58,7 +58,7 @@ const WeeklyCheckCounterHooks = (props) => {
        try {
          const data = getListParam();
           await debounce(() => { 
-            dispatch(getWeeklyChecCounterkData(data));
+            dispatch(getWeeklyChecCounterData(data));
          }, state.debounceDelay);
        } catch (error) {
          await console.error(error);
