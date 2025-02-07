@@ -32,7 +32,7 @@ let AnnualSalesQoutaClientGroups = (props) => {
       >
         <AddAnnualSalesQoutaClientGroups />
       </Modal>
-      {/* <Modal
+      <Modal
         open={annualSalesQuotaClientGroups?.editModal}
         fullScreen={matches ? false : true}
         title={"Edit Monthly Sale Quota"}
@@ -40,8 +40,8 @@ let AnnualSalesQoutaClientGroups = (props) => {
         action={undefined}
         handleClose={annualSalesQuotaClientGroups.onClickCloseEditModal}
       >
-        <EditMonthlySaleQuota />
-      </Modal> */}
+        {/* <EditMonthlySaleQuota /> */}
+      </Modal>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Stack

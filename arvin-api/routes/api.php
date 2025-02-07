@@ -47,6 +47,7 @@ use App\Http\Controllers\SalesDailyOutSettingsClientGroupsController;
 use App\Http\Controllers\SalesDailyOutSettingsAnnualQuotaClientGroupsController;
 use App\Http\Controllers\SalesDailyOutReportDavaotksController;
 use App\Http\Controllers\SalesDailyOutClientSalesTrackersController;
+use App\Http\Controllers\SalesDailyOutSettingsClientSubGroupsController;
 
 use App\Http\Controllers\SalesQuotationRequestController;
 use App\Http\Controllers\SalesQuotationRequestForApprovalsController;
@@ -196,6 +197,13 @@ use Illuminate\Support\Facades\Route;
         Route::get('salesdailyout/client_groups/get_group_clients',[SalesDailyOutSettingsClientGroupsController::class,'get_group_clients']);
         Route::apiResource('salesdailyout/client_groups',SalesDailyOutSettingsClientGroupsController::class)->middleware(['light_decryption']);
         // Sales Client Group END
+
+        // Sales Client Subgroup START
+        Route::apiResource('salesdailyout/client_subgroups',SalesDailyOutSettingsClientSubGroupsController::class)->middleware(['light_decryption']);
+        // Sales Client Subgroup END
+
+
+
 
         // Sales Daily Out Settings Annual Quota Client Groups START
         Route::get('salesdailyout/settings_quota_groups/annual_quota_client_groups',[SalesDailyOutSettingsAnnualQuotaClientGroupsController::class,'annual_quota_client_groups']);//for pagination

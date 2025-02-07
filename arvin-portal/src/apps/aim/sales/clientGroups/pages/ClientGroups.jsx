@@ -9,6 +9,7 @@ import configure from "../../../../configure/configure.json";
 import ClientGroupsHooks from "../hooks/ClientGroupsHooks";
 import AddClientGroup from "./components/AddClientGroup";
 import Table from "../../../../../components/table/Table";
+import ViewClientGroup from "./components/ViewClientGroup";
 const formName = "ClientGroups";
 let ClientGroups = (props) => {
   const { ...clientGroups } = ClientGroupsHooks(props);
@@ -24,6 +25,16 @@ let ClientGroups = (props) => {
         handleClose={clientGroups.onClickOpenCloseModal}
       >
         <AddClientGroup />
+      </Modal>
+      <Modal
+        open={clientGroups?.viewModal}
+        fullScreen={matches ? false : true}
+        title={"View Group"}
+        size={"md"}
+        action={undefined}
+        handleClose={clientGroups.onClickCloseViewModal}
+      >
+        <ViewClientGroup />
       </Modal>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>

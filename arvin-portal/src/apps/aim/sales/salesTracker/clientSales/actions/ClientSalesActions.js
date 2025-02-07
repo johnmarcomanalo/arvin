@@ -9,7 +9,7 @@ import swal from "sweetalert";
 import configure from "../../../../../configure/configure.json";
 import { decryptaes } from "../../../../../../utils/LightSecurity";
 import { AuthGetReferencesChild } from "../../../../settings/reference/services/referenceServices";
-export const getSalesDailyOut = (values) => async (dispatch) => {
+export const getClientSalesTracker = (values) => async (dispatch) => {
   try {
     await dispatch({
       type: Constants.ACTION_LOADING,
@@ -19,20 +19,16 @@ export const getSalesDailyOut = (values) => async (dispatch) => {
     });
 
     const response = GetSpecificDefaultServices(
-      "api/salesdailyout/sales_tracker/get_sales_tracker/?page=" +
+      "api/salesdailyout/sales_tracker/client/get_client_sales_tracker/?y=" +
+        values.y +
+        "&m=" +
+        values.m +
+        "&p=" +
         values.p +
-        "&limit=" +
-        values.l +
-        "&q=" +
-        values.q +
-        "&f=" +
-        values.f +
-        "&uid=" +
-        values.u +
-        "&sc=" +
-        values.sc +
-        "&pg=" +
-        values.pg
+        "&c=" +
+        values.c +
+        "&b=" +
+        values.b
     );
     response.then((res) => {
       try {
@@ -40,15 +36,8 @@ export const getSalesDailyOut = (values) => async (dispatch) => {
         dispatch({
           type: Constants.ACTION_SALES_DAILY_OUT,
           payload: {
-            dataList: decrypted.dataList.data,
-            dataListCount: decrypted.dataList.total,
-            report_data: decrypted.report_data,
-            present_mtd_data: decrypted.present_mtd_data,
-            previous_mtd_data: decrypted.previous_mtd_data,
-            final_ytd_data: decrypted.final_ytd_data,
-            ytdTotalDailyOutAmount: decrypted.ytdTotalDailyOutAmount,
-            ytdTotalDailyQoutaAmount: decrypted.ytdTotalDailyQoutaAmount,
-            today_data: decrypted.today_data,
+            dataList: decrypted.dataList.original,
+            // dataListCount: decrypted.dataList.total,
           },
         });
       } catch (error) {

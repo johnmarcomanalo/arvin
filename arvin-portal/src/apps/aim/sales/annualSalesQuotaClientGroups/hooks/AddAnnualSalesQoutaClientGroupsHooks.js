@@ -145,7 +145,6 @@ const AddAnnualSalesQoutaClientGroupsHooks = (props) => {
   };
 
   const onClickSelectEmployee = (data) => {
-    console.log(data);
     props.dispatch(
       change("AddAnnualSalesQoutaClientGroups", "bdo", data.username)
     );

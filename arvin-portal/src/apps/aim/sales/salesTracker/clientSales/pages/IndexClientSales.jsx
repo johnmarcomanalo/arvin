@@ -7,6 +7,7 @@ import * as React from "react";
 import BreadCrumbs from "../../../../../../components/breadCrumb/BreadCrumbs";
 import configure from "../../../../../configure/configure.json";
 import ClientSales from "./ClientSales";
+import PageTitle from "../../../../../../components/pageTItle/PageTitle";
 const title_page = "Client Sales";
 const breadCrumbArray = [
   {
@@ -69,6 +70,9 @@ export default function IndexClientSales(props) {
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <BreadCrumbs breadCrumbs={breadCrumbArray} />
         </Grid>{" "}
+        <Grid item xs={12} sm={12} md={12} lg={12}>
+          <PageTitle title={"Client Sales"} subtitle={null} />
+        </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <ClientSales />
         </Grid>

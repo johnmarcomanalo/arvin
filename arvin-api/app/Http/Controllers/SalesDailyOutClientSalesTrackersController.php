@@ -8,6 +8,9 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use App\Models\SalesDailyOutSettingsClientSubGroups;
+use App\Models\SalesDailyOutSettingsAnnualQuotaClientGroups;
+use App\Models\UsersAccounts;
+use App\Models\User;
 use SebastianBergmann\LinesOfCode\Counter;
 
 class SalesDailyOutClientSalesTrackersController extends Controller
@@ -68,12 +71,12 @@ class SalesDailyOutClientSalesTrackersController extends Controller
     }
 
 
-    public function get_client_sales_tracker(){
-        $selected_year = 2025;
-        $selected_month = 1;
-        $selected_product = 'INDUSTRIAL SALT';
-        $selected_group_code = null;
-        $bdo = null;
+    public function get_client_sales_tracker(Request $request){
+        $selected_year = $request->query('y');
+        $selected_month = $request->query('m');
+        $selected_product = $request->query('p');
+        $selected_group_code = $request->query('c');
+        $bdo = $request->query('b');
 
         $data = SalesDailyOutClientSalesTrackers::where('year_sales_target', $selected_year)
         ->whereMonth('sales_date', $selected_month)
@@ -88,11 +91,10 @@ class SalesDailyOutClientSalesTrackersController extends Controller
         })
         ->whereNull('deleted_at')
         ->get();
-
         $weekGroups = [];
+
         foreach ($data as $sale) {
             $groupCode = $sale->sales_daily_out_settings_annual_quota_client_groups_code;
-            // Initialize the group if not already set
             if (!isset($weekGroups[$groupCode])) {
                 $weekGroups[$groupCode] = [
                     'month_sales_daily_out' => 0,
@@ -105,32 +107,75 @@ class SalesDailyOutClientSalesTrackersController extends Controller
                     '22-30/31' => 0,
                 ];
             }
+            // $mtd_date_selected_month = $this->get_mtd($selected_year, $selected_month,$bdo,$selected_product,$groupCode);
+            // $ytd_date_selected_month = $this->get_ytd($selected_year, $selected_month,$bdo,$selected_product,$groupCode);
+            $data_quota = SalesDailyOutSettingsAnnualQuotaClientGroups::where('sales_daily_out_settings_client_group_code',$groupCode)->first();
+
+            if ($data_quota) {
+                 $bdo_user_account = UsersAccounts::where('username', $data_quota->bdo)
+                    ->select('user_code')
+                    ->first();
+
+                if ($bdo_user_account) {
+                    $bdo_user = User::where('code', $bdo_user_account->user_code)
+                        ->first(DB::raw("UPPER(users.first_name + ' ' + users.last_name) AS full_name"));
+
+                    $weekGroups[$groupCode]['bdo'] = $bdo_user->full_name ?? 'N/A';
+                }
+            }
             $mtd_date_selected_month = $this->get_mtd($selected_year, $selected_month,$bdo,$selected_product,$groupCode);
             $ytd_date_selected_month = $this->get_ytd($selected_year, $selected_month,$bdo,$selected_product,$groupCode);
 
             // Increment totals
-            $weekGroups[$groupCode]['month_sales_daily_out'] += $sale->sales_daily_out;
-            $weekGroups[$groupCode]['month_sales_daily_qouta'] += $sale->sales_daily_qouta;
-            $weekGroups[$groupCode]['sales_daily_qouta'] = $sale->sales_daily_qouta;
-            $weekGroups[$groupCode]['mtd'] = $mtd_date_selected_month;
-            $weekGroups[$groupCode]['ytd'] = $ytd_date_selected_month;
-            // Determine the week range
-            $day = (int) date('j', strtotime($sale->sales_date));
+            // $weekGroups[$groupCode]['month_sales_daily_out'] += $sale->sales_daily_out;
+            // $weekGroups[$groupCode]['month_sales_daily_qouta'] += $sale->sales_daily_qouta;
+            // $weekGroups[$groupCode]['sales_daily_qouta'] = $sale->sales_daily_qouta;
+            // $weekGroups[$groupCode]['mtd_total_daily_qouta_amount'] = $mtd_date_selected_month['mtd_total_daily_qouta_amount'];
+            // $weekGroups[$groupCode]['mtd_total_daily_out_amount'] = $mtd_date_selected_month['mtd_total_daily_out_amount'];
+            // $weekGroups[$groupCode]['mtd_total_status_daily_target'] = $mtd_date_selected_month['mtd_total_status_daily_target'];
+            // $weekGroups[$groupCode]['mtd_final_percentage'] = $mtd_date_selected_month['mtd_final_percentage'];
+            // $weekGroups[$groupCode]['ytd_total_daily_qouta_amount'] = $ytd_date_selected_month['ytd_total_daily_qouta_amount'];
+            // $weekGroups[$groupCode]['ytd_total_daily_out_amount'] = $ytd_date_selected_month['ytd_total_daily_out_amount'];
+            // $weekGroups[$groupCode]['ytd_total_status_daily_target'] = $ytd_date_selected_month['ytd_total_status_daily_target'];
+            // $weekGroups[$groupCode]['ytd_final_percentage'] = $ytd_date_selected_month['ytd_final_percentage'];
 
+
+
+            $weekGroups[$groupCode]['month_sales_daily_out'] = round($weekGroups[$groupCode]['month_sales_daily_out'] + $sale->sales_daily_out, 4);
+            $weekGroups[$groupCode]['month_sales_daily_qouta'] = round($weekGroups[$groupCode]['month_sales_daily_qouta'] + $sale->sales_daily_qouta, 4);
+            $weekGroups[$groupCode]['sales_daily_qouta'] = round($sale->sales_daily_qouta, 4);
+            $weekGroups[$groupCode]['mtd_total_daily_qouta_amount'] = round($mtd_date_selected_month['mtd_total_daily_qouta_amount'], 4);
+            $weekGroups[$groupCode]['mtd_total_daily_out_amount'] = round($mtd_date_selected_month['mtd_total_daily_out_amount'], 4);
+            $weekGroups[$groupCode]['mtd_total_status_daily_target'] = round($mtd_date_selected_month['mtd_total_status_daily_target'], 4);
+            $weekGroups[$groupCode]['mtd_final_percentage'] = round($mtd_date_selected_month['mtd_final_percentage'], 4);
+            $weekGroups[$groupCode]['ytd_total_daily_qouta_amount'] = round($ytd_date_selected_month['ytd_total_daily_qouta_amount'], 4);
+            $weekGroups[$groupCode]['ytd_total_daily_out_amount'] = round($ytd_date_selected_month['ytd_total_daily_out_amount'], 4);
+            $weekGroups[$groupCode]['ytd_total_status_daily_target'] = round($ytd_date_selected_month['ytd_total_status_daily_target'], 4);
+            $weekGroups[$groupCode]['ytd_final_percentage'] = round($ytd_date_selected_month['ytd_final_percentage'], 4);
+
+            $day = (int) date('j', strtotime($sale->sales_date));
             if ($day >= 1 && $day <= 7) {
-                $weekGroups[$groupCode]['1-7'] += $sale->sales_daily_out;
+                $weekGroups[$groupCode]['1-7'] = round($weekGroups[$groupCode]['1-7'] + $sale->sales_daily_out, 4);
             } elseif ($day >= 8 && $day <= 14) {
-                $weekGroups[$groupCode]['8-14'] += $sale->sales_daily_out;
+                $weekGroups[$groupCode]['8-14'] = round($weekGroups[$groupCode]['8-14'] + $sale->sales_daily_out, 4);
             } elseif ($day >= 15 && $day <= 21) {
-                $weekGroups[$groupCode]['15-21'] += $sale->sales_daily_out;
+                $weekGroups[$groupCode]['15-21'] = round($weekGroups[$groupCode]['15-21'] + $sale->sales_daily_out, 4);
             } else {
-                $weekGroups[$groupCode]['22-30/31'] += $sale->sales_daily_out;
+                $weekGroups[$groupCode]['22-30/31'] = round($weekGroups[$groupCode]['22-30/31'] + $sale->sales_daily_out, 4);
             }
 
-            
         }
+        $dataList = response()->json(array_values($weekGroups));
 
-        return response()->json(array_values($weekGroups));
+        $response = [
+                "dataList"=>$dataList,
+                'result'=>True,
+                'title'=>'Success',
+                'status'=>'success',
+                'message'=> 'Authentication successful.',
+            ];
+        return Crypt::encryptString(json_encode($response));
+
     }
 
 
@@ -159,7 +204,9 @@ class SalesDailyOutClientSalesTrackersController extends Controller
                 ->when(isset($groupCode), function ($qry) use ($groupCode) {
                     return $qry->where('sales_daily_out_settings_annual_quota_client_groups_code', $groupCode);
                 })
-                ->where('ref_product_groups_description',$selected_product)
+                ->when(isset($selected_product), function ($qry) use ($selected_product) {
+                    return $qry->where('ref_product_groups_description',$selected_product);
+                })
                 ->whereDate('sales_date','>=', $firstDayOfMonth)
                 ->whereDate('sales_date','<=',$LastOrCurrentDateOfTheMonth)
                 ->whereNull('deleted_at')
@@ -218,7 +265,9 @@ class SalesDailyOutClientSalesTrackersController extends Controller
                 ->when(isset($groupCode), function ($qry) use ($groupCode) {
                     return $qry->where('sales_daily_out_settings_annual_quota_client_groups_code', $groupCode);
                 })
-                ->where('ref_product_groups_description',$selected_product)
+                ->when(isset($selected_product), function ($qry) use ($selected_product) {
+                    return $qry->where('ref_product_groups_description',$selected_product);
+                })
                 ->whereDate('sales_date','>=', $januaryFirst)
                 ->whereDate('sales_date','<=',$LastOrCurrentDateOfTheMonth)
                 ->whereNull('deleted_at')
@@ -276,18 +325,34 @@ class SalesDailyOutClientSalesTrackersController extends Controller
         $recordsByDate = [];
         $final_results = [];
         
+        // foreach ($records as $record) {
+        //     $date = Carbon::parse($record->createdate)->format('Y-m-d');
+        //     $recordsByDate[$date] = $record;
+        // }
+
+        // foreach ($recordsByDate as $date => $record) {
+        //     $results[] = [
+        //         'sales_date' => $record->createdate,
+        //         'sales_daily_out' => $record->QtyInKg,
+        //         'ref_product_groups_description'=> $record->u_groupcategory
+        //     ];
+        // }
+        // Group records by date and sum QtyInKg
         foreach ($records as $record) {
             $date = Carbon::parse($record->createdate)->format('Y-m-d');
-            $recordsByDate[$date] = $record;
-        }
 
-        foreach ($recordsByDate as $date => $record) {
-            $results[] = [
-                'sales_date' => $record->createdate,
-                'sales_daily_out' => $record->QtyInKg,
-                'ref_product_groups_description'=> $record->u_groupcategory
-            ];
+            if (!isset($recordsByDate[$date])) {
+                $recordsByDate[$date] = [
+                    'sales_date' => $record->createdate,
+                    'sales_daily_out' => $record->QtyInKg,
+                    'ref_product_groups_description' => $record->u_groupcategory
+                ];
+            } else {
+                $recordsByDate[$date]['sales_daily_out'] += $record->QtyInKg;
+            }
         }
+        
+        $results = array_values($recordsByDate);
 
         foreach ($datalist as $value) {
             $sales_daily_qouta = $value['sales_daily_qouta'];

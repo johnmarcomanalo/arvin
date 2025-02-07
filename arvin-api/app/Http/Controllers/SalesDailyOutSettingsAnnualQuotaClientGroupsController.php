@@ -6,6 +6,7 @@ use App\Models\SalesDailyOutSettingsAnnualQuotaClientGroups;
 use App\Models\SalesDailyOutSettingsClientGroups;
 use App\Models\SalesDailyOutSettingsClientSubGroups;
 use App\Models\SalesDailyOutClientSalesTrackers;
+use App\Models\RefProductGroups;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
@@ -128,21 +129,21 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
 
         } else {
 
-                $check_quota = SalesDailyOutSettingsAnnualQuotaClientGroups::where('year_sales_target',$fields['year_sales_target'])
-                    ->where('sales_daily_out_settings_client_group_code',$fields['sales_daily_out_settings_client_group_code'])
-                    ->where('ref_product_groups_code',$fields['ref_product_groups_code'])
-                    ->whereNull('deleted_at')
-                    ->count();
+                // $check_quota = SalesDailyOutSettingsAnnualQuotaClientGroups::where('year_sales_target',$fields['year_sales_target'])
+                //     ->where('sales_daily_out_settings_client_group_code',$fields['sales_daily_out_settings_client_group_code'])
+                //     ->where('ref_product_groups_code',$fields['ref_product_groups_code'])
+                //     ->whereNull('deleted_at')
+                //     ->count();
 
-                if($check_quota > 0){
-                    $response = [
-                            'message' => 'There is already a existing quota for - : '.$fields["subsection"].' Year : '.$fields['year_sales_target'].'with date effectiveness of'.$fields['date_effectiveness'] ,
-                            'result' => false,
-                            'status' => 'warning',
-                            'title' => 'Oppss!',
-                    ];
-                    return response($response,409);
-                }
+                // if($check_quota > 0){
+                //     $response = [
+                //             'message' => 'There is already a existing quota for - : '.$fields["subsection"].' Year : '.$fields['year_sales_target'].'with date effectiveness of'.$fields['date_effectiveness'] ,
+                //             'result' => false,
+                //             'status' => 'warning',
+                //             'title' => 'Oppss!',
+                //     ];
+                //     return response($response,409);
+                // }
                 
                 $check_in_group = SalesDailyOutSettingsClientGroups::where('description',$fields['description'])
                     ->whereNull('deleted_at')
@@ -265,8 +266,7 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
      */
     public function show($id)
     {
-                return Crypt::encryptString($this->do_show($id));
-
+        return Crypt::encryptString($this->do_show($id));
     }
 
     /**
@@ -279,14 +279,11 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
     public function update(Request $request, $id)
     {
         $fields = $request->validate([
+            'sales_daily_out_settings_client_group_code' => 'required',
             'year_sales_target' => 'required',
-            'ref_product_groups_code' => [
-                'required',
-                Rule::unique('sales_daily_out_settings_annual_quota_client_groups')->ignore($id, 'code'),
-            ],
             'annual_sales_target' => 'required',
+            'ref_product_groups_code' => 'required',
             'january_sales_target' => 'required',
-            'february_sales_target' => 'required',
             'february_sales_target' => 'required',
             'march_sales_target' => 'required',
             'april_sales_target' => 'required',
@@ -298,16 +295,75 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
             'october_sales_target' => 'required',
             'november_sales_target' => 'required',
             'december_sales_target' => 'required',
-            'added_by' => 'required',
+            'bdo' => 'required',
+            'added' => 'required',
             'modified_by' => 'required',
         ]);
         
-        $updateFields = Arr::except($fields, ['added_by']);
+        // $updateFields = Arr::except($fields, ['added_by']);
 
-        SalesDailyOutSettingsAnnualQuotaClientGroups::where('code', $id)
-            ->firstOrFail()
-            ->update($updateFields);
+        // SalesDailyOutSettingsAnnualQuotaClientGroups::where('code', $id)
+        //     ->firstOrFail()
+        //     ->update($updateFields);
+        $update_quota = SalesDailyOutSettingsAnnualQuotaClientGroups::where('code',$id)
+            ->first();
+        if(empty($update_quota)){
+            $response = [
+                'result' => false,
+                'icon' => 'error',
+                'message' => 'Quota does not exists!',
+            ];
+            return response($response, 404);
+        }
 
+        $check_data_same_value = SalesDailyOutSettingsAnnualQuotaClientGroups::where('sales_daily_out_settings_client_group_code',$fields["sales_daily_out_settings_client_group_code"])
+            ->where('year_sales_target',$fields["year_sales_target"])
+            ->where('annual_sales_target',$fields["annual_sales_target"])
+            ->where('ref_product_groups_code',$fields["ref_product_groups_code"])
+            ->where('january_sales_target',$fields["january_sales_target"])
+            ->where('february_sales_target',$fields["february_sales_target"])
+            ->where('march_sales_target',$fields["march_sales_target"])
+            ->where('april_sales_target',$fields["april_sales_target"])
+            ->where('may_sales_target',$fields["may_sales_target"])
+            ->where('june_sales_target',$fields["june_sales_target"])
+            ->where('july_sales_target',$fields["july_sales_target"])
+            ->where('august_sales_target',$fields["august_sales_target"])
+            ->where('september_sales_target',$fields["september_sales_target"])
+            ->where('october_sales_target',$fields["october_sales_target"])
+            ->where('november_sales_target',$fields["november_sales_target"])
+            ->where('december_sales_target',$fields["december_sales_target"])
+            // ->where('bdo',$fields["bdo"])
+            ->first();
+
+
+        if(!empty($check_data_same_value)){
+            $response = [
+                'result' => false,
+                'icon' => 'error',
+                'message' => 'Details already exists!',
+            ];
+            return response($response, 404);
+        }
+
+        $update_quota->update([
+            'year_sales_target' => $fields['year_sales_target'],
+            'annual_sales_target' => $fields['annual_sales_target'],
+            'ref_product_groups_code' =>$fields['ref_product_groups_code'],
+            'january_sales_target' => $fields["january_sales_target"],
+            'february_sales_target' => $fields["february_sales_target"],
+            'march_sales_target' => $fields["march_sales_target"],
+            'april_sales_target' => $fields["april_sales_target"],
+            'may_sales_target' => $fields["may_sales_target"],
+            'june_sales_target' => $fields["june_sales_target"],
+            'july_sales_target' => $fields["july_sales_target"],
+            'august_sales_target' => $fields["august_sales_target"],
+            'september_sales_target' => $fields["september_sales_target"],
+            'october_sales_target' => $fields["october_sales_target"],
+            'november_sales_target' => $fields["november_sales_target"],
+            'december_sales_target' => $fields["december_sales_target"],   
+            'bdo' => $fields["bdo"],   
+            'modified_by' => $fields["modified_by"],   
+        ]);
         $response = [
             'message' => '',
             'result' => true,

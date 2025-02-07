@@ -6,18 +6,31 @@ import { cancelRequest } from "../../../../../api/api";
 import { Constants } from "../../../../../reducer/Contants";
 import { useDebounce } from "../../../../../utils/HelperUtils";
 import { getClientGroups } from "../actions/ClientGroupsActions";
+import { getClientSubGroups } from "../actions/ClientSubgroupsActions";
 const ClientGroupsHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
   const refresh2 = useSelector((state) => state.SalesDailyOutReducer.refresh2);
   const addModal = useSelector((state) => state.SalesDailyOutReducer.addModal);
-  const viewModal = useSelector((state) => state.ReferenceReducer.viewModal);
+  const viewModal = useSelector(
+    (state) => state.SalesDailyOutReducer.viewModal
+  );
 
   const dataList = useSelector((state) => state.SalesDailyOutReducer.dataList);
   const dataListCount = useSelector(
     (state) => state.SalesDailyOutReducer.dataListCount
   );
+
+  const dataSubList = useSelector(
+    (state) => state.SalesDailyOutReducer.dataSubList
+  );
+  const dataSubListCount = useSelector(
+    (state) => state.SalesDailyOutReducer.dataSubListCount
+  );
   const account_details = useSelector(
     (state) => state.AuthenticationReducer.account_details
+  );
+  const selectedDataList = useSelector(
+    (state) => state.SalesDailyOutReducer.selectedDataList
   );
   const [state, setState] = React.useState({
     debounceTimer: null,
@@ -40,14 +53,14 @@ const ClientGroupsHooks = (props) => {
   const dispatch = useDispatch();
 
   const columns = [
-    { id: "code", label: "Ranking", align: "left" },
+    { id: "code", label: "Code", align: "left" },
     { id: "description", label: "Description", align: "left" },
   ];
 
-  const columns2 = [
-    { id: "description", label: "Month", align: "left" },
-    { id: "placement", label: "Placement", align: "left" },
-    { id: "value", label: "Points", align: "left" },
+  const subcolumns = [
+    { id: "customer_code", label: "Code", align: "left" },
+    { id: "description", label: "Description", align: "left" },
+    { id: "type", label: "Type", align: "left" },
   ];
   const selected_code = useSelector(
     (state) => state.SalesDailyOutReducer.selected_code
@@ -86,8 +99,15 @@ const ClientGroupsHooks = (props) => {
       },
     });
   };
-  const onSelectItem = (data) => {
-    console.log(data);
+  const onSelectItem = async (data) => {
+    await dispatch(getClientSubGroups(data.code));
+    await dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        selectedDataList: data,
+        viewModal: true,
+      },
+    });
   };
   const onChangeSearch = (event) => {
     // SEARCH DATA
@@ -132,7 +152,14 @@ const ClientGroupsHooks = (props) => {
     GetClientGroups();
     return () => cancelRequest();
   }, [refresh, filterQuery, search]);
-
+  const onClickCloseViewModal = () => {
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        viewModal: false,
+      },
+    });
+  };
   return {
     search,
     page,
@@ -143,9 +170,12 @@ const ClientGroupsHooks = (props) => {
     addModal,
     selected_code,
     account_details,
-    columns2,
+    subcolumns,
     filterQuery,
     viewModal,
+    dataSubList,
+    dataListCount,
+    selectedDataList,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,
@@ -153,6 +183,7 @@ const ClientGroupsHooks = (props) => {
     onClickOpenAddModal,
     onChangeFilter,
     onClickOpenCloseModal,
+    onClickCloseViewModal,
   };
 };
 
