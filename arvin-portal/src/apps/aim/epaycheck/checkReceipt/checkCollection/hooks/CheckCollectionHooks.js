@@ -1,15 +1,14 @@
-import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
-import React,{ useState, useEffect } from "react"; 
-import { useDebounce } from "../../../../../utils/HelperUtils";
+import React from "react"; 
+import { useDebounce } from "utils/HelperUtils";
 import { useSearchParams, useNavigate } from "react-router-dom"; 
-import { change, Field, formValueSelector, reduxForm, reset } from "redux-form";
-import { Constants } from "../../../../../reducer/Contants";
-import { decryptaes } from "../../../../../utils/LightSecurity";
-import { cancelRequest } from "../../../../../api/api";
+import { reset } from "redux-form";
+import { Constants } from "reducer/Contants";
+import { decryptaes } from "utils/LightSecurity";
+import { cancelRequest } from "api/api";
 import {
   getEmployeeCustomerAccessDetails,
-} from "../../../settings/reference/actions/ReferenceActions";
+} from "../../../../settings/reference/actions/ReferenceActions";
 import {
   getSalesInvoiceDetails,
   postCheckCollection
@@ -186,7 +185,7 @@ const CheckCollectionHooks = (props) => {
       try { 
     
           const isConfirm = await swal({
-            title: "Ensure all invoice details are correct before submission and Invoice",
+            title: "Ensure all invoice details are correct before submission",
             text: "Are you sure you want to submit?",
             icon: "warning",
             buttons: true,

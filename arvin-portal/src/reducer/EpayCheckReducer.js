@@ -20,6 +20,8 @@ const initialState = {
   addModal2: false,
   selected_code: null,
   editModal: false,
+  viewModal: false,
+  viewModal2: false,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

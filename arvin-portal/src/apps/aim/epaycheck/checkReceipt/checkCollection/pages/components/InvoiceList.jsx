@@ -8,9 +8,9 @@ import {
   import { connect } from "react-redux";
   import { change, Field, formValueSelector, reduxForm, reset } from "redux-form"; 
   //component
-  import TableComponent from "../../../../../../components/table/Table"; 
-  import SearchField from "../../../../../../components/inputFIeld/SearchField";
-  import Page from "../../../../../../components/pagination/Pagination";
+  import TableComponent from "../../../../../../../components/table/Table"; 
+  import SearchField from "../../../../../../../components/inputFIeld/SearchField";
+  import Page from "../../../../../../../components/pagination/Pagination";
   //hoooks and configuration
   import CheckCollectionHooks from "../../hooks/CheckCollectionHooks";
   let formName = "InvoiceList";

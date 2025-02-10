@@ -1,12 +1,13 @@
-import { Constants } from "../../../../../reducer/Contants";
+import { Constants } from "reducer/Contants.js";
 import {
   GetMultiSpecificDefaultServices,
   GetSpecificDefaultServices,
   PostDefaultServices,
-} from "../../../../../services/apiService";
-import { decryptaes } from "../../../../../utils/LightSecurity";
+} from "services/apiService";
+
+import { decryptaes } from "utils/LightSecurity";
 import swal from "sweetalert";
-import configure from "../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 export const getSalesInvoiceDetails = (formValues) => async (dispatch) => {
     try {
       await dispatch({
@@ -73,6 +74,12 @@ export const postCheckCollection = (formValues) => async (dispatch) => {
    
     return res;
   } catch (error) {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
     var title = configure.error_message.default;
     var message = "";
     if (typeof error.response.data.message !== "undefined")
@@ -83,12 +90,6 @@ export const postCheckCollection = (formValues) => async (dispatch) => {
         .join("\n");
       message = formattedErrors;
     }
-    await swal(title, message, "error");
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
+    await swal(title, message, "error"); 
   }
 };

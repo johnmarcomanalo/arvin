@@ -28,6 +28,11 @@ class EPayCheckCheckDetails extends Model
         $this->attributes['bank_address'] = strtoupper($value);
     }
 
+    public function setCrprAttribute($value)
+    {
+        $this->attributes['crpr'] = strtoupper($value);
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -44,14 +49,5 @@ class EPayCheckCheckDetails extends Model
         });
     }
 
-
-    public static function generate_code(){
-        $code = 1;
-        $current_date = date('Y-m-d');
-         $latest_code = Static::latest('code')->first('code')->code ?? NULL;
-        if(!empty($latest_code)){
-            $code = $latest_code + 1;
-        }
-        return $code;
-    }
+ 
 }

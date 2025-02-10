@@ -3,14 +3,14 @@ import HomeIcon from "@mui/icons-material/Home";
 import StarIcon from "@mui/icons-material/Star";
 import { Grid } from "@mui/material";
 import * as React from "react";
-import BreadCrumbs from "../../../../../components/breadCrumb/BreadCrumbs";
-import PageTitle from "../../../../../components/pageTItle/PageTitle";
+import BreadCrumbs from "../../../../../../components/breadCrumb/BreadCrumbs";
+import PageTitle from "../../../../../../components/pageTItle/PageTitle";
 import configure from "../../../../configure/configure.json";
 import GroupIcon from "@mui/icons-material/Group";
 import PaidIcon from '@mui/icons-material/Paid';
-import CheckCollection from "./CheckCollection";
+import IndexCheckReceive from "./IndexCheckReceive";
 import FolderSharedIcon from "@mui/icons-material/FolderShared";
-const title_page = "Check Collection";
+const title_page = "Check Monitoring"
 const breadCrumbArray = [
   {
     name: "Home",
@@ -39,8 +39,8 @@ const breadCrumbArray = [
     ),
   },
   {
-    name: "Check Collection",
-    href: "/Modules/E-PayCheck/CheckCollection",
+    name: "Check Monitoring",
+    href: "/Modules/E-PayCheck/IndexCheckReceive",
     icon: (
       <GroupIcon
         sx={{
@@ -52,7 +52,7 @@ const breadCrumbArray = [
     ),
   },
 ];
-export default function IndexCheckCollection() {
+export default function IndexCheckMonitoring() {
   return (
     <React.Fragment>
       <Grid container spacing={2}>
@@ -63,7 +63,7 @@ export default function IndexCheckCollection() {
           <PageTitle title={title_page} />
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
-          <CheckCollection />
+          <IndexCheckReceive />
         </Grid>
       </Grid>
     </React.Fragment>

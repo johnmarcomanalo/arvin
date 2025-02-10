@@ -17,8 +17,8 @@ class CreateEPayCheckDepositedTable extends Migration
             $table->id();
             $table->bigInteger('code')->unique();
             $table->string('check_details_code',50);
-            $table->string('bank_deposited')->nullable(); // For deposited status
-            $table->dateTime('deposit_date')->nullable(); // For deposited status
+            $table->string('deposited_bank')->nullable(); // For deposited status
+            $table->dateTime('deposited_date')->nullable(); // For deposited status
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->timestamp('deleted_at')->nullable();
