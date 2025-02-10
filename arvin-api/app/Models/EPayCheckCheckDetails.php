@@ -28,6 +28,11 @@ class EPayCheckCheckDetails extends Model
         $this->attributes['bank_address'] = strtoupper($value);
     }
 
+    public function setCrprAttribute($value)
+    {
+        $this->attributes['crpr'] = strtoupper($value);
+    }
+
     protected static function boot()
     {
         parent::boot();

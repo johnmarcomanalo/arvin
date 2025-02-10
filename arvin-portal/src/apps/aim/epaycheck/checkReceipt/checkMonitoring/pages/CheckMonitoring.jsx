@@ -20,17 +20,19 @@ import * as React from "react";
 import { change, Field, formValueSelector, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 //component
-import ButtonComponent from "../../../../../components/button/Button";
-import TableComponent from "../../../../../components/table/Table";
-import SearchField from "../../../../../components/inputFIeld/SearchField";
-import InputField from "../../../../../components/inputFIeld/InputField";
-import ComboBox from "../../../../../components/autoComplete/AutoComplete";
-import Modal from "../../../../../components/modal/Modal";
-import Page from "../../../../../components/pagination/Pagination";
+import ButtonComponent from "components/button/Button";
+import TableComponent from "components/table/Table";
+import SearchField from "components/inputFIeld/SearchField";
+import InputField from "components/inputFIeld/InputField";
+import ComboBox from "components/autoComplete/AutoComplete";
+import Modal from "components/modal/Modal";
+import Page from "components/pagination/Pagination";
 import CheckMonitoringHooks from "../hooks/CheckMonitoringHooks"; 
 import moment from "moment";
-import configure from "../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 import Deposit from "./components/Deposit";
+import CheckDetails from "./components/CheckDetails";
+import Reject from "./components/Reject";
 let formName = "CheckMonitoring"
 const CheckMonitoring = (props) => {
     const { ...check } = CheckMonitoringHooks(props); 
@@ -41,12 +43,32 @@ const CheckMonitoring = (props) => {
           <Modal
               open={check.viewModal}
               fullScreen={matches ? false : true}
-              title={"Deposit"}
+              title={"Deposit Details"}
               size={"sm"}
               action={undefined}
               handleClose={check.onClickCloseViewModalDeposit}
             >
             <Deposit/>
+          </Modal>
+          <Modal
+              open={check.editModal}
+              fullScreen={matches ? false : true}
+              title={"Check Details"}
+              size={"sm"}
+              action={undefined}
+              handleClose={check.onClickCloseEditModal}
+            >
+            <CheckDetails details={check.selectedItem}/>
+          </Modal> 
+          <Modal
+              open={check.viewModal2}
+              fullScreen={matches ? false : true}
+              title={"Reject Details"}
+              size={"sm"}
+              action={undefined}
+              handleClose={check.onClickCloseRejectModal}
+            >
+            <Reject/>
           </Modal>
          <Grid container spacing={2}>  
             <Grid item xs={12} sm={12} md={12} lg={12}> 
@@ -144,13 +166,13 @@ const CheckMonitoring = (props) => {
                     rowsPerPage={check.rowsPerPage}
                     handleChangePage={check.handleChangePage}
                     handleChangeRowsPerPage={check.handleChangeRowsPerPage}
-                    // onSelectItem={check.onClickOpenViewModal}
+                    onSelectItem={check.onClickOpenEditModal}
                     id={"home_attendance"}
                     localStorage={""}
                     rowCount={check.dataListCount}
                     actionshow={true}
                     paginationShow={false}
-                    subAction1Show={false}
+                    subAction1Show={(check.filterStatus=="ON-HAND") ? true : false}
                     subAction2Show={true}
                     action={(row, index) => {
                       let check_status = row?.check_status;
@@ -187,13 +209,13 @@ const CheckMonitoring = (props) => {
                       // );
 
                       return (
-                        <Checkbox 
-                          // checked={check.selectedDataList?.includes(row.code) }
+                        <Checkbox  
+                        // checked={check.selectedDataList.includes(row.code)}
                           onChange={async (e) => { 
                               check.handleCheckboxChange(row,e.target.checked); 
                           }}
                           size="medium"
-                          sx={{ height: "25px", marginLeft: "-5px" }}
+                          sx={{ height: "23px", margin: "-10px" }}
                         />
                       )
 
@@ -230,7 +252,7 @@ const CheckMonitoring = (props) => {
                               type="button"
                               fullWidth={true}
                               children={"Reject"}
-                              click={check.reject}
+                              click={check.onClickOpenRejectModal}
                             />
                       </ButtonGroup>
                     ) :  

@@ -6,6 +6,8 @@ use App\Models\EPayCheckCheckDetailLogs;
 use App\Models\EPayCheckCheckDetails;
 use App\Models\EPayCheckCheckSalesInvoiceDetails;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
@@ -60,7 +62,12 @@ class EPayCheckCheckDetailsController extends Controller
                 'crpr'             => 'required|string',
                 'check_amount'     => 'required|numeric|min:0',
                 'check_date'       => 'required|date|after_or_equal:' . Carbon::yesterday()->toDateString(),
-                'check_number'     => 'required',
+                'check_number'     => [
+                    'required',
+                    Rule::unique('e_pay_check_check_details', 'check_number')->where(function ($query) use ($request) {
+                        return $query->where('card_code', $request->card_code);
+                    })
+                ],
                 'card_code'        => 'required',
                 'card_name'        => 'required',
                 'subsection_code'  => 'required|string',
@@ -76,6 +83,7 @@ class EPayCheckCheckDetailsController extends Controller
                 'invoice_list.required' => 'Kindly select list of invoices if this is not an advance payment.',
                 'check_date.date' => 'The check date must be a valid date.',
                 'check_date.after_or_equal' => 'The check date cannot be in the past.',
+                'check_number.unique' => 'This check number has already been entered.',
             ];
     
             // Validate the request data
@@ -181,74 +189,96 @@ class EPayCheckCheckDetailsController extends Controller
      * @param  \App\Models\EPayCheckCheckDetails  $ePayCheckCheckDetails
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, EPayCheckCheckDetails $ePayCheckCheckDetails)
+    public function update(Request $request, $id)
     {    
-        
-        
-        $checkDetail = EPayCheckCheckDetails::where('code', $request['code'])->first();
-        if (!$checkDetail) { 
-            $response = [
-                'result' => false,
-                'status' => 'warning',
-                'title' => 'Warning',
-                'message' => 'Record not found.'
-            ];  
-        } 
+        try {
+            DB::beginTransaction();
     
-        // Prevent invalid status transitions
-        if (($checkDetail['check_status'] == self::DEPOSITED && $request['status'] == self::TRANSMITTED) ||
-            ($checkDetail['check_status'] == self::TRANSMITTED && $request['status'] == self::DEPOSITED)) {
-            $response = [
-                'result' => false,
-                'status' => 'warning',
-                'title' => 'Warning',
-                'message' => 'Not allowed to change status to ' . $request['status'] . '.'
-            ];
- 
-        }else{
-             // Update record for check details
-            $fields['check_status_date'] = Carbon::now();
-            
-            // Revert status logs if necessary
-            $this->revertStatusLogs($checkDetail, $fields['check_status'], $fields);
-        
-            // Update the check details
-            $checkDetail->update($fields);
-        
-            // Success response
-            $response = [
-                'result' => true,
-                'status' => 'success',
-                'title' => 'Success',
-                'message' => 'Check details updated successfully.'
-            ];
-        }
-     
-        return Crypt::encryptString(json_encode($response));
-    }
-    
-    private function revertStatusLogs($checkDetail, $check_status, $fields) {
-        $statusesToHandle = [self::DEPOSITED, self::TRANSMITTED];
-    
-        if (in_array($checkDetail['check_status'], $statusesToHandle) && $check_status == self::ONHAND) {
-            // Soft-delete the logs for DEPOSITED or TRANSMITTED status
-            EPayCheckCheckDetailLogs::where('check_details_code', $checkDetail['code'])
-                ->where('check_status', $checkDetail['check_status'])
-                ->update(['deleted_at' => Carbon::now()]);
-        } else {
-            // Generate a new code for the logs
-            $codeLogs = (new EPayCheckCheckDetailLogsController)->generate_code();
-            
-            $logFields = [
-                'code' => $codeLogs,
-                'check_details_code' => $checkDetail->code,
-                'check_status' => $fields['check_status'], // Make sure 'check_status' exists in $fields
-            ];
-            
-            EPayCheckCheckDetailLogs::create($logFields);
-        }
-    }
+            // Find the record
+            $ePayCheckCheckDetails = EPayCheckCheckDetails::find($id);
 
+            if (!$ePayCheckCheckDetails) {
+                return response()->json([
+                    'result'  => false,
+                    'status'  => 'error',
+                    'title'   => 'Error',
+                    'message' => 'Record not found.'
+                ], 404);
+            }
+    
+            // Validation Rules
+            $fields = [
+                'advance_payment'  => 'required',
+                'bank_address'     => 'required',
+                'bank_branch'      => 'required',
+                'bank_description' => 'required',
+                'crpr'             => 'required',
+                'check_amount'     => 'required|numeric|min:0',
+                'check_date'       => 'required|date|after_or_equal:' . Carbon::yesterday()->toDateString(),
+                'check_number'     => 'required',
+                'card_code'        => 'required',
+                'card_name'        => 'required',
+                'subsection_code'  => 'required',
+                'modified_by'      => 'required',
+            ];
+    
+            // Custom messages for validation
+            $customMessages = [
+                'check_date.date' => 'The check date must be a valid date.',
+                'check_date.after_or_equal' => 'The check date cannot be in the past.',
+            ];
+    
+            $validator = Validator::make($request->all(), $fields, $customMessages);
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'result'  => false,
+                    'status'  => 'error',
+                    'title'   => 'Error',
+                    'message' => $validator->errors()->first()
+                ], 422);
+            }
+    
+            // Get validated data
+            $validatedData = $validator->validated();
+    
+            // Update the record
+            $ePayCheckCheckDetails->updateOrFail($validatedData);
+    
+            // Response
+            $response = [
+                'result'  => true,
+                'status'  => 'success',
+                'title'   => 'Success',
+                'message' => 'Record updated successfully.'
+            ];
+    
+            DB::commit();
+        
+            return Crypt::encryptString(json_encode($response));
+        } catch (ModelNotFoundException $e) {
+            DB::rollBack();
+            Log::error('Record not found: ' . $e->getMessage());
+    
+            return response()->json([
+                'result'  => false,
+                'status'  => 'error',
+                'title'   => 'Error',
+                'message' => 'Record not found.'
+            ], 404);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error in update method: ' . $e->getMessage());
+    
+            return response()->json([
+                'result'  => false,
+                'status'  => 'warning',
+                'title'   => 'Warning',
+                'message' => 'An error occurred while updating the data.'
+            ], 500);
+        }
+    }
+    
     /**
      * Remove the specified resource from storage.
      *
@@ -327,10 +357,12 @@ class EPayCheckCheckDetailsController extends Controller
                     $q->where(function ($subQuery) use ($query) {
                         $subQuery
                             ->where('card_name', 'like', '%' . $query . '%')
+                            ->orwhere('card_code', 'like', '%' . $query . '%')
                             ->orWhere('bank_description', 'like', '%' . $query . '%')
                             ->orWhere('bank_branch', 'like', '%' . $query . '%')
                             ->orWhere('bank_address', 'like', '%' . $query . '%')
-                            ->orWhere('check_amount', 'like', '%' . $query . '%');
+                            ->orWhere('check_amount', 'like', '%' . $query . '%')
+                            ->orWhere('check_number', 'like', '%' . $query . '%');
                     });
                 })
                 ->when(in_array($status, ['DEPOSITED', 'TRANSMITTED']), function ($q) use ($df, $dt) {
@@ -339,7 +371,7 @@ class EPayCheckCheckDetailsController extends Controller
                 ->where('check_status', $status)
                 ->where('subsection_code', $sc)
                 ->whereNull('deleted_at')
-                ->paginate(10, ['*'], 'page', $page);
+                ->paginate(15, ['*'], 'page', $page);
     
             $requests = $check_details->map(function ($value) {
                 return [
@@ -354,6 +386,7 @@ class EPayCheckCheckDetailsController extends Controller
                     'check_date'           => Carbon::parse($value['check_date'])->format('Y-m-d'),
                     'check_number'         => $value['check_number'],
                     'check_status'         => $value['check_status'],
+                    'check_status_date'    => Carbon::parse($value['check_status_date'])->format('Y-m-d'),
                     'card_code'            => $value['card_code'],
                     'card_name'            => $value['card_name'],
                     'subsection_code'      => $value['subsection_code'],
@@ -384,22 +417,55 @@ class EPayCheckCheckDetailsController extends Controller
         //         'status' => 'required|string',
         //         'bank_deposit' => 'nullable|string',
         //         'deposited_date' => 'nullable|date',
-        //     ]); 
-
-            $codes = $request['code'];
-            $check_status = $request['status'];
-            $bank_deposit = $request['bank_deposit'];
-            $deposited_date = $request['deposited_date'];
+        //     ]);  
+            $codes            = $request['code'];
+            $check_status     = $request['status'];
+            $deposited_bank   = $request['deposited_bank'];
+            $deposited_date   = $request['deposited_date'];
+            $rejected_date    = $request['rejected_date'];
+            $rejected_remarks = $request['rejected_remarks'];
     
-            if ($check_status == self::UNDO) {
-                // Revert status to ONHAND and soft-delete logs
-                EPayCheckCheckDetails::whereIn('code', $codes)
-                    ->update(['check_status' => self::ONHAND, 'check_status_date' => now()]);
-    
-                EPayCheckCheckDetailLogs::whereIn('check_details_code', $codes)
-                    ->where('check_status', '!=', self::ONHAND)
-                    ->update(['deleted_at' => now()]);
+            if ($check_status === self::UNDO) {
+                // Check if there are any logs where 'received_date' is null for the given codes
+                 $checkIfAlreadyReceived = EPayCheckCheckDetailLogs::whereNull('received_date')
+                    ->where('check_status','!=', self::ONHAND)
+                    ->whereNull('deleted_at')
+                    ->whereIn('check_details_code', $codes) // Removed unnecessary check_status condition
+                    ->get();
+            
+                if ($checkIfAlreadyReceived->isNotEmpty()) { 
+                    // Update the status of the check details to ONHAND
+                    foreach ($checkIfAlreadyReceived as $value) {
+                        EPayCheckCheckDetails::where('code', $value['check_details_code']) // Corrected field name
+                        ->update([
+                            'check_status' => self::ONHAND,
+                            'check_status_date' => now()
+                        ]);
+            
+                         // Soft delete ONLY logs where 'received_date' is null
+                        EPayCheckCheckDetailLogs::where('check_details_code', $value['check_details_code'])
+                            ->whereNull('received_date') // Ensures only logs without received_date are affected
+                            ->update(['deleted_at' => now()]);
+                    }
+            
+                    // Return success response
+                    return Crypt::encryptString(json_encode([
+                        'result' => true,
+                        'status' => 'success',
+                        'title' => 'Success',
+                        'message' => 'Records updated successfully.'
+                    ]));
+                } else {
+                    // Return warning response if no records were found
+                    return Crypt::encryptString(json_encode([
+                        'result' => true,
+                        'status' => 'warning',
+                        'title' => 'Warning',
+                        'message' => 'Record has already been received.'
+                    ]));
+                }
             } else {
+                
                 // Update status and create logs
                 EPayCheckCheckDetails::whereIn('code', $codes)
                     ->update(['check_status' => $check_status, 'check_status_date' => now()]);
@@ -407,11 +473,13 @@ class EPayCheckCheckDetailsController extends Controller
                 foreach ($codes as $key => $code) {
                     $codeLogs = MainController::generate_code('App\Models\EPayCheckCheckDetailLogs', "code");
                     $logs = [
-                        'code' => $codeLogs,
+                        'code'               => $codeLogs,
                         'check_details_code' => $code,
-                        'check_status'   => $check_status,
-                        'bank_deposit'   => $bank_deposit,
-                        'deposited_date' => $deposited_date
+                        'check_status'       => $check_status,
+                        'deposited_bank'     => $deposited_bank,
+                        'deposited_date'     => $deposited_date,
+                        'rejected_date'      => $rejected_date,
+                        'rejected_remarks'   => $rejected_remarks
                     ];
                     EPayCheckCheckDetailLogs::create($logs);
                 }

@@ -1,15 +1,15 @@
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import React,{ useState, useEffect } from "react"; 
-import { useDebounce } from "../../../../../utils/HelperUtils";
+import { useDebounce } from "utils/HelperUtils";
 import { useSearchParams, useNavigate } from "react-router-dom"; 
 import { change, Field, formValueSelector, reduxForm, reset } from "redux-form";
-import { Constants } from "../../../../../reducer/Contants";
-import { decryptaes } from "../../../../../utils/LightSecurity";
-import { cancelRequest } from "../../../../../api/api";
+import { Constants } from "reducer/Contants";
+import { decryptaes } from "utils/LightSecurity";
+import { cancelRequest } from "api/api";
 import {
   getAllRefBankAccounts,
-} from "../../../settings/reference/actions/ReferenceActions";
+} from "../../../../settings/reference/actions/ReferenceActions";
 import {
     getCheckDetails,
     postCheckDetailsStatus,
@@ -28,19 +28,20 @@ const CheckMonitoringHooks = (props) => {
     const filterEndQuery   = searchParams.get("dt") != null ? String(searchParams.get("dt")): moment(new Date()).format("YYYY-MM-DD");
     const filterStatus     = searchParams.get("s")  != null ? String(searchParams.get("s")) : "ON-HAND";
     const filterSubSection = searchParams.get("sc") != null ? String(searchParams.get("sc")) : account_details.subsection_code;
-    const debounceSearch   = useDebounce(searchParams, 500);
+    const debounceSearch   = useDebounce(searchParams, 100);
     const access           = useSelector((state) => state.AuthenticationReducer.access); 
     const selectedItem     = useSelector((state) => state.EpayCheckReducer.selectedItem); 
     const dataList         = useSelector((state) => state.EpayCheckReducer.dataList);
     const dataListCount    = useSelector((state) => state.EpayCheckReducer.dataListCount);
     const viewModal        = useSelector((state) => state.EpayCheckReducer.viewModal); 
+    const viewModal2        = useSelector((state) => state.EpayCheckReducer.viewModal2); 
+    const editModal        = useSelector((state) => state.EpayCheckReducer.editModal); 
     const bank_accounts    = useSelector((state) => state.ReferenceReducer.bank_accounts); 
     const refresh          = useSelector((state) => state.EpayCheckReducer.refresh);
     const selectedDataList = useSelector((state) => state.EpayCheckReducer.selectedDataList); 
     const [state, setState]= React.useState({
         debounceTimer: null,
-        debounceDelay: 1000, 
-        selectedItem:{},
+        debounceDelay: 1000,
         selectedCheck:[]
     }); 
     const columns = [
@@ -52,13 +53,19 @@ const CheckMonitoringHooks = (props) => {
         { id:"bank_address", label:"Bank Address", align:"left"},
         { id:"bank_branch", label:"Bank Branch", align:"left"},
         { id:"crpr", label:"CR/PR", align:"left"},
-        { id:"check_status", label:"Status", align:"left"},
+        { id:"check_status_date", label:"Status Date", align:"left"},
     ];
 
     const status = [ 
-        { status:false , description: 'ON-HAND'},
+        { status:true , description: 'ON-HAND'},
         { status:true  , description: 'DEPOSITED'},
         { status:true  , description: 'TRANSMITTED'},
+        { status:false  , description: 'REJECTED'},
+    ]
+
+    const epay_selection = [
+      {  description:'NO'},
+      {  description:'YES'}
     ]
 
     const getListParam = () => {
@@ -98,7 +105,7 @@ const CheckMonitoringHooks = (props) => {
       });
        GetChequeList();
          return () => cancelRequest(); 
-    }, [refresh,filterStartQuery,filterEndQuery,filterStatus,selectedDataList]);
+    }, [refresh,search,filterStartQuery,filterEndQuery,filterStatus,selectedDataList]);
       
       const onChangeSearch = (event) => { 
         const search = event.target.value;
@@ -235,8 +242,7 @@ const CheckMonitoringHooks = (props) => {
         }
       };  
       
-      const updateStatus = async (data,successMessage, errorMessage) => {
-        console.log("Selected Checks: updateStatus",selectedDataList);
+      const updateStatus = async (data) => { 
         // Check if any checks are selected
         if (data.code.length === 0) {
           await swal("Error", `Please select at least one check to ${data?.status.toLowerCase()}`, "error");
@@ -268,16 +274,23 @@ const CheckMonitoringHooks = (props) => {
                   viewModal: false
                 },
               })
+              // clear search
+              setSearchParams({
+                q  : "", 
+                p  : page == null ? 1 : page,
+                df : filterStartQuery,
+                dt : filterEndQuery,
+                s  : filterStatus, 
+                sc : filterSubSection
+              });
             }
           } else {
 
           }
-          
-          
-         
+
         } catch (error) {
           console.error("Error updating status:", error); // Use console.error for errors
-          swal("Oops!", errorMessage || "Something went wrong, please try again!", "error");
+          swal("Oops!", "Something went wrong, please try again!", "error");
         }
       };
       
@@ -286,7 +299,7 @@ const CheckMonitoringHooks = (props) => {
           status: "TRANSMITTED",
           code: selectedDataList,
         }
-        await updateStatus(data, "Check(s) transmitted successfully!", "Failed to transmit check(s).");
+        await updateStatus(data);
       };
        
 
@@ -295,12 +308,56 @@ const CheckMonitoringHooks = (props) => {
           status: "UNDO",
           code: selectedDataList, 
         }
-        await updateStatus(data, "Check(s) deposited successfully!", "Failed to deposit check(s).");
+        await updateStatus(data);
+      };
+
+      const onClickReject = async () => {
+        const data = {
+          status: "REJECTED",
+          code: selectedDataList, 
+        }
+        await updateStatus(data);
       };
      
+      const onClickOpenEditModal = async  (row)=> {
+        dispatch({
+          type: Constants.ACTION_EPAY_CHECK,
+          payload: {
+            selectedItem: row,
+            editModal: true,
+          },
+        });
+      };
+      const onClickCloseEditModal = () => {
+        dispatch({
+          type: Constants.ACTION_EPAY_CHECK,
+          payload: {
+            editModal: false,
+          },
+        });
+      };
+
+      const onClickOpenRejectModal = async  ()=> { 
+        dispatch({
+          type: Constants.ACTION_EPAY_CHECK,
+          payload: {
+            viewModal2: true,
+          },
+        });
+      };
+      const onClickCloseRejectModal = () => {
+        dispatch({
+          type: Constants.ACTION_EPAY_CHECK,
+          payload: {
+            viewModal2: false,
+          },
+        });
+      };
       
    
     return {
+        viewModal2,
+        epay_selection,
         state,
         account_details,
         columns,
@@ -316,6 +373,7 @@ const CheckMonitoringHooks = (props) => {
         bank_accounts,
         filterStatus,
         selectedDataList,
+        editModal,
         onChangeSearch,
         onClickOpenViewModalDeposit,
         onClickCloseViewModalDeposit,
@@ -327,7 +385,12 @@ const CheckMonitoringHooks = (props) => {
         onUpdateCheckDetails, 
         handleCheckboxChange,
         onClickTransmit, 
-        onClickUndo
+        onClickReject,
+        onClickOpenEditModal,
+        onClickCloseEditModal,
+        onClickUndo,
+        onClickOpenRejectModal,
+        onClickCloseRejectModal
     };
 };
 

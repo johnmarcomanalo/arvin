@@ -15,6 +15,7 @@ const SearchField = (props) => {
         </Typography>
       )}
       <TextField
+        autoComplete="off"
         onChange={props.onChange}
         fullWidth
         value={props.value}

@@ -25,15 +25,15 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { change, Field, formValueSelector, reduxForm, reset } from "redux-form"; 
 //component
-import ButtonComponent from "../../../../../components/button/Button";
-import ComboBox from "../../../../../components/autoComplete/AutoComplete";
-import Modal from "../../../../../components/modal/Modal";  
-import InputField from "../../../../../components/inputFIeld/InputField";
+import ButtonComponent from "components/button/Button";
+import ComboBox from "components/autoComplete/AutoComplete";
+import Modal from "components/modal/Modal";  
+import InputField from "components/inputFIeld/InputField";
 
 //hoooks and other  configuration
 import CheckCollectionHooks from "../hooks/CheckCollectionHooks";
-import configure from "../../../../configure/configure.json";
-import InvoiceList from "../pages/components/InvoiceList";
+import configure from "apps/configure/configure.json";
+import InvoiceList from "./components/InvoiceList";
 let formName = "CheckCollection";
 
 let CheckCollection = (props) => {
@@ -220,6 +220,7 @@ let CheckCollection = (props) => {
                           // maxHeight: screenHeight - 300,
                           whiteSpace: "nowrap",
                           overflowX: "auto",
+                          marginBottom: 2,
                         
                         }}
                       >
@@ -251,11 +252,13 @@ let CheckCollection = (props) => {
                                 <TableCell colSpan={6} align="center">Data not available</TableCell>
                               </TableRow>
                             )} 
-                            {/* <TableRow>
+                            <TableRow>
                               <TableCell colSpan={4}></TableCell>
                               <TableCell  align="left">TOTAL</TableCell>
-                              <TableCell align="left">{amount}</TableCell>
-                            </TableRow> */}
+                              <TableCell align="left" sx={{ fontWeight: "bold" }}>
+                                {Number(amount).toLocaleString("en-US", { minimumFractionDigits: 4, maximumFractionDigits: 4 })}
+                              </TableCell>
+                            </TableRow>
                           </TableBody> 
                         </Table> 
                       </TableContainer> 
@@ -295,6 +298,7 @@ let CheckCollection = (props) => {
                         justifyContent="flex-end"
                         alignItems="flex-end"
                         spacing={2}
+                        sx={{ marginTop: 2 }}
                       >
                         <ButtonComponent
                           stx={configure.default_button}

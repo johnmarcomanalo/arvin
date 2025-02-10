@@ -1,47 +1,47 @@
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import React,{ useState, useEffect } from "react"; 
-import { useDebounce } from "../../../../../utils/HelperUtils";
+import { useDebounce } from "utils/HelperUtils";
 import { useSearchParams, useNavigate } from "react-router-dom"; 
 import { change, Field, formValueSelector, reduxForm, reset } from "redux-form";
-import { Constants } from "../../../../../reducer/Contants";
-import { decryptaes } from "../../../../../utils/LightSecurity";
-import { cancelRequest } from "../../../../../api/api";
+import { Constants } from "reducer/Contants";
+import { decryptaes } from "utils/LightSecurity";
+import { cancelRequest } from "api/api";
 import {
   getAllRefBankAccounts,
-} from "../../../settings/reference/actions/ReferenceActions";
+} from "../../../../settings/reference/actions/ReferenceActions";
 import {
     getCheckDetails,
     postCheckDetailsStatus,
 } from "../actions/CheckMonitoringAction"
 import swal from "sweetalert";
 let formName = "Deposit";
-const DepositHooks = (props) => {  
-  console.log("HOOKS",props.refresh);
-  
+const CheckStatusHooks = (props) => {
     const navigate         = useNavigate();
     const dispatch         = useDispatch();
     const viewModal        = useSelector((state) => state.EpayCheckReducer.viewModal); 
     const refresh          = useSelector((state) => state.EpayCheckReducer.refresh);
     const bank_accounts    = useSelector((state) => state.ReferenceReducer.bank_accounts); 
-    const selectedDataList = useSelector((state) => state.EpayCheckReducer.selectedDataList); 
-   
+    const selectedDataList = useSelector((state) => state.EpayCheckReducer.selectedDataList);
+    
     React.useEffect(() => { 
-      props.initialize({  
-        deposited_date: moment(new Date()).format("YYYY-MM-DD"),
-        code: selectedDataList
+      props.initialize({
+        code: selectedDataList, 
+        deposited_bank: "", 
+        rejected_remarks: "",
       });
       dispatch(getAllRefBankAccounts());
-          return () => cancelRequest();
+      return () => cancelRequest();
     },[props.code]);
 
-    const submit = async (values,dispatch) => { 
-
+    const submit = async (values,dispatch) => {  
       const data = {
-        status: "DEPOSITED",
-        code: selectedDataList,
+        status: values.status, 
+        code: values.code,
         deposited_date: values?.deposited_date, 
-        bank_deposit: values?.bank_deposit
+        deposited_bank: values?.deposited_bank,
+        rejected_date: values?.rejected_date,
+        rejected_remarks: values?.rejected_remarks
       }
       // Check if any checks are selected
       if (data.code.length === 0) {
@@ -73,6 +73,7 @@ const DepositHooks = (props) => {
                   selectedDataList:[],
                   refesh: !refresh,
                   viewModal: false, // Open the deposit modal
+                  viewModal2: false
                 },
             }); 
           }
@@ -101,4 +102,4 @@ const DepositHooks = (props) => {
     };
 };
 
-export default DepositHooks;
+export default CheckStatusHooks;

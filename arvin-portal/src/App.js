@@ -165,10 +165,10 @@ const IndexRefSubSections = lazy(() =>
 
 //EPAYCHECK START
 const IndexCheckCollection = lazy(() =>
-  import("./apps/aim/epaycheck/checkCollection/pages/IndexCheckCollection") 
+  import("./apps/aim/epaycheck/checkReceipt/checkCollection/pages/IndexCheckCollection") 
 );
 const  IndexCheckMonitoring = lazy(() =>
-  import("./apps/aim/epaycheck/checkMonitoring/pages/IndexCheckMonitoring")
+  import("./apps/aim/epaycheck/checkReceipt/checkMonitoring/pages/IndexCheckMonitoring")
 );
 const  IndexWeeklyCheckCounter = lazy(() =>
   import("./apps/aim/epaycheck/report/weeklyCheckCounter/pages/IndexWeeklyCheckCounter")
@@ -776,13 +776,13 @@ function App() {
 
                   {/* EPAYCHECK START */}
                     <Route
-                      path="/Modules/E-PayCheck/CheckCollection"
+                      path="/Modules/E-PayCheck/CheckReceipt/Collection"
                       element={
                         <PrivateRoute
                             accessChecker={getAccessChecker({
                               module: "E-Pay Check",
-                              component: "Check Collection",
-                              subComponent:null, 
+                              component: "Check Receipt",
+                              subComponent:"Collection", 
                             })}
                         >
                           <IndexCheckCollection />
@@ -791,13 +791,13 @@ function App() {
                     />
 
                      <Route
-                      path="/Modules/E-PayCheck/CheckMonitoring"
+                      path="/Modules/E-PayCheck/CheckReceipt/Monitoring"
                       element={
                         <PrivateRoute
                             accessChecker={getAccessChecker({
                               module: "E-Pay Check",
-                              component: "Check Monitoring",
-                              subComponent:null, 
+                              component: "Check Receipt",
+                              subComponent:"Monitoring", 
                             })}
                         >
                           <IndexCheckMonitoring />

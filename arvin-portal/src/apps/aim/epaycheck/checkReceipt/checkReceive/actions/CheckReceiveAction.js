@@ -1,12 +1,12 @@
 
-import { Constants } from "../../../../../reducer/Contants";
+import { Constants } from "../../../../../../reducer/Contants";
 import {
   GetMultiSpecificDefaultServices,
   GetSpecificDefaultServices,
   PostDefaultServices,
   PutDefaultServices,
-} from "../../../../../services/apiService";
-import { decryptaes } from "../../../../../utils/LightSecurity";
+} from "../../../../../../services/apiService";
+import { decryptaes } from "../../../../../../utils/LightSecurity";
 import swal from "sweetalert";
 import configure from "../../../../configure/configure.json";
 export const getCheckDetails = (formValues) => async (dispatch) => {
@@ -100,3 +100,44 @@ export const postCheckDetailsStatus = (formValues) => async (dispatch) => {
   }
 };
  
+
+export const putCheckMonitoring = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PutDefaultServices(
+      "api/epaycheck/check_details/",
+      formValues.code,
+      formValues
+    );
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+    return res;
+  } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
