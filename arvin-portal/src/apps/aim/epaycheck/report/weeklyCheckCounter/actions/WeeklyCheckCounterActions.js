@@ -4,7 +4,7 @@ import { decryptaes } from "../../../../../../utils/LightSecurity";
 import swal from "sweetalert";
 import configure from "../../../../../configure/configure.json";
 
-export const getWeeklyChecCounterkData = (formValues) => async (dispatch) => {
+export const getWeeklyChecCounterData = (formValues) => async (dispatch) => {
   try {
     await dispatch({
       type: Constants.ACTION_LOADING,

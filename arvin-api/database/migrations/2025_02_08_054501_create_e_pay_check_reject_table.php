@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEPayCheckTransmittedTable extends Migration
+class CreateEPayCheckRejectTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateEPayCheckTransmittedTable extends Migration
      */
     public function up()
     {
-        Schema::create('e_pay_check_transmitted', function (Blueprint $table) {
+        Schema::create('e_pay_check_reject', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('code')->unique();
             $table->string('check_details_code',50);
-            $table->string('received_by')->nullable(); // For transmitted status
-            $table->timestamp('received_date')->nullable(); // For transmitted status
+            $table->longText('rejected_remarks')->nullable();
+            $table->timestamp('rejected_date')->useCurrent();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->timestamp('deleted_at')->nullable();
@@ -34,6 +34,6 @@ class CreateEPayCheckTransmittedTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('e_pay_check_transmitted');
+        Schema::dropIfExists('e_pay_check_reject');
     }
 }

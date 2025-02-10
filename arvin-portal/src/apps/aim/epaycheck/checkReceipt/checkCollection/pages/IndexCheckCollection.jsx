@@ -1,14 +1,16 @@
-import AssessmentIcon from "@mui/icons-material/Assessment";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import HomeIcon from "@mui/icons-material/Home";
-import SummarizeIcon from "@mui/icons-material/Summarize";
+import StarIcon from "@mui/icons-material/Star";
 import { Grid } from "@mui/material";
 import * as React from "react";
-import BreadCrumbs from "../../../../../../components/breadCrumb/BreadCrumbs";
-import PageTitle from "../../../../../../components/pageTItle/PageTitle";
-import configure from "../../../../../configure/configure.json";
-import WeeklyCheckCounter from "./WeeklyCheckCounter";
-const title_page = "Weekly Check Counter";
+import BreadCrumbs from "components/breadCrumb/BreadCrumbs";
+import PageTitle from "components/pageTItle/PageTitle";
+import configure from "apps/configure/configure.json";
+import GroupIcon from "@mui/icons-material/Group";
+import PaidIcon from '@mui/icons-material/Paid';
+import CheckCollection from "./CheckCollection";
+import FolderSharedIcon from "@mui/icons-material/FolderShared";
+const title_page = "Check Collection";
 const breadCrumbArray = [
   {
     name: "Home",
@@ -24,10 +26,10 @@ const breadCrumbArray = [
     ),
   },
   {
-    name: "Sales",
+    name: "EpayCheck",
     href: "",
     icon: (
-      <FormatQuoteIcon
+      <PaidIcon
         sx={{
           mr: 0.5,
           fontSize: configure.bread_crumbs_font_size,
@@ -37,23 +39,10 @@ const breadCrumbArray = [
     ),
   },
   {
-    name: "Reports",
-    href: "",
+    name: "Check Collection",
+    href: "/Modules/E-PayCheck/CheckCollection",
     icon: (
-      <AssessmentIcon
-        sx={{
-          mr: 0.5,
-          fontSize: configure.bread_crumbs_font_size,
-          color: configure.primary_color,
-        }}
-      />
-    ),
-  },
-  {
-    name: title_page,
-    href: "",
-    icon: (
-      <SummarizeIcon
+      <GroupIcon
         sx={{
           mr: 0.5,
           fontSize: configure.bread_crumbs_font_size,
@@ -63,10 +52,10 @@ const breadCrumbArray = [
     ),
   },
 ];
-export default function IndexWeeklyCheckCounter() {
+export default function IndexCheckCollection() {
   return (
     <React.Fragment>
-      <Grid container spacing={1}>
+      <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <BreadCrumbs breadCrumbs={breadCrumbArray} />
         </Grid>
@@ -74,7 +63,7 @@ export default function IndexWeeklyCheckCounter() {
           <PageTitle title={title_page} />
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
-          <WeeklyCheckCounter />
+          <CheckCollection />
         </Grid>
       </Grid>
     </React.Fragment>

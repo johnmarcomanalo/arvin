@@ -13,6 +13,16 @@ import {
   MenuItem,
   Select
 } from "@mui/material";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  pdf,
+  PDFViewer,
+  Font,
+} from "@react-pdf/renderer";
 import { useTheme } from "@mui/material/styles";
 import * as React from "react";  
 import { change, Field, formValueSelector, reduxForm } from "redux-form";
@@ -21,31 +31,31 @@ import { connect } from "react-redux";
 import TableComponent from "../../../../../../components/table/Table"; 
 import SearchField from "../../../../../../components/inputFIeld/SearchField";
 import InputField from "../../../../../../components/inputFIeld/InputField";
-import ComboBox from "../../../../../../components/autoComplete/AutoComplete";
-import Page from "../../../../../../components/pagination/Pagination";
+import ComboBox from "../../../../../../components/autoComplete/AutoComplete"; 
 import WeeklyCheckCounterHooks from "../hooks/WeeklyCheckCounterHooks"; 
 import moment from "moment";
-import configure from "../../../../../configure/configure.json";
+import configure from "../../../../../configure/configure.json"; 
+import ViewPrintWeeklyCheckReport from '../pages/components/ViewPrintWeeklyCheckReport'
 let formName = "WeeklyCheckCounter"
 const WeeklyCheckCounter = (props) => {
   const { ...check } = WeeklyCheckCounterHooks(props);
   const matches = useMediaQuery("(min-width:600px)");
   return (
     <React.Fragment>
-       <Grid container spacing={2}>  
+       <Grid container spacing={1}>  
           <Grid item xs={12} sm={12} md={12} lg={12}> 
                 <Stack
                   direction={matches ? "row" : "column"}
                   alignItems={matches ? "center" : "flex-start"}
                   justifyContent="space-between"
-                  spacing={2}
+                  spacing={1}
                 >
-                  <Grid item xs={12} sm={4} md={2} lg={2}>
+                  <Grid item xs={12} sm={6} md={2} lg={2}>
                     {/* <SearchField value={check.search} onChange={check.onChangeSearch} textHidden={false}/> */}
                   </Grid>
-                  <Grid item xs={12} sm={8} md={5} lg={5}>
+                  <Grid item xs={12} sm={6} md={4} lg={4}>
                     <Grid container spacing={2}>
-                      <Grid item xs={12} sm={3} md={3} lg={3}>
+                      <Grid item xs={12} sm={4} md={4} lg={4}>
                         <Field
                           id="filter_date_start"
                           name="filter_date_start"
@@ -63,7 +73,7 @@ const WeeklyCheckCounter = (props) => {
                           // disabled
                         />
                       </Grid>
-                      <Grid item xs={12} sm={3} md={3} lg={3}>
+                      <Grid item xs={12} sm={4} md={4} lg={4}>
                         <Field
                           id="filter_date_end"
                           name="filter_date_end"
@@ -81,24 +91,7 @@ const WeeklyCheckCounter = (props) => {
                           // disabled
                         />
                       </Grid>
-                      <Grid item xs={12} sm={3} md={3} lg={3}>
-                        <Field
-                          id="filterStatus"
-                          name="filterStatus"
-                          label="Status"
-                          options={check?.status}
-                          getOptionLabel={(option) =>
-                            option?.description ? option?.description : "ALL"
-                          }
-                          component={ComboBox}
-                          onChangeHandle={(e, newValue) => {
-                            if (newValue?.description) {
-                              check.onChangeFilterStatus(newValue?.description);
-                            }
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={3} md={3} lg={3}>
+                      <Grid item xs={12} sm={4} md={4} lg={4}>
                         <Field
                           id="filter_user_access_organization_rights"
                           name="filter_user_access_organization_rights"
@@ -120,7 +113,7 @@ const WeeklyCheckCounter = (props) => {
                 </Stack> 
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={12}> 
-            
+            <ViewPrintWeeklyCheckReport/>  
           </Grid>
         </Grid>
     </React.Fragment>
