@@ -2,16 +2,14 @@
   "compilerOptions": {
     "baseUrl": "src",
     "paths": {
-      "@/reducers/*": ["src/reducer/*"], 
-      "@/components/*": ["src/components/*"], 
+      "@/reducers/*": ["src/reducer/*"],
+      "@/components/*": ["src/components/*"],
       "@/utils/*": ["src/utils/*"],
       "@/services/*": ["src/services/*"],
       "@/api/*": ["src/api/*"],
       "@/configure/*": ["src/apps/configure/*"]
     }
-  }, 
-  "include":[
-    "src"
-  ],
+  },
+  "include": ["src"],
   "exclude": ["node_modules", "build"]
 }
