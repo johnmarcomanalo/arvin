@@ -326,7 +326,7 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
                 'annual_sales_target' => $annual_sales_target,
                 'modified_by' => $fields['modified_by']
             ]);
-        }
+        } 
 
         // Fetching data based on conditions
         $datalist = SalesDailyOutTrackers::where('sales_daily_out_annual_settings_sales_code', $fields['code'])
@@ -337,7 +337,7 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
         // Ensure we have data to avoid division by zero
         $count_datalist = $datalist->count();
 
-        $new_daily_quota = $fields["monthly_sales_target"] / $count_datalist;
+        return $new_daily_quota = $fields["monthly_sales_target"] / $count_datalist;
 
        
         if($count_datalist > 0){
@@ -354,7 +354,7 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
                     'daily_sales_target_percentage' => $quota_computation['percentage_daily_target'],
                     'modified_by' => $fields['modified_by'],
                 ]
-            );
+                );
             }
         }
 

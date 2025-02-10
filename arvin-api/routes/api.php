@@ -214,6 +214,10 @@ use Illuminate\Support\Facades\Route;
         // Client Sales Tracker START
         Route::get('salesdailyout/sales_tracker/client/get_client_sales_tracker',[SalesDailyOutClientSalesTrackersController::class, 'get_client_sales_tracker']);
         Route::get('salesdailyout/sales_tracker/client/insert_sap_client_sales_tracker',[SalesDailyOutClientSalesTrackersController::class, 'insert_sap_client_sales_tracker']);
+        Route::get('salesdailyout/sales_tracker/client/getFiveDaysClientSalesTrackerbyCurrentDate',[SalesDailyOutClientSalesTrackersController::class, 'getFiveDaysClientSalesTrackerbyCurrentDate']);
+        
+        
+        
         // Client Sales Tracker END 
        
 

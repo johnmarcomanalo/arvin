@@ -316,9 +316,23 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
             return response($response, 404);
         }
 
+        $annual_sales_target = $fields["january_sales_target"] +
+                               $fields["february_sales_target"] +
+                               $fields["march_sales_target"] +
+                               $fields["april_sales_target"] +
+                               $fields["may_sales_target"] +
+                               $fields["june_sales_target"] +
+                               $fields["july_sales_target"] +
+                               $fields["august_sales_target"] +
+                               $fields["september_sales_target"] +
+                               $fields["october_sales_target"] +
+                               $fields["november_sales_target"] +
+                               $fields["december_sales_target"];
+
+                               
         $check_data_same_value = SalesDailyOutSettingsAnnualQuotaClientGroups::where('sales_daily_out_settings_client_group_code',$fields["sales_daily_out_settings_client_group_code"])
             ->where('year_sales_target',$fields["year_sales_target"])
-            ->where('annual_sales_target',$fields["annual_sales_target"])
+            ->where('annual_sales_target', $annual_sales_target)
             ->where('ref_product_groups_code',$fields["ref_product_groups_code"])
             ->where('january_sales_target',$fields["january_sales_target"])
             ->where('february_sales_target',$fields["february_sales_target"])
@@ -344,10 +358,12 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
             ];
             return response($response, 404);
         }
+        
+
 
         $update_quota->update([
             'year_sales_target' => $fields['year_sales_target'],
-            'annual_sales_target' => $fields['annual_sales_target'],
+            'annual_sales_target' => $annual_sales_target,
             'ref_product_groups_code' =>$fields['ref_product_groups_code'],
             'january_sales_target' => $fields["january_sales_target"],
             'february_sales_target' => $fields["february_sales_target"],
@@ -364,6 +380,14 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
             'bdo' => $fields["bdo"],   
             'modified_by' => $fields["modified_by"],   
         ]);
+
+
+        $datalist = SalesDailyOutClientSalesTrackers::where('sales_daily_out_settings_annual_quota_client_groups_code', $id)
+                    ->whereNull('deleted_at')
+                    ->get();
+
+        
+
         $response = [
             'message' => '',
             'result' => true,
