@@ -337,7 +337,7 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
         // Ensure we have data to avoid division by zero
         $count_datalist = $datalist->count();
 
-        return $new_daily_quota = $fields["monthly_sales_target"] / $count_datalist;
+        $new_daily_quota = $fields["monthly_sales_target"] / $count_datalist;
 
        
         if($count_datalist > 0){

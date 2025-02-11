@@ -1,13 +1,10 @@
-import { Constants } from "../../../../../reducer/Contants";
-import {
-  GetMultiSpecificDefaultServices,
-  GetSpecificDefaultServices,
-  PostDefaultServices,
-} from "../../../../../services/apiService";
-import { decryptaes } from "../../../../../utils/LightSecurity";
 import swal from "sweetalert";
+import { Constants } from "../../../../../reducer/Contants";
+import { GetSpecificDefaultServices } from "../../../../../services/apiService";
+import { decryptaes } from "../../../../../utils/LightSecurity";
 import configure from "../../../../configure/configure.json";
-export const getEmployeeList = (values) => async (dispatch) => {
+
+export const getAccountList = (values) => async (dispatch) => {
   try {
     await dispatch({
       type: Constants.ACTION_LOADING,
@@ -16,7 +13,7 @@ export const getEmployeeList = (values) => async (dispatch) => {
       },
     });
     const response = GetSpecificDefaultServices(
-      "api/humanresource/employee_list?page=" +
+      "api/humanresource/account_list?page=" +
         values.p +
         "&limit=" +
         values.l +

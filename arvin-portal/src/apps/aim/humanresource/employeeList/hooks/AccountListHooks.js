@@ -1,17 +1,13 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 import { Constants } from "../../../../../reducer/Contants";
-import { React, useEffect } from "react";
-import {
-  getEmployeeList,
-  getUserEmployeeList,
-} from "../actions/EmployeeListActions";
-import { useSearchParams, useNavigate } from "react-router-dom";
 import { useDebounce } from "../../../../../utils/HelperUtils";
+import { getEmployeeCustomerAccessList } from "../../../settings/accessrights/customerrights/actions/CustomerRightsActions";
 import { getEmployeeOrganizationAccessList } from "../../../settings/accessrights/organizationrights/actions/OrganizationRightsActions";
 import { getEmployeePageAccessList } from "../../../settings/accessrights/pagerights/actions/PageRightsActions";
-import { getEmployeeCustomerAccessList } from "../../../settings/accessrights/customerrights/actions/CustomerRightsActions";
-const EmployeeMasterListHooks = (props) => {
-  const navigate = useNavigate();
+import { getAccountList } from "../actions/AccountListActions";
+const AccountListHooks = (props) => {
   const refresh = useSelector((state) => state.HumanResourceReducer.refresh);
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -24,6 +20,16 @@ const EmployeeMasterListHooks = (props) => {
     searchParams.get("l") != null ? searchParams.get("l") : 10;
   const filterQuery =
     searchParams.get("f") != null ? String(searchParams.get("f")) : "";
+
+  //second search param start
+  const search2 =
+    searchParams.get("srch") != null ? String(searchParams.get("srch")) : "";
+  const page2 = searchParams.get("pg") != null ? searchParams.get("pg") : 1;
+  const rowsPerPage2 =
+    searchParams.get("lmt") != null ? searchParams.get("lmt") : 10;
+  const filterQuery2 =
+    searchParams.get("fltr") != null ? String(searchParams.get("fltr")) : "";
+  //second search param end
 
   const debounceSearch = useDebounce(searchParams, 500);
 
@@ -46,19 +52,15 @@ const EmployeeMasterListHooks = (props) => {
   const viewModal = useSelector(
     (state) => state.HumanResourceReducer.viewModal
   );
-  const uploadModal = useSelector(
-    (state) => state.HumanResourceReducer.uploadModal
-  );
-  const addModal = useSelector((state) => state.HumanResourceReducer.addModal);
   const columns = [
-    { id: "code", label: "User Code", align: "left" },
+    { id: "code", label: "Account Code", align: "left" },
     { id: "full_name", label: "Complete Name", align: "left" },
-    // { id: "position", label: "Position", align: "left" },
+    { id: "username", label: "Username", align: "left" },
   ];
 
-  const handleChangePage = (event, page) => {
+  const handleChangePage = (event, newPage) => {
     setSearchParams({
-      p: page,
+      p: newPage,
       q: search,
       l: String(rowsPerPage),
       f: filterQuery,
@@ -74,9 +76,18 @@ const EmployeeMasterListHooks = (props) => {
     });
   };
   const onSelectItem = async (data) => {
-    await navigate(
-      "/Modules/HumanResource/Employee/EmployeeDetails/" + data.code
-    );
+    const data2 = getListParam2();
+    await dispatch(getEmployeeOrganizationAccessList(data.code));
+    await dispatch(getEmployeePageAccessList(data.code));
+    await dispatch(getEmployeeCustomerAccessList(data2));
+    await dispatch({
+      type: Constants.ACTION_HUMAN_RESOURCE,
+      payload: {
+        selectedDataList: data,
+        refresh: !refresh,
+        viewModal: false,
+      },
+    });
   };
   const onDeleteDeduction = (data) => {
     console.log(data);
@@ -84,7 +95,7 @@ const EmployeeMasterListHooks = (props) => {
   const onClickOpenViewModal = () => {
     dispatch({
       type: Constants.ACTION_HUMAN_RESOURCE,
-      payload: {
+      payloads: {
         viewModal: true,
       },
     });
@@ -92,7 +103,7 @@ const EmployeeMasterListHooks = (props) => {
   const onClickCloseViewModal = () => {
     dispatch({
       type: Constants.ACTION_HUMAN_RESOURCE,
-      payload: {
+      payloads: {
         viewModal: false,
       },
     });
@@ -119,51 +130,27 @@ const EmployeeMasterListHooks = (props) => {
     return data;
   };
 
-  const GetEmployeeLists = async () => {
+  const getListParam2 = () => {
+    const data = {
+      pg: page2 == null ? 1 : page,
+      srch: search2,
+      lmt: rowsPerPage2,
+      fltr: filterQuery2,
+      uid: account_details?.code,
+    };
+    return data;
+  };
+  const GetAccountLists = async () => {
     try {
       const data = getListParam();
-      await dispatch(getEmployeeList(data));
+      await dispatch(getAccountList(data));
     } catch (error) {
       await console.error(error);
     }
   };
   useEffect(() => {
-    GetEmployeeLists();
+    GetAccountLists();
   }, [refresh, debounceSearch, filterQuery]);
-
-  const onClickOpenUploadModal = () => {
-    dispatch({
-      type: Constants.ACTION_HUMAN_RESOURCE,
-      payload: {
-        uploadModal: true,
-      },
-    });
-  };
-  const onClickCloseUploadModal = () => {
-    dispatch({
-      type: Constants.ACTION_HUMAN_RESOURCE,
-      payload: {
-        uploadModal: false,
-      },
-    });
-  };
-  const onClickOpenAddModal = () => {
-    dispatch({
-      type: Constants.ACTION_HUMAN_RESOURCE,
-      payload: {
-        addModal: true,
-      },
-    });
-  };
-  const onClickCloseAddModal = () => {
-    dispatch({
-      type: Constants.ACTION_HUMAN_RESOURCE,
-      payload: {
-        addModal: false,
-      },
-    });
-  };
-
   return {
     search,
     page,
@@ -176,8 +163,6 @@ const EmployeeMasterListHooks = (props) => {
     columns,
     account_details,
     viewModal,
-    uploadModal,
-    addModal,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,
@@ -185,11 +170,7 @@ const EmployeeMasterListHooks = (props) => {
     onClickOpenViewModal,
     onClickCloseViewModal,
     onChangeSearch,
-    onClickOpenUploadModal,
-    onClickCloseUploadModal,
-    onClickOpenAddModal,
-    onClickCloseAddModal,
   };
 };
 
-export default EmployeeMasterListHooks;
+export default AccountListHooks;

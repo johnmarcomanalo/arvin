@@ -234,6 +234,7 @@ use Illuminate\Support\Facades\Route;
 
         // HUMAN RESOURCE START
         Route::get('humanresource/employee_list',[UsersController::class, 'employee_list']);
+        Route::get('humanresource/account_list',[UsersController::class, 'account_list']);
         Route::get('humanresource/fast_create',[UsersController::class, 'fast_create']);
         Route::apiResource('humanresource/employee',UsersController::class)->middleware(['light_decryption']);
 

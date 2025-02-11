@@ -59,8 +59,17 @@ const PageRightsHooks = (props) => {
       },
     });
   };
-  const onSelectItem = (data) => {
+  const onSelectItem = async (data) => {
     console.log(data);
+    await dispatch(getEmployeePageAccessList(data.code));
+    await dispatch({
+      type: Constants.ACTION_HUMAN_RESOURCE,
+      payload: {
+        selectedDataList: data,
+        refresh: !HRrefresh,
+        viewModal: false,
+      },
+    });
   };
   const onDeleteDeduction = (data) => {
     console.log(data);

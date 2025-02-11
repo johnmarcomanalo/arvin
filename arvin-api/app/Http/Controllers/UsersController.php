@@ -83,6 +83,8 @@ class UsersController extends Controller
         $fields['code'] = MainController::generate_code('App\Models\User',"code");
         $fields['account_code'] = MainController::generate_code('App\Models\UsersAccounts',"code");
         $fields['password'] = bcrypt("welcome123");
+
+        $fields['modified_by'] = $fields['modified_by'] ?? $fields['added_by'];
         // User::create($fields);
         User::create([
             'code' => $fields['code'],
@@ -107,7 +109,7 @@ class UsersController extends Controller
             'position' => $fields['position'],
             'position_level' => $fields['position_level'],
             'added_by' => $fields['added_by'],
-            'modified_by' => $fields['modified_by'],
+            'modified_by' => $fields['added_by'],
         ]);
 
         return response([
@@ -125,9 +127,10 @@ class UsersController extends Controller
      * @param  \App\Models\Users  $users
      * @return \Illuminate\Http\Response
      */
-    public function show(User $users)
+    public function show($id)
     {
-        //
+        return Crypt::encryptString($this->do_show($id));
+        // return User::find($id);
     }
 
     /**
@@ -171,6 +174,54 @@ class UsersController extends Controller
         }
 
         // Query the users and join with the users_accounts table to get all accounts
+        $query = User::whereNull('deleted_at');
+
+        if (isset($search)) {
+            $query->where(DB::raw("UPPER(users.first_name + ' ' + users.last_name)"), 'like', '%' . strtoupper($search) . '%');
+        }
+
+        // $query->orderBy('users.first_name', 'asc');
+
+        // Select the necessary fields and get all accounts for the user
+        $dataList = $query->select([
+            'code',
+            DB::raw("UPPER(users.first_name + ' ' + users.last_name) AS full_name"),
+        ])
+        ->paginate($limit); // Use pagination to handle the results
+
+        // Convert to array to manipulate the response
+        $dataList = $dataList->toArray();
+
+        $response = [
+            'dataList' => $dataList,
+            'result' => true,
+            'title' => 'Success',
+            'status' => 'success',
+            'message' => 'Authentication successful.',
+        ];
+
+        // Return encrypted response
+        return Crypt::encryptString(json_encode($response));
+    }
+    public function account_list(Request $request){
+        $page = $request->query('page');
+        $limit = $request->query('limit');
+        $search = $request->query('q');
+        $filter = $request->query('f');
+        $user_id = $request->query('uid'); 
+
+        // Check if the user is valid and currently logged in
+        if(empty($user_id)){
+            $response = [
+                'result' => false,
+                'status' => 'warning',
+                'title' => 'Oppss!',
+                'message' => "Invalid request. Please login.",
+            ];
+            return response($response, 200);
+        }
+
+        // Query the users and join with the users_accounts table to get all accounts
         $query = User::join('users_accounts', 'users.code', '=', 'users_accounts.user_code')
             ->whereNull('users_accounts.deleted_at');
 
@@ -182,7 +233,7 @@ class UsersController extends Controller
 
         // Select the necessary fields and get all accounts for the user
         $dataList = $query->select([
-            'users_accounts.code',
+            'users_accounts.code as code',
             DB::raw("UPPER(users.first_name + ' ' + users.last_name) AS full_name"),
             'users_accounts.position',
             'users_accounts.username'
@@ -203,7 +254,6 @@ class UsersController extends Controller
         // Return encrypted response
         return Crypt::encryptString(json_encode($response));
     }
-
     public function fast_create(){
         // $user_code = MainController::generate_code('App\Models\User',"code");
         // $user_access_module_code = MainController::generate_code('App\Models\UserAccessModuleRights',"code");
@@ -244,5 +294,15 @@ class UsersController extends Controller
         ]);
 
 
+    }
+    public function do_show($id) {
+        if (isset($id)) {
+            $data = User::where('code', '=', $id)->first();
+        }
+        if ($data->isEmpty()) {
+            $data = array();
+        }
+
+        return $data;
     }
 }

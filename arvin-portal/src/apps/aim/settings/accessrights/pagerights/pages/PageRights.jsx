@@ -31,6 +31,7 @@ import configure from "../../../../../configure/configure.json";
 import UserList from "../../../../humanresource/employeeList/pages/components/UserList";
 import PageRightsHooks from "../hooks/PageRightsHooks";
 import SearchField from "../../../../../../components/inputFIeld/SearchField";
+import AccountList from "apps/aim/humanresource/employeeList/pages/components/AccountList";
 const formName = "PageRights";
 const submit = async (values, dispatch, props) => {
   try {
@@ -48,12 +49,12 @@ let PageRights = (props) => {
       <Modal
         open={pageRights.viewModal}
         fullScreen={matches ? false : true}
-        title={"Employee Search"}
+        title={"Account Search"}
         size={"md"}
         action={undefined}
         handleClose={pageRights.onClickCloseViewModal}
       >
-        <UserList />
+        <AccountList onClickSelect={pageRights.onSelectItem} />
       </Modal>
 
       <form onSubmit={props.handleSubmit}>
@@ -94,7 +95,7 @@ let PageRights = (props) => {
                         iconType="view"
                         type="button"
                       >
-                        Employee List
+                        Account List
                       </ButtonComponent>
                     </Stack>
                   </Grid>

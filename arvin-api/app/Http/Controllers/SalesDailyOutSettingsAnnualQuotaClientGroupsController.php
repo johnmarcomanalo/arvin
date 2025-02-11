@@ -299,6 +299,7 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
             'added' => 'required',
             'modified_by' => 'required',
         ]);
+        $salesDailyOutClientSalesTrackersController = new SalesDailyOutClientSalesTrackersController();
         
         // $updateFields = Arr::except($fields, ['added_by']);
 
@@ -386,7 +387,54 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
                     ->whereNull('deleted_at')
                     ->get();
 
-        
+        $count_datalist = $datalist->count();
+
+        if ($count_datalist > 0) {
+            $year = $fields['year_sales_target']; // Extract the year from request
+
+            // Dynamically get the number of days in each month
+            $daysInMonth = [
+                'january' => Carbon::create($year, 1)->daysInMonth,
+                'february' => Carbon::create($year, 2)->daysInMonth,
+                'march' => Carbon::create($year, 3)->daysInMonth,
+                'april' => Carbon::create($year, 4)->daysInMonth,
+                'may' => Carbon::create($year, 5)->daysInMonth,
+                'june' => Carbon::create($year, 6)->daysInMonth,
+                'july' => Carbon::create($year, 7)->daysInMonth,
+                'august' => Carbon::create($year, 8)->daysInMonth,
+                'september' => Carbon::create($year, 9)->daysInMonth,
+                'october' => Carbon::create($year, 10)->daysInMonth,
+                'november' => Carbon::create($year, 11)->daysInMonth,
+                'december' => Carbon::create($year, 12)->daysInMonth,
+            ];
+
+            foreach ($daysInMonth as $month => $days) {
+                $monthlyTargetField = $month . '_sales_target'; // Field name in request
+
+                if (!isset($fields[$monthlyTargetField])) {
+                    continue; // Skip if the month target is not set
+                }
+
+                // Compute daily quota for the month
+                $new_daily_quota = ($count_datalist > 0) ? $fields[$monthlyTargetField] / $days : 0;
+
+                foreach ($datalist as $value) {
+                    $quota_computation = $salesDailyOutClientSalesTrackersController->get_status_daily_target_and_percentage_daily_target_by_daily_out(
+                        $value['sales_daily_out'],
+                        $new_daily_quota
+                    );
+
+                    SalesDailyOutClientSalesTrackers::where('code', $value['code'])->update([
+                        'sales_daily_qouta' => $new_daily_quota,
+                        'sales_daily_target' => $quota_computation['status_daily_target'],
+                        'daily_sales_target_percentage' => $quota_computation['percentage_daily_target'],
+                        'modified_by' => $fields['modified_by'],
+                    ]);
+                }
+            }
+        }
+
+
 
         $response = [
             'message' => '',

@@ -4,7 +4,11 @@ import PersonIcon from "@mui/icons-material/Person";
 import configure from "../../../../configure/configure.json";
 import { React } from "react";
 import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+
 const EmployeeDetailsHooks = (props) => {
+  const { id } = useParams();
+  console.log("id", id);
   const refresh = useSelector((state) => state.HumanResourceReducer.refresh);
   const tabs = [
     {

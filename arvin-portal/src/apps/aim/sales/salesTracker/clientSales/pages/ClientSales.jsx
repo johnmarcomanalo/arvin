@@ -1,21 +1,20 @@
+import CloseIcon from "@mui/icons-material/Close";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { Grid, Stack, Tooltip, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import AccountList from "apps/aim/humanresource/employeeList/pages/components/AccountList";
 import moment from "moment";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import ComboBox from "../../../../../../components/autoComplete/AutoComplete";
-import InputMonthYearPicker from "../../../../../../components/inputFIeld/InputMonthYearPicker";
-import ComponentTable from "../../../../../../components/table/Table";
-import ClientSalesHooks from "../hooks/ClientSalesHooks";
 import ButtonComponent from "../../../../../../components/button/Button";
-import configure from "../../../../../configure/configure.json";
-import InputField from "../../../../../../components/inputFIeld/InputField";
-import EmployeeList from "../../../../humanresource/employeeList/pages/components/EmployeeList";
-import Modal from "../../../../../../components/modal/Modal";
 import InputFieldButton from "../../../../../../components/inputFIeld/InputFieldButton";
-import CloseIcon from "@mui/icons-material/Close";
+import InputMonthYearPicker from "../../../../../../components/inputFIeld/InputMonthYearPicker";
+import Modal from "../../../../../../components/modal/Modal";
+import ComponentTable from "../../../../../../components/table/Table";
+import configure from "../../../../../configure/configure.json";
+import ClientSalesHooks from "../hooks/ClientSalesHooks";
 const formName = "ClientSales";
 const submit = async (values, dispatch, props) => {
   try {
@@ -34,12 +33,12 @@ let ClientSales = (props) => {
       <Modal
         open={salesTracker.employeeModal}
         fullScreen={matches ? false : true}
-        title={"Employee Search"}
+        title={"Account Search"}
         size={"md"}
         action={undefined}
         handleClose={salesTracker.onClickCloseEmployeeViewModal}
       >
-        <EmployeeList onClickSelect={salesTracker.onClickSelectEmployee} />
+        <AccountList onClickSelect={salesTracker.onClickSelectEmployee} />
       </Modal>
       <form onSubmit={props.handleSubmit}>
         <Grid container spacing={2}>
@@ -112,6 +111,7 @@ let ClientSales = (props) => {
               component={ComboBox}
               onChangeHandle={(e, newValue) => {
                 if (newValue?.description) {
+                  console.log(newValue);
                   salesTracker.filterClientGroups(newValue.code);
                 } else {
                   salesTracker.filterClientGroups("");

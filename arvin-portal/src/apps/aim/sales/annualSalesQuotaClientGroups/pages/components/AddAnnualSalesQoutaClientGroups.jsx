@@ -10,6 +10,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
+import AccountList from "apps/aim/humanresource/employeeList/pages/components/AccountList";
 import moment from "moment";
 import * as React from "react";
 import { connect, useDispatch } from "react-redux";
@@ -19,13 +20,12 @@ import ComboBox from "../../../../../../components/autoComplete/AutoComplete";
 import ButtonComponent from "../../../../../../components/button/Button";
 import InputField from "../../../../../../components/inputFIeld/InputField";
 import InputYearPicker from "../../../../../../components/inputFIeld/InputYearPicker";
+import Modal from "../../../../../../components/modal/Modal";
 import { Constants } from "../../../../../../reducer/Contants";
 import configure from "../../../../../configure/configure.json";
+import Customers from "../../../../settings/accessrights/customerrights/pages/components/Customers";
 import { postSettingsAnnualQuotaClientGroups } from "../../actions/AnnualSalesQoutaClientGroupsActions";
 import AddAnnualSalesQoutaClientGroupsHooks from "../../hooks/AddAnnualSalesQoutaClientGroupsHooks";
-import Customers from "../../../../settings/accessrights/customerrights/pages/components/Customers";
-import Modal from "../../../../../../components/modal/Modal";
-import EmployeeList from "../../../../humanresource/employeeList/pages/components/EmployeeList";
 const formName = "AddAnnualSalesQoutaClientGroups";
 const submit = async (values, dispatch, props) => {
   try {
@@ -83,7 +83,7 @@ let AddAnnualSalesQoutaClientGroups = (props) => {
           addAnnualSalesQoutaClientGroups.onClickCloseEmployeeViewModal
         }
       >
-        <EmployeeList
+        <AccountList
           onClickSelect={addAnnualSalesQoutaClientGroups.onClickSelectEmployee}
         />
       </Modal>
