@@ -80,27 +80,28 @@ class SalesDailyOutClientSalesTrackersController extends Controller
         $bdo = $request->query('b');
 
         $data = SalesDailyOutClientSalesTrackers::where('year_sales_target', $selected_year)
-        ->whereMonth('sales_date', $selected_month)
-        ->when(isset($selected_product), function ($qry) use ($selected_product) {
-                return $qry->where('ref_product_groups_description', $selected_product);
-        })
-        ->when(isset($bdo), function ($qry) use ($bdo) {
-                return $qry->where('bdo', $bdo);
-        })
-        ->when(isset($selected_group_code), function ($qry) use ($selected_group_code) {
-                return $qry->where('sales_daily_out_settings_annual_quota_client_groups_code', $selected_group_code);
-        })
-        ->whereNull('deleted_at')
-        ->get();
+            ->whereMonth('sales_date', $selected_month)
+            ->when(isset($selected_product), function ($qry) use ($selected_product) {
+                    return $qry->where('ref_product_groups_description', $selected_product);
+            })
+            ->when(isset($bdo), function ($qry) use ($bdo) {
+                    return $qry->where('bdo', $bdo);
+            })
+            ->when(isset($selected_group_code), function ($qry) use ($selected_group_code) {
+                    return $qry->where('sales_daily_out_settings_annual_quota_client_groups_code', $selected_group_code);
+            })
+            ->whereNull('deleted_at')
+            ->get();
         $weekGroups = [];
-
         foreach ($data as $sale) {
+            // return $sale;
+            $annual_group_code = $sale->sales_daily_out_settings_annual_quota_client_groups_code;
             $groupCode = $sale->sales_daily_out_settings_annual_quota_client_groups_code;
-            if (!isset($weekGroups[$groupCode])) {
-                $weekGroups[$groupCode] = [
+            if (!isset($weekGroups[$annual_group_code])) {
+                $weekGroups[$annual_group_code] = [
                     'month_sales_daily_out' => 0,
                     'month_sales_daily_qouta' => 0,
-                    'sales_daily_out_settings_annual_quota_client_groups_code' => $groupCode,
+                    'sales_daily_out_settings_annual_quota_client_groups_code' => $annual_group_code,
                     'sales_daily_out_settings_client_groups_description' => $sale->sales_daily_out_settings_client_groups_description,
                     '1-7' => 0,
                     '8-14' => 0,
@@ -110,7 +111,7 @@ class SalesDailyOutClientSalesTrackersController extends Controller
             }
             // $mtd_date_selected_month = $this->get_mtd($selected_year, $selected_month,$bdo,$selected_product,$groupCode);
             // $ytd_date_selected_month = $this->get_ytd($selected_year, $selected_month,$bdo,$selected_product,$groupCode);
-            $data_quota = SalesDailyOutSettingsAnnualQuotaClientGroups::where('sales_daily_out_settings_client_group_code',$groupCode)->first();
+             $data_quota = SalesDailyOutSettingsAnnualQuotaClientGroups::where('code',$annual_group_code)->first();
 
             if ($data_quota) {
                  $bdo_user_account = UsersAccounts::where('username', $data_quota->bdo)
@@ -121,11 +122,11 @@ class SalesDailyOutClientSalesTrackersController extends Controller
                     $bdo_user = User::where('code', $bdo_user_account->user_code)
                         ->first(DB::raw("UPPER(users.first_name + ' ' + users.last_name) AS full_name"));
 
-                    $weekGroups[$groupCode]['bdo'] = $bdo_user->full_name ?? 'N/A';
+                     $weekGroups[$groupCode]['bdo'] = $bdo_user->full_name ?? 'N/A';
                 }
             }
-            $mtd_date_selected_month = $this->get_mtd($selected_year, $selected_month,$bdo,$selected_product,$groupCode);
-            $ytd_date_selected_month = $this->get_ytd($selected_year, $selected_month,$bdo,$selected_product,$groupCode);
+            $mtd_date_selected_month = $this->get_mtd($selected_year, $selected_month,$bdo,$selected_product,$annual_group_code);
+            $ytd_date_selected_month = $this->get_ytd($selected_year, $selected_month,$bdo,$selected_product,$annual_group_code);
 
             // Increment totals
             // $weekGroups[$groupCode]['month_sales_daily_out'] += $sale->sales_daily_out;
@@ -142,27 +143,27 @@ class SalesDailyOutClientSalesTrackersController extends Controller
 
 
 
-            $weekGroups[$groupCode]['month_sales_daily_out'] = round($weekGroups[$groupCode]['month_sales_daily_out'] + $sale->sales_daily_out, 4);
-            $weekGroups[$groupCode]['month_sales_daily_qouta'] = round($weekGroups[$groupCode]['month_sales_daily_qouta'] + $sale->sales_daily_qouta, 4);
-            $weekGroups[$groupCode]['sales_daily_qouta'] = round($sale->sales_daily_qouta, 4);
-            $weekGroups[$groupCode]['mtd_total_daily_qouta_amount'] = round($mtd_date_selected_month['mtd_total_daily_qouta_amount'], 4);
-            $weekGroups[$groupCode]['mtd_total_daily_out_amount'] = round($mtd_date_selected_month['mtd_total_daily_out_amount'], 4);
-            $weekGroups[$groupCode]['mtd_total_status_daily_target'] = round($mtd_date_selected_month['mtd_total_status_daily_target'], 4);
-            $weekGroups[$groupCode]['mtd_final_percentage'] = round($mtd_date_selected_month['mtd_final_percentage'], 4);
-            $weekGroups[$groupCode]['ytd_total_daily_qouta_amount'] = round($ytd_date_selected_month['ytd_total_daily_qouta_amount'], 4);
-            $weekGroups[$groupCode]['ytd_total_daily_out_amount'] = round($ytd_date_selected_month['ytd_total_daily_out_amount'], 4);
-            $weekGroups[$groupCode]['ytd_total_status_daily_target'] = round($ytd_date_selected_month['ytd_total_status_daily_target'], 4);
-            $weekGroups[$groupCode]['ytd_final_percentage'] = round($ytd_date_selected_month['ytd_final_percentage'], 4);
+            $weekGroups[$annual_group_code]['month_sales_daily_out'] = round($weekGroups[$annual_group_code]['month_sales_daily_out'] + $sale->sales_daily_out, 4);
+            $weekGroups[$annual_group_code]['month_sales_daily_qouta'] = round($weekGroups[$annual_group_code]['month_sales_daily_qouta'] + $sale->sales_daily_qouta, 4);
+            $weekGroups[$annual_group_code]['sales_daily_qouta'] = round($sale->sales_daily_qouta, 4);
+            $weekGroups[$annual_group_code]['mtd_total_daily_qouta_amount'] = round($mtd_date_selected_month['mtd_total_daily_qouta_amount'], 4);
+            $weekGroups[$annual_group_code]['mtd_total_daily_out_amount'] = round($mtd_date_selected_month['mtd_total_daily_out_amount'], 4);
+            $weekGroups[$annual_group_code]['mtd_total_status_daily_target'] = round($mtd_date_selected_month['mtd_total_status_daily_target'], 4);
+            $weekGroups[$annual_group_code]['mtd_final_percentage'] = round($mtd_date_selected_month['mtd_final_percentage'], 4);
+            $weekGroups[$annual_group_code]['ytd_total_daily_qouta_amount'] = round($ytd_date_selected_month['ytd_total_daily_qouta_amount'], 4);
+            $weekGroups[$annual_group_code]['ytd_total_daily_out_amount'] = round($ytd_date_selected_month['ytd_total_daily_out_amount'], 4);
+            $weekGroups[$annual_group_code]['ytd_total_status_daily_target'] = round($ytd_date_selected_month['ytd_total_status_daily_target'], 4);
+            $weekGroups[$annual_group_code]['ytd_final_percentage'] = round($ytd_date_selected_month['ytd_final_percentage'], 4);
 
             $day = (int) date('j', strtotime($sale->sales_date));
             if ($day >= 1 && $day <= 7) {
-                $weekGroups[$groupCode]['1-7'] = round($weekGroups[$groupCode]['1-7'] + $sale->sales_daily_out, 4);
+                $weekGroups[$annual_group_code]['1-7'] = round($weekGroups[$annual_group_code]['1-7'] + $sale->sales_daily_out, 4);
             } elseif ($day >= 8 && $day <= 14) {
-                $weekGroups[$groupCode]['8-14'] = round($weekGroups[$groupCode]['8-14'] + $sale->sales_daily_out, 4);
+                $weekGroups[$annual_group_code]['8-14'] = round($weekGroups[$annual_group_code]['8-14'] + $sale->sales_daily_out, 4);
             } elseif ($day >= 15 && $day <= 21) {
-                $weekGroups[$groupCode]['15-21'] = round($weekGroups[$groupCode]['15-21'] + $sale->sales_daily_out, 4);
+                $weekGroups[$annual_group_code]['15-21'] = round($weekGroups[$annual_group_code]['15-21'] + $sale->sales_daily_out, 4);
             } else {
-                $weekGroups[$groupCode]['22-30/31'] = round($weekGroups[$groupCode]['22-30/31'] + $sale->sales_daily_out, 4);
+                $weekGroups[$annual_group_code]['22-30/31'] = round($weekGroups[$annual_group_code]['22-30/31'] + $sale->sales_daily_out, 4);
             }
 
         }
