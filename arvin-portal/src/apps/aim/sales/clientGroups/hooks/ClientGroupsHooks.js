@@ -151,7 +151,7 @@ const ClientGroupsHooks = (props) => {
   React.useEffect(() => {
     GetClientGroups();
     return () => cancelRequest();
-  }, [refresh, filterQuery, search]);
+  }, [refresh, filterQuery, search, page]);
   const onClickCloseViewModal = () => {
     dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,

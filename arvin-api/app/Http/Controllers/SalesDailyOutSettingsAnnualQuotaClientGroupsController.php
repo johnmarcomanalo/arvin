@@ -65,7 +65,7 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
 
             if($check_quota > 0){
                 $response = [
-                        'message' => 'There is already a existing quota for - : '.$fields["subsection"].' Year : '.$fields['year_sales_target'].'with date effectiveness of'.$fields['date_effectiveness'] ,
+                        'message' => 'There is already a existing quota for - : '.$check_quota["description"].' Year : '.$fields['year_sales_target'] ,
                         'result' => false,
                         'status' => 'warning',
                         'title' => 'Oppss!',
@@ -128,23 +128,6 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
             }
 
         } else {
-
-                // $check_quota = SalesDailyOutSettingsAnnualQuotaClientGroups::where('year_sales_target',$fields['year_sales_target'])
-                //     ->where('sales_daily_out_settings_client_group_code',$fields['sales_daily_out_settings_client_group_code'])
-                //     ->where('ref_product_groups_code',$fields['ref_product_groups_code'])
-                //     ->whereNull('deleted_at')
-                //     ->count();
-
-                // if($check_quota > 0){
-                //     $response = [
-                //             'message' => 'There is already a existing quota for - : '.$fields["subsection"].' Year : '.$fields['year_sales_target'].'with date effectiveness of'.$fields['date_effectiveness'] ,
-                //             'result' => false,
-                //             'status' => 'warning',
-                //             'title' => 'Oppss!',
-                //     ];
-                //     return response($response,409);
-                // }
-                
                 $check_in_group = SalesDailyOutSettingsClientGroups::where('description',$fields['description'])
                     ->whereNull('deleted_at')
                     ->count();
@@ -158,7 +141,6 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
                     ];
                     return response($response,409);
                 }
-
                 $check_in_subgroup = SalesDailyOutSettingsClientSubGroups::where('customer_code',$fields['customer_code'])
                     ->where('description',$fields['description'])    
                     ->whereNull('deleted_at')
@@ -173,7 +155,6 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
                     ];
                     return response($response,409);
                 }
-
                 $code_group = MainController::generate_code('App\Models\SalesDailyOutSettingsClientGroups',"code");
                 $card_code = '';
                 SalesDailyOutSettingsClientGroups::create([
@@ -196,8 +177,6 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
                         'modified_by' => $fields["modified_by"],
                     ]);
                 }
-
-                
                 SalesDailyOutSettingsAnnualQuotaClientGroups::create([
                     'code' => $code_annual_quota,
                     'sales_daily_out_settings_client_group_code' =>$code_group,
@@ -228,7 +207,7 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
                     $sales_daily_quota = $this->get_quota_day($value,$fields["monthly_sales_target"]) ;
                     SalesDailyOutClientSalesTrackers::create([
                             'code' => $code,
-                            'sales_daily_out_settings_annual_quota_client_groups_code' => $code_group,
+                            'sales_daily_out_settings_annual_quota_client_groups_code' => $code_annual_quota,
                             'sales_daily_out_settings_client_groups_description' => $fields["description"],
                             'ref_product_groups_description' =>$fields["ref_product_groups_description"],
                             'daily_sales_target_percentage' => -100,

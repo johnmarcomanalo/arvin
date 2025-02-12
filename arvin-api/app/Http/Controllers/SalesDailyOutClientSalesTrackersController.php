@@ -94,7 +94,6 @@ class SalesDailyOutClientSalesTrackersController extends Controller
             ->get();
         $weekGroups = [];
         foreach ($data as $sale) {
-            // return $sale;
             $annual_group_code = $sale->sales_daily_out_settings_annual_quota_client_groups_code;
             $groupCode = $sale->sales_daily_out_settings_annual_quota_client_groups_code;
             if (!isset($weekGroups[$annual_group_code])) {
@@ -109,8 +108,6 @@ class SalesDailyOutClientSalesTrackersController extends Controller
                     '22-30/31' => 0,
                 ];
             }
-            // $mtd_date_selected_month = $this->get_mtd($selected_year, $selected_month,$bdo,$selected_product,$groupCode);
-            // $ytd_date_selected_month = $this->get_ytd($selected_year, $selected_month,$bdo,$selected_product,$groupCode);
              $data_quota = SalesDailyOutSettingsAnnualQuotaClientGroups::where('code',$annual_group_code)->first();
 
             if ($data_quota) {
@@ -127,22 +124,6 @@ class SalesDailyOutClientSalesTrackersController extends Controller
             }
             $mtd_date_selected_month = $this->get_mtd($selected_year, $selected_month,$bdo,$selected_product,$annual_group_code);
             $ytd_date_selected_month = $this->get_ytd($selected_year, $selected_month,$bdo,$selected_product,$annual_group_code);
-
-            // Increment totals
-            // $weekGroups[$groupCode]['month_sales_daily_out'] += $sale->sales_daily_out;
-            // $weekGroups[$groupCode]['month_sales_daily_qouta'] += $sale->sales_daily_qouta;
-            // $weekGroups[$groupCode]['sales_daily_qouta'] = $sale->sales_daily_qouta;
-            // $weekGroups[$groupCode]['mtd_total_daily_qouta_amount'] = $mtd_date_selected_month['mtd_total_daily_qouta_amount'];
-            // $weekGroups[$groupCode]['mtd_total_daily_out_amount'] = $mtd_date_selected_month['mtd_total_daily_out_amount'];
-            // $weekGroups[$groupCode]['mtd_total_status_daily_target'] = $mtd_date_selected_month['mtd_total_status_daily_target'];
-            // $weekGroups[$groupCode]['mtd_final_percentage'] = $mtd_date_selected_month['mtd_final_percentage'];
-            // $weekGroups[$groupCode]['ytd_total_daily_qouta_amount'] = $ytd_date_selected_month['ytd_total_daily_qouta_amount'];
-            // $weekGroups[$groupCode]['ytd_total_daily_out_amount'] = $ytd_date_selected_month['ytd_total_daily_out_amount'];
-            // $weekGroups[$groupCode]['ytd_total_status_daily_target'] = $ytd_date_selected_month['ytd_total_status_daily_target'];
-            // $weekGroups[$groupCode]['ytd_final_percentage'] = $ytd_date_selected_month['ytd_final_percentage'];
-
-
-
             $weekGroups[$annual_group_code]['month_sales_daily_out'] = round($weekGroups[$annual_group_code]['month_sales_daily_out'] + $sale->sales_daily_out, 4);
             $weekGroups[$annual_group_code]['month_sales_daily_qouta'] = round($weekGroups[$annual_group_code]['month_sales_daily_qouta'] + $sale->sales_daily_qouta, 4);
             $weekGroups[$annual_group_code]['sales_daily_qouta'] = round($sale->sales_daily_qouta, 4);
@@ -377,27 +358,28 @@ class SalesDailyOutClientSalesTrackersController extends Controller
                 }
         }
 
-
         $batchSize = 50; // Update 50 records at a time
-        $counter = 0;
-        foreach ($final_results as $value) {
-            DB::table('sales_daily_out_client_sales_trackers')
-                ->where('sales_daily_out_settings_annual_quota_client_groups_code', $value['sales_daily_out_settings_annual_quota_client_groups_code'])
-                ->where('ref_product_groups_description',  $value['ref_product_groups_description'])
-                ->where('sales_date',  $value['sales_date'])
-                ->update([
-                    'sales_daily_out' => $value['sales_daily_out'],
-                    'sales_daily_target' => $value['sales_daily_target'],
-                    'daily_sales_target_percentage' => $value['daily_sales_target_percentage'],
-                    'modified_by' => $value['modified_by']
-                ]);
-            $counter++;
+        DB::transaction(function () use ($final_results, $batchSize) {
+            $counter = 0;
+            foreach ($final_results as $value) {
+                DB::table('sales_daily_out_client_sales_trackers')
+                    ->where('sales_daily_out_settings_annual_quota_client_groups_code', $value['sales_daily_out_settings_annual_quota_client_groups_code'])
+                    ->where('ref_product_groups_description',  $value['ref_product_groups_description'])
+                    ->where('sales_date',  $value['sales_date'])
+                    ->update([
+                        'sales_daily_out' => $value['sales_daily_out'],
+                        'sales_daily_target' => $value['sales_daily_target'],
+                        'daily_sales_target_percentage' => $value['daily_sales_target_percentage'],
+                        'modified_by' => $value['modified_by']
+                    ]);
+                $counter++;
 
-            // Add a delay after every 50 updates
-            if ($counter % $batchSize == 0) {
-                sleep(2); // Add a 2-second delay to avoid overloading the database
+                // Add a delay after every 50 updates
+                if ($counter % $batchSize == 0) {
+                    sleep(2); // Add a 2-second delay to avoid overloading the database
+                }
             }
-        }
+        });
     } 
     
     public function getFiveDaysClientSalesTrackerbyCurrentDate() {

@@ -10,6 +10,7 @@ import ClientGroupsHooks from "../hooks/ClientGroupsHooks";
 import AddClientGroup from "./components/AddClientGroup";
 import Table from "../../../../../components/table/Table";
 import ViewClientGroup from "./components/ViewClientGroup";
+import Page from "components/pagination/Pagination";
 const formName = "ClientGroups";
 let ClientGroups = (props) => {
   const { ...clientGroups } = ClientGroupsHooks(props);
@@ -52,6 +53,22 @@ let ClientGroups = (props) => {
               fullWidth={true}
               children={"Add Group"}
               click={clientGroups.onClickOpenAddModal}
+            />
+          </Stack>
+        </Grid>
+        <Grid item xs={12} sm={12} md={12} lg={12}>
+          <Stack
+            direction="row"
+            justifyContent={"flex-end"}
+            alignItems={"flex-end"}
+            flexDirection={matches ? "row" : "column"}
+            spacing={2}
+          >
+            <Page
+              page={clientGroups?.page}
+              limit={clientGroups?.dataListCount}
+              status={""}
+              onHandleChange={clientGroups.handleChangePage}
             />
           </Stack>
         </Grid>
