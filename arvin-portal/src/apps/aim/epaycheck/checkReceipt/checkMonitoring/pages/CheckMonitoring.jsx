@@ -126,7 +126,7 @@ const CheckMonitoring = (props) => {
                             label="Status"
                             options={check?.status}
                             getOptionLabel={(option) =>
-                              option?.description ? option?.description : "ON-HAND"
+                              option?.description ? option?.description : check.filterStatus
                             }
                             component={ComboBox}
                             onChangeHandle={(e, newValue) => {

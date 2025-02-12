@@ -179,6 +179,9 @@ const IndexCheckMonitoring = lazy(() =>
     "./apps/aim/epaycheck/checkReceipt/checkMonitoring/pages/IndexCheckMonitoring"
   )
 );
+const  IndexCheckReceive = lazy(() =>
+  import("./apps/aim/epaycheck/checkReceipt/checkReceive/pages/IndexCheckReceive")
+);
 const IndexWeeklyCheckCounter = lazy(() =>
   import(
     "./apps/aim/epaycheck/report/weeklyCheckCounter/pages/IndexWeeklyCheckCounter"
@@ -827,20 +830,35 @@ function App() {
                     }
                   />
 
-                  <Route
-                    path="/Modules/E-PayCheck/Reports/WeeklyCheckCounter"
-                    element={
-                      <PrivateRoute
-                        accessChecker={getAccessChecker({
-                          module: "E-Pay Check",
-                          component: "Reports",
-                          subComponent: "Weekly Check Counter",
-                        })}
-                      >
-                        <IndexWeeklyCheckCounter />
-                      </PrivateRoute>
-                    }
-                  />
+                    <Route
+                      path="/Modules/E-PayCheck/CheckReceipt/Receive"
+                      element={
+                        <PrivateRoute
+                            accessChecker={getAccessChecker({
+                              module: "E-Pay Check",
+                              component: "Check Receipt",
+                              subComponent:"Receive", 
+                            })}
+                        >
+                          <IndexCheckReceive />
+                        </PrivateRoute>
+                      }
+                    />
+
+                    <Route
+                      path="/Modules/E-PayCheck/Reports/WeeklyCheckCounter"
+                      element={
+                        <PrivateRoute
+                          accessChecker={getAccessChecker({
+                            module: "E-Pay Check",
+                            component: "Reports",
+                            subComponent: "Weekly Check Counter",
+                          })}
+                        >
+                          <IndexWeeklyCheckCounter />
+                        </PrivateRoute>
+                      }
+                    />
                   {/* EPAYCHECK END */}
                   {/* SYSTEM SETTINGS END */}
                 </Route>

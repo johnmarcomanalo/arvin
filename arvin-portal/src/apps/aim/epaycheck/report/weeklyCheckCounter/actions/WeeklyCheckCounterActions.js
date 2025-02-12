@@ -13,27 +13,20 @@ export const getWeeklyChecCounterData = (formValues) => async (dispatch) => {
       },
     });
     const results = GetSpecificDefaultServices(
-      "api/epaycheck/check_details/get_weekly_check_counter_data?q=" +
-        formValues.q +
-        "&p=" +
-        formValues.p +
-        "&df=" +
+      "api/epaycheck/check_detail_logs/get_weekly_check_counter_data?df=" +
         formValues.df +
         "&dt=" +
         formValues.dt +
-        "&s=" +
-        formValues.s +
         "&sc=" +
         formValues.sc
     );
     results.then((res) => {  
       let decrypted = decryptaes(res?.data)
-      let data = decrypted?.dataList; 
+      let data = decrypted
         dispatch({
             type: Constants.ACTION_EPAY_CHECK,
             payload: {
-              dataList: data, 
-              dataListCount: decrypted.total,
+              reportData: data,
             },
         });
     }); 

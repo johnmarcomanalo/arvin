@@ -20,22 +20,21 @@ import * as React from "react";
 import { change, Field, formValueSelector, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 //component
-import ButtonComponent from "../../../../../../components/button/Button";
-import TableComponent from "../../../../../../components/table/Table";
-import SearchField from "../../../../../../components/inputFIeld/SearchField";
-import InputField from "../../../../../../components/inputFIeld/InputField";
-import ComboBox from "../../../../../../components/autoComplete/AutoComplete";
-import Modal from "../../../../../../components/modal/Modal";
-import Page from "../../../../../../components/pagination/Pagination";
-import CheckReceivedHooks from "../hooks/CheckReceiveHooks"; 
+import ButtonComponent from "components/button/Button";
+import TableComponent from "components/table/Table";
+import SearchField from "components/inputFIeld/SearchField";
+import InputField from "components/inputFIeld/InputField";
+import ComboBox from "components/autoComplete/AutoComplete";
+import Modal from "components/modal/Modal";
+import Page from "components/pagination/Pagination";
+import CheckReceiveHooks from "../hooks/CheckReceiveHooks"; 
 import moment from "moment";
-import configure from "../../../../configure/configure.json";
-import Deposit from "./components/Deposit";
-import CheckDetails from "./components/CheckDetails";
-import Reject from "./components/Reject";
-let formName = "CheckReceived"
-const CheckReceived = (props) => {
-    const { ...check } = CheckReceivedHooks(props); 
+import configure from "apps/configure/configure.json"; 
+import CheckDetails from "./components/Receive"; 
+import Receive from './components/Receive';
+let formName = "CheckReceive"
+const CheckReceive = (props) => {
+    const { ...check } = CheckReceiveHooks(props); 
     const matches = useMediaQuery("(min-width:600px)");
     const state = check.state
     return (
@@ -43,32 +42,12 @@ const CheckReceived = (props) => {
           <Modal
               open={check.viewModal}
               fullScreen={matches ? false : true}
-              title={"Deposit Details"}
+              title={"Receive Details"}
               size={"sm"}
               action={undefined}
-              handleClose={check.onClickCloseViewModalDeposit}
+              handleClose={check.onClickCloseReceiveModal}
             >
-            <Deposit/>
-          </Modal>
-          <Modal
-              open={check.editModal}
-              fullScreen={matches ? false : true}
-              title={"Check Details"}
-              size={"sm"}
-              action={undefined}
-              handleClose={check.onClickCloseEditModal}
-            >
-            <CheckDetails details={check.selectedItem}/>
-          </Modal> 
-          <Modal
-              open={check.viewModal2}
-              fullScreen={matches ? false : true}
-              title={"Reject Details"}
-              size={"sm"}
-              action={undefined}
-              handleClose={check.onClickCloseRejectModal}
-            >
-            <Reject/>
+            <Receive/>
           </Modal>
          <Grid container spacing={2}>  
             <Grid item xs={12} sm={12} md={12} lg={12}> 
@@ -78,12 +57,12 @@ const CheckReceived = (props) => {
                     justifyContent="space-between"
                     spacing={2}
                   >
-                    <Grid item xs={12} sm={4} md={2} lg={2}>
+                    <Grid item xs={12} sm={6} md={2} lg={2}>
                       <SearchField value={check.search} onChange={check.onChangeSearch} textHidden={false}/>
                     </Grid>
-                    <Grid item xs={12} sm={8} md={6} lg={6}>
+                    <Grid item xs={12} sm={6} md={4} lg={4}>
                       <Grid container spacing={2}>
-                        <Grid item xs={12} sm={3} md={3} lg={3}>
+                        <Grid item xs={12} sm={4} md={4} lg={4}>
                           <Field
                             id="filter_date_start"
                             name="filter_date_start"
@@ -101,7 +80,7 @@ const CheckReceived = (props) => {
                             // disabled
                           />
                         </Grid>
-                        <Grid item xs={12} sm={3} md={3} lg={3}>
+                        <Grid item xs={12} sm={4} md={4} lg={4}>
                           <Field
                             id="filter_date_end"
                             name="filter_date_end"
@@ -118,25 +97,8 @@ const CheckReceived = (props) => {
                             }}
                             // disabled
                           />
-                        </Grid>
-                        <Grid item xs={12} sm={3} md={3} lg={3}>
-                          <Field
-                            id="filterStatus"
-                            name="filterStatus"
-                            label="Status"
-                            options={check?.status}
-                            getOptionLabel={(option) =>
-                              option?.description ? option?.description : "ON-HAND"
-                            }
-                            component={ComboBox}
-                            onChangeHandle={(e, newValue) => {
-                              if (newValue?.description) {
-                                check.onChangeFilterStatus(newValue?.description);
-                              }
-                            }}
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={3} md={3} lg={3}>
+                        </Grid> 
+                        <Grid item xs={12} sm={4} md={4} lg={4}>
                           <Field
                             id="filter_user_access_organization_rights"
                             name="filter_user_access_organization_rights"
@@ -172,42 +134,9 @@ const CheckReceived = (props) => {
                     rowCount={check.dataListCount}
                     actionshow={true}
                     paginationShow={false}
-                    subAction1Show={(check.filterStatus=="ON-HAND") ? true : false}
+                    subAction1Show={false}
                     subAction2Show={true}
-                    action={(row, index) => {
-                      let check_status = row?.check_status;
-                      // return (
-                      //   <FormControl size="small" fullWidth>
-                      //     <InputLabel
-                      //       id="demo-simple-select-label"
-                      //       shrink={true}
-                      //     ></InputLabel>
-                      //     <Select
-                      //         labelId="demo-simple-select-label"
-                      //         id="demo-simple-select"
-                      //         label="Age"
-                      //         value={check_status}
-                      //         onChange={(e) => {
-                      //           check.onUpdateCheckDetails(
-                      //             row,
-                      //             e.target.value
-                      //           );
-                      //         }}
-                      //         size="small"
-                      //         sx={{ width: "100%", height: "33px", marginLeft: "-5px" }}
-                      //     >
-                      //       {check?.status
-                      //         .filter((status) => status.description !== "ALL")
-                      //         .map((status, key) => (
-                      //           <MenuItem key={key} value={status.description} >
-                      //             {status.description}
-                      //           </MenuItem>
-                      //         ))}
-
-                      //     </Select>
-                      //   </FormControl>
-                      // );
-
+                    action={(row, index) => { 
                       return (
                         <Checkbox  
                         // checked={check.selectedDataList.includes(row.code)}
@@ -228,45 +157,24 @@ const CheckReceived = (props) => {
                       justifyContent="flex-end"
                       alignItems="flex-end" 
                     >
-                    {check.filterStatus === "ON-HAND" ? (
                       <ButtonGroup disableElevation aria-label="Disabled button group">
-                          <ButtonComponent
-                            stx={configure.default_button}
-                            iconType="add"
-                            type="button"
-                            fullWidth={true}
-                            children={"Deposit"}
-                            click={check.onClickOpenViewModalDeposit}
-                          />
-                          <ButtonComponent
-                            stx={configure.default_button}
-                            iconType="add"
-                            type="button"
-                            fullWidth={true}
-                            children={"Transmit"}
-                            click={check.onClickTransmit}
-                          />
-                           <ButtonComponent
+                            <ButtonComponent
+                                  stx={configure.default_button}
+                                  iconType="add"
+                                  type="button"
+                                  fullWidth={true}
+                                  children={"Receive Check"}
+                                  click={check.onClickReceive}
+                            />
+                            <ButtonComponent
                               stx={configure.default_button}
-                              iconType="add"
+                              iconType="update"
                               type="button"
                               fullWidth={true}
-                              children={"Reject"}
-                              click={check.onClickOpenRejectModal}
+                              children={"Undo Receive"}
+                              click={check.onClickUndoReceive}
                             />
-                      </ButtonGroup>
-                    ) :  
-                    <ButtonGroup disableElevation aria-label="Disabled button group">
-                        <ButtonComponent
-                          stx={configure.default_button}
-                          iconType="delete"
-                          type="button"
-                          fullWidth={true}
-                          children={"Undo "+ check.filterStatus}
-                          click={check.onClickUndo}
-                        />
-                    </ButtonGroup>
-                    }
+                        </ButtonGroup>
                     </Stack>
               </Grid>
            
@@ -277,7 +185,7 @@ const CheckReceived = (props) => {
   
   const ReduxFormComponent = reduxForm({
     form: formName,
-  })(CheckReceived);
+  })(CheckReceive);
   const selector = formValueSelector(formName);
   export default connect((state) => {
     const refresh =  !state.EpayCheckReducer.refresh;

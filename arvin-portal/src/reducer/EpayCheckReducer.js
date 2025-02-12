@@ -22,6 +22,7 @@ const initialState = {
   editModal: false,
   viewModal: false,
   viewModal2: false,
+  reportData:[]
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
