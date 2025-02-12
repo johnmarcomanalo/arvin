@@ -42,18 +42,22 @@ export const getWeeklyChecCounterData = (formValues) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
+    setTimeout(() => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+    },2000)
   } finally {
-    dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
+    setTimeout(() => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+    },2000)
   }
 };

@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
   Document,
   Page,
@@ -13,7 +12,7 @@ import PoppinsBold from "../../../../../../../utils/font/Poppins-Bold.ttf";
 import PoppinsBoldItalic from "../../../../../../../utils/font/Poppins-BoldItalic.ttf";
 import PoppinsSemiBoldItalic from "../../../../../../../utils/font/Poppins-SemiBoldItalic.ttf";
 import moment from "moment";
-
+import React,{ useState, useEffect } from "react"; 
 // Register fonts
 Font.register({
   family: "PoppinsRegular",
@@ -79,6 +78,13 @@ const headers = [
   {id:"crpr",description:"OR/PR"}, 
 ];
 
+const formatMoney = (amount, locale = "en-PH") => {
+  return (parseFloat(amount) || 0).toLocaleString(locale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
+
 const Table = ({ title, data }) => {
   if (!data || typeof data !== "object") {
     return null; // Prevent rendering if data is undefined or not an object
@@ -115,6 +121,19 @@ const Table = ({ title, data }) => {
                     ))}
                   </View>
                 ))}
+              <View style={styles.row}>
+                <Text style={[styles.cell]}></Text>
+                <Text style={[styles.cell]}></Text>
+                <Text style={[styles.cell]}></Text>
+                <Text style={[styles.cell]}>TOTAL: </Text>
+                <Text style={styles.cell}>
+                  {formatMoney(
+                    rows.reduce((total, row) => total + (parseFloat(row.check_amount) || 0), 0)
+                  )}
+                </Text> 
+                <Text style={[styles.cell]}></Text>
+                <Text style={[styles.cell]}></Text>
+              </View>
             </View>
           ))}
         </>
@@ -132,6 +151,7 @@ const ViewPrintWeeklyCheckReport = (props) => {
   const deposited_data    = props.data?.deposited
   const transmitted_data  = props.data?.transmitted
   const rejected_data     = props.data?.rejected
+  const beginning_on_hand = footer_summary?.beginning_on_hand
   const deposited         = footer_summary?.deposited
   const onhand            = footer_summary?.onhand
   const transmitted       = footer_summary?.transmitted
@@ -144,6 +164,16 @@ const ViewPrintWeeklyCheckReport = (props) => {
   const header_subsection = header_data?.sub_section
   const header_title      = "WEEKLY CHECK COUNTER RECEIPT"
    
+  const [width, setWidth] = useState(window.innerWidth * 0.9);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWidth(window.innerWidth * 0.9);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <PDFViewer style={{ width: "100%", height: 900 }}>
       <Document>
@@ -165,13 +195,13 @@ const ViewPrintWeeklyCheckReport = (props) => {
           <View style={styles.footer}>
             <View style={styles.footerRow}>
               <Text style={styles.footerLabel}>Beginning ON-HAND:</Text>
-              <Text style={styles.footerValue}>0.0</Text>
+              <Text style={styles.footerValue}>{beginning_on_hand}</Text>
             </View>
             <View style={styles.footerDivider} />
-            <View style={styles.footerRow}>
+            {/* <View style={styles.footerRow}>
               <Text style={styles.footerLabel}>Collected:</Text>
               <Text style={styles.footerValue}>0.0</Text>
-            </View>
+            </View> */}
             <View style={styles.footerRow}>
               <Text style={styles.footerLabel}>Deposited:</Text>
               <Text style={styles.footerValue}>{deposited}</Text>
@@ -187,7 +217,7 @@ const ViewPrintWeeklyCheckReport = (props) => {
             <View style={styles.footerDivider} />
             <View style={styles.footerRow}>
               <Text style={styles.footerLabel}>Ending ON-HAND:</Text>
-              <Text style={styles.footerValue}>0.0</Text>
+              <Text style={styles.footerValue}>{onhand}</Text>
             </View>
           </View>
         </Page>

@@ -6,6 +6,7 @@ use App\Models\EPayCheckCheckDetailLogs;
 use App\Models\RefSections;
 use App\Models\RefSubSections;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 
@@ -66,6 +67,10 @@ class EPayCheckCheckDetailLogsController extends Controller
         //
     }
 
+    private function executeReport($df, $dt, $sc, $type) {
+        return DB::select("exec dbo.sp_e_pay_check_weekly_check_counter_report ?,?,?,?", [$df, $dt, $sc, $type]);
+    }
+
     public function get_weekly_check_counter_data(Request $request){
 
         $validated = $request->validate([
@@ -73,14 +78,14 @@ class EPayCheckCheckDetailLogsController extends Controller
             'dt' => 'required|date',
             'sc' => 'required|string',
         ]);
-    
-        // Call the stored procedure
-        $result = DB::select("exec dbo.sp_e_pay_check_weekly_check_counter_report ?,?,?", [
-            $validated['df'],
-            $validated['dt'],
-            $validated['sc'],
-        ]);
-    
+
+        
+        
+        $result = $this->executeReport($validated['df'], $validated['dt'], $validated['sc'], "filter");
+        $beginning_on_hand = $this->executeReport($validated['df'], $validated['dt'], $validated['sc'], "beginning");
+        
+
+
         // Convert result to a collection for easier processing
         $transactions = collect($result);
     
@@ -114,7 +119,7 @@ class EPayCheckCheckDetailLogsController extends Controller
 
         // Compute summary
         $summary = (object) [
-            'beginning_on_hand' => 0.0, // You may need to fetch this from another source
+            'beginning_on_hand' => count($beginning_on_hand),
             // 'collected'         => $transactions->where('check_status', 'collected')->sum('total'),
             'deposited'         => $transactions->where('check_status', 'DEPOSITED')->count(),
             'onhand'            => $transactions->where('check_status', 'ON-HAND')->count(),
@@ -126,19 +131,19 @@ class EPayCheckCheckDetailLogsController extends Controller
         $warehouse = RefSubSections::where('code',$validated['sc'])->first();
 
         $header = [
-            'date_from'   => $validated['df'],
-            'date_to'     => $validated['dt'],
+            'date_from'   => Carbon::parse($validated['df'])->format('M d, Y'), // Feb 10, 2023
+            'date_to'     => Carbon::parse($validated['dt'])->format('M d, Y'), // Feb 10, 2023 
             'sub_section' => $warehouse->description,
         ];
     
         $response = [
-            // 'transactions' => $groupedTransactions,
-            'header'       => $header,
-            'deposited'    => $deposited,
-            'onhand'       => $onHand,
-            'transmitted'  => $transmitted,
-            'rejected'     => $rejected,
-            'summary'      => $summary
+            // 'transactions'   => $groupedTransactions, 
+            'header'            => $header,
+            'deposited'         => $deposited,
+            'onhand'            => $onHand,
+            'transmitted'       => $transmitted,
+            'rejected'          => $rejected,
+            'summary'           => $summary
         ];
         return Crypt::encryptString(json_encode($response));
 
