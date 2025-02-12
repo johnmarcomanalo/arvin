@@ -12,18 +12,14 @@ import { ViewAmountFormatingDecimals } from "../../../../../../utils/AccountingU
 const WeeklyCheckCounterHooks = (props) => {
   const [searchParams, setSearchParams]  = useSearchParams();
   const dispatch         = useDispatch();
-  const account_details  = useSelector((state) => state.AuthenticationReducer.account_details);
-  const search           = searchParams.get("q")  != null ? String(searchParams.get("q")) : "";
-  const page             = searchParams.get("p")  != null ? searchParams.get("p") : 1;
+  const account_details  = useSelector((state) => state.AuthenticationReducer.account_details); 
   const filterStartQuery = searchParams.get("df") != null ? String(searchParams.get("df")): moment(new Date()).format("YYYY-MM-DD");
-  const filterEndQuery   = searchParams.get("dt") != null ? String(searchParams.get("dt")): moment(new Date()).format("YYYY-MM-DD");
-  const filterStatus     = searchParams.get("s")  != null ? String(searchParams.get("s")) : "ALL";
+  const filterEndQuery   = searchParams.get("dt") != null ? String(searchParams.get("dt")): moment(new Date()).format("YYYY-MM-DD"); 
   const filterSubSection = searchParams.get("sc") != null ? String(searchParams.get("sc")) : account_details.subsection_code;
   const debounceSearch   = useDebounce(searchParams, 500);
-  const access           = useSelector((state) => state.AuthenticationReducer.access); 
-  const dataList         = useSelector((state) => state.EpayCheckReducer.dataList);
-  const dataListCount    = useSelector((state) => state.EpayCheckReducer.dataListCount);
+  const access           = useSelector((state) => state.AuthenticationReducer.access);
   const refresh          = useSelector((state) => state.EpayCheckReducer.refresh);
+  const reportData       = useSelector((state) => state.EpayCheckReducer.reportData);
   
   const [state, setState] = React.useState({
     debounceTimer: null,
@@ -38,12 +34,9 @@ const WeeklyCheckCounterHooks = (props) => {
      ]
  
      const getListParam = () => {
-       const data = { 
-         p  : page == null ? 1 : page,
-         q  : search,
+       const data = {
          df : filterStartQuery,
-         dt : filterEndQuery,
-         s  : filterStatus,
+         dt : filterEndQuery, 
          sc : filterSubSection
        };
        return data;
@@ -69,7 +62,6 @@ const WeeklyCheckCounterHooks = (props) => {
       props.initialize({ 
         filter_date_start: filterStartQuery,
         filter_date_end: filterEndQuery,
-        filterStatus: filterStatus,
       });
       GetChequeList();
         return () => cancelRequest();
@@ -77,46 +69,26 @@ const WeeklyCheckCounterHooks = (props) => {
     
   const onChangeFilterStart = (date) => {
     const newdate = moment(date).format("YYYY-MM-DD");
-    setSearchParams({
-      q  : search, 
-      p  : page == null ? 1 : page,
+    setSearchParams({ 
       df : newdate,
-      dt : filterEndQuery,
-      s  : filterStatus, 
+      dt : filterEndQuery, 
       sc : filterSubSection
     });
   };
 
   const onChangeFilterEnd = (date) => {
     const newdate = moment(date).format("YYYY-MM-DD");
-    setSearchParams({
-      q  : search, 
-      p  : page == null ? 1 : page,
+    setSearchParams({ 
       df : filterStartQuery,
-      dt : newdate,
-      s  : filterStatus, 
+      dt : newdate, 
       sc : filterSubSection
     });
   };
-
-  const onChangeFilterStatus = (status) => {
-    setSearchParams({
-      q  : search, 
-      p  : page == null ? 1 : page,
-      df : filterStartQuery,
-      dt : filterEndQuery,
-      s  : status, 
-      sc : filterSubSection
-    });
-  };
-
+ 
   const onChangeFilteSubsection = (subsection) => {
-    setSearchParams({
-      q  : search, 
-      p  : page == null ? 1 : page,
+    setSearchParams({ 
       df : filterStartQuery,
-      dt : filterEndQuery,
-      s  : filterStatus, 
+      dt : filterEndQuery, 
       sc : subsection
     });
   };
@@ -124,9 +96,9 @@ const WeeklyCheckCounterHooks = (props) => {
   return {
     access,
     status,
+    reportData,
     onChangeFilterStart,
-    onChangeFilterEnd,
-    onChangeFilterStatus,
+    onChangeFilterEnd, 
     onChangeFilteSubsection,
   };
 };

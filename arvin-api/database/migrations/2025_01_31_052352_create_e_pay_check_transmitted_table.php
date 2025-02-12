@@ -19,6 +19,7 @@ class CreateEPayCheckTransmittedTable extends Migration
             $table->string('check_details_code',50);
             $table->string('received_by')->nullable(); // For transmitted status
             $table->timestamp('received_date')->nullable(); // For transmitted status
+            $table->string('received_by')->nullable(); // For transmitted status
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->timestamp('deleted_at')->nullable();

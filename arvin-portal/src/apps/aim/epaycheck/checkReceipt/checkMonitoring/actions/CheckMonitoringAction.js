@@ -141,3 +141,36 @@ export const putCheckMonitoring = (formValues) => async (dispatch) => {
     });
   }
 };
+
+export const postCheckDetailsReceive = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PostDefaultServices(
+      "api/epaycheck/check_details/update_check_receive",
+      formValues
+    );  
+  
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    }); 
+    
+    let decrypted = decryptaes(res?.data)
+    return decrypted;
+  } catch (error) {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+ 

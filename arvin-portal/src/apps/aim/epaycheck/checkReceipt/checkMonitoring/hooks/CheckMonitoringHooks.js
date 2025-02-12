@@ -13,6 +13,7 @@ import {
 import {
     getCheckDetails,
     postCheckDetailsStatus,
+    postCheckDetailsReceive
 } from "../actions/CheckMonitoringAction"
 import swal from "sweetalert";
 let formName = "CheckCollection"

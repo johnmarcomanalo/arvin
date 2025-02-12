@@ -13,36 +13,43 @@ import {
   MenuItem,
   Select
 } from "@mui/material"; 
-  
+
+import { useDispatch, useSelector } from "react-redux";
+import { Constants } from "reducer/Contants";
+import { useTheme } from "@mui/material/styles";
+import * as React from "react";  
 import { connect } from "react-redux";
-import React,{ useState, useEffect } from "react"; 
 import { change, Field, formValueSelector, reduxForm, reset } from "redux-form"; 
+  
 //component
-import TableComponent from "../../../../../../../components/table/Table"; 
-import InputField from "../../../../../../../components/inputFIeld/InputField";
-import SearchField from "../../../../../../../components/inputFIeld/SearchField";
-import ButtonComponent from "../../../../../../../components/button/Button";
-import ComboBox from "../../../../../../../components/autoComplete/AutoComplete";
-//hoooks and configuration 
-import configure from "../../../../../configure/configure.json"; 
-import CheckStatusHooks from "../../hooks/CheckStatusHooks";
+import TableComponent from "components/table/Table"; 
+import InputField from "components/inputFIeld/InputField";
+import SearchField from "components/inputFIeld/SearchField";
+import ButtonComponent from "components/button/Button";
+import ComboBox from "components/autoComplete/AutoComplete";
+//hoooks and configuration
+import CheckStatusHooks from "../../../checkMonitoring/hooks/CheckStatusHooks";
+import configure from "apps/configure/configure.json";
+import swal from "sweetalert";
+import {
+postCheckDetailsStatus,
+} from "../../../checkMonitoring/actions/CheckMonitoringAction" 
 import moment from "moment";
-let formName = "Reject";
-let Reject = (props) => { 
+let formName = "Receive"; 
+let Receive = (props) => { 
     const { ...check } = CheckStatusHooks(props);
-    props.dispatch(change(formName, "rejected_date", moment(new Date()).format("YYYY-MM-DD"))); 
-    props.dispatch(change(formName, "status", "REJECTED")); 
+    props.dispatch(change(formName, "receive_date", moment(new Date()).format("YYYY-MM-DD")));
     return (
       <React.Fragment> 
             <form autoComplete="off" onSubmit={props.handleSubmit(check.submit)}>
               <Grid container spacing={2}> 
                   <Grid  item xs={12} sm={12} md={12} lg={12}>
                     <Field
-                        id="rejected_date"
-                        name="rejected_date"
+                        id="deposited_date"
+                        name="deposited_date"
                         component={InputField}
                         type="date"
-                        label="Rejected Date"
+                        label="Deposit Date"
                         size="small"
                         disabled={true} 
                         fullWidth
@@ -50,12 +57,17 @@ let Reject = (props) => {
                   </Grid>  
                   <Grid  item xs={12} sm={12} md={12} lg={12}> 
                       <Field
-                          id="rejected_remarks"
-                          name="rejected_remarks"
-                          label="Remarks" 
+                          id="deposited_bank"
+                          name="deposited_bank"
+                          label="Bank Deposit"
+                          options={check?.bank_accounts}
+                          getOptionLabel={(option) =>
+                          option?.description ? option?.description: ""
+                          } 
                           required={true}
-                          component={InputField} 
-                          multiline={true}
+                          component={ComboBox}
+                          onChangeHandle={(e, newValue) => {  
+                          }}
                       />
                   </Grid>  
                   <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -81,8 +93,8 @@ let Reject = (props) => {
 }
 
 const ReduxFormComponent = reduxForm({
-  form: formName, 
-})(Reject);
+  form: formName,
+})(Receive);
 const selector = formValueSelector(formName);
 export default connect((state) => {
   const refresh = state.EpayCheckReducer.refresh;

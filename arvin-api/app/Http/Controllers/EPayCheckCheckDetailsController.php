@@ -343,59 +343,54 @@ class EPayCheckCheckDetailsController extends Controller
         $dt     = $validated['dt'];
         $sc     = $validated['sc']; 
         
-        $check_details = EPayCheckCheckDetails::select([
-                    'e_pay_check_check_details.code',
-                    'advance_payment','bank_address',
-                    'bank_branch','bank_description',
-                    'crpr','check_amount',
-                    'check_date','check_number',
-                    'check_status','card_code',
-                    'card_name','subsection_code',
-                    'created_at','check_status_date'
-                ])
-                ->when($query, function ($q) use ($query) {
-                    $q->where(function ($subQuery) use ($query) {
-                        $subQuery
-                            ->where('card_name', 'like', '%' . $query . '%')
-                            ->orwhere('card_code', 'like', '%' . $query . '%')
-                            ->orWhere('bank_description', 'like', '%' . $query . '%')
-                            ->orWhere('bank_branch', 'like', '%' . $query . '%')
-                            ->orWhere('bank_address', 'like', '%' . $query . '%')
-                            ->orWhere('check_amount', 'like', '%' . $query . '%')
-                            ->orWhere('check_number', 'like', '%' . $query . '%');
-                    });
-                })
-                ->when(in_array($status, ['DEPOSITED', 'TRANSMITTED']), function ($q) use ($df, $dt) {
-                    $q->whereRaw('CONVERT(date, check_status_date) BETWEEN ? AND ?', [$df, $dt]);
-                })
-                ->where('check_status', $status)
-                ->where('subsection_code', $sc)
-                ->whereNull('deleted_at')
-                ->paginate(15, ['*'], 'page', $page);
-    
-            $requests = $check_details->map(function ($value) {
-                return [
-                    'code'                 => $value['code'],
-                    'advance_payment'      => $value['advance_payment'],
-                    'bank_address'         => $value['bank_address'],
-                    'bank_branch'          => $value['bank_branch'],
-                    'bank_description'     => $value['bank_description'],
-                    'crpr'                 => $value['crpr'],
-                    'check_amount'         => $value['check_amount'],
-                    'check_amount_display' => number_format($value['check_amount'], 4),
-                    'check_date'           => Carbon::parse($value['check_date'])->format('Y-m-d'),
-                    'check_number'         => $value['check_number'],
-                    'check_status'         => $value['check_status'],
-                    'check_status_date'    => Carbon::parse($value['check_status_date'])->format('Y-m-d'),
-                    'card_code'            => $value['card_code'],
-                    'card_name'            => $value['card_name'],
-                    'subsection_code'      => $value['subsection_code'],
-                    'created_at'           => Carbon::parse($value['created_at'])->format('Y-m-d'),
-                ];
+       $check_details =  DB::table('vw_epay_check_get_check_details')
+        ->when($query, function ($q) use ($query) {
+            $q->where(function ($subQuery) use ($query) {
+                $subQuery
+                    ->where('card_name', 'like', "%{$query}%")
+                    ->orWhere('card_code', 'like', "%{$query}%")
+                    ->orWhere('bank_description', 'like', "%{$query}%")
+                    ->orWhere('bank_branch', 'like', "%{$query}%")
+                    ->orWhere('bank_address', 'like', "%{$query}%")
+                    ->orWhereRaw("CAST(check_amount AS VARCHAR) LIKE ?", ["%{$query}%"])
+                    ->orWhere('check_number', 'like', "%{$query}%");
             });
+        }) 
+        ->when(in_array($status, ['DEPOSITED', 'TRANSMITTED']), function ($q) use ($df, $dt) {
+            $q->whereBetween(DB::raw("CAST(check_status_date AS DATE)"), [$df, $dt]);
+        })
+        ->where('check_status', $status)
+        ->where('subsection_code', $sc)
+        ->paginate(15, ['*'], 'page', $page);
+    
         
-            $response = [
-                'dataList'      => $requests->toArray(),
+        $requests = [];
+
+        foreach ($check_details as $value) { 
+            $requests[] = [
+                'code'                 => $value->code,
+                'advance_payment'      => $value->advance_payment,
+                'bank_address'         => $value->bank_address,
+                'bank_branch'          => $value->bank_branch,
+                'bank_description'     => $value->bank_description,
+                'crpr'                 => $value->crpr,
+                'check_amount'         => $value->check_amount,
+                'check_amount_display' => number_format($value->check_amount, 4),
+                'check_date'           => Carbon::parse($value->check_date)->format('Y-m-d'),
+                'check_number'         => $value->check_number,
+                'check_status'         => $value->check_status,
+                'check_status_date'    => Carbon::parse($value->check_status_date)->format('Y-m-d'),
+                'card_code'            => $value->card_code,
+                'card_name'            => $value->card_name,
+                'subsection_code'      => $value->subsection_code,
+                'created_at'           => Carbon::parse($value->created_at)->format('Y-m-d'),
+                'received_date'        => $value->received_date ? Carbon::parse($value->received_date)->format('Y-m-d') : null,
+            ];
+        }
+        
+        
+           $response = [
+                'dataList'      => $requests,
                 'dataListCount' => $check_details->total(),
                 'currentPage'   => $check_details->currentPage(),
                 'perPage'       => $check_details->perPage(),
@@ -410,14 +405,14 @@ class EPayCheckCheckDetailsController extends Controller
 
     public function update_check_status(Request $request)
     {
-        // try {
-        //     // Validate input data
-        //     $request->validate([
-        //         'code' => 'required|array',
-        //         'status' => 'required|string',
-        //         'bank_deposit' => 'nullable|string',
-        //         'deposited_date' => 'nullable|date',
-        //     ]);  
+        try {
+            // Validate input data
+            $request->validate([
+                'code' => 'required|array',
+                'status' => 'required|string',
+                'bank_deposit' => 'nullable|string',
+                'deposited_date' => 'nullable|date',
+            ]);  
             $codes            = $request['code'];
             $check_status     = $request['status'];
             $deposited_bank   = $request['deposited_bank'];
@@ -445,6 +440,7 @@ class EPayCheckCheckDetailsController extends Controller
                          // Soft delete ONLY logs where 'received_date' is null
                         EPayCheckCheckDetailLogs::where('check_details_code', $value['check_details_code'])
                             ->whereNull('received_date') // Ensures only logs without received_date are affected
+                            ->where('check_status','!=', self::ONHAND)
                             ->update(['deleted_at' => now()]);
                     }
             
@@ -492,20 +488,77 @@ class EPayCheckCheckDetailsController extends Controller
                 'title' => 'Success',
                 'message' => 'Check details updated successfully.'
             ]));
-        // } catch (\Exception $e) {
-        //     return Crypt::encryptString(json_encode([
-        //         'result' => false,
-        //         'status' => 'error',
-        //         'title' => 'Error',
-        //         'message' => 'An error occurred while updating check details.'
-        //     ]));
-        // }
+        } catch (\Exception $e) {
+            return Crypt::encryptString(json_encode([
+                'result' => false,
+                'status' => 'error',
+                'title' => 'Error',
+                'message' => 'An error occurred while updating check details.'
+            ]));
+        }
     }
 
 
+    public function update_check_receive(Request $request)
+    {
+        $validated = $request->validate([
+            'code' => 'required|array',
+            'code.*' => 'required|string', // Ensures all items in the array are strings
+            'received_by' => 'required|string',
+            'received_date' => 'required|date',
+            'status' => 'required|in:YES,NO' // Ensures status is either "YES" or "NO"
+        ]);
     
+        DB::beginTransaction();
     
-    public function get_weekly_check_counter_data(Request $request){
-        
+        try {
+            $success = false;
+    
+            foreach ($validated['code'] as $code) {
+                $updateData = $validated['status'] === 'YES'
+                    ? [
+                        'received_by' => $validated['received_by'],
+                        'received_date' => $validated['received_date']
+                    ]
+                    : [
+                        'received_by' => null,
+                        'received_date' => null
+                    ];
+    
+                $updatedRows = EPayCheckCheckDetailLogs::where('check_details_code', $code)
+                    ->where('check_status', self::TRANSMITTED)
+                    ->whereNull('deleted_at')
+                    ->update($updateData);
+    
+                if ($updatedRows > 0) {
+                    $success = true;
+                }
+            }
+    
+            if (!$success) {
+                throw new \Exception("No check details were updated.");
+            }
+    
+            DB::commit();
+    
+            return Crypt::encryptString(json_encode([
+                'result' => true,
+                'status' => 'success',
+                'title' => 'Success',
+                'message' => $validated['status'] === 'YES' 
+                ? 'Check details received successfully.' 
+                : 'Check details receiving undone successfully.'
+            ]));
+        } catch (\Exception $e) {
+            DB::rollBack();
+    
+            return Crypt::encryptString(json_encode([
+                'result' => false,
+                'status' => 'error',
+                'title' => 'Error',
+                'message' => 'An error occurred: ' . $e->getMessage()
+            ]));
+        }
     }
+    
 }

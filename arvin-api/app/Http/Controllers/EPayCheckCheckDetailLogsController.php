@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\EPayCheckCheckDetailLogs;
+use App\Models\RefSections;
+use App\Models\RefSubSections;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 
 class EPayCheckCheckDetailLogsController extends Controller
 {
@@ -62,5 +66,82 @@ class EPayCheckCheckDetailLogsController extends Controller
         //
     }
 
-   
+    public function get_weekly_check_counter_data(Request $request){
+
+        $validated = $request->validate([
+            'df' => 'required|date',
+            'dt' => 'required|date',
+            'sc' => 'required|string',
+        ]);
+    
+        // Call the stored procedure
+        $result = DB::select("exec dbo.sp_e_pay_check_weekly_check_counter_report ?,?,?", [
+            $validated['df'],
+            $validated['dt'],
+            $validated['sc'],
+        ]);
+    
+        // Convert result to a collection for easier processing
+        $transactions = collect($result);
+    
+        // Group transactions by date
+        $groupedTransactions = $transactions->groupBy('created_at'); 
+
+        $deposited = $transactions->where('check_status', 'DEPOSITED')->groupBy('created_at')->map(function ($items) {
+            return $items->map(function ($item) {
+                return $item;
+            })->values();
+        });
+
+        $onHand = $transactions->where('check_status', 'ON-HAND')->groupBy('created_at')->map(function ($items) {
+            return $items->map(function ($item) {
+                return $item;
+            })->values();
+        });
+
+        $transmitted = $transactions->where('check_status', 'TRANSMITTED')->groupBy('created_at')->map(function ($items) {
+            return $items->map(function ($item) {
+                return $item;
+            })->values();
+        });
+    
+
+        $rejected = $transactions->where('check_status', 'REJECTED')->groupBy('created_at')->map(function ($items) {
+            return $items->map(function ($item) {
+                return $item;
+            })->values();
+        });
+
+        // Compute summary
+        $summary = (object) [
+            'beginning_on_hand' => 0.0, // You may need to fetch this from another source
+            // 'collected'         => $transactions->where('check_status', 'collected')->sum('total'),
+            'deposited'         => $transactions->where('check_status', 'DEPOSITED')->count(),
+            'onhand'            => $transactions->where('check_status', 'ON-HAND')->count(),
+            'transmitted'       => $transactions->where('check_status', 'TRANSMITTED')->count(),
+            'rejected'          => $transactions->where('check_status', 'REJECTED')->count(),
+            'ending_on_hand'    => 0.0, // You can calculate this based on logic
+        ];
+
+        $warehouse = RefSubSections::where('code',$validated['sc'])->first();
+
+        $header = [
+            'date_from'   => $validated['df'],
+            'date_to'     => $validated['dt'],
+            'sub_section' => $warehouse->description,
+        ];
+    
+        $response = [
+            // 'transactions' => $groupedTransactions,
+            'header'       => $header,
+            'deposited'    => $deposited,
+            'onhand'       => $onHand,
+            'transmitted'  => $transmitted,
+            'rejected'     => $rejected,
+            'summary'      => $summary
+        ];
+        return Crypt::encryptString(json_encode($response));
+
+    }
+
 }

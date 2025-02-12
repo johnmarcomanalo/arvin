@@ -113,7 +113,7 @@ const WeeklyCheckCounter = (props) => {
                 </Stack> 
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={12}> 
-            <ViewPrintWeeklyCheckReport/>  
+            <ViewPrintWeeklyCheckReport data={check.reportData}/>
           </Grid>
         </Grid>
     </React.Fragment>
