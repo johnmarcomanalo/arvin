@@ -53,7 +53,7 @@ const WeeklyCheckCounter = (props) => {
                   <Grid item xs={12} sm={6} md={2} lg={2}>
                     {/* <SearchField value={check.search} onChange={check.onChangeSearch} textHidden={false}/> */}
                   </Grid>
-                  <Grid item xs={12} sm={6} md={4} lg={4}>
+                  <Grid item xs={12} sm={12} md={4} lg={4}>
                     <Grid container spacing={2}>
                       <Grid item xs={12} sm={4} md={4} lg={4}>
                         <Field

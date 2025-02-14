@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   Document,
   Page,
@@ -9,10 +10,11 @@ import {
 } from "@react-pdf/renderer";
 import PoppinsRegular from "../../../../../../../utils/font/Poppins-Regular.ttf";
 import PoppinsBold from "../../../../../../../utils/font/Poppins-Bold.ttf";
+import { ViewAmountFormatingDecimals } from 'utils/AccountingUtils'
 import PoppinsBoldItalic from "../../../../../../../utils/font/Poppins-BoldItalic.ttf";
 import PoppinsSemiBoldItalic from "../../../../../../../utils/font/Poppins-SemiBoldItalic.ttf";
+import { CircularProgress } from "@mui/material";
 import moment from "moment";
-import React,{ useState, useEffect } from "react"; 
 // Register fonts
 Font.register({
   family: "PoppinsRegular",
@@ -29,15 +31,19 @@ Font.register({
 
 // Define styles
 const styles = StyleSheet.create({
-  page: { padding: 15, fontSize: 10 },
+  page: { 
+    padding: 15, 
+    fontSize: 10,
+    backgroundColor: "#f0f0f0", // Light gray background while loading
+  },
   section: { marginBottom: 10 },
-  title: { fontSize: 10, fontWeight: "bold", marginBottom: 1, fontFamily: "PoppinsBold" },
+  title: { fontSize: 10, fontWeight: "bold", marginBottom: 0, fontFamily: "PoppinsBold" },
   subtitle: { fontSize: 7, fontWeight: "bold", marginBottom: 1,marginTop:8, fontFamily: "PoppinsBold" },
-  headerGroup: { marginBottom: 5, textAlign: "center" },
+  headerGroup: { marginBottom: 3, textAlign: "center" },
   headerText: { fontSize: 9, margin:1, fontFamily: "PoppinsRegular" },
   table: { display: "flex", flexDirection: "column", border: "0.5px solid black", fontSize: 6 },
   row: { flexDirection: "row", borderBottom: "0.5px solid black",fontWeight: "bold" },
-  cell: { padding: 4, borderRight: "0.5px solid black", flex: 1, textAlign: "center", fontSize: 6 },
+  cell: { padding: 3, borderRight: "0.5px solid black", flex: 1, textAlign: "center", fontSize: 6 },
   footer: {
     marginTop: 20,
     paddingBottom:20,
@@ -58,7 +64,7 @@ const styles = StyleSheet.create({
   },
   footerValue: {
     fontSize: 8,
-    fontFamily: "PoppinsRegular",
+    fontFamily: "PoppinsBold",
     color: "black",
   },
   footerDivider: {
@@ -69,6 +75,7 @@ const styles = StyleSheet.create({
 
 // Table headers
 const headers = [
+  {id:"created_at",description:"POSTING DATE"},
   {id:"check_date",description:"CHECK DATE"},
   {id:"created_at",description:"DATE DEP/TRANS"},
   {id:"check_number",description:"CHECK NUMBER"}, 
@@ -78,12 +85,7 @@ const headers = [
   {id:"crpr",description:"OR/PR"}, 
 ];
 
-const formatMoney = (amount, locale = "en-PH") => {
-  return (parseFloat(amount) || 0).toLocaleString(locale, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-};
+
 
 const Table = ({ title, data }) => {
   if (!data || typeof data !== "object") {
@@ -125,11 +127,12 @@ const Table = ({ title, data }) => {
                 <Text style={[styles.cell]}></Text>
                 <Text style={[styles.cell]}></Text>
                 <Text style={[styles.cell]}></Text>
+                <Text style={[styles.cell]}></Text>
                 <Text style={[styles.cell]}>TOTAL: </Text>
                 <Text style={styles.cell}>
-                  {formatMoney(
+                  {ViewAmountFormatingDecimals(
                     rows.reduce((total, row) => total + (parseFloat(row.check_amount) || 0), 0)
-                  )}
+                  ,4)}
                 </Text> 
                 <Text style={[styles.cell]}></Text>
                 <Text style={[styles.cell]}></Text>
@@ -141,41 +144,58 @@ const Table = ({ title, data }) => {
     </View>
   );
 };
-
+// Table Component (keep your existing Table component)
 
 const pageWidth = 8.5 * 72; // Convert inches to points
-const pageHeight = 13 * 72; // Convert inches to points 
+const pageHeight = 13 * 72; // Convert inches to points
+
 const ViewPrintWeeklyCheckReport = (props) => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate fetching data
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500); // Simulating API delay
+  }, [props.data]);
+
   const footer_summary    = props.data?.summary
   const onhand_data       = props.data?.onhand
   const deposited_data    = props.data?.deposited
   const transmitted_data  = props.data?.transmitted
   const rejected_data     = props.data?.rejected
-  const beginning_on_hand = footer_summary?.beginning_on_hand
-  const deposited         = footer_summary?.deposited
-  const onhand            = footer_summary?.onhand
-  const transmitted       = footer_summary?.transmitted
-  const rejected          = footer_summary?.rejected
 
-  //header
+  // FOOTER DATA
+  const beginning_on_hand = footer_summary?.beginning_on_hand ? footer_summary?.beginning_on_hand : "-"
+  const ending_on_hand    = footer_summary?.ending_on_hand ? footer_summary?.ending_on_hand :"-"
+  const deposited         = footer_summary?.deposited ? footer_summary?.deposited :"-"
+  const collected         = footer_summary?.collected ? footer_summary?.collected :"-"
+  const transmitted       = footer_summary?.transmitted ? footer_summary?.transmitted :"-"
+  const rejected          = footer_summary?.rejected ? footer_summary?.rejected :"-"
+
+  //HEADER DATA
   const header_data       = props.data?.header;
   const header_date_from  = header_data?.date_from
   const header_date_to    = header_data?.date_to
   const header_subsection = header_data?.sub_section
   const header_title      = "WEEKLY CHECK COUNTER RECEIPT"
-   
-  const [width, setWidth] = useState(window.innerWidth * 0.9);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWidth(window.innerWidth * 0.9);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   return (
-    <PDFViewer style={{ width: "100%", height: 900 }}>
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <div style={{ position: "relative", width: "100%", height: "900px" }}> {/* PDF size */}
+        {loading && (
+          <div style={{
+            position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            backgroundColor: "rgba(255, 255, 255, 0.9)", // Light overlay
+            zIndex: 10,
+            border: "1px solid black" // Ensure border is visible
+          }}>
+            <span>Loading PDF...</span>
+          </div>
+        )}
+       <PDFViewer style={{ width: "100%", height: 900, backgroundColor: "#f3f3f3" }}>
       <Document>
         <Page size={[pageWidth, pageHeight]} style={styles.page} orientation="landscape" wrap>
           {/* Header Group */}
@@ -198,10 +218,11 @@ const ViewPrintWeeklyCheckReport = (props) => {
               <Text style={styles.footerValue}>{beginning_on_hand}</Text>
             </View>
             <View style={styles.footerDivider} />
-            {/* <View style={styles.footerRow}>
+            <View style={styles.footerRow}>
               <Text style={styles.footerLabel}>Collected:</Text>
-              <Text style={styles.footerValue}>0.0</Text>
-            </View> */}
+              <Text style={styles.footerValue}>{collected}</Text>
+            </View>
+            <View style={styles.footerDivider} />
             <View style={styles.footerRow}>
               <Text style={styles.footerLabel}>Deposited:</Text>
               <Text style={styles.footerValue}>{deposited}</Text>
@@ -217,13 +238,15 @@ const ViewPrintWeeklyCheckReport = (props) => {
             <View style={styles.footerDivider} />
             <View style={styles.footerRow}>
               <Text style={styles.footerLabel}>Ending ON-HAND:</Text>
-              <Text style={styles.footerValue}>{onhand}</Text>
+              <Text style={styles.footerValue}>{ending_on_hand}</Text>
             </View>
           </View>
         </Page>
       </Document>
     </PDFViewer>
-  )
+    </div>
+    </div>
+  );
 };
 
 export default ViewPrintWeeklyCheckReport;

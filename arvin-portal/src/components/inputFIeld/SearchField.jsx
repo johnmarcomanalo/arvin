@@ -22,6 +22,7 @@ const SearchField = (props) => {
         placeholder="Search..."
         size="small"
         id="outlined-required"
+        inputProps={{ maxLength: 50 }}
         sx={{
           "& input": {
             backgroundColor: props.disabled ? "#e8e8e8" : "transparent",

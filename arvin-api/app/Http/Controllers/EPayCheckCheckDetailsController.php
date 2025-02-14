@@ -327,14 +327,31 @@ class EPayCheckCheckDetailsController extends Controller
 
     public function get_check_details(Request $request)
     { 
-        $validated = $request->validate([
-            'q'  => 'nullable|string',
-            's'  => 'nullable|string',
-            'p'  => 'nullable|integer|min:1',
-            'df' => 'required|date|date_format:Y-m-d',
-            'dt' => 'required|date|date_format:Y-m-d',
-            'sc' => 'required',
-        ]);
+ 
+        $customMessages = [
+            'dt.after_or_equal' => 'The selected end date must be the same as or later than the start date.',
+            'df.date_format'    => 'The start date must be in YYYY-MM-DD format.',
+            'dt.date_format'    => 'The end date must be in YYYY-MM-DD format.',
+        ];
+        $validator = Validator::make($request->all(), [
+            'q'  => ['nullable','string'],
+            's'  => ['nullable','string'],
+            'p'  => ['nullable','integer','min:1'],
+            'df' => ['required', 'date', 'date_format:Y-m-d'],
+            'dt' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:df'], 
+            'sc' => ['required', 'string'],
+        ], $customMessages); // Pass custom messages here
+        
+        if ($validator->fails()) {
+            return response()->json([
+                'result'  => false,
+                'status'  => 'warning',
+                'title'   => 'Error',
+                'message' => $validator->errors()->first(),
+            ], 422);
+        }
+        
+        $validated = $validator->validated();
     
         $query  = $validated['q']  ?? '';
         $status = $validated['s'];
