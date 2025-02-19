@@ -49,16 +49,9 @@ class UpdateSalesTracker extends Command
 
     public function getFiveDaysSalesTrackerbyCurrentDate() {
         $records = [];
-        DB::table('vw_sales_daily_out_delivery_return_cm_latest_five_days')
-            ->select('warehouse', 'createdate','u_groupcategory', 'QtyInKg') // Select only necessary columns
-            ->orderBy('createdate')
-            ->chunk(1000, function ($chunk) use (&$records) {
-                foreach ($chunk as $record) {
-                    $records[] = $record;
-                }
-            });
-        
-        // Convert $records array to a Collection
+        $records = DB::select('SET NOCOUNT ON exec dbo.sp_sales_daily_out_delivery_return_cm_v3_5_days');
+
+        // // Convert $records array to a Collection
         $recordsCollection = collect($records);
 
         $subSections = RefSubSections::whereIn('type', $recordsCollection->pluck('warehouse'))->get()->keyBy('type');
@@ -69,33 +62,6 @@ class UpdateSalesTracker extends Command
             $recordsByDateAndWarehouse[$date][$record->warehouse][$record->u_groupcategory] = $record;
         }
 
-        foreach ($recordsByDateAndWarehouse as $date => $warehouseRecords) {
-            $carbonDate = Carbon::parse($date);
-
-            if ($carbonDate->isSunday()) {
-                // Find the corresponding Monday
-                $mondayDate = $carbonDate->addDay()->format('Y-m-d');
-
-                foreach ($warehouseRecords as $warehouse => $groupRecords) {
-                    foreach ($groupRecords as $u_groupcategory => $record) {
-                        // Check if Monday's record for the same warehouse and u_groupcategory exists
-                        if (!isset($recordsByDateAndWarehouse[$mondayDate][$warehouse][$u_groupcategory])) {
-                            // Initialize Monday's record if it doesn't exist
-                            $recordsByDateAndWarehouse[$mondayDate][$warehouse][$u_groupcategory] = (object)[
-                                'warehouse' => $warehouse,
-                                'createdate' => $mondayDate,
-                                'u_groupcategory' => $u_groupcategory,
-                                'QtyInKg' => 0
-                            ];
-                        }
-
-                        // Add Sunday's QtyInKg to Monday's QtyInKg for the same warehouse and u_groupcategory
-                        $sundayQty = (float) $record->QtyInKg;
-                        $recordsByDateAndWarehouse[$mondayDate][$warehouse][$u_groupcategory]->QtyInKg += $sundayQty;
-                    }
-                }
-            }
-        }
         $results = [];
 
         foreach ($recordsByDateAndWarehouse as $date => $warehouseRecords) {
@@ -135,6 +101,7 @@ class UpdateSalesTracker extends Command
                             'sales_daily_out' => $sales_daily_out,
                             'sales_daily_target' => $computation["status_daily_target"],
                             'daily_sales_target_percentage' => $computation["percentage_daily_target"],
+                            'updated_at' => now(),
                             'modified_by' => 'SAP',
                         ]);
                     }

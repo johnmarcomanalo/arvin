@@ -17,6 +17,9 @@ class Kernel extends ConsoleKernel
         
         $schedule->command('update:sales-tracker')
              ->withoutOverlapping();
+
+        $schedule->command('update:sales-tracker-client')
+             ->withoutOverlapping();
     }
     /**
      * Register the commands for the application.
