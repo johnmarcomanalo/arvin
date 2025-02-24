@@ -103,7 +103,7 @@ let PageRights = (props) => {
                     <Field
                       id="user_code"
                       name="user_code"
-                      label="User Code"
+                      label="Account Code"
                       component={InputField}
                       required={false}
                       disabled={true}

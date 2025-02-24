@@ -1,23 +1,19 @@
 import { Grid, Stack, useMediaQuery } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
+import AccountList from "apps/aim/humanresource/employeeList/pages/components/AccountList";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import ButtonComponent from "../../../../../../components/button/Button";
 import InputField from "../../../../../../components/inputFIeld/InputField";
+import SearchField from "../../../../../../components/inputFIeld/SearchField";
 import Modal from "../../../../../../components/modal/Modal";
+import Page from "../../../../../../components/pagination/Pagination";
 import Table from "../../../../../../components/table/Table";
 import configure from "../../../../../configure/configure.json";
-import EmployeeList from "../../../../humanresource/employeeList/pages/components/EmployeeList";
 import RequestRightsHooks from "../hooks/RequestRightsHooks";
-import Page from "../../../../../../components/pagination/Pagination";
-import SearchField from "../../../../../../components/inputFIeld/SearchField";
 import UpdateUserRequestHierarchy from "./components/UpdateUserRequestHierarchy";
 const formName = "PageRights";
 const submit = async (values, dispatch, props) => {
@@ -40,7 +36,7 @@ let RequestRights = (props) => {
         action={undefined}
         handleClose={requestRights.onClickCloseViewModal}
       >
-        <EmployeeList onClickSelect={requestRights.onSelectItem} />
+        <AccountList onClickSelect={requestRights.onSelectItem} />
       </Modal>
       <Modal
         open={requestRights.updateModal}
@@ -99,7 +95,7 @@ let RequestRights = (props) => {
                     <Field
                       id="user_code"
                       name="user_code"
-                      label="User Code"
+                      label="Account Code"
                       component={InputField}
                       required={false}
                       disabled={true}

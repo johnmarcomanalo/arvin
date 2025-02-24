@@ -61,8 +61,16 @@ const OrganizationRightsHooks = (props) => {
       },
     });
   };
-  const onSelectItem = (data) => {
-    console.log(data);
+  const onSelectItem = async (data) => {
+    await dispatch(getEmployeeOrganizationAccessList(data.code));
+    await dispatch({
+      type: Constants.ACTION_HUMAN_RESOURCE,
+      payload: {
+        selectedDataList: data,
+        refresh: !HRrefresh,
+        viewModal: false,
+      },
+    });
   };
   const onDeleteDeduction = (data) => {
     console.log(data);
@@ -107,6 +115,8 @@ const OrganizationRightsHooks = (props) => {
       data: search,
     });
   };
+
+  const onClickAccount = (event) => {};
   return {
     search,
     page,

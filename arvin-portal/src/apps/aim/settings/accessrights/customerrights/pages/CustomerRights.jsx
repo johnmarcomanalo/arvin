@@ -18,6 +18,7 @@ import UserList from "../../../../humanresource/employeeList/pages/components/Us
 import CustomerRightsHooks from "../hooks/CustomerRightsHooks";
 import Page from "../../../../../../components/pagination/Pagination";
 import SearchField from "../../../../../../components/inputFIeld/SearchField";
+import AccountList from "apps/aim/humanresource/employeeList/pages/components/AccountList";
 const formName = "PageRights";
 const submit = async (values, dispatch, props) => {
   try {
@@ -34,12 +35,12 @@ let CustomerRights = (props) => {
       <Modal
         open={customerRights.viewModal}
         fullScreen={matches ? false : true}
-        title={"Employee Search"}
+        title={"Account Search"}
         size={"md"}
         action={undefined}
         handleClose={customerRights.onClickCloseViewModal}
       >
-        <UserList />
+        <AccountList onClickSelect={customerRights.onSelectItem} />
       </Modal>
 
       <form onSubmit={props.handleSubmit}>
@@ -80,7 +81,7 @@ let CustomerRights = (props) => {
                         iconType="view"
                         type="button"
                       >
-                        Employee List
+                        Account List
                       </ButtonComponent>
                     </Stack>
                   </Grid>
@@ -88,7 +89,7 @@ let CustomerRights = (props) => {
                     <Field
                       id="user_code"
                       name="user_code"
-                      label="User Code"
+                      label="Account Code"
                       component={InputField}
                       required={false}
                       disabled={true}

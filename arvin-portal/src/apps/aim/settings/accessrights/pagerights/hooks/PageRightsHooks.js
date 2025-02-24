@@ -60,7 +60,6 @@ const PageRightsHooks = (props) => {
     });
   };
   const onSelectItem = async (data) => {
-    console.log(data);
     await dispatch(getEmployeePageAccessList(data.code));
     await dispatch({
       type: Constants.ACTION_HUMAN_RESOURCE,

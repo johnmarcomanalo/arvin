@@ -6,18 +6,17 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
+import AccountList from "apps/aim/humanresource/employeeList/pages/components/AccountList";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import ButtonComponent from "../../../../../../components/button/Button";
 import InputField from "../../../../../../components/inputFIeld/InputField";
 import SearchField from "../../../../../../components/inputFIeld/SearchField";
+import Modal from "../../../../../../components/modal/Modal";
 import Table from "../../../../../../components/table/Table";
 import configure from "../../../../../configure/configure.json";
 import ProductGroupRightsHooks from "../hooks/ProductGroupRightsHooks";
-import Modal from "../../../../../../components/modal/Modal";
-import UserList from "../../../../humanresource/employeeList/pages/components/UserList";
-import EmployeeList from "../../../../humanresource/employeeList/pages/components/EmployeeList";
 const formName = "ProductGroupRights";
 const submit = async (values, dispatch, props) => {
   try {
@@ -34,14 +33,12 @@ let ProductGroupRights = (props) => {
       <Modal
         open={productGroupRights.viewModal}
         fullScreen={matches ? false : true}
-        title={"Employee Search"}
+        title={"Account Search"}
         size={"md"}
         action={undefined}
         handleClose={productGroupRights.onClickCloseViewModal}
       >
-        <EmployeeList
-          onClickSelect={productGroupRights.onClickSelectEmployee}
-        />
+        <AccountList onClickSelect={productGroupRights.onClickSelectEmployee} />
       </Modal>
 
       <form onSubmit={props.handleSubmit}>
@@ -82,7 +79,7 @@ let ProductGroupRights = (props) => {
                         iconType="view"
                         type="button"
                       >
-                        Employee List
+                        Account List
                       </ButtonComponent>
                     </Stack>
                   </Grid>
@@ -90,7 +87,7 @@ let ProductGroupRights = (props) => {
                     <Field
                       id="user_code"
                       name="user_code"
-                      label="User Code"
+                      label="Account Code"
                       component={InputField}
                       required={false}
                       disabled={true}

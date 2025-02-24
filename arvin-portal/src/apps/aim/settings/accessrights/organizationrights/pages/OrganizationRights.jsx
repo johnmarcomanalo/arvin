@@ -17,6 +17,7 @@ import configure from "../../../../../configure/configure.json";
 import UserList from "../../../../humanresource/employeeList/pages/components/UserList";
 import OrganizationRightsHooks from "../hooks/OrganizationRightsHooks";
 import SearchField from "../../../../../../components/inputFIeld/SearchField";
+import AccountList from "apps/aim/humanresource/employeeList/pages/components/AccountList";
 const formName = "PageRights";
 const submit = async (values, dispatch, props) => {
   try {
@@ -33,12 +34,13 @@ let OrganizationRights = (props) => {
       <Modal
         open={organizationRights.viewModal}
         fullScreen={matches ? false : true}
-        title={"Employee Search"}
+        title={"Account Search"}
         size={"md"}
         action={undefined}
         handleClose={organizationRights.onClickCloseViewModal}
       >
-        <UserList />
+        {/* <UserList /> */}
+        <AccountList onClickSelect={organizationRights.onSelectItem} />
       </Modal>
 
       <form onSubmit={props.handleSubmit}>
@@ -79,7 +81,7 @@ let OrganizationRights = (props) => {
                         iconType="view"
                         type="button"
                       >
-                        Employee List
+                        Account List
                       </ButtonComponent>
                     </Stack>
                   </Grid>
@@ -87,7 +89,7 @@ let OrganizationRights = (props) => {
                     <Field
                       id="user_code"
                       name="user_code"
-                      label="User Code"
+                      label="Account Code"
                       component={InputField}
                       required={false}
                       disabled={true}

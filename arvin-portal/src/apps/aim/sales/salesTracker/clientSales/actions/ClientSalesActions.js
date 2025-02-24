@@ -19,7 +19,11 @@ export const getClientSalesTracker = (values) => async (dispatch) => {
     });
 
     const response = GetSpecificDefaultServices(
-      "api/salesdailyout/sales_tracker/client/get_client_sales_tracker/?y=" +
+      "api/salesdailyout/sales_tracker/client/get_client_sales_tracker/?page=" +
+        values.page +
+        "&limit=" +
+        values.limit +
+        "&y=" +
         values.y +
         "&m=" +
         values.m +
@@ -33,11 +37,12 @@ export const getClientSalesTracker = (values) => async (dispatch) => {
     response.then((res) => {
       try {
         let decrypted = decryptaes(res.data);
+        console.log(decrypted);
         dispatch({
           type: Constants.ACTION_SALES_DAILY_OUT,
           payload: {
-            dataList: decrypted.dataList.original,
-            // dataListCount: decrypted.dataList.total,
+            dataList: decrypted.dataList,
+            dataListCount: decrypted.dataListCount,
           },
         });
       } catch (error) {
