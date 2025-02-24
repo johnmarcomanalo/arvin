@@ -76,7 +76,7 @@ class SalesDailyOutClientSalesTrackersController extends Controller
     public function get_client_sales_tracker(Request $request){
         $selected_year = $request->query('y');
         $selected_month = $request->query('m');
-        $selected_product = $request->query('p');
+        $selected_product = $request->query('pr');
         $selected_group_code = $request->query('c');
         $bdo = $request->query('b'); 
 

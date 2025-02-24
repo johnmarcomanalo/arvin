@@ -19,16 +19,12 @@ export const getClientSalesTracker = (values) => async (dispatch) => {
     });
 
     const response = GetSpecificDefaultServices(
-      "api/salesdailyout/sales_tracker/client/get_client_sales_tracker/?page=" +
-        values.page +
-        "&limit=" +
-        values.limit +
-        "&y=" +
+      "api/salesdailyout/sales_tracker/client/get_client_sales_tracker/?y=" +
         values.y +
         "&m=" +
         values.m +
-        "&p=" +
-        values.p +
+        "&pr=" +
+        values.pr +
         "&c=" +
         values.c +
         "&b=" +
