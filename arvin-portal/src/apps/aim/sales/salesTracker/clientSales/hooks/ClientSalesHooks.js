@@ -39,6 +39,12 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       ? String(searchParams.get("m"))
       : moment(new Date()).format("MM");
 
+  const page =
+    searchParams.get("page") != null ? String(searchParams.get("page")) : 1;
+
+  const limit =
+    searchParams.get("p") != null ? String(searchParams.get("p")) : 10;
+
   const product =
     searchParams.get("p") != null ? String(searchParams.get("p")) : "";
 
@@ -270,6 +276,8 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     let selected_year = moment(date).format("YYYY");
     let selected_month = moment(date).format("MM");
     setSearchParams({
+      page: page,
+      limit: limit,
       y: selected_year,
       m: selected_month,
       p: product,
@@ -280,6 +288,8 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
 
   const getListParam = () => {
     const data = {
+      page: page,
+      limit: limit,
       y: year,
       m: month,
       p: product,
@@ -340,7 +350,9 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     GetClientGroups();
   }, []);
   React.useEffect(() => {
-    GetClientSales();
+    if (product !== "" && bdo !== "") {
+      GetClientSales();
+    }
   }, [refresh, year, month, product, group_code, bdo]);
   const onClickOpenFilterModal = () => {
     dispatch({
@@ -376,6 +388,8 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
 
   const filterProductGroups = (description) => {
     setSearchParams({
+      page: page,
+      limit: limit,
       y: year,
       m: month,
       p: description,
@@ -386,6 +400,8 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
 
   const filterClientGroups = (code) => {
     setSearchParams({
+      page: page,
+      limit: limit,
       y: year,
       m: month,
       p: product,
@@ -467,6 +483,8 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   };
   const onClickSelectEmployee = (bdo) => {
     setSearchParams({
+      page: page,
+      limit: limit,
       y: year,
       m: month,
       p: product,
@@ -478,6 +496,8 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   };
   const onClickSelectResetEmployee = () => {
     setSearchParams({
+      page: page,
+      limit: limit,
       y: year,
       m: month,
       p: product,

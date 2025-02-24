@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
 use App\Models\RefProductGroups;
 use App\Models\SalesDailyOutSettingsAnnualQuotaLogs;
+use App\Models\RefHolidays;
 
 class SalesDailyOutSettingsAnnualQuotaController extends Controller
 {
@@ -69,9 +70,6 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
         }
         $code_annual_quota = MainController::generate_code('App\Models\SalesDailyOutSettingsAnnualQuota',"code");
 
-        $dates_to_get = $salesDailyOutAnnualSettingsSalesController->get_dates_in_selected_year_without_sundays($fields["year_sales_target"]);
-
-
         $data = SalesDailyOutSettingsAnnualQuota::create([
             'code' => $code_annual_quota,
             'subsection_code' =>$fields["subsection_code"],
@@ -96,30 +94,71 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
             'modified_by' => $fields["modified_by"],
         ]);
 
+        $dates_to_get = MainController::get_dates_in_selected_year($fields["year_sales_target"]);
+
+        $holidays = RefHolidays::whereYear('holiday_date', $fields["year_sales_target"])
+            ->where(function ($query) use ($fields) {
+                $query->where('type', 'REGULAR')
+                    ->orWhere(function ($q) use ($fields) {
+                        $q->where('TYPE', 'SPECIAL')
+                            ->where('subsection_code', $fields["subsection_code"]); // Filter by subsection
+                    });
+            })
+            ->pluck('holiday_date')
+            ->map(fn($date) => Carbon::parse($date)->toDateString())
+            ->toArray();
+        $activeDaysPerMonth = [];
+
+
+        foreach ($dates_to_get as $date) {
+            $carbonDate = Carbon::parse($date);
+            $month = $carbonDate->month;
+            $dayOfWeek = $carbonDate->dayOfWeek; // 0 (Sunday) to 6 (Saturday)
+            
+            if ($dayOfWeek !== 0 && !in_array($date, $holidays)) { // Not Sunday and not a holiday
+                $activeDaysPerMonth[$month] = ($activeDaysPerMonth[$month] ?? 0) + 1;
+            }
+        }
+
         foreach ($dates_to_get as $value) {
-            $code = MainController::generate_code('App\Models\SalesDailyOutTrackers',"code");
-            $sales_daily_quota = $salesDailyOutAnnualSettingsSalesController->get_number_of_days_in_a_month_with_out_sunday($value,$fields["monthly_sales_target"]) ;
+            $code = MainController::generate_code('App\Models\SalesDailyOutTrackers', "code");
+
+            $carbonDate = Carbon::parse($value);
+            $month = $carbonDate->month;
+            $dayOfWeek = $carbonDate->dayOfWeek; // 0 (Sunday) to 6 (Saturday)
+
+            // Determine if the date should be marked as deleted
+            $deleted_at = null;
+            if ($dayOfWeek === 0 || in_array($value, $holidays)) { // If it's Sunday or a holiday
+                $deleted_at = now();
+            }
+
+            // Compute daily quota dynamically
+            $activeDays = $activeDaysPerMonth[$month] ?? 1; // Avoid division by zero
+            $sales_daily_quota = $fields["monthly_sales_target"] / $activeDays;
+
             SalesDailyOutTrackers::create([
-                    'code' => $code,
-                    'sales_daily_out_annual_settings_sales_code' => $data["code"],
-                    'subsection_code' =>$fields["subsection_code"],
-                    'ref_product_groups_description' =>$fields["ref_product_groups_description"],
-                    'daily_sales_target_percentage' => -100,
-                    'sales_date' => $value,
-                    'sales_daily_out' => 0,
-                    'sales_daily_qouta' =>  $sales_daily_quota,
-                    'sales_daily_target' =>  '-'.$sales_daily_quota,
-                    'year_sales_target' => $fields["year_sales_target"],
-                    'added_by' => $fields["added_by"],
-                    'modified_by' => $fields["modified_by"],
+                'code' => $code,
+                'sales_daily_out_annual_settings_sales_code' => $data["code"],
+                'subsection_code' => $fields["subsection_code"],
+                'ref_product_groups_description' => $fields["ref_product_groups_description"],
+                'daily_sales_target_percentage' => -100,
+                'sales_date' => $value,
+                'sales_daily_out' => 0,
+                'sales_daily_qouta' => $sales_daily_quota,
+                'sales_daily_target' => '-' . $sales_daily_quota,
+                'year_sales_target' => $fields["year_sales_target"],
+                'deleted_at' => $deleted_at, // Apply deleted_at dynamically
+                'added_by' => $fields["added_by"],
+                'modified_by' => $fields["modified_by"],
             ]);
         }
+        
+        // $records = count(DB::select("SET NOCOUNT ON exec dbo.sp_sales_daily_out_delivery_return_cm_v3 ?,?,?",array($fields["ref_product_groups_description"],$fields["year_sales_target"],$fields["sub_section_type"],$data->code)));
 
-        $records = count(DB::select("exec dbo.sp_sales_daily_out_delivery_return_cm_v3 ?,?,?",array($fields["ref_product_groups_description"],$fields["year_sales_target"],$fields["sub_section_type"],$data->code)));
-
-        if(!empty($records)){
-            $salesDailyOutTrackersController->insert_sap_sales_daily_out($fields["ref_product_groups_description"],$fields["year_sales_target"],$fields["sub_section_type"],$data->code);
-        }
+        // if(!empty($records)){
+        //     $salesDailyOutTrackersController->insert_sap_sales_daily_out($fields["ref_product_groups_description"],$fields["year_sales_target"],$fields["sub_section_type"],$data->code);
+        // }
 
         return response([
             'message' => 'Target sales added successfully',

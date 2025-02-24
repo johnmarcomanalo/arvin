@@ -80,8 +80,18 @@ class AuthController extends Controller
         $account_details = User::join('users_accounts', 'users.code', '=', 'users_accounts.user_code')
             ->where('users_accounts.username', $fields['username'])
             ->first([
-                'users.*',
-                'users_accounts.username as username',
+                'users.first_name',
+                'users.middle_name',
+                'users.last_name',
+                'users_accounts.company_code',
+                'users_accounts.business_unit_code',
+                'users_accounts.business_unit_code',
+                'users_accounts.team_code',
+                'users_accounts.department_code',
+                'users_accounts.section_code',
+                'users_accounts.subsection_code',
+                'users_accounts.position',
+                'users_accounts.username',
                 'users.code as user_code',
                 'users_accounts.code as code'
             ]);
