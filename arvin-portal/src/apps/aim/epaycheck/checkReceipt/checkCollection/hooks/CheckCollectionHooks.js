@@ -6,45 +6,52 @@ import { reset } from "redux-form";
 import { Constants } from "reducer/Contants";
 import { decryptaes } from "utils/LightSecurity";
 import { cancelRequest } from "api/api";
-import { getEmployeeCustomerAccessDetails } from "../../../../settings/reference/actions/ReferenceActions";
 import {
   getSalesInvoiceDetails,
   postCheckCollection,
+  getReceiptFormat,
 } from "../actions/CheckCollectionActions";
 import swal from "sweetalert";
 let formName = "CheckCollection";
 const CheckCollectionHooks = (props) => {
-  const navigate = useNavigate();
-  const refresh = useSelector((state) => state.EpayCheckReducer.refresh);
-  const dispatch = useDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const search =
-    searchParams.get("q") != null ? String(searchParams.get("q")) : "";
-  const code =
-    searchParams.get("c") != null ? String(searchParams.get("c")) : "";
-  const description =
-    searchParams.get("c") != null ? String(searchParams.get("d")) : "";
-  const page = searchParams.get("p") != null ? searchParams.get("p") : 1;
-  const debounceSearch = useDebounce(searchParams, 500);
-  const account_details = useSelector(
-    (state) => state.AuthenticationReducer.account_details
-  );
-  const access = useSelector((state) => state.AuthenticationReducer.access);
-  const dataList = useSelector((state) => state.EpayCheckReducer.dataList);
-  const dataListCount = useSelector(
-    (state) => state.EpayCheckReducer.dataListCount
-  );
-  const viewModal = useSelector((state) => state.EpayCheckReducer.viewModal);
-  const selectedDataList = useSelector(
-    (state) => state.EpayCheckReducer.selectedDataList
-  );
+  const navigate          = useNavigate();
+  const refresh           = useSelector((state) => state.EpayCheckReducer.refresh);
+  const dispatch          = useDispatch();
+  const [
+      searchParams, 
+      setSearchParams
+  ] = useSearchParams();
+  const search            = searchParams.get("q") != null ? String(searchParams.get("q")) : "";
+  const code              = searchParams.get("c") != null ? String(searchParams.get("c")) : "";
+  const customer_name     = searchParams.get("d") != null ? String(searchParams.get("d")) : "";
+  const sap               = searchParams.get("s") != null ? String(searchParams.get("s")) : "";
+  const page              = searchParams.get("p") != null ? searchParams.get("p") : 1;
+  const debounceSearch    = useDebounce(searchParams, 500);
+  const account_details   = useSelector((state) => state.AuthenticationReducer.account_details);
+  const access            = useSelector((state) => state.AuthenticationReducer.access);
+  const dataList          = useSelector((state) => state.EpayCheckReducer.dataList);
+  const dataListCount     = useSelector((state) => state.EpayCheckReducer.dataListCount);
+  const viewModal         = useSelector((state) => state.EpayCheckReducer.viewModal);
+  const viewModal2        = useSelector((state) => state.EpayCheckReducer.viewModal2);
+  const viewModal3        = useSelector((state) => state.EpayCheckReducer.viewModal3);
+  const selectedDataList  = useSelector((state) => state.EpayCheckReducer.selectedDataList);
+  const printData         = useSelector((state) => state.EpayCheckReducer.printData); 
+  const dataListFormat    = useSelector((state) => state.EpayCheckReducer.dataListFormat); 
+  const customerDetails   = {}
   const [state, setState] = React.useState({
     debounceTimer: null,
     debounceDelay: 1000,
     invoice_list: [],
   });
 
-  const epay_selection = [{ description: "NO" }, { description: "YES" }];
+  const epay_selection = [
+    { description: "NO" }, 
+    { description: "YES" }
+  ];
+  const print_format   = [
+    { value:"CR" ,description:"COLLECTION RECEIPT" },
+    { value:"PR" ,description:"PROVISIONAL RECEIPT"}
+  ]
 
   const columns = [
     { id: "docno", label: "Document Number", align: "left" },
@@ -59,8 +66,10 @@ const CheckCollectionHooks = (props) => {
   const getListParam = () => {
     const data = {
       c: code,
-      p: page == null ? 1 : page,
+      d: customer_name,
+      s: sap,
       q: search,
+      p: page == null ? 1 : page,
     };
     return data;
   };
@@ -75,6 +84,7 @@ const CheckCollectionHooks = (props) => {
       const data = getListParam();
       await debounce(() => {
         dispatch(getSalesInvoiceDetails(data));
+        dispatch(getReceiptFormat());
       }, state.debounceDelay);
     } catch (error) {
       await console.error(error);
@@ -90,7 +100,8 @@ const CheckCollectionHooks = (props) => {
     const search = event.target.value;
     setSearchParams({
       c: code,
-      d: description,
+      d: customer_name,
+      s: sap,
       q: search,
       p: page,
     });
@@ -114,45 +125,57 @@ const CheckCollectionHooks = (props) => {
     });
   };
 
-  const GetCustomerDetails = async (value) => {
-    try {
-      let data = {
-        customer_code: value.customer_code,
-        type: value.type,
-        status: value.status,
-      };
-      localStorage.setItem("customerDetails", JSON.stringify(value));
-      const res = await dispatch(getEmployeeCustomerAccessDetails(data));
-      const decrypted = decryptaes(res.data);
-      const customer_details = decrypted.data;
-      setSearchParams({
-        c: customer_details.cardcode,
-        d: customer_details.cardname,
-        q: search,
-        p: "1",
-      });
+  // const GetCustomerDetails = async (value) => {
+  //   try {
+  //     let data = {
+  //       customer_code: value.customer_code,
+  //       type: value.type,
+  //       status: value.status,
+  //     };
+  //     localStorage.setItem("customerDetails", JSON.stringify(value));
+  //     const res = await dispatch(getEmployeeCustomerAccessDetails(data));
+  //     const decrypted = decryptaes(res.data);
+  //     const customer_details = decrypted.data;
+  //     setSearchParams({
+  //       c: customer_details.cardcode,
+  //       d: customer_details.cardname,
+  //       s: customer_details.sap,
+  //       q: search,
+  //       p: "1",
+  //     });
 
-      await dispatch({
-        type: Constants.ACTION_EPAY_CHECK,
-        payload: {
-          dataList: [],
-          dataListCount: 0,
-        },
-      });
+  //     await dispatch({
+  //       type: Constants.ACTION_EPAY_CHECK,
+  //       payload: {
+  //         dataList: [],
+  //         dataListCount: 0,
+  //       },
+  //     });
 
-      setState((prev) => ({
-        ...prev,
-        invoice_list: [],
-      }));
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  //     setState((prev) => ({
+  //       ...prev,
+  //       invoice_list: [],
+  //     }));
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  const getInvoiceList = (data) =>{
+    setSearchParams({
+      c: data.cardcode,
+      d: data.cardname,
+      s: data.sap,
+      q: search,
+      p: "1",
+    });
+  }
 
   const handleChangePage = (event, newPage) => {
     setSearchParams({
       c: code,
-      d: description,
+      d: customer_name,
+      s: sap,
       q: search,
       p: page == null ? 1 : newPage,
     });
@@ -188,7 +211,7 @@ const CheckCollectionHooks = (props) => {
   const submit = async (values, dispatch, props) => {
     try {
       const isConfirm = await swal({
-        title: "Ensure all invoice details are correct before submission",
+        title: "Verify check details before submitting",
         text: "Are you sure you want to submit?",
         icon: "warning",
         buttons: true,
@@ -213,7 +236,7 @@ const CheckCollectionHooks = (props) => {
         if (decrypted.result === true) {
           localStorage.removeItem("customerDetails");
           await dispatch(reset(formName));
-          setSearchParams({ c: "", d: "", q: "", p: "" });
+          setSearchParams({ c: "", d: "",s:"", q: "", p: "" });
           window.location.reload();
         }
       }
@@ -222,10 +245,62 @@ const CheckCollectionHooks = (props) => {
     }
   };
 
-  return {
+  const onClickOpenReceiptDetailsModal = () => {
+    dispatch({
+      type: Constants.ACTION_EPAY_CHECK,
+      payload: {
+        viewModal2: true,
+      },
+    });
+  };
+  const onClickCloseReceiptDetailsModal = () => {
+    dispatch({
+      type: Constants.ACTION_EPAY_CHECK,
+      payload: {
+        viewModal2: false,
+      },
+    });
+  };
+
+  const onClickOpenAccessCustomerModal = () => {
+    setSearchParams({});
+    dispatch({
+      type: Constants.ACTION_EPAY_CHECK,
+      payload: {
+        viewModal3: true,
+      },
+    });
+  };
+  const onClickCloseAccessCustomerModal = () => {
+    dispatch({
+      type: Constants.ACTION_EPAY_CHECK,
+      payload: {
+        viewModal3: false,
+      },
+    });
+  };
+  
+  const getCustomerDetails = (value) =>{  
+    getInvoiceList(value);
+    props.change("card_code", value.cardcode);
+    props.change("card_name", value.cardname); 
+    props.change("sap", value.sap); 
+    onClickCloseAccessCustomerModal();
+    swal("Success", "Customer Details has been selected", "success", {
+      buttons: false,
+      timer: 800,
+    });
+  }
+  
+
+  return { 
+    dataListFormat,
+    customer_name,
     account_details,
     columns,
     viewModal,
+    viewModal2,
+    viewModal3,
     access,
     dataList,
     dataListCount,
@@ -235,17 +310,23 @@ const CheckCollectionHooks = (props) => {
     code,
     state,
     epay_selection,
+    print_format,
+    printData,
     submit,
     dispatch,
     setSearchParams,
-    GetInvoiceList,
-    GetCustomerDetails,
+    GetInvoiceList, 
+    getCustomerDetails,
     handleChangePage,
     onClickOpenViewModal,
     onClickCloseViewModal,
     onChangeSearch,
     onSelectItem,
     onClickRemoveInvoiceList,
+    onClickOpenReceiptDetailsModal,
+    onClickCloseReceiptDetailsModal,
+    onClickOpenAccessCustomerModal,
+    onClickCloseAccessCustomerModal,
   };
 };
 

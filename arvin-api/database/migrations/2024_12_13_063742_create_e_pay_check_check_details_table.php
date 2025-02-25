@@ -32,6 +32,7 @@ class CreateEPayCheckCheckDetailsTable extends Migration
             $table->longText('card_name');
             $table->string('crpr',50);
             $table->string('advance_payment');
+            $table->string('sap',50);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->timestamp('deleted_at')->nullable();

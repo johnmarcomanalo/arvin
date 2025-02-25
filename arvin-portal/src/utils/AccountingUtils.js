@@ -341,7 +341,8 @@ export const NumberToWords = (num) => {
 
   let result = convert(integerPart) + " PESOS ";
   if (decimalPart > 0) {
-    result += " AND " + convert(decimalPart) + " CENTAVOS ONLY";
+    // result += " AND " + convert(decimalPart) + " CENTAVOS ONLY";
+    result += " AND " + decimalPart + "/100 ONLY";
   } else {
     result += " ONLY ";
   }

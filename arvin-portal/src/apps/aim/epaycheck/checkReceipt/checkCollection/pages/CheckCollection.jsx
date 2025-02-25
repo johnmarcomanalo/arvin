@@ -19,6 +19,7 @@ import {
   Typography,  
   useMediaQuery,
   Box,
+  Button
 } from "@mui/material"; 
 import { useTheme } from "@mui/material/styles";
 import * as React from "react";  
@@ -34,6 +35,10 @@ import InputField from "components/inputFIeld/InputField";
 import CheckCollectionHooks from "../hooks/CheckCollectionHooks";
 import configure from "apps/configure/configure.json";
 import InvoiceList from "./components/InvoiceList";
+import ReceiptDetails from "./components/ReceiptDetails";
+import Customers from "apps/aim/settings/accessrights/customerrights/pages/components/Customers";
+import CheckCustomer from "./components/CheckCustomer";
+import { CloudUpload, Upload } from "@mui/icons-material";
 let formName = "CheckCollection";
 
 let CheckCollection = (props) => {
@@ -58,6 +63,26 @@ let CheckCollection = (props) => {
           >
            <InvoiceList onSelectItem={check.onSelectItem} />
         </Modal>
+        <Modal
+            open={check.viewModal2}
+            fullScreen={matches ? false : true}
+            title={"Print Receipt Details"}
+            size={"lg"}
+            action={undefined}
+            handleClose={check.onClickCloseReceiptDetailsModal}
+        >
+           <ReceiptDetails format_list={check.dataListFormat}/>
+        </Modal>
+        <Modal
+            open={check.viewModal3}
+            fullScreen={matches ? false : true}
+            title={"Customer Details"}
+            size={"lg"}
+            action={undefined}
+            handleClose={check.onClickCloseAccessCustomerModal}
+        >
+          <CheckCustomer onClickSelect={check.getCustomerDetails}/>
+        </Modal>
         <form onSubmit={props.handleSubmit(check.submit)} autoComplete="off">
         <Card
               sx={{
@@ -65,20 +90,37 @@ let CheckCollection = (props) => {
               }}
             >
             <CardContent >
-                <Typography
-                  variant="h6"
-                  align="left"
-                  sx={{ color: configure.primary_color }}
+               <Stack
+                  direction={matches ? "row" : "column"}
+                  alignItems={matches ? "center" : "flex-start"}
+                  justifyContent="space-between"
+                  spacing={1}
                 >
-                  Check Details
-                </Typography>
-                <Typography
-                  align="left"
-                  gutterBottom
-                  sx={{ color: configure.dark_gray_color, fontSize: 12 }}
-                >
-                  Ensure all the required fields are correctly filled out
-                </Typography>
+                  <div>
+                  <Typography
+                    variant="h6"
+                    align="left"
+                    sx={{ color: configure.primary_color }}
+                  >
+                    Check Details
+                  </Typography>
+                  <Typography
+                    align="left"
+                    gutterBottom
+                    sx={{ color: configure.dark_gray_color, fontSize: 12 }}
+                  >
+                    Ensure all the required fields are correctly filled out
+                  </Typography>
+                  </div>
+                  <ButtonComponent
+                      stx={configure.default_button}
+                      iconType="export"
+                      type="button"
+                      fullWidth={true}
+                      children={"Print CR/PR"}
+                      click={check.onClickOpenReceiptDetailsModal}
+                    />
+                </Stack> 
                 <Grid container spacing={2}>  
                   <Grid item xs={12} sm={12} md={6} lg={6}>
                       <Field
@@ -168,13 +210,13 @@ let CheckCollection = (props) => {
                         />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={6}> 
-                      <Field
+                      {/* <Field
                             id="card_name"
                             name="card_name"
                             label="Customer"
                             options={access?.user_access_customer_rights}
                             getOptionLabel={(option) =>
-                              option?.description ? option?.description : (props.customerDetails?.description?props.customerDetails?.description: "")
+                              option?.description ? option?.description : check?.customer_name
                             }
                             required={true}
                             component={ComboBox}
@@ -184,7 +226,16 @@ let CheckCollection = (props) => {
                                 props.change("card_code", newValue.customer_code);
                               }
                             }}
-                        /> 
+                        />  */}
+                         <Field
+                            id="card_name"
+                            name="card_name"
+                            label="Customer"
+                            type="text"
+                            component={InputField}
+                            required={true}
+                            onClick={check.onClickOpenAccessCustomerModal}
+                        />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={6}>
                         <Field
@@ -198,7 +249,14 @@ let CheckCollection = (props) => {
                         />
                   </Grid>
                   <Grid item xs={12} sm={12} md={12} lg={12}>
-                      <Typography
+                  <Stack
+                    direction={matches ? "row" : "column"}
+                    alignItems={matches ? "center" : "flex-start"}
+                    justifyContent="space-between"
+                    spacing={1}
+                  >
+                  <div>
+                    <Typography
                         align="left"
                         gutterBottom
                         sx={{ color: configure.primary_color }}
@@ -206,12 +264,26 @@ let CheckCollection = (props) => {
                         Selected Invoice
                       </Typography>
                       <Typography
-                  align="left"
-                  gutterBottom
-                  sx={{ color: configure.dark_gray_color, fontSize: 12 }}
-                >
-                 Ensure all invoice details are correct before submission
-                </Typography>
+                        align="left"
+                        gutterBottom
+                        sx={{ color: configure.dark_gray_color, fontSize: 12 }}
+                      >
+                      Ensure all invoice details are correct before submission
+                      </Typography>
+                  </div> 
+                  <Button
+                    component="label"
+                    role={undefined}
+                    variant="contained"
+                    tabIndex={-1}
+                    startIcon={<Upload />}
+                     sx={{...configure.default_button, px:2}}
+                    disabled
+                  >
+                    Upload Check 
+                  </Button>
+                </Stack>
+                     
                   </Grid>
                   <Grid item xs={12} sm={12} md={12} lg={12}>  
                       

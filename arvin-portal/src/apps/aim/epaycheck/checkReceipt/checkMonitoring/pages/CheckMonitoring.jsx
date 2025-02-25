@@ -70,93 +70,113 @@ const CheckMonitoring = (props) => {
             >
             <Reject/>
           </Modal>
-         <Grid container spacing={2}>  
-            <Grid item xs={12} sm={12} md={12} lg={12}> 
-                  <Stack
-                    direction={matches ? "row" : "column"}
-                    alignItems={matches ? "center" : "flex-start"}
-                    justifyContent="space-between"
+         <Grid container spacing={2}>   
+            <Grid item xs={12} sm={12} md={12} lg={12}>
+                <Stack
+                    direction="row"
+                    justifyContent={matches ? "flex-end" : "center"}
+                    alignItems={matches ? "flex-end" : "center"}
+                    flexDirection={matches ? "row" : "column"}
+                    spacing={1}
+                >       
+                    <Grid item xs={12} sm={12} md={3} lg={1}>
+                        <Field
+                          id="filterStatus"
+                          name="filterStatus"
+                          label="Status"
+                          options={check?.status}
+                          getOptionLabel={(option) =>
+                            option?.description ? option?.description : check.filterStatus
+                          }
+                          component={ComboBox}
+                          onChangeHandle={(e, newValue) => {
+                            if (newValue?.description) {
+                              check.onChangeFilterStatus(newValue?.description);
+                            }
+                          }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={2} lg={1}>
+                      <Field
+                        id="filter_date_start"
+                        name="filter_date_start"
+                        label="Start Date"
+                        type="date"
+                        component={InputField}
+                        onChange={(event) => {
+                          // Get the date from the input event
+                          const selectedDate = event.target.value;
+                          if (selectedDate) {
+                            // Pass the selected date to your handler
+                            check.onChangeFilterStart(new Date(selectedDate));
+                          }
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={2} lg={1}>
+                      <Field
+                        id="filter_date_end"
+                        name="filter_date_end"
+                        label="End Date"
+                        type="date"
+                        component={InputField}
+                        onChange={(event) => {
+                          // Get the date from the input event
+                          const selectedDate = event.target.value;
+                          if (selectedDate) {
+                            // Pass the selected date to your handler
+                            check.onChangeFilterEnd(new Date(selectedDate));
+                          }
+                        }}
+                      />
+                    
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={3} lg={1}>
+                      <Field
+                        id="filter_user_access_organization_rights"
+                        name="filter_user_access_organization_rights"
+                        label="Warehouse"
+                        options={check?.access.user_access_organization_rights}
+                        getOptionLabel={(option) =>
+                          option?.description ? option?.description : ""
+                        }
+                        component={ComboBox}
+                        onChangeHandle={(e, newValue) => {
+                          if (newValue?.description) { 
+                            check.onChangeFilteSubsection(newValue?.code);
+                          }
+                        }}
+                      />
+                    </Grid> 
+                </Stack> 
+            </Grid>
+            <Grid item xs={12} sm={12} md={6} lg={6}> 
+                <Stack
+                    direction="row"
+                    justifyContent={matches ? "flex-start" : "center"}
+                    alignItems={matches ? "flex-start" : "center"}
+                    flexDirection={matches ? "row" : "column"}
                     spacing={2}
                   >
-                    <Grid item xs={12} sm={4} md={2} lg={2}>
-                      <SearchField value={check.search} onChange={check.onChangeSearch} textHidden={false}/>
-                    </Grid>
-                    <Grid item xs={12} sm={8} md={6} lg={6}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12} sm={3} md={3} lg={3}>
-                          <Field
-                            id="filter_date_start"
-                            name="filter_date_start"
-                            label="Start Date"
-                            type="date"
-                            component={InputField}
-                            onChange={(event) => {
-                              // Get the date from the input event
-                              const selectedDate = event.target.value;
-                              if (selectedDate) {
-                                // Pass the selected date to your handler
-                                check.onChangeFilterStart(new Date(selectedDate));
-                              }
-                            }}
-                            // disabled
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={3} md={3} lg={3}>
-                          <Field
-                            id="filter_date_end"
-                            name="filter_date_end"
-                            label="End Date"
-                            type="date"
-                            component={InputField}
-                            onChange={(event) => {
-                              // Get the date from the input event
-                              const selectedDate = event.target.value;
-                              if (selectedDate) {
-                                // Pass the selected date to your handler
-                                check.onChangeFilterEnd(new Date(selectedDate));
-                              }
-                            }}
-                            // disabled
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={3} md={3} lg={3}>
-                          <Field
-                            id="filterStatus"
-                            name="filterStatus"
-                            label="Status"
-                            options={check?.status}
-                            getOptionLabel={(option) =>
-                              option?.description ? option?.description : check.filterStatus
-                            }
-                            component={ComboBox}
-                            onChangeHandle={(e, newValue) => {
-                              if (newValue?.description) {
-                                check.onChangeFilterStatus(newValue?.description);
-                              }
-                            }}
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={3} md={3} lg={3}>
-                          <Field
-                            id="filter_user_access_organization_rights"
-                            name="filter_user_access_organization_rights"
-                            label="Warehouse"
-                            options={check?.access.user_access_organization_rights}
-                            getOptionLabel={(option) =>
-                              option?.description ? option?.description : ""
-                            }
-                            component={ComboBox}
-                            onChangeHandle={(e, newValue) => {
-                              if (newValue?.description) { 
-                                check.onChangeFilteSubsection(newValue?.code);
-                              }
-                            }}
-                          />
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                  </Stack> 
-            </Grid>
+                    <SearchField value={check.search} onChange={check.onChangeSearch}/>   
+                </Stack>  
+            </Grid> 
+            <Grid item xs={12} sm={12} md={6} lg={6}>
+                <Stack
+                    direction="row"
+                    justifyContent={matches ? "flex-end" : "center"}
+                    alignItems={matches ? "flex-end" : "center"}
+                    flexDirection={matches ? "row" : "column"}
+                    spacing={2}
+                >    
+                    <Page
+                      page={check?.page}
+                      limit={check?.dataListCount}
+                      status={""}
+                      onHandleChange={check.handleChangePage}
+                    />  
+                </Stack> 
+            </Grid> 
             <Grid item xs={12} sm={12} md={12} lg={12}>
             
                 <TableComponent
@@ -175,42 +195,8 @@ const CheckMonitoring = (props) => {
                     subAction1Show={(check.filterStatus=="ON-HAND") ? true : false}
                     subAction2Show={true}
                     action={(row, index) => {
-                      let check_status = row?.check_status;
-                      // return (
-                      //   <FormControl size="small" fullWidth>
-                      //     <InputLabel
-                      //       id="demo-simple-select-label"
-                      //       shrink={true}
-                      //     ></InputLabel>
-                      //     <Select
-                      //         labelId="demo-simple-select-label"
-                      //         id="demo-simple-select"
-                      //         label="Age"
-                      //         value={check_status}
-                      //         onChange={(e) => {
-                      //           check.onUpdateCheckDetails(
-                      //             row,
-                      //             e.target.value
-                      //           );
-                      //         }}
-                      //         size="small"
-                      //         sx={{ width: "100%", height: "33px", marginLeft: "-5px" }}
-                      //     >
-                      //       {check?.status
-                      //         .filter((status) => status.description !== "ALL")
-                      //         .map((status, key) => (
-                      //           <MenuItem key={key} value={status.description} >
-                      //             {status.description}
-                      //           </MenuItem>
-                      //         ))}
-
-                      //     </Select>
-                      //   </FormControl>
-                      // );
-
                       return (
                         <Checkbox  
-                        // checked={check.selectedDataList.includes(row.code)}
                           onChange={async (e) => { 
                               check.handleCheckboxChange(row,e.target.checked); 
                           }}

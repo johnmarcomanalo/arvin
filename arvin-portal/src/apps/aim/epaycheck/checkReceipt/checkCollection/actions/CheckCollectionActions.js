@@ -3,6 +3,7 @@ import {
   GetMultiSpecificDefaultServices,
   GetSpecificDefaultServices,
   PostDefaultServices,
+  GetDefaultServices,
 } from "services/apiService";
 
 import { decryptaes } from "utils/LightSecurity";
@@ -21,6 +22,8 @@ export const getSalesInvoiceDetails = (formValues) => async (dispatch) => {
         formValues.c +
         "&d=" +
         formValues.d +
+        "&s=" +
+        formValues.s +
         "&q=" +
         formValues.q +
         "&p=" +
@@ -92,5 +95,151 @@ export const postCheckCollection = (formValues) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+  }
+};
+
+export const getReceiptDetails = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const results = GetSpecificDefaultServices(
+      "api/epaycheck/get_receipt_details?receipt_number=" +
+        formValues.receipt_number +
+        "&print_format=" +
+        formValues.print_format +
+        "&code=" +
+        formValues.code+
+        "&subsection_code=" +
+        formValues.subsection_code
+    );
+
+    results.then((res) => {
+      let decrypted = decryptaes(res?.data);
+      let data = decrypted?.data;
+      dispatch({
+        type: Constants.ACTION_EPAY_CHECK,
+        payload: {
+          printData: data,
+        },
+      });
+    });
+  } catch (error) {
+    let title = configure.error_message.default;
+    let message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
+
+export const getCheckCustomer = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const results = GetSpecificDefaultServices(
+      "api/epaycheck/get_check_customer?u=" +
+        formValues.u +
+        "&q=" +
+        formValues.q +
+        "&p=" +
+        formValues.p
+    );
+
+    results.then((res) => {
+      let decrypted = decryptaes(res?.data);
+      let data = decrypted?.dataList;
+      dispatch({
+        type: Constants.ACTION_EPAY_CHECK,
+        payload: {
+          dataList2: data,
+          dataListCount2: decrypted.total,
+        },
+      });
+    });
+  } catch (error) {
+    let title = configure.error_message.default;
+    let message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
+
+
+
+export const getReceiptFormat = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const results = GetDefaultServices("api/epaycheck/get_receipt_format");
+    results.then((res) => {
+      let decrypted = decryptaes(res?.data);
+      let data = decrypted?.dataList;
+      dispatch({
+        type: Constants.ACTION_EPAY_CHECK,
+        payload: {
+          dataListFormat: data,
+        },
+      });
+    });
+  } catch (error) {
+    let title = configure.error_message.default;
+    let message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };

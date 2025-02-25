@@ -248,10 +248,13 @@ use Illuminate\Support\Facades\Route;
         Route::get('epaycheck/check_detail_logs/get_weekly_check_counter_data',[EPayCheckCheckDetailLogsController::class,'get_weekly_check_counter_data']);
         Route::get('epaycheck/get_sales_invoice_list',[EPayCheckCheckSalesInvoiceDetailsController::class,'get_sales_invoice_list']);
         Route::get('epaycheck/get_check_details',[EPayCheckCheckDetailsController::class,'get_check_details']);
+        Route::get('epaycheck/get_receipt_details',[EPayCheckCheckDetailsController::class,'get_receipt_details']);
+        Route::get('epaycheck/get_check_customer',[EPayCheckCheckDetailsController::class,'get_check_customer']);
+        Route::get('epaycheck/get_receipt_format',[EPayCheckCheckDetailsController::class,'get_receipt_format']);
         Route::apiResource('epaycheck/check_details',EPayCheckCheckDetailsController::class)->middleware(['light_decryption']);
         Route::post('epaycheck/check_details/update_check_status',[EPayCheckCheckDetailsController::class,'update_check_status'])->middleware(['light_decryption']);
         Route::post('epaycheck/check_details/update_check_receive',[EPayCheckCheckDetailsController::class,'update_check_receive'])->middleware(['light_decryption']);
-
+        
         // EPAYCHECK END
 
     });

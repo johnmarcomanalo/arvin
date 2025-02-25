@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\EPayCheckCheckDetailLogs;
 use App\Models\EPayCheckCheckDetails;
 use App\Models\EPayCheckCheckSalesInvoiceDetails;
+use App\Models\EPayCheckReceiptDetails;
+use App\Models\RefDepartments;
+use App\Models\RefSubSections;
+use App\Models\RefTeams;
+use App\Models\UsersAccounts;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\Rule;
@@ -24,6 +29,8 @@ class EPayCheckCheckDetailsController extends Controller
     private const TRANSMITTED = 'TRANSMITTED';
     private const REJECTED = 'REJECTED';
     private const NO = 'NO';
+    private const COLLECTION_RECEIPT = 'CR';
+    private const PROVISIONAL_RECEIPT = 'PR';
     
 
     public function __construct()
@@ -49,7 +56,7 @@ class EPayCheckCheckDetailsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
+    { 
         try {
             DB::beginTransaction();
     
@@ -61,7 +68,8 @@ class EPayCheckCheckDetailsController extends Controller
                 'bank_description' => 'required|string',
                 'crpr'             => 'required|string',
                 'check_amount'     => 'required|numeric|min:0',
-                'check_date'       => 'required|date|after_or_equal:' . Carbon::yesterday()->toDateString(),
+                'check_date'       => 'required|date', #|after_or_equal:' . Carbon::yesterday()->toDateString(),
+                'sap'              => 'required|string',
                 'check_number'     => [
                     'required',
                     Rule::unique('e_pay_check_check_details', 'check_number')->where(function ($query) use ($request) {
@@ -214,7 +222,7 @@ class EPayCheckCheckDetailsController extends Controller
                 'bank_description' => 'required',
                 'crpr'             => 'required',
                 'check_amount'     => 'required|numeric|min:0',
-                'check_date'       => 'required|date|after_or_equal:' . Carbon::yesterday()->toDateString(),
+                'check_date'       => 'required',//|date|after_or_equal:' . Carbon::yesterday()->toDateString(),
                 'check_number'     => 'required',
                 'card_code'        => 'required',
                 'card_name'        => 'required',
@@ -322,9 +330,7 @@ class EPayCheckCheckDetailsController extends Controller
     
         return $success ? $results : false; // Return results if successful, otherwise false
     }
-    
-
-
+     
     public function get_check_details(Request $request)
     { 
  
@@ -401,7 +407,7 @@ class EPayCheckCheckDetailsController extends Controller
                 'card_name'            => $value->card_name,
                 'subsection_code'      => $value->subsection_code,
                 'created_at'           => Carbon::parse($value->created_at)->format('Y-m-d'),
-                'received_date'        => $value->received_date ? Carbon::parse($value->received_date)->format('Y-m-d') : null,
+                'received_date'        => $value->received_date ? Carbon::parse($value->received_date)->format('Y-m-d') : null, 
             ];
         }
         
@@ -479,23 +485,37 @@ class EPayCheckCheckDetailsController extends Controller
                 }
             } else {
                 
-                // Update status and create logs
+             // Iterate over the codes
+            foreach ($codes as $key => $code) {
+                $ePayCheckDetail = EPayCheckCheckDetails::where('code', $code)->first();
+
+                // Check if the status is DEPOSITED and check date is overdue
+                if ($check_status === self::DEPOSITED && $ePayCheckDetail && now()->lessThan($ePayCheckDetail->check_date)) {
+                    // Prompt message or handle the error before updating
+                    $dates = Carbon::parse($ePayCheckDetail->check_date)->format('Y-m-d');
+                    throw new \Exception("Check date for check number {$ePayCheckDetail->check_number} cannot be deposited before {$dates}.");
+                }
+
+                // Proceed with updating the status if validation passes
                 EPayCheckCheckDetails::whereIn('code', $codes)
                     ->update(['check_status' => $check_status, 'check_status_date' => now()]);
-                 
-                foreach ($codes as $key => $code) {
-                    $codeLogs = MainController::generate_code('App\Models\EPayCheckCheckDetailLogs', "code");
-                    $logs = [
-                        'code'               => $codeLogs,
-                        'check_details_code' => $code,
-                        'check_status'       => $check_status,
-                        'deposited_bank'     => $deposited_bank,
-                        'deposited_date'     => $deposited_date,
-                        'rejected_date'      => $rejected_date,
-                        'rejected_remarks'   => $rejected_remarks
-                    ];
-                    EPayCheckCheckDetailLogs::create($logs);
-                }
+
+                // Generate logs
+                $codeLogs = MainController::generate_code('App\Models\EPayCheckCheckDetailLogs', "code");
+                $logs = [
+                    'code'               => $codeLogs,
+                    'check_details_code' => $code,
+                    'check_status'       => $check_status,
+                    'deposited_bank'     => $deposited_bank,
+                    'deposited_date'     => $deposited_date,
+                    'rejected_date'      => $rejected_date,
+                    'rejected_remarks'   => $rejected_remarks
+                ];
+
+                // Create log entry
+                EPayCheckCheckDetailLogs::create($logs);
+            }
+
  
             }
     
@@ -510,7 +530,7 @@ class EPayCheckCheckDetailsController extends Controller
                 'result' => false,
                 'status' => 'error',
                 'title' => 'Error',
-                'message' => 'An error occurred while updating check details.'
+                'message' => $e->getMessage()
             ]));
         }
     }
@@ -578,4 +598,134 @@ class EPayCheckCheckDetailsController extends Controller
         }
     }
     
+
+    public function get_receipt_details(Request $request){
+        try {
+            $validator = Validator::make($request->all(), [
+                'receipt_number'  => 'required',
+                'print_format'    => 'required',
+                'code'            => 'required',
+                'subsection_code' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                throw new \Exception($validator->errors()->first());
+            } 
+
+           
+            $validatedData = $validator->validated();
+            $userData = UsersAccounts::select("ref_sections.description as section","ref_sub_sections.description as sub_section")
+                            ->join('ref_sections','users_accounts.section_code','=','ref_sections.code')
+                            ->join('ref_sub_sections','ref_sections.code','=','ref_sub_sections.section_code')
+                            ->where('users_accounts.code',$validatedData['code'])->first();
+
+            $sap          = $this->_sap($userData['section'],$userData['sub_section']);
+            $res          = DB::select("exec sp_e_pay_check_details_receipt ?,?,?",[$sap,$validatedData['receipt_number'],$validatedData['subsection_code']]);
+            $receiptDetils= EPayCheckReceiptDetails::where('code',$validatedData['print_format'])->first(); 
+            $response = [
+                'message' => "Successfully retrieved data",
+                'data'    => [
+                    'card_name'     => $res[0]->card_name ?? null,
+                    'card_code'     => $res[0]->card_code ?? null,
+                    'address'       => $res[0]->address ?? null,
+                    'check_amount'  => array_sum(array_column($res ?? [], 'check_amount')) ?? null,
+                    'crpr'          => $res[0]->crpr ?? null,
+                    'date_pay'      => isset($res[0]->date_pay) ? Carbon::parse($res[0]->date_pay)->format('m/d/Y') : null,
+                    'docdate'       => isset($res[0]->docdate) ? Carbon::parse($res[0]->docdate)->format('m/d/Y') : null,
+                    'lictradnum'    => $res[0]->lictradnum ?? null,
+                    'sales_invoice' => $res[0]->sales_invoice ?? null,
+                    'username'      => $res[0]->username ?? null,
+                    'format'        => json_decode($receiptDetils['format'])
+                ],
+                'result'  => false,
+                'status'  => 'success',
+            ];
+
+            return Crypt::encryptString(json_encode($response));
+
+        } catch (\Exception $e) {
+            return Crypt::encryptString(json_encode([
+                'result' => false,
+                'status' => 'error',
+                'title' => 'Error',
+                'message' => $e->getMessage()
+            ]));
+        }
+    }
+ 
+
+    private function _sap($section, $sub_section) { 
+        if (in_array($section, ['Luzon', 'Visayas', 'Mindanao'])) {
+            return 'PROVINCE';
+        }
+        if (strtoupper($sub_section) === "PEANUT") {
+            return "PEANUT";
+        } 
+        return "MANILA"; 
+    }
+
+
+    public function get_check_customer(Request $request)
+    {
+        $page      = $request->query('p', 1); 
+        $limit     = $request->query('lmt', 10);
+        $search    = trim($request->query('q')); // Trim extra spaces
+        $user_code = $request->query('u'); 
+    
+        $userData  = UsersAccounts::select("ref_sections.description as section", "ref_sub_sections.description as sub_section")
+                    ->join('ref_sections', 'users_accounts.section_code', '=', 'ref_sections.code')
+                    ->join('ref_sub_sections', 'ref_sections.code', '=', 'ref_sub_sections.section_code')
+                    ->where('users_accounts.code', $user_code)
+                    ->first();
+    
+        if (!$userData) {
+            return response()->json(['result' => false, 'message' => 'User not found'], 404);
+        }
+    
+        $sap = $this->_sap($userData['section'], $userData['sub_section']);
+    
+        $query = DB::table('vw_ref_customers')->select('cardname', 'cardcode', 'sap');
+    
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('cardname', 'like', '%' . $search . '%')
+                  ->orWhere('cardcode', 'like', '%' . $search . '%');
+            });
+        }
+    
+        if (!empty($sap)) {
+            $query->where('sap', $sap);
+        }
+    
+        $customersFromSAP = $query->paginate($limit, ['*'], 'page', $page);
+    
+        $response = [
+            'dataList' => $customersFromSAP->items(),
+            'total' => $customersFromSAP->total(),
+            'count' => $customersFromSAP->count(),
+            'per_page' => $customersFromSAP->perPage(),
+            'current_page' => $customersFromSAP->currentPage(),
+            'total_pages' => $customersFromSAP->lastPage(),
+            'result' => true,
+            'title' => 'Success',
+            'status' => 'success',
+            'message' => 'Fetched successfully.',
+        ];
+        return Crypt::encryptString(json_encode($response)); 
+    }
+    
+
+    public function get_receipt_format(Request $request){
+        $receiptDetails = EPayCheckReceiptDetails::where("active", true)->orderBy('description')->get();
+        $response = [
+            'dataList' => $receiptDetails,
+            'total'    => $receiptDetails->count(),
+            'result'   => true,
+            'title'    => 'Success',
+            'status'   => 'success',
+            'message'  => 'Fetched successfully.',
+        ]; 
+        return Crypt::encryptString(json_encode($response));
+
+    }
 }

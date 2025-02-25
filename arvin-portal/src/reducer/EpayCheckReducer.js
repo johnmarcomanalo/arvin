@@ -6,8 +6,10 @@ const initialState = {
   page: 1,
   rowsPerPage: 30,
   dataList: [],
+  dataList2: [],
   dataSubList: [],
   dataListCount: 0,
+  dataListCount2: 0,
   dataSubListCount: 0,
   filter: "",
   dateFilter: new Date(),
@@ -22,7 +24,10 @@ const initialState = {
   editModal: false,
   viewModal: false,
   viewModal2: false,
-  reportData:[]
+  viewModal3: false,
+  reportData:[],
+  printData:{},
+  dataListFormat:[]
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

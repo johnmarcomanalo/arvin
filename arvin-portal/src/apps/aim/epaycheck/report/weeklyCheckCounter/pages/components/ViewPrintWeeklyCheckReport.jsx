@@ -43,7 +43,8 @@ const styles = StyleSheet.create({
   headerText: { fontSize: 9, margin:1, fontFamily: "PoppinsRegular" },
   table: { display: "flex", flexDirection: "column", border: "0.5px solid black", fontSize: 6 },
   row: { flexDirection: "row", borderBottom: "0.5px solid black",fontWeight: "bold" },
-  cell: { padding: 3, borderRight: "0.5px solid black", flex: 1, textAlign: "center", fontSize: 6 },
+  cell: { padding: 2, borderRight: "0.5px solid black", flex: 1, textAlign: "center", fontSize: 6 },
+  smallCell: { flex: 0.4, padding: 2, borderRight: "0.5px solid black", textAlign: "center", fontSize: 6 },
   footer: {
     marginTop: 20,
     paddingBottom:20,
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
 const headers = [
   {id:"created_at",description:"POSTING DATE"},
   {id:"check_date",description:"CHECK DATE"},
-  {id:"created_at",description:"DATE DEP/TRANS"},
+  {id:"check_status_date",description:"DATE DEP/TRANS"},
   {id:"check_number",description:"CHECK NUMBER"}, 
   {id:"bank_description",description:"BANK NAME"},
   {id:"check_amount",description:"CHECK AMOUNT"}, 
@@ -106,7 +107,7 @@ const Table = ({ title, data }) => {
               {/* Table Header */}
               <View style={[styles.row, { backgroundColor: "#ddd" }]}>
                 {headers.map((header, index) => (
-                  <Text key={index} style={styles.cell}>
+                  <Text key={index} style={index < 4 || index === 7 ? styles.smallCell : styles.cell}>
                     {header.description}
                   </Text>
                 ))}
@@ -117,17 +118,17 @@ const Table = ({ title, data }) => {
                 rows.map((row, rowIndex) => (
                   <View key={rowIndex} style={styles.row}>
                     {headers.map((header, cellIndex) => (
-                      <Text key={cellIndex} style={styles.cell}>
-                        {row[header.id] || "N/A"}
+                      <Text key={cellIndex}  style={cellIndex < 4 || cellIndex === 7 ? styles.smallCell : styles.cell}>
+                        {row[header.id] || ""}
                       </Text>
                     ))}
                   </View>
                 ))}
               <View style={styles.row}>
-                <Text style={[styles.cell]}></Text>
-                <Text style={[styles.cell]}></Text>
-                <Text style={[styles.cell]}></Text>
-                <Text style={[styles.cell]}></Text>
+                <Text style={[styles.smallCell]}></Text>
+                <Text style={[styles.smallCell]}></Text>
+                <Text style={[styles.smallCell]}></Text>
+                <Text style={[styles.smallCell]}></Text>
                 <Text style={[styles.cell]}>TOTAL: </Text>
                 <Text style={styles.cell}>
                   {ViewAmountFormatingDecimals(
@@ -135,7 +136,7 @@ const Table = ({ title, data }) => {
                   ,4)}
                 </Text> 
                 <Text style={[styles.cell]}></Text>
-                <Text style={[styles.cell]}></Text>
+                <Text style={[styles.smallCell]}></Text>
               </View>
             </View>
           ))}
@@ -145,6 +146,44 @@ const Table = ({ title, data }) => {
   );
 };
 // Table Component (keep your existing Table component)
+
+const Summary = ({data})=>{
+    const beginning_on_hand = data?.beginning_on_hand ? data?.beginning_on_hand : "-"
+    const ending_on_hand    = data?.ending_on_hand ? data?.ending_on_hand :"-"
+    const deposited         = data?.deposited ? data?.deposited :"-"
+    const collected         = data?.collected ? data?.collected :"-"
+    const transmitted       = data?.transmitted ? data?.transmitted :"-"
+    const rejected          = data?.rejected ? data?.rejected :"-"
+    return (  <View style={styles.footer}>
+      <View style={styles.footerRow}>
+        <Text style={styles.footerLabel}>Beginning ON-HAND:</Text>
+        <Text style={styles.footerValue}>{beginning_on_hand}</Text>
+      </View>
+      <View style={styles.footerDivider} />
+      <View style={styles.footerRow}>
+        <Text style={styles.footerLabel}>Collected:</Text>
+        <Text style={styles.footerValue}>{collected}</Text>
+      </View>
+      <View style={styles.footerDivider} />
+      <View style={styles.footerRow}>
+        <Text style={styles.footerLabel}>Deposited:</Text>
+        <Text style={styles.footerValue}>{deposited}</Text>
+      </View>
+      <View style={styles.footerRow}>
+        <Text style={styles.footerLabel}>Transmitted:</Text>
+        <Text style={styles.footerValue}>{transmitted}</Text>
+      </View>
+      <View style={styles.footerRow}>
+        <Text style={styles.footerLabel}>Rejected:</Text>
+        <Text style={styles.footerValue}>{rejected}</Text>
+      </View>
+      <View style={styles.footerDivider} />
+      <View style={styles.footerRow}>
+        <Text style={styles.footerLabel}>Ending ON-HAND:</Text>
+        <Text style={styles.footerValue}>{ending_on_hand}</Text>
+      </View>
+    </View>)
+}
 
 const pageWidth = 8.5 * 72; // Convert inches to points
 const pageHeight = 13 * 72; // Convert inches to points
@@ -160,19 +199,15 @@ const ViewPrintWeeklyCheckReport = (props) => {
     }, 500); // Simulating API delay
   }, [props.data]);
 
-  const footer_summary    = props.data?.summary
-  const onhand_data       = props.data?.onhand
-  const deposited_data    = props.data?.deposited
-  const transmitted_data  = props.data?.transmitted
-  const rejected_data     = props.data?.rejected
+  const footer_summary    = props.data?.footer
+  const body_data         = props.data?.body
+  const onhand_data       = body_data?.onhand
+  const deposited_data    = body_data?.deposited
+  const transmitted_data  = body_data?.transmitted
+  const rejected_data     = body_data?.rejected
 
   // FOOTER DATA
-  const beginning_on_hand = footer_summary?.beginning_on_hand ? footer_summary?.beginning_on_hand : "-"
-  const ending_on_hand    = footer_summary?.ending_on_hand ? footer_summary?.ending_on_hand :"-"
-  const deposited         = footer_summary?.deposited ? footer_summary?.deposited :"-"
-  const collected         = footer_summary?.collected ? footer_summary?.collected :"-"
-  const transmitted       = footer_summary?.transmitted ? footer_summary?.transmitted :"-"
-  const rejected          = footer_summary?.rejected ? footer_summary?.rejected :"-"
+ 
 
   //HEADER DATA
   const header_data       = props.data?.header;
@@ -190,7 +225,8 @@ const ViewPrintWeeklyCheckReport = (props) => {
             display: "flex", alignItems: "center", justifyContent: "center",
             backgroundColor: "rgba(255, 255, 255, 0.9)", // Light overlay
             zIndex: 10,
-            border: "1px solid black" // Ensure border is visible
+            border: "1px solid black", // Ensure border is visible
+            fontSize:12
           }}>
             <span>Loading PDF...</span>
           </div>
@@ -212,35 +248,7 @@ const ViewPrintWeeklyCheckReport = (props) => {
           <Table title="REJECTED" data={rejected_data} />
   
           {/* Footer */}
-          <View style={styles.footer}>
-            <View style={styles.footerRow}>
-              <Text style={styles.footerLabel}>Beginning ON-HAND:</Text>
-              <Text style={styles.footerValue}>{beginning_on_hand}</Text>
-            </View>
-            <View style={styles.footerDivider} />
-            <View style={styles.footerRow}>
-              <Text style={styles.footerLabel}>Collected:</Text>
-              <Text style={styles.footerValue}>{collected}</Text>
-            </View>
-            <View style={styles.footerDivider} />
-            <View style={styles.footerRow}>
-              <Text style={styles.footerLabel}>Deposited:</Text>
-              <Text style={styles.footerValue}>{deposited}</Text>
-            </View>
-            <View style={styles.footerRow}>
-              <Text style={styles.footerLabel}>Transmitted:</Text>
-              <Text style={styles.footerValue}>{transmitted}</Text>
-            </View>
-            <View style={styles.footerRow}>
-              <Text style={styles.footerLabel}>Rejected:</Text>
-              <Text style={styles.footerValue}>{rejected}</Text>
-            </View>
-            <View style={styles.footerDivider} />
-            <View style={styles.footerRow}>
-              <Text style={styles.footerLabel}>Ending ON-HAND:</Text>
-              <Text style={styles.footerValue}>{ending_on_hand}</Text>
-            </View>
-          </View>
+          <Summary data={footer_summary} />
         </Page>
       </Document>
     </PDFViewer>

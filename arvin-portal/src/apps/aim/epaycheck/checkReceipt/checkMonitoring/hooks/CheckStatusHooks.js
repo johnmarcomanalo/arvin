@@ -75,7 +75,10 @@ const CheckStatusHooks = (props) => {
                   viewModal: false, // Open the deposit modal
                   viewModal2: false
                 },
-            }); 
+            });
+            if (res.status === "error") {
+              window.location.reload();
+            }
           }
         }  
 

@@ -34,12 +34,13 @@ export const getCheckDetails = (formValues) => async (dispatch) => {
         );
   
         let decrypted = decryptaes(results?.data)
-        let data = decrypted?.dataList; 
+        let data  = decrypted?.dataList;
+        let total = decrypted?.dataListCount;
           dispatch({
               type: Constants.ACTION_EPAY_CHECK,
               payload: {
                 dataList: data, 
-                dataListCount: decrypted.total,
+                dataListCount: total
               },
           });
      

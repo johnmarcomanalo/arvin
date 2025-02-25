@@ -68,42 +68,52 @@ class EPayCheckCheckSalesInvoiceDetailsController extends Controller
     }
 
     public function get_sales_invoice_list(Request $request){
-
-        $page   = $request->query('p', 1); // Default to page 1 if not provided 
+        $page   = $request->query('p', 1); // Default to page 1
+        $sap    = $request->query('s');
         $code   = $request->query('c');
         $search = $request->query('q');
-        $limit  = $request->query('lmt', 10); // Default to 10 items per page if not provided
- 
-        $query = DB::table('vw_epay_check_invoice_list')->select(
-            'docno','sino','drno','docdate','totalbeforetax','vatsum','doctotal'
-        )->where('cardcode', $code);
-
-        if (isset($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where('drno', 'like', '%' . $search . '%')
-                  ->orWhere('docno', 'like', '%' . $search . '%')
-                  ->orWhere('sino', 'like', '%' . $search . '%');
+        $limit  = $request->query('lmt', 10); // Default to 10 items per page
+    
+        // Execute stored procedure
+        if (!is_null($code) && !is_null($sap)) {
+            $queryResult = DB::select('EXEC dbo.sp_e_pay_check_invoice_list ?, ?', [$code, $sap]);
+        }
+    
+        // Convert result to collection for filtering
+        $collection = collect($queryResult ?? []);
+    
+        // Apply search filter if provided
+        if (!empty($search)) {
+            $collection = $collection->filter(function ($item) use ($search) {
+                return stripos($item->drno, $search) !== false ||
+                       stripos($item->docno, $search) !== false ||
+                       stripos($item->sino, $search) !== false;
             });
         }
-         
-        // Paginate the query
-        $res = $query->paginate($limit, ['*'], 'page', $page);
-
+    
+        // Get total count after filtering
+        $total = $collection->count();
+    
+        // Apply manual pagination
+        $paginatedData = $collection->slice(($page - 1) * $limit, $limit)->values();
+    
+        // Format response
         $response = [
-               'dataList'     => $res->items(),
-                'total'        => $res->total(),
-                'count'        => $res->count(),
-                'per_page'     => $res->perPage(),
-                'current_page' => $res->currentPage(),
-                'total_pages'  => $res->lastPage(),
-                'result' => true,
-                'title' => 'Success',
-                'status' => 'success',
-                'message' => 'Fetched successfully.',
+            'dataList'     => $paginatedData,
+            'total'        => $total,
+            'count'        => count($paginatedData),
+            'per_page'     => $limit,
+            'current_page' => $page,
+            'total_pages'  => ceil($total / $limit),
+            'result'       => true,
+            'title'        => 'Success',
+            'status'       => 'success',
+            'message'      => 'Fetched successfully.',
         ];  
+    
         return Crypt::encryptString(json_encode($response));
-
     }
+    
 
     public function generate_code(){
         $code = 1;

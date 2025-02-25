@@ -120,6 +120,30 @@ const CheckReceiveHooks = (props) => {
         })
       };
 
+    const onChangeFilterStart = (date) => {
+        const newdate = moment(date).format("YYYY-MM-DD");
+        setSearchParams({
+          q  : search, 
+          p  : page == null ? 1 : page,
+          df : newdate,
+          dt : filterEndQuery,
+          s  : filterStatus, 
+          sc : filterSubSection
+        });
+    };
+      
+      const onChangeFilterEnd = (date) => {
+        const newdate = moment(date).format("YYYY-MM-DD");
+        setSearchParams({
+          q  : search, 
+          p  : page == null ? 1 : page,
+          df : filterStartQuery,
+          dt : newdate,
+          s  : filterStatus, 
+          sc : filterSubSection
+        });
+      };
+
       const onClickOpenReceiveModal = async  ()=> { 
         dispatch({
           type: Constants.ACTION_EPAY_CHECK,
@@ -199,9 +223,7 @@ const CheckReceiveHooks = (props) => {
             selectedDataList.splice(index, 1);
           }
         }
-      };  
-
-     
+      };
    
     return {
         viewModal, 
@@ -226,7 +248,9 @@ const CheckReceiveHooks = (props) => {
         onClickCloseReceiveModal,
         handleCheckboxChange,
         onClickReceive,
-        onClickUndoReceive
+        onClickUndoReceive,
+        onChangeFilterStart,
+        onChangeFilterEnd,
     };
 };
 

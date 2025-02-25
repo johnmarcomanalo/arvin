@@ -72,15 +72,30 @@ class EPayCheckCheckDetailLogsController extends Controller
         return DB::select("exec dbo.sp_e_pay_check_weekly_check_counter_report ?,?,?,?", [$df, $dt, $sc, $type]);
     }
 
-    private function get_group_data_per_date($data, $type) {
-        return $data->where('check_status', $type)->groupBy('created_at')->map(function ($items) {
-            return $items->map(function ($item) {
-                return $item;
-            })->values();
-        });
+    private function get_group_data($data, $type, $exclude = null, $group_by_date = false) {
+        return $data->where('check_status', $type)
+            ->reject(function ($item) use ($exclude) {
+                return !empty($exclude) && in_array($item->code, (array) $exclude);
+            })
+            ->when($group_by_date, function ($filteredData) {
+                return $filteredData->groupBy(function ($item) {
+                    return \Carbon\Carbon::parse($item->created_at)->format('Y-m-d'); // Group by date
+                })->map(function ($items) {
+                    return $items->values(); // Reset array indexes
+                });
+            }, function ($filteredData) {
+                return $filteredData->values(); // If no grouping, just return as a collection
+            });
+    }
+    
+
+    public function check_summary($data){ 
+        $code_exclude     = $data->whereIn('check_status',["REJECTED","TRANSMITTED","DEPOSITED"])->pluck('code')->filter()->toArray(); 
+        $data_onhand      = $this->get_group_data($data,"ON-HAND",$code_exclude);
+        return  $data_onhand; 
     }
 
-    public function get_weekly_check_counter_data(Request $request){
+    public function get_weekly_check_counter_data(Request $request){ 
 
         $customMessages = [
         'df.required'         => 'The start date is required.',
@@ -109,7 +124,7 @@ class EPayCheckCheckDetailLogsController extends Controller
     
         $validated            = $validator->validated();
         $result_body          = $this->execute_report($validated['df'], $validated['dt'], $validated['sc'], "within_range");
-        $result_footer        = $this->execute_report($validated['df'], $validated['dt'], $validated['sc'], "open   ");
+        $result_footer        = $this->execute_report($validated['df'], $validated['dt'], $validated['sc'], "open");
 
         //HEADER summary data
 
@@ -122,41 +137,51 @@ class EPayCheckCheckDetailLogsController extends Controller
         ];
         // HEADER END
 
+        //BODY
+        $transactions     = collect($result_body);
+        $beginning_on_hand= collect($result_footer);
+        $code_exclude     = $transactions->whereIn('check_status',["REJECTED","TRANSMITTED","DEPOSITED"])->pluck('code')->filter()->toArray();
+        
+        //merging data open status and within range
+        $data_beg         = $this->check_summary($beginning_on_hand);
+        $datax            = $transactions->where('check_status', 'ON-HAND');
+        $merge_data       = $datax->merge($data_beg)->map(function ($item) {
+            $item->check_status_date = null;
+            return $item;
+        });
 
-         // BODY summary data
-        // Convert result to a collection for easier processing
-        $transactions          = collect($result_body);
-        $beginning_on_hand     = collect($result_footer);
-        $merge_data            = $transactions->merge($beginning_on_hand)->unique('code')->sortBy('created_at')->values();
+        // data body grouped by date
+        $data_onhand = $this->get_group_data($merge_data, "ON-HAND", $code_exclude, true);
+        $data_transmitted = $this->get_group_data($transactions,"TRANSMITTED",null,true);
+        $data_deposited   = $this->get_group_data($transactions,"DEPOSITED",null,true);
+        $data_rejected    = $this->get_group_data($transactions,"REJECTED",null,true);
+ 
+        $body = [
+            'deposited'        => $data_deposited,
+            'onhand'           => $data_onhand,
+            'transmitted'      => $data_transmitted,
+            'rejected'         => $data_rejected,
+        ];
 
-        $deposited_data        = $this->get_group_data_per_date($transactions, "DEPOSITED");
-        $onHand_data           = $this->get_group_data_per_date($merge_data, "ON-HAND");
-        $transmitted_data      = $this->get_group_data_per_date($transactions, "TRANSMITTED");
-        $rejected_data         = $this->get_group_data_per_date($transactions, "REJECTED");
-        // BODY END
-
+        $minus_status =  $transactions->where('check_status', 'DEPOSITED')->count()
+        + $transactions->where('check_status', 'TRANSMITTED')->count()
+        + $transactions->where('check_status', 'REJECTED')->count();
+        
         // FOOTER Compute summary
         $summary = (object) [
-            'beginning_on_hand'=> $beginning_on_hand->count(),
-            'collected'        => $transactions->where('check_status', 'ON-HAND')->count()
-                                + $transactions->where('check_status', 'DEPOSITED')->count()
-                                + $transactions->where('check_status', 'TRANSMITTED')->count()
-                                + $transactions->where('check_status', 'REJECTED')->count(),
+            'beginning_on_hand'=> $data_beg->count(),
+            'collected'        => $transactions->where('check_status', 'ON-HAND')->count(),
             'deposited'        => $transactions->where('check_status', 'DEPOSITED')->count(),
             'transmitted'      => $transactions->where('check_status', 'TRANSMITTED')->count(),
             'rejected'         => $transactions->where('check_status', 'REJECTED')->count(),
-            'ending_on_hand'   => ($beginning_on_hand->count() + $transactions->where('check_status', 'ON-HAND')->count())
+            'ending_on_hand'   => ($data_beg->count() + $transactions->where('check_status', 'ON-HAND')->count())-$minus_status,
         ];
-        //FOOTER END
+        // //FOOTER END
     
         $response = [
-            // 'transactions'  => $groupedTransactions, 
             'header'           => $header,
-            'deposited'        => $deposited_data,
-            'onhand'           => $onHand_data,
-            'transmitted'      => $transmitted_data,
-            'rejected'         => $rejected_data,
-            'summary'          => $summary
+            'body'             => $body,
+            'footer'           => $summary
         ];
         return Crypt::encryptString(json_encode($response));
 

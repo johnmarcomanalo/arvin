@@ -35,7 +35,7 @@ const CheckMonitoringHooks = (props) => {
     const dataList         = useSelector((state) => state.EpayCheckReducer.dataList);
     const dataListCount    = useSelector((state) => state.EpayCheckReducer.dataListCount);
     const viewModal        = useSelector((state) => state.EpayCheckReducer.viewModal); 
-    const viewModal2        = useSelector((state) => state.EpayCheckReducer.viewModal2); 
+    const viewModal2        = useSelector((state)=> state.EpayCheckReducer.viewModal2); 
     const editModal        = useSelector((state) => state.EpayCheckReducer.editModal); 
     const bank_accounts    = useSelector((state) => state.ReferenceReducer.bank_accounts); 
     const refresh          = useSelector((state) => state.EpayCheckReducer.refresh);
@@ -122,6 +122,7 @@ const CheckMonitoringHooks = (props) => {
 
       // ADD CHECK START FUNCTION AND PROCESS
       const onClickOpenViewModalDeposit = () => {
+          if (!hasSelectedChecks()) return;
           dispatch({
               type: Constants.ACTION_EPAY_CHECK,
               payload: {
@@ -339,6 +340,7 @@ const CheckMonitoringHooks = (props) => {
       };
 
       const onClickOpenRejectModal = async  ()=> { 
+        if (!hasSelectedChecks()) return;
         dispatch({
           type: Constants.ACTION_EPAY_CHECK,
           payload: {
@@ -354,6 +356,14 @@ const CheckMonitoringHooks = (props) => {
           },
         });
       };
+
+      const hasSelectedChecks = () => {
+        if (selectedDataList.length === 0) {
+          swal("Error", "Please select at least one check", "error");
+          return false; // Return false to indicate no selection
+        }
+        return true; // Return true if selection exists
+      }
       
    
     return {
