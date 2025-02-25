@@ -384,7 +384,7 @@ class EPayCheckCheckDetailsController extends Controller
         })
         ->where('check_status', $status)
         ->where('subsection_code', $sc)
-        ->paginate(15, ['*'], 'page', $page);
+        ->paginate(10, ['*'], 'page', $page);
     
         
         $requests = [];

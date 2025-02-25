@@ -107,7 +107,7 @@ const CheckMonitoringHooks = (props) => {
       });
        GetChequeList();
          return () => cancelRequest(); 
-    }, [refresh,search,filterStartQuery,filterEndQuery,filterStatus,selectedDataList]);
+    }, [refresh,search,filterStartQuery,filterEndQuery,filterStatus,selectedDataList,page]);
       
       const onChangeSearch = (event) => { 
         const search = event.target.value;
