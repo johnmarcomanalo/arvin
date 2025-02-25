@@ -154,13 +154,21 @@ let CheckCollection = (props) => {
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={6}>
                       <Field
-                        id="bank_description"
-                        name="bank_description"
-                        label="Bank"
-                        type="text"
-                        component={InputField}
-                        required={true}
-                      />
+                            id="bank_name"
+                            name="bank_name"
+                            label="Bank Name"
+                            options={check?.banks.phbanks}
+                            getOptionLabel={(option) =>
+                              option?.name ? option?.name : ""
+                            }
+                            required={true}
+                            component={ComboBox}
+                            onChangeHandle={(e, newValue) => {
+                              if (newValue?.name) {
+                                props.change("bank_description", newValue.name);
+                              }
+                            }}
+                        /> 
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={6}>
                       <Field

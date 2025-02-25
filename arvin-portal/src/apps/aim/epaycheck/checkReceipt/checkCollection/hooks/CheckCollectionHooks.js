@@ -37,6 +37,8 @@ const CheckCollectionHooks = (props) => {
   const selectedDataList  = useSelector((state) => state.EpayCheckReducer.selectedDataList);
   const printData         = useSelector((state) => state.EpayCheckReducer.printData); 
   const dataListFormat    = useSelector((state) => state.EpayCheckReducer.dataListFormat); 
+  const banks           = useSelector((state) => state.ReferenceReducer.phbanks);
+  
   const customerDetails   = {}
   const [state, setState] = React.useState({
     debounceTimer: null,
@@ -293,7 +295,8 @@ const CheckCollectionHooks = (props) => {
   }
   
 
-  return { 
+  return {
+    banks,
     dataListFormat,
     customer_name,
     account_details,

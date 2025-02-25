@@ -1,4 +1,5 @@
 import { Constants } from "./Contants";
+import phbanks from "apps/configure/phbanks.json";
 const initialState = {
   refresh: false,
   companies: [],
@@ -44,6 +45,7 @@ const initialState = {
   holidays: [],
   viewModal: false,
   bank_accounts: [],
+  phbanks:phbanks
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
