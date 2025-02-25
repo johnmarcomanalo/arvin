@@ -78,6 +78,7 @@ import {
         check_date: details?.check_date,
         check_amount: details?.check_amount, 
         bank_description: details?.bank_description,
+        bank_name: details?.bank_description,
         bank_branch: details?.bank_branch, 
         bank_address: details?.bank_address,
         advance_payment: details?.advance_payment,
@@ -134,13 +135,21 @@ import {
                   </Grid>
                   <Grid item xs={12} sm={12} md={12} lg={12}>
                       <Field
-                        id="bank_description"
-                        name="bank_description"
-                        label="Bank"
-                        type="text"
-                        component={InputField}
-                        required={true}
-                      />
+                          id="bank_name"
+                          name="bank_name"
+                          label="Bank Name"
+                          options={check?.banks.phbanks}
+                          getOptionLabel={(option) =>
+                            option?.name ? option?.name : details?.bank_description
+                          }
+                          required={true}
+                          component={ComboBox}
+                          onChangeHandle={(e, newValue) => {
+                            if (newValue?.name) {
+                              props.change("bank_description", newValue.name);
+                            }
+                          }}
+                      /> 
                   </Grid>
                   <Grid item xs={12} sm={12} md={12} lg={12}>
                       <Field

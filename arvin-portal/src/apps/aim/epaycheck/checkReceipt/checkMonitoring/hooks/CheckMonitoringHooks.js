@@ -39,7 +39,8 @@ const CheckMonitoringHooks = (props) => {
     const editModal        = useSelector((state) => state.EpayCheckReducer.editModal); 
     const bank_accounts    = useSelector((state) => state.ReferenceReducer.bank_accounts); 
     const refresh          = useSelector((state) => state.EpayCheckReducer.refresh);
-    const selectedDataList = useSelector((state) => state.EpayCheckReducer.selectedDataList); 
+    const selectedDataList = useSelector((state) => state.EpayCheckReducer.selectedDataList);
+    const banks            = useSelector((state) => state.ReferenceReducer.phbanks); 
     const [state, setState]= React.useState({
         debounceTimer: null,
         debounceDelay: 1000,
@@ -367,6 +368,7 @@ const CheckMonitoringHooks = (props) => {
       
    
     return {
+        banks,
         viewModal2,
         epay_selection,
         state,
