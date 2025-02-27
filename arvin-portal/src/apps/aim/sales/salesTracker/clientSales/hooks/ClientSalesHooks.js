@@ -394,12 +394,24 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     });
   };
 
-  const exportToExcel = (dataList, fileName = "data.xlsx") => {
+  const exportToExcel = (dataList) => {
     if (!dataList || dataList.length === 0) {
       console.warn("No data to export.");
       return;
     }
-
+    let fileName =
+      "Client Sales Tracker " +
+      "(" +
+      year +
+      "-" +
+      month +
+      ") " +
+      (product ? product : " All Product ") +
+      "-" +
+      (group_code ? group_code : " All Group ") +
+      "-" +
+      (bdo ? bdo : "All BDO") +
+      ".xlsx";
     // Define column mappings based on the updated `columns` array
     const columnMappings = {
       bdo: "BDO",
