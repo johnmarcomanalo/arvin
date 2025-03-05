@@ -701,6 +701,7 @@ let WarehouseSales = (props) => {
                 }}
               />
               <Field
+                key={props.refresh}
                 id="subcomponents"
                 name="subcomponents"
                 label="Warehouses"
@@ -717,6 +718,7 @@ let WarehouseSales = (props) => {
                 }}
               />
               <Field
+                key={props.refresh}
                 id="product_group"
                 name="product_group"
                 label="Product"

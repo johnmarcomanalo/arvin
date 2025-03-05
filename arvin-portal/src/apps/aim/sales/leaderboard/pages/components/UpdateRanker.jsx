@@ -83,6 +83,7 @@ let UpdateRanker = (props) => {
           </Grid>
           <Grid item xs={12} md={12}>
             <Field
+              key={props.refresh}
               id="placement"
               name="placement"
               label="Placement"

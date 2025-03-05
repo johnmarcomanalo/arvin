@@ -54,6 +54,7 @@ let UpdateUserRequestHierarchy = (props) => {
               />
             </Grid>
             <Field
+              key={props.refresh}
               id="request_hierarchy_description"
               name="request_hierarchy_description"
               label="Hierarchy Description"

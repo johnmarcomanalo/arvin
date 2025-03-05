@@ -93,6 +93,7 @@ let SalesSummary = (props) => {
                 }}
               />
               <Field
+                key={props.refresh}
                 id="product_group"
                 name="product_group"
                 label="Product"
@@ -109,6 +110,7 @@ let SalesSummary = (props) => {
                 }}
               />
               <Field
+                key={props.refresh}
                 id="filter_type"
                 name="filter_type"
                 label="Warehouse"

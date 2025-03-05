@@ -33,7 +33,6 @@ export const getClientSalesTracker = (values) => async (dispatch) => {
     response.then((res) => {
       try {
         let decrypted = decryptaes(res.data);
-        console.log(decrypted);
         dispatch({
           type: Constants.ACTION_SALES_DAILY_OUT,
           payload: {

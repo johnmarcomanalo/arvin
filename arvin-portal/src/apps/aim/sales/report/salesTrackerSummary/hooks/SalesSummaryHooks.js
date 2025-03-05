@@ -114,7 +114,6 @@ const SalesSummaryHooks = (props) => {
   const otherMTDYTDSales = current_sales_mtd_ytd_subsections?.filter(
     (item) => !item?.subsection?.includes("BDO")
   );
-  console.log(current_sales_mtd_ytd_subsections);
   const columns = [
     { id: "description", label: "Description", align: "left" },
     { id: "january", label: "January", align: "left" },
@@ -372,7 +371,6 @@ const SalesSummaryHooks = (props) => {
   const onChangeFilter = (date) => {
     // SEARCH DATA
     const filterQuery = date;
-    console.log(filterQuery);
     setSearchParams({
       p: page == null ? 1 : page,
       q: search,
