@@ -163,6 +163,7 @@ let AddSaleQuota = (props) => {
             </Grid>
             <Grid item xs={12} md={12}>
               <Field
+                key={props.refresh}
                 id="team"
                 name="team"
                 label="Team"
@@ -184,6 +185,7 @@ let AddSaleQuota = (props) => {
             </Grid>
             <Grid item xs={12} md={12}>
               <Field
+                key={props.refresh}
                 id="department"
                 name="department"
                 label="Department"
@@ -205,6 +207,7 @@ let AddSaleQuota = (props) => {
             </Grid>
             <Grid item xs={12} md={12}>
               <Field
+                key={props.refresh}
                 id="section"
                 name="section"
                 label="Section"
@@ -226,6 +229,7 @@ let AddSaleQuota = (props) => {
             </Grid>
             <Grid item xs={12} md={12}>
               <Field
+                key={props.refresh}
                 id="subsection"
                 name="subsection"
                 label="Sub-section"

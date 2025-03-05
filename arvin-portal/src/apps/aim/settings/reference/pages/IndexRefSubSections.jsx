@@ -160,6 +160,7 @@ let IndexRefsubsections = (props) => {
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={12}>
                     <Field
+                      key={props.refresh}
                       id="section_description"
                       name="section_description"
                       label="Section"

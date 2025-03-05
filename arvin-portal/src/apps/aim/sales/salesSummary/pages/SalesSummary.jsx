@@ -95,6 +95,7 @@ let SalesSummary = (props) => {
                 }}
               />
               <Field
+                key={props.refresh}
                 id="filter_type"
                 name="filter_type"
                 label="Warehouse"

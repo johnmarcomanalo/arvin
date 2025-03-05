@@ -80,6 +80,7 @@ let ClientSales = (props) => {
           </Grid>
           <Grid item xs={12} sm={12} md={3} lg={3}>
             <Field
+              key={props.refresh}
               id="product_group"
               name="product_group"
               label="Product"
@@ -100,6 +101,7 @@ let ClientSales = (props) => {
           </Grid>
           <Grid item xs={12} sm={12} md={3} lg={3}>
             <Field
+              key={props.refresh}
               id="group_client"
               name="group_client"
               label="Group Clients"
@@ -111,7 +113,6 @@ let ClientSales = (props) => {
               component={ComboBox}
               onChangeHandle={(e, newValue) => {
                 if (newValue?.description) {
-                  console.log(newValue);
                   salesTracker.filterClientGroups(newValue.code);
                 } else {
                   salesTracker.filterClientGroups("");

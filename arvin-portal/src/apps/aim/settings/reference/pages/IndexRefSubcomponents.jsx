@@ -131,6 +131,7 @@ let IndexRefComponents = (props) => {
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={12}>
                     <Field
+                      key={props.refresh}
                       id="module_description"
                       name="module_description"
                       label="Module"
@@ -150,6 +151,7 @@ let IndexRefComponents = (props) => {
                       }}
                     />
                     <Field
+                      key={props.refresh}
                       id="component_description"
                       name="component_description"
                       label="Component"

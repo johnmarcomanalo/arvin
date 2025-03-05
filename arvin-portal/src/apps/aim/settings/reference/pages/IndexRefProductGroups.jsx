@@ -154,6 +154,7 @@ let IndexRefProductGroups = (props) => {
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={12}>
                     <Field
+                      key={props.refresh}
                       id="description"
                       name="description"
                       label="Description"
@@ -177,6 +178,7 @@ let IndexRefProductGroups = (props) => {
                   </Grid>
                   <Grid item xs={12} md={12}>
                     <Field
+                      key={props.refresh}
                       id="unit_of_measurment"
                       name="unit_of_measurment"
                       label="UoM Quota"

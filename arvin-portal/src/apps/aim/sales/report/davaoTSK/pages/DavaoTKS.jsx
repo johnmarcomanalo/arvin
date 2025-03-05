@@ -37,6 +37,7 @@ let DavaoTKS = (props) => {
               <Grid container spacing={2}>
                 <Grid item xs={12} md={4}>
                   <Field
+                    key={props.refresh}
                     id="type"
                     name="type"
                     label="Type"

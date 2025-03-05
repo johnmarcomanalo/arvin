@@ -49,6 +49,7 @@ use App\Http\Controllers\SalesDailyOutSettingsAnnualQuotaClientGroupsController;
 use App\Http\Controllers\SalesDailyOutReportDavaotksController;
 use App\Http\Controllers\SalesDailyOutClientSalesTrackersController;
 use App\Http\Controllers\SalesDailyOutSettingsClientSubGroupsController;
+use App\Http\Controllers\SalesDailyOutReportClientsSummaryController;
 
 use App\Http\Controllers\SalesQuotationRequestController;
 use App\Http\Controllers\SalesQuotationRequestForApprovalsController;
@@ -221,6 +222,10 @@ use Illuminate\Support\Facades\Route;
         
         // Client Sales Tracker END 
        
+
+        // Sales Daily Out Report Client Summary START
+        Route::get('salesdailyout/report/get_client_sales_tracker_summary',[SalesDailyOutReportClientsSummaryController::class,'get_client_sales_tracker_summary']);
+        // Sales Daily Out Report Client Summary End
 
         //MODULE SALES DAILY OUT END 
 

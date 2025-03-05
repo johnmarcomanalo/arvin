@@ -181,6 +181,7 @@ let IndexRefRequestHierarchy = (props) => {
 
                   <Grid item xs={12} md={12}>
                     <Field
+                      key={props.refresh}
                       id="request_type_description"
                       name="request_type_description"
                       label="Request Type"

@@ -8,7 +8,6 @@ import { useParams } from "react-router-dom";
 
 const EmployeeDetailsHooks = (props) => {
   const { id } = useParams();
-  console.log("id", id);
   const refresh = useSelector((state) => state.HumanResourceReducer.refresh);
   const tabs = [
     {

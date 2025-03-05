@@ -133,6 +133,7 @@ let IndexRefHolidays = (props) => {
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={12}>
                     <Field
+                      key={props.refresh}
                       id="type"
                       name="type"
                       label="Type"
@@ -157,6 +158,7 @@ let IndexRefHolidays = (props) => {
                   </Grid>
                   <Grid item xs={12} sm={12} md={12} lg={12}>
                     <Field
+                      key={props.refresh}
                       id="subsection_description"
                       name="subsection_description"
                       label="Subsection"

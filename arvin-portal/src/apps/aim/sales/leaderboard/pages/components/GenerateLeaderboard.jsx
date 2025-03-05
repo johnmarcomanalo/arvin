@@ -37,6 +37,7 @@ let GenerateAnnualSalesRanking = (props) => {
         <Grid container spacing={2}>
           <Grid item xs={12} md={12}>
             <Field
+              key={props.refresh}
               id="description"
               name="description"
               label="Rank List"

@@ -164,6 +164,7 @@ let AddRanker = (props) => {
           </Grid>
           <Grid item xs={12} md={12}>
             <Field
+              key={props.refresh}
               id="section"
               name="section"
               label="Section"
@@ -185,6 +186,7 @@ let AddRanker = (props) => {
           </Grid>
           <Grid item xs={12} md={12}>
             <Field
+              key={props.refresh}
               id="subsection"
               name="subsection"
               label="Sub-section"
