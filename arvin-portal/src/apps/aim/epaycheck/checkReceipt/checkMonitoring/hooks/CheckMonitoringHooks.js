@@ -13,7 +13,8 @@ import {
 import {
     getCheckDetails,
     postCheckDetailsStatus,
-    postCheckDetailsReceive
+    postCheckDetailsReceive,
+    postCheckRejectToClose
 } from "../actions/CheckMonitoringAction"
 import swal from "sweetalert";
 let formName = "CheckCollection"
@@ -45,19 +46,24 @@ const CheckMonitoringHooks = (props) => {
         debounceTimer: null,
         debounceDelay: 1000,
         selectedCheck:[]
-    }); 
+    });
+    const subsection_allowed_to_reject = [12];
     const columns = [
+        { id:"status", label:"Status", align:"left"},
+        { id:"stale_check_view", label:"Stale Check", align:"left"},
+        { id:"card_code", label:"Customer Code", align:"left"},
         { id:"card_name", label:"Customer", align:"left"},
-        { id:"check_number", label:"Check Number", align:"left"},
+        { id:"account_number", label:"Account No.", align:"left"},
+        { id:"check_number", label:"Check No.", align:"left"},
         { id:"check_date", label:"Check Date", align:"left"},
         { id:"check_amount_display", label:"Check Amount", align:"left"},
         { id:"bank_description", label:"Bank", align:"left"},
-        { id:"bank_address", label:"Bank Address", align:"left"},
         { id:"bank_branch", label:"Bank Branch", align:"left"},
-        { id:"crpr", label:"CR/PR", align:"left"},
-        { id:"check_status_date", label:"Status Date", align:"left"},
+        { id:"prefix_crpr", label:"CR/PR", align:"left"},
+        { id:"sales_invoice", label:"Sales Invoice", align:"left"},
+        { id:"dr_number", label:"DR Number", align:"left"},
     ];
-
+     
     const status = [ 
         { status:true , description: 'ON-HAND'},
         { status:true  , description: 'DEPOSITED'},
@@ -99,15 +105,19 @@ const CheckMonitoringHooks = (props) => {
       }
     };
 
-    React.useEffect(() => { 
-      props.initialize({ 
-        filter_date_start: filterStartQuery,
-        filter_date_end: filterEndQuery,
-        filterStatus: filterStatus,
-      });
+    React.useEffect(() => {
        GetChequeList();
          return () => cancelRequest(); 
-    }, [refresh,search,filterStartQuery,filterEndQuery,filterStatus,selectedDataList,page]);
+    // }, [refresh,search,filterStartQuery,filterEndQuery,filterStatus,selectedDataList,page]);
+  }, [refresh,debounceSearch,selectedDataList]);
+
+      React.useEffect(() => { 
+        props.initialize({ 
+          filter_date_start: filterStartQuery,
+          filter_date_end: filterEndQuery,
+          filterStatus: filterStatus,
+        });
+      }, []);
       
       const onChangeSearch = (event) => { 
         const search = event.target.value;
@@ -233,33 +243,49 @@ const CheckMonitoringHooks = (props) => {
       };
 
       const handleCheckboxChange = (row, checked) => {
-        if (checked) {
-          if (!selectedDataList.includes(row.code)) {
-            selectedDataList.push(row.code);
-          }
-        } else {
-          const index = selectedDataList.indexOf(row.code);
-          if (index > -1) {
-            selectedDataList.splice(index, 1);
-          }
-        }
-      };  
+        dispatch({
+          type: Constants.ACTION_EPAY_CHECK,
+          payload: {
+            selectedDataList: checked
+              ? [...selectedDataList, row.code] // ✅ Push new item
+              : selectedDataList.filter((code) => code !== row.code) // ✅ Remove item
+          },
+        });
+      };
       
       const updateStatus = async (data) => { 
+       
         // Check if any checks are selected
-        if (data.code.length === 0) {
-          await swal("Error", `Please select at least one check to ${data?.status.toLowerCase()}`, "error");
-          return;
+        if (!hasSelectedChecks()) return;
+
+        let stts = ''
+        switch (data?.status) {
+          case 'APPROVED':
+            stts = 'APPROVE'
+            break;
+          case 'DEPOSITED':
+            stts = 'DEPOSIT'
+            break;
+          case 'TRANSMITTED':
+            stts = 'TRANSMIT'
+            break;
+            case 'REJECTED':
+              stts = 'REJECT'
+              break;
+          default:
+            stts='UNDO'
+            break;
         }
       
         try {
           // Ask for confirmation before proceeding
           const isConfirm = await swal({
-            title: data?.status,
-            text: `Are you sure you want to proceed with ${data?.status}? `,
-            icon: "warning",
+            title: stts,
+            text: `Are you sure you want to proceed with ${stts}? `,
+            icon: "info",
             buttons: true,
             dangerMode: true,
+            closeOnClickOutside: false,
           });
       
           if (isConfirm) {
@@ -268,15 +294,15 @@ const CheckMonitoringHooks = (props) => {
       
             // Handle the response
             if (res) {  
-              await swal(res.title, res.message, res.status); 
-              dispatch({
+              await dispatch({
                 type: Constants.ACTION_EPAY_CHECK,
                 payload: {
                   selectedDataList: [],
-                  refresh: !state.refresh,
+                  refresh: !refresh,
                   viewModal: false
                 },
               })
+              await swal(res.title, res.message, res.status);  
               // clear search
               setSearchParams({
                 q  : "", 
@@ -360,12 +386,45 @@ const CheckMonitoringHooks = (props) => {
 
       const hasSelectedChecks = () => {
         if (selectedDataList.length === 0) {
-          swal("Error", "Please select at least one check", "error");
+          swal("Information", "Please select at least one check", "info");
           return false; // Return false to indicate no selection
         }
         return true; // Return true if selection exists
+      }    
+
+
+      const onClickRejectToClose = async () => {
+        if (!hasSelectedChecks()) return;
+        const values = {
+          code: selectedDataList,
+          // rejected_remarks: values?.rejected_remarks
+        }
+        const isConfirm = await swal({
+          title: "Close",
+          text: `Are you sure you want to proceed with close? (${selectedDataList.length})`,
+          icon: "info",
+          buttons: true,
+          dangerMode: true,
+          closeOnClickOutside: false,
+        });
+    
+        if (isConfirm) {
+        const res = await dispatch(postCheckRejectToClose(values));
+        if (res) {
+          dispatch({
+            type: Constants.ACTION_EPAY_CHECK,
+            payload: {
+              viewModal: false,
+              refresh: !refresh,
+              selectedDataList: [],
+            },
+          }); 
+
+          await swal(res.title, res.message, res.status);
+        }
       }
-      
+      }
+       
    
     return {
         banks,
@@ -387,6 +446,7 @@ const CheckMonitoringHooks = (props) => {
         filterStatus,
         selectedDataList,
         editModal,
+        subsection_allowed_to_reject,
         onChangeSearch,
         onClickOpenViewModalDeposit,
         onClickCloseViewModalDeposit,
@@ -403,7 +463,8 @@ const CheckMonitoringHooks = (props) => {
         onClickCloseEditModal,
         onClickUndo,
         onClickOpenRejectModal,
-        onClickCloseRejectModal
+        onClickCloseRejectModal,
+        onClickRejectToClose
     };
 };
 

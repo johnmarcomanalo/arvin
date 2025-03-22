@@ -1,10 +1,10 @@
 import { Grid, Stack, useMediaQuery } from "@mui/material";
-import * as React from "react";
-import { connect } from "react-redux";
-import { formValueSelector, reduxForm } from "redux-form";
 import SearchField from "components/inputFIeld/SearchField";
 import Page from "components/pagination/Pagination";
 import TableComponent from "components/table/Table";
+import * as React from "react";
+import { connect } from "react-redux";
+import { formValueSelector, reduxForm } from "redux-form";
 import CheckCustomerHooks from "../../hooks/CheckCustomerHooks";
 const formName = "CheckCustomer"; 
 let CheckCustomer = (props) => {
@@ -21,7 +21,9 @@ let CheckCustomer = (props) => {
             flexDirection={matches ? "row" : "column"}
             spacing={2}
           >
-            <SearchField onChange={customer.onChangeSearch} />
+            <SearchField 
+            value={customer.search} 
+            onChange={customer.onChangeSearch} />
             <Page
               page={customer?.page}
               limit={customer?.dataListCount}
@@ -33,8 +35,7 @@ let CheckCustomer = (props) => {
           <TableComponent
             columns={customer.columns}
             dataList={customer.dataList}
-            handleChangePage={customer.handleChangePage}
-            onSelectItem={props.onClickSelect}
+            onSelectItem={customer.onClickGetCustomer}
             id={"customers_table"}
             localStorage={""}
             action={(row) => {

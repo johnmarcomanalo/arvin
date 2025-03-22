@@ -28,4 +28,8 @@ class UsersAccounts extends Authenticatable
         'added_by',
         'modified_by',
     ];
+
+    public function user(){
+        return $this->belongsTo(User::class, 'user_code', 'code');
+    }
 }

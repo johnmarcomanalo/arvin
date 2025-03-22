@@ -27,7 +27,11 @@ export const getSalesInvoiceDetails = (formValues) => async (dispatch) => {
         "&q=" +
         formValues.q +
         "&p=" +
-        formValues.p
+        formValues.p +
+        "&sort_by=" +
+        formValues.sort_by +
+        "&order=" +
+        formValues.order
     );
 
     results.then((res) => {
@@ -44,22 +48,26 @@ export const getSalesInvoiceDetails = (formValues) => async (dispatch) => {
   } catch (error) {
     let title = configure.error_message.default;
     let message = "";
+    let status = "warning";
     if (typeof error.response.data.message !== "undefined")
       title = error.response.data.message;
+      status = error.response.data.status;
     if (typeof error.response.data.errors !== "undefined") {
       const formattedErrors = Object.entries(error.response.data.errors)
         .map(([key, value]) => `${value.join(", ")}`)
         .join("\n");
       message = formattedErrors;
     }
-    await swal(title, message, "error");
+    await swal(title, message, status);
   } finally {
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
+    setTimeout(() => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+    }, 1000);
   }
 };
 
@@ -78,23 +86,31 @@ export const postCheckCollection = (formValues) => async (dispatch) => {
 
     return res;
   } catch (error) {
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
+    
     var title = configure.error_message.default;
     var message = "";
+    var status = "warning";
     if (typeof error.response.data.message !== "undefined")
-      title = error.response.data.message;
+      message = error.response.data.message;
+      status = error.response.data.status;
     if (typeof error.response.data.errors !== "undefined") {
       const formattedErrors = Object.entries(error.response.data.errors)
         .map(([key, value]) => `${value.join(", ")}`)
         .join("\n");
       message = formattedErrors;
     }
-    await swal(title, message, "error");
+    swal({
+      title: title, // Main alert title
+      text: message, // Subtitle with more details
+      icon: status, // Alert type (e.g., warning, error, success)
+    });
+  }finally{
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
   }
 };
 
@@ -107,19 +123,17 @@ export const getReceiptDetails = (formValues) => async (dispatch) => {
       },
     });
     const results = GetSpecificDefaultServices(
-      "api/epaycheck/get_receipt_details?receipt_number=" +
+      "api/epaycheck/get_receipt_details?receipt_code=" +
+        formValues.receipt_code +
+        "&receipt_number=" +
         formValues.receipt_number +
-        "&print_format=" +
-        formValues.print_format +
-        "&code=" +
-        formValues.code+
         "&subsection_code=" +
         formValues.subsection_code
     );
 
     results.then((res) => {
       let decrypted = decryptaes(res?.data);
-      let data = decrypted?.data;
+      let data = decrypted?.data; 
       dispatch({
         type: Constants.ACTION_EPAY_CHECK,
         payload: {
@@ -129,16 +143,18 @@ export const getReceiptDetails = (formValues) => async (dispatch) => {
     });
   } catch (error) {
     let title = configure.error_message.default;
-    let message = "";
+    let message = ""; 
+    let status = "error"; 
     if (typeof error.response.data.message !== "undefined")
-      title = error.response.data.message;
+      title = error.response.data.message; 
+      status = error.response.data.status; 
     if (typeof error.response.data.errors !== "undefined") {
       const formattedErrors = Object.entries(error.response.data.errors)
         .map(([key, value]) => `${value.join(", ")}`)
         .join("\n");
       message = formattedErrors;
     }
-    await swal(title, message, "error");
+    await swal(title, message,status);
   } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
@@ -159,12 +175,12 @@ export const getCheckCustomer = (formValues) => async (dispatch) => {
       },
     });
     const results = GetSpecificDefaultServices(
-      "api/epaycheck/get_check_customer?u=" +
-        formValues.u +
-        "&q=" +
-        formValues.q +
-        "&p=" +
-        formValues.p
+      "api/epaycheck/get_check_customer?uc=" +
+        formValues.uc +
+        "&query=" +
+        formValues.query +
+        "&page=" +
+        formValues.page
     );
 
     results.then((res) => {
@@ -191,19 +207,19 @@ export const getCheckCustomer = (formValues) => async (dispatch) => {
     }
     await swal(title, message, "error");
   } finally {
-    await dispatch({
+   setTimeout(() => {
+    dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
         loading: false,
       },
     });
+   }, 1000);
   }
 };
+ 
 
-
-
-
-export const getReceiptFormat = (formValues) => async (dispatch) => {
+export const getReceiptFormatList = (formValues) => async (dispatch) => {
   try {
     await dispatch({
       type: Constants.ACTION_LOADING,

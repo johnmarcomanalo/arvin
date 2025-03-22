@@ -54,8 +54,6 @@ class EPayCheckCheckDetails extends Model
                 'a.check_status',
                 'b.check_status as check_status_logs',
                 'b.check_status_date',
-                'a.check_payee',
-                'a.check_maker',
                 'a.bank_description',
                 'a.bank_branch',
                 'a.bank_address',
@@ -80,13 +78,13 @@ class EPayCheckCheckDetails extends Model
 
         // Set added_by and modified_by during creation
         static::creating(function ($model) {
-            $model->added_by = Auth::id();
-            $model->modified_by = Auth::id();
+            $model->added_by = Auth::user()->code;
+            $model->modified_by = Auth::user()->code;
         });
 
         // Set modified_by during update
         static::updating(function ($model) {
-            $model->modified_by = Auth::id();
+            $model->modified_by = Auth::user()->code;
         });
     }
 

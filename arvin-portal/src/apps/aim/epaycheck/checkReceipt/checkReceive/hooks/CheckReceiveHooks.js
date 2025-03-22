@@ -8,7 +8,7 @@ import { Constants } from "reducer/Contants";
 import { decryptaes } from "utils/LightSecurity";
 import { cancelRequest } from "api/api";
 import{
-  getCheckDetails,
+  getCheckReceive,
   postCheckDetailsReceive,
 } from "../../checkMonitoring/actions/CheckMonitoringAction"
 import swal from "sweetalert";
@@ -41,16 +41,21 @@ const CheckReceiveHooks = (props) => {
         selectedCheck:[]
     }); 
     const columns = [
+        { id:"received_date", label:"Received Date", align:"left"},
         { id:"card_name", label:"Customer", align:"left"},
         { id:"check_number", label:"Check Number", align:"left"},
         { id:"check_date", label:"Check Date", align:"left"},
         { id:"check_amount_display", label:"Check Amount", align:"left"},
+        { id:"account_number", label:"Account Number", align:"left"},
         { id:"bank_description", label:"Bank", align:"left"},
-        { id:"bank_address", label:"Bank Address", align:"left"},
         { id:"bank_branch", label:"Bank Branch", align:"left"},
         { id:"crpr", label:"CR/PR", align:"left"},
-        { id:"received_date", label:"Received Date", align:"left"},
     ];
+
+    const status = [ 
+      { status:true , description: 'TRANSMITTED'},
+      { status:false  , description: 'RECEIVED'},
+    ]
   
     const getListParam = () => {
       const data = { 
@@ -74,7 +79,7 @@ const CheckReceiveHooks = (props) => {
         // alert('qwer')
         const data = getListParam();
          await debounce(() => { 
-           dispatch(getCheckDetails(data));
+           dispatch(getCheckReceive(data));
         }, state.debounceDelay);
       } catch (error) {
         await console.error(error);
@@ -85,11 +90,11 @@ const CheckReceiveHooks = (props) => {
       props.initialize({ 
         filter_date_start: filterStartQuery,
         filter_date_end: filterEndQuery,
-        filterStatus: filterStatus,
+        filter_status: filterStatus,
       });
        GetChequeList();
          return () => cancelRequest(); 
-    }, [refresh,search,filterStartQuery,filterEndQuery,filterStatus,selectedDataList]);
+    }, [refresh,debounceSearch]);
       
       const onChangeSearch = (event) => { 
         const search = event.target.value;
@@ -120,17 +125,35 @@ const CheckReceiveHooks = (props) => {
         })
       };
 
-    const onChangeFilterStart = (date) => {
-        const newdate = moment(date).format("YYYY-MM-DD");
+      const onChangeFilterStatus = (status) => {
         setSearchParams({
           q  : search, 
           p  : page == null ? 1 : page,
-          df : newdate,
+          df : filterStartQuery,
           dt : filterEndQuery,
-          s  : filterStatus, 
+          s  : status,
           sc : filterSubSection
         });
-    };
+        dispatch({
+          type: Constants.ACTION_EPAY_CHECK,
+          payload: {
+            selectedDataList: [], 
+          },
+        })
+      };
+
+
+      const onChangeFilterStart = (date) => {
+          const newdate = moment(date).format("YYYY-MM-DD");
+          setSearchParams({
+            q  : search, 
+            p  : page == null ? 1 : page,
+            df : newdate,
+            dt : filterEndQuery,
+            s  : filterStatus, 
+            sc : filterSubSection
+          });
+      };
       
       const onChangeFilterEnd = (date) => {
         const newdate = moment(date).format("YYYY-MM-DD");
@@ -188,41 +211,38 @@ const CheckReceiveHooks = (props) => {
         if (res) {
           try {
             const res = await dispatch(postCheckDetailsReceive(data));
-            await swal(res.title, res.message, res.status);   
-            window.location.reload()
+           
             dispatch({
               type: Constants.ACTION_EPAY_CHECK,
               payload: {
+                refresh: !refresh,
                 selectedDataList: [], 
               },
             })
-            getCheckDetails()
+            await swal(res.title, res.message, res.status);
+            // getCheckReceive()
           } catch (error) {
             await console.error(error);
           }
         }
       }
-
       const onClickReceive = async () =>{
         updateReceived({status:'YES'})
       }
 
-      
       const onClickUndoReceive = async () =>{
         updateReceived({status:'NO'})
       }
-      
+
       const handleCheckboxChange = (row, checked) => {
-        if (checked) {
-          if (!selectedDataList.includes(row.code)) {
-            selectedDataList.push(row.code);
-          }
-        } else {
-          const index = selectedDataList.indexOf(row.code);
-          if (index > -1) {
-            selectedDataList.splice(index, 1);
-          }
-        }
+        dispatch({
+          type: Constants.ACTION_EPAY_CHECK,
+          payload: {
+            selectedDataList: checked
+              ? [...selectedDataList, row.code] // ✅ Push new item
+              : selectedDataList.filter((code) => code !== row.code) // ✅ Remove item
+          },
+        });
       };
    
     return {
@@ -242,6 +262,7 @@ const CheckReceiveHooks = (props) => {
         filterStatus,
         selectedDataList,
         editModal,
+        status,
         onChangeSearch,
         onChangeFilteSubsection,
         onClickOpenReceiveModal,
@@ -251,6 +272,7 @@ const CheckReceiveHooks = (props) => {
         onClickUndoReceive,
         onChangeFilterStart,
         onChangeFilterEnd,
+        onChangeFilterStatus,
     };
 };
 

@@ -186,6 +186,11 @@ const IndexWeeklyCheckCounter = lazy(() =>
   import(
     "./apps/aim/epaycheck/report/weeklyCheckCounter/pages/IndexWeeklyCheckCounter"
   )
+); 
+const IndexCheckForApproval = lazy(() =>
+  import(
+    "./apps/aim/epaycheck/checkReceipt/checkForApproval/pages/IndexCheckForApproval"
+  )
 );
 //EPAYCHECK END
 
@@ -844,7 +849,20 @@ function App() {
                         </PrivateRoute>
                       }
                     />
-
+                  <Route
+                    path="/Modules/E-PayCheck/CheckReceipt/ForApproval"
+                    element={
+                      <PrivateRoute
+                          accessChecker={getAccessChecker({
+                            module: "E-Pay Check",
+                            component: "Check Receipt",
+                            subComponent:"For Approval", 
+                          })}
+                      >
+                        <IndexCheckForApproval />
+                      </PrivateRoute>
+                    }
+                  />
                     <Route
                       path="/Modules/E-PayCheck/Reports/WeeklyCheckCounter"
                       element={

@@ -69,7 +69,7 @@ import {
     const account_details = check.account_details; 
     const details         = props.details;
     console.log("modified_by",details);
-    
+    console.log("request_status",details);
     React.useEffect(() => {
       props.initialize({
         modified_by: account_details?.code,
@@ -80,12 +80,13 @@ import {
         bank_description: details?.bank_description,
         bank_name: details?.bank_description,
         bank_branch: details?.bank_branch, 
-        bank_address: details?.bank_address,
-        advance_payment: details?.advance_payment,
+        remarks: details?.remarks,
+        account_number: details?.account_number,
         crpr: details?.crpr,
         subsection_code: details?.subsection_code,
         card_name: details?.card_name,
-        card_code: details?.card_code
+        card_code: details?.card_code,
+        request_status: details?.request_status
       }); 
     }, []);
     
@@ -135,6 +136,15 @@ import {
                   </Grid>
                   <Grid item xs={12} sm={12} md={12} lg={12}>
                       <Field
+                        id="account_number"
+                        name="account_number"
+                        label="Account Number"
+                        type="number"
+                        component={InputField}
+                      />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12} lg={12}>
+                      <Field
                           id="bank_name"
                           name="bank_name"
                           label="Bank Name"
@@ -163,29 +173,13 @@ import {
                   </Grid>
                   <Grid item xs={12} sm={12} md={12} lg={12}>
                       <Field
-                        id="bank_address"
-                        name="bank_address"
-                        label="Bank Address"
+                        id="remarks"
+                        name="remarks"
+                        label="Remarks"
                         type="text"
                         component={InputField}
-                        required={true}
                       />
-                  </Grid> 
-                  {/* <Grid item xs={12} sm={12} md={6} lg={6}>
-                        <Field
-                            id="advance_payment"
-                            name="advance_payment"
-                            label="Advance Payment"
-                            options={check.epay_selection}
-                            getOptionLabel={(option) =>
-                              option?.description ? option?.description : details?.advance_payment
-                            }
-                            required={true}
-                            disabled={true}
-                            readOnly={true}
-                            component={ComboBox}
-                        />
-                  </Grid> */}
+                  </Grid>
                   <Grid item xs={12} sm={12} md={12} lg={12}>
                         <Field
                             id="crpr"

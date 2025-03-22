@@ -1,105 +1,68 @@
 import {
-    ButtonGroup,
-    Grid,
-    Stack,
-    useMediaQuery,
-    Table,
-    TableBody,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableContainer,
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Select,
-    Checkbox
-  } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import * as React from "react";  
-import { change, Field, formValueSelector, reduxForm } from "redux-form";
+  ButtonGroup,
+  Checkbox,
+  Grid,
+  Stack,
+  useMediaQuery
+} from "@mui/material";
+import * as React from "react";
 import { connect } from "react-redux";
+import { Field, formValueSelector, reduxForm } from "redux-form";
 //component
-import ButtonComponent from "components/button/Button";
-import TableComponent from "components/table/Table";
-import SearchField from "components/inputFIeld/SearchField";
-import InputField from "components/inputFIeld/InputField";
+import configure from "apps/configure/configure.json";
 import ComboBox from "components/autoComplete/AutoComplete";
+import ButtonComponent from "components/button/Button";
+import InputField from "components/inputFIeld/InputField";
+import SearchField from "components/inputFIeld/SearchField";
 import Modal from "components/modal/Modal";
 import Page from "components/pagination/Pagination";
-import CheckReceiveHooks from "../hooks/CheckReceiveHooks"; 
-import moment from "moment";
-import configure from "apps/configure/configure.json"; 
-import CheckDetails from "./components/Receive"; 
-import Receive from './components/Receive';
-let formName = "CheckReceive"
-const CheckReceive = (props) => {
-    const { ...check } = CheckReceiveHooks(props); 
+import TableComponent from "components/table/Table";
+import CheckForApprovalHooks from "../hooks/CheckForApprovalHooks";
+import ViewRemarks from "./components/ViewRemarks";
+import CheckDetails from "../../checkMonitoring/pages/components/CheckDetails";
+let formName = "CheckForApproval"
+const CheckForApproval = (props) => {
+    const { ...check } = CheckForApprovalHooks(props); 
     const matches = useMediaQuery("(min-width:600px)");
     const state = check.state
+    const account      = check?.account_details
     return (
-      <React.Fragment>
-          <Modal
-              open={check.viewModal}
+      <React.Fragment> 
+         <Modal
+            open={check.viewModal}
+            fullScreen={matches ? false : true}
+            title={"Remarks Details"}
+            size={"lg"}
+            action={undefined}
+            handleClose={check.onClickCloseViewRemarksModal}
+          >
+          <ViewRemarks/>
+        </Modal>
+        <Modal
+              open={check.editModal}
               fullScreen={matches ? false : true}
-              title={"Receive Details"}
+              title={"Check Details"}
               size={"sm"}
               action={undefined}
-              handleClose={check.onClickCloseReceiveModal}
+              handleClose={check.onClickCloseEditModal}
             >
-            <Receive/>
-          </Modal>
+            <CheckDetails details={check.selectedItem}/>
+          </Modal> 
          <Grid container spacing={2}>  
-         <Grid item xs={12} sm={12} md={12} lg={12}>
+            <Grid item xs={12} sm={12} md={12} lg={12}>
                 <Stack
                     direction="row"
                     justifyContent={matches ? "flex-end" : "center"}
                     alignItems={matches ? "flex-end" : "center"}
                     flexDirection={matches ? "row" : "column"}
                     spacing={1}
-                >     
-                    <Grid item xs={12} sm={12} md={2} lg={1}>
-                      <Field
-                        id="filter_date_start"
-                        name="filter_date_start"
-                        label="Start Date"
-                        type="date"
-                        component={InputField}
-                        onChange={(event) => {
-                          // Get the date from the input event
-                          const selectedDate = event.target.value;
-                          if (selectedDate) {
-                            // Pass the selected date to your handler
-                            check.onChangeFilterStart(new Date(selectedDate));
-                          }
-                        }}
-                        disabled={check.filterStatus=='TRANSMITTED'}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={2} lg={1}>
-                      <Field
-                        id="filter_date_end"
-                        name="filter_date_end"
-                        label="End Date"
-                        type="date"
-                        component={InputField}
-                        onChange={(event) => {
-                          // Get the date from the input event
-                          const selectedDate = event.target.value;
-                          if (selectedDate) {
-                            // Pass the selected date to your handler
-                            check.onChangeFilterEnd(new Date(selectedDate));
-                          }
-                        }}
-                        disabled={check.filterStatus=='TRANSMITTED'}
-                      /> 
-                    </Grid>
+                >    
                     <Grid item xs={12} sm={12} md={3} lg={1}>
                       <Field
                         id="filter_status"
                         name="filter_status"
                         label="Status"
-                        options={check?.status}
+                        options={check?.statusList}
                         getOptionLabel={(option) =>
                           option?.description ? option?.description : check.filterStatus
                         }
@@ -107,6 +70,8 @@ const CheckReceive = (props) => {
                         onChangeHandle={(e, newValue) => {
                           if (newValue?.description) { 
                             check.onChangeFilterStatus(newValue?.description);
+                          }else{
+                            check.onChangeFilterStatus(check.filterStatus);
                           }
                         }}
                       />
@@ -116,18 +81,24 @@ const CheckReceive = (props) => {
                         id="filter_user_access_organization_rights"
                         name="filter_user_access_organization_rights"
                         label="Warehouse"
-                        options={check?.access.user_access_organization_rights}
+                        options={(check?.access.user_access_organization_rights.length > 0)? check?.warehouse : []}
                         getOptionLabel={(option) =>
-                          option?.description ? option?.description : ""
+                          option?.description ? option?.description : (check?.access.user_access_organization_rights.length > 0 ?"All" : "")
                         }
                         component={ComboBox}
                         onChangeHandle={(e, newValue) => {
                           if (newValue?.description) { 
                             check.onChangeFilteSubsection(newValue?.code);
+                          }else{
+                            if(check?.access.user_access_organization_rights.length > 0){
+                              check.onChangeFilteSubsection("All");
+                            }else{
+                              check.onChangeFilteSubsection(account.subsection_code);
+                            }
                           }
                         }}
                       />
-                    </Grid>  
+                    </Grid> 
                 </Stack> 
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={6}> 
@@ -166,56 +137,68 @@ const CheckReceive = (props) => {
                     rowsPerPage={check.rowsPerPage}
                     handleChangePage={check.handleChangePage}
                     handleChangeRowsPerPage={check.handleChangeRowsPerPage}
-                    onSelectItem={check.onClickOpenEditModal}
+                    onSelectItem={check.onClickFunc}
                     id={"home_attendance"}
                     localStorage={""}
                     rowCount={check.dataListCount}
                     actionshow={true}
                     paginationShow={false}
-                    subAction1Show={false}
+                    subAction1Show={(check.filterStatus !== "APPROVED")}
                     subAction2Show={true}
-                    action={(row, index) => { 
+                    action={(row, index) => {
                       return (
                         <Checkbox  
-                          checked={check.selectedDataList.includes(row.code)}
+                        // checked={check.selectedDataList.includes(row.code)}
                           onChange={async (e) => { 
                               check.handleCheckboxChange(row,e.target.checked); 
                           }}
                           size="medium"
                           sx={{ height: "23px", margin: "-10px" }}
                         />
-                      ) 
+                      )
                     }}
                 /> 
             </Grid> 
-                <Grid item xs={12} sm={12} md={12} lg={12}>
-                    <Stack
-                      direction="row"
-                      justifyContent="flex-end"
-                      alignItems="flex-end" 
-                    > 
-                        {check.filterStatus=='TRANSMITTED'?(
-                            <ButtonComponent
-                                  stx={configure.default_button}
-                                  iconType="add"
-                                  type="button"
-                                  fullWidth={true}
-                                  children={"Receive Check"}
-                                  click={check.onClickReceive}
-                            />
-                        ):(
+            <Grid item xs={12} sm={12} md={12} lg={12}>
+                <Stack
+                  direction="row"
+                  justifyContent="flex-end"
+                  alignItems="flex-end" 
+                >
+                  {account?.user_code === "27" && (
+                      check.filterStatus === "PENDING" ? ( 
+                        <ButtonGroup disableElevation aria-label="Disabled button group">
                           <ButtonComponent
                             stx={configure.default_button}
                             iconType="update"
                             type="button"
                             fullWidth={true}
-                            children={"Undo Receive"}
-                            click={check.onClickUndoReceive}
-                          /> 
-                        )} 
-                    </Stack>
-              </Grid>
-           
+                            children="Approve"
+                            click={() => check.onClickApprove()}
+                          />
+                          <ButtonComponent
+                            stx={configure.default_button}
+                            iconType="update"
+                            type="button"
+                            fullWidth={true}
+                            children="Disapprove"
+                            click={() => check.onClickDisapprove()}
+                          />
+                        </ButtonGroup>
+                      ) : (
+                        <ButtonComponent
+                          stx={configure.default_button}
+                          iconType="update"
+                          type="button"
+                          fullWidth={true}
+                          children="Undo"
+                          click={() => check.onClickUndo()}
+                        />
+                      )
+                    )}
+
+                </Stack>
+            </Grid>
           </Grid>
       </React.Fragment>
     );
@@ -223,9 +206,9 @@ const CheckReceive = (props) => {
   
   const ReduxFormComponent = reduxForm({
     form: formName,
-  })(CheckReceive);
+  })(CheckForApproval);
   const selector = formValueSelector(formName);
   export default connect((state) => {
-    const refresh =  !state.EpayCheckReducer.refresh;
+    const refresh =  state.EpayCheckReducer.refresh;
     return { refresh };
   }, {})(ReduxFormComponent);

@@ -207,10 +207,28 @@ class AuthController extends Controller
         $fields = $request->validate([
             'code' => 'required',
         ]);
-        $user = User::where('code',$fields['code'])->first();
+        // $user = User::where('code',$fields['code'])->first();
+        $account_details = User::join('users_accounts', 'users.code', '=', 'users_accounts.user_code')
+            ->where('users_accounts.code', $fields['code'])
+            ->first([
+                'users.first_name',
+                'users.middle_name',
+                'users.last_name',
+                'users_accounts.company_code',
+                'users_accounts.business_unit_code',
+                'users_accounts.business_unit_code',
+                'users_accounts.team_code',
+                'users_accounts.department_code',
+                'users_accounts.section_code',
+                'users_accounts.subsection_code',
+                'users_accounts.position',
+                'users_accounts.username',
+                'users.code as user_code',
+                'users_accounts.code as code'
+            ]);
         $access = $this->get_user_access_right_by_id($fields['code']);
         $response = [
-            'user' => Crypt::encryptString(json_encode($user)),
+            'user' => Crypt::encryptString(json_encode($account_details)),
             'access' => $access,
             'result' => true,
             'title'=>'Success',

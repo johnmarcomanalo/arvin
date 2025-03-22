@@ -1,63 +1,54 @@
-import { 
+import {
+  Button,
   ButtonGroup,
-  CardContent,
   Card,
-  Divider,
-  Grid, 
-  IconButton, 
-  Input, 
-  Stack,  
-  Tab,  
-  Table,  
-  TableBody,  
-  TableCell,  
-  TableContainer,  
-  TableFooter,  
-  TableHead,  
-  TableRow,  
-  Tooltip,  
-  Typography,  
-  useMediaQuery,
-  Box,
-  Button
-} from "@mui/material"; 
-import { useTheme } from "@mui/material/styles";
-import * as React from "react";  
+  CardContent,
+  Grid,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+  useMediaQuery
+} from "@mui/material";
+import React, { useState } from 'react';
 import { connect } from "react-redux";
-import { change, Field, formValueSelector, reduxForm, reset } from "redux-form"; 
+import { change, Field, formValueSelector, reduxForm } from "redux-form";
 //component
-import ButtonComponent from "components/button/Button";
 import ComboBox from "components/autoComplete/AutoComplete";
-import Modal from "components/modal/Modal";  
+import ButtonComponent from "components/button/Button";
+import CheckBoxComponent from "components/checkbox/CheckBox";
 import InputField from "components/inputFIeld/InputField";
+import Modal from "components/modal/Modal";
 
 //hoooks and other  configuration
-import CheckCollectionHooks from "../hooks/CheckCollectionHooks";
+import { AddCircle, Upload } from "@mui/icons-material";
 import configure from "apps/configure/configure.json";
+import CheckCollectionHooks from "../hooks/CheckCollectionHooks";
+import CheckCustomer from "./components/CheckCustomer";
 import InvoiceList from "./components/InvoiceList";
 import ReceiptDetails from "./components/ReceiptDetails";
-import Customers from "apps/aim/settings/accessrights/customerrights/pages/components/Customers";
-import CheckCustomer from "./components/CheckCustomer";
-import { CloudUpload, Upload } from "@mui/icons-material";
 let formName = "CheckCollection";
-
 let CheckCollection = (props) => {
   const { ...check }    = CheckCollectionHooks(props);
   const state           = check.state;
-  const account_details = check.account_details;
+  const account         = check.account_details;
   const amount          = check.state.invoice_list.reduce((a, b) => a + parseFloat(b.doctotal), null)
   const access          = check.access;
   const matches         = useMediaQuery("(min-width:600px)"); 
   props.dispatch(change(formName, "invoice_list", state?.invoice_list));
-  props.dispatch(change(formName, "subsection_code", account_details.subsection_code));
-  props.dispatch(change(formName, "amount", amount));
+  props.dispatch(change(formName, "subsection_code", account.subsection_code));
+  props.dispatch(change(formName, "amount", amount)); 
   return (
     <React.Fragment>
         <Modal
             open={check.viewModal}
             fullScreen={matches ? false : true}
             title={"Invoice Search"}
-            size={"lg"}
+            size={"xl"}
             action={undefined}
             handleClose={check.onClickCloseViewModal}
           >
@@ -79,9 +70,9 @@ let CheckCollection = (props) => {
             title={"Customer Details"}
             size={"lg"}
             action={undefined}
-            handleClose={check.onClickCloseAccessCustomerModal}
+            handleClose={check.onClickCloseCustomerModal}
         >
-          <CheckCustomer onClickSelect={check.getCustomerDetails}/>
+          <CheckCustomer/>
         </Modal>
         <form onSubmit={props.handleSubmit(check.submit)} autoComplete="off">
         <Card
@@ -112,6 +103,24 @@ let CheckCollection = (props) => {
                     Ensure all the required fields are correctly filled out
                   </Typography>
                   </div>
+                
+                </Stack> 
+                <Grid container spacing={2}>  
+                <Grid item xs={12} sm={12} md={12} lg={12}>
+                <Stack
+                  direction={matches ? "row" : "column"}
+                  alignItems={matches ? "center" : "flex-start"}
+                  justifyContent="space-between"
+                  spacing={1}
+                >
+                  <Field
+                    name="advance_payment"
+                    component={CheckBoxComponent}
+                    checked={state.advancePayment}
+                    onChange={check.handleCheckboxChange}
+                    type="checkbox" 
+                    label="Advance Payment" 
+                  />
                   <ButtonComponent
                       stx={configure.default_button}
                       iconType="export"
@@ -120,8 +129,32 @@ let CheckCollection = (props) => {
                       children={"Print CR/PR"}
                       click={check.onClickOpenReceiptDetailsModal}
                     />
-                </Stack> 
-                <Grid container spacing={2}>  
+                  </Stack>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6}>  
+                    <Field
+                      id="card_name"
+                      name="card_name"
+                      label="Customer"
+                      type="text"
+                      component={InputField}
+                      required={true}
+                      readOnly={true}
+                      onClick={check.onClickOpenCustomerModal}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={6}>
+                      <Field
+                          id="card_code"
+                          name="card_code"
+                          label="Customer Code"
+                          type="text"
+                          component={InputField}
+                          required={true}
+                          readOnly={true}
+                          onClick={check.onClickOpenCustomerModal}
+                      />
+                  </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={6}>
                       <Field
                         id="check_number"
@@ -146,7 +179,7 @@ let CheckCollection = (props) => {
                       <Field
                         id="check_amount"
                         name="check_amount"
-                        label="Amount"
+                        label="Check Amount"
                         type="number"
                         component={InputField}
                         required={true}
@@ -154,6 +187,7 @@ let CheckCollection = (props) => {
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={6}>
                       <Field
+                            key={props.refresh}
                             id="bank_name"
                             name="bank_name"
                             label="Bank Name"
@@ -182,80 +216,86 @@ let CheckCollection = (props) => {
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={6}>
                       <Field
-                        id="bank_address"
-                        name="bank_address"
-                        label="Bank Address"
-                        type="text"
+                          id="account_number"
+                          name="account_number"
+                          label="Account Number"
+                          type="number"
+                          component={InputField}
+                          required={true}
+                      />
+                  </Grid> 
+                  <Grid item xs={12} sm={12} md={6} lg={6}>
+                      <Field
+                          id="crpr"
+                          name="crpr"
+                          label="Document Number (CR/PR)"
+                          type="number"
+                          component={InputField}
+                          required={true}
+                      />
+                  </Grid> 
+                  <Grid item xs={12} sm={12} md={6} lg={6}> 
+                      <Field
+                        id="remarks"
+                        name="remarks"
+                        label="Remarks"
+                        multiline={true}
+                        height={100} 
                         component={InputField}
-                        required={true}
                       />
                   </Grid>
-                 
-                  <Grid item xs={12} sm={12} md={6} lg={6}>
-                        <Field
-                            id="advance_payment"
-                            name="advance_payment"
-                            label="Advance Payment"
-                            options={check.epay_selection}
-                            getOptionLabel={(option) =>
-                            option?.description ? option?.description: ""
-                            } 
-                            required={true}
-                            component={ComboBox}
-                            onChangeHandle={(e, newValue) => { 
-                             
-                            }}
-                        />
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={6} lg={6}>
-                        <Field
-                            id="crpr"
-                            name="crpr"
-                            label="Document (CR/PR)"
+                  {(state.advancePayment) && (
+                    <>
+                       <Grid item xs={12} sm={12} md={6} lg={6}>
+                          <Field
+                               key={props.refresh}
+                               id="form_description"
+                               name="form_description"
+                               label="Form Description"
+                               options={check?.form_type}
+                               getOptionLabel={(option) =>
+                                 option?.description ? option?.description : ""
+                               }
+                               required={state.advancePayment}
+                               component={ComboBox}
+                               onChangeHandle={(e, newValue) => {
+                                 if (newValue?.value) {
+                                   props.change("document_type", newValue.value);
+                                 }
+                               }}
+                          />
+                      </Grid> 
+                      <Grid item xs={12} sm={12} md={6} lg={6}> 
+                          <Field
+                            id="prefix"
+                            name="prefix"
+                            label="Prefix"
+                            required={state.advancePayment}
+                            minLength={1}
                             type="text"
                             component={InputField}
-                            required={true}
-                        />
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={6} lg={6}> 
-                      {/* <Field
-                            id="card_name"
-                            name="card_name"
-                            label="Customer"
-                            options={access?.user_access_customer_rights}
-                            getOptionLabel={(option) =>
-                              option?.description ? option?.description : check?.customer_name
-                            }
-                            required={true}
-                            component={ComboBox}
-                            onChangeHandle={(e, newValue) => {
-                              if (newValue?.description) {
-                                check.GetCustomerDetails(newValue);
-                                props.change("card_code", newValue.customer_code);
-                              }
-                            }}
-                        />  */}
-                         <Field
-                            id="card_name"
-                            name="card_name"
-                            label="Customer"
-                            type="text"
-                            component={InputField}
-                            required={true}
-                            onClick={check.onClickOpenAccessCustomerModal}
-                        />
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={6} lg={6}>
-                        <Field
-                            id="card_code"
-                            name="card_code"
-                            label="Customer Code"
-                            type="text"
-                            component={InputField}
-                            required={true}
-                            readOnly={true}
-                        />
-                  </Grid>
+                            pattern={/^[A-Za-z]$/}
+                          />
+                          {/* <Field
+                           key={props.refresh}
+                           id="company_prefix"
+                           name="company_prefix"
+                           label="Company Prefix"
+                           options={check?.form_type}
+                           getOptionLabel={(option) =>
+                             option?.description ? option?.description : ""
+                           }
+                           required={state.advancePayment}
+                           component={ComboBox}
+                           onChangeHandle={(e, newValue) => {
+                             if (newValue?.value) {
+                               props.change("company_prefix", newValue.value);
+                             }
+                           }}
+                          /> */}
+                      </Grid>
+                    </>
+                  )}
                   <Grid item xs={12} sm={12} md={12} lg={12}>
                   <Stack
                     direction={matches ? "row" : "column"}
@@ -280,16 +320,15 @@ let CheckCollection = (props) => {
                       </Typography>
                   </div> 
                   <Button
-                    component="label"
-                    role={undefined}
-                    variant="contained"
-                    tabIndex={-1}
-                    startIcon={<Upload />}
-                     sx={{...configure.default_button, px:2}}
-                    disabled
-                  >
-                    Upload Check 
-                  </Button>
+                      component="label"
+                      role={undefined}
+                      variant="contained" 
+                      startIcon={<Upload />}
+                      sx={ configure.default_button }
+                      disabled={true} 
+                    >
+                      Upload Check 
+                    </Button>
                 </Stack>
                      
                   </Grid>
@@ -307,33 +346,34 @@ let CheckCollection = (props) => {
                         <Table size="small">
                           <TableHead>
                             <TableRow> 
-                                <TableCell style={{ backgroundColor: configure.primary_table_color, color: configure.primary_table_text_color, }}>  DOCUMENT NUMBER </TableCell> 
-                                <TableCell style={{ backgroundColor: configure.primary_table_color, color: configure.primary_table_text_color, }}>  DOCUMENT DATE </TableCell> 
-                                <TableCell style={{ backgroundColor: configure.primary_table_color, color: configure.primary_table_text_color, }}>  SI NUMBER </TableCell> 
-                                <TableCell style={{ backgroundColor: configure.primary_table_color, color: configure.primary_table_text_color, }}>  DR NUMBER </TableCell> 
-                                <TableCell style={{ backgroundColor: configure.primary_table_color, color: configure.primary_table_text_color, }}>  VAT </TableCell> 
-                                <TableCell style={{ backgroundColor: configure.primary_table_color, color: configure.primary_table_text_color, }}>  TOTAL INVOICE </TableCell>
+                              {check.column_headers.map((header, index) => (
+                                <TableCell key={index} style={{ backgroundColor: configure.primary_table_color, color: configure.primary_table_text_color, }}>
+                                  {header.label}
+                                </TableCell>
+                              ))}
                             </TableRow> 
                           </TableHead>
                           <TableBody>
                             {check?.state.invoice_list?.length > 0 ? (
                               check.state.invoice_list.map((row, index) => (
                                 <TableRow key={index}>
+                                  <TableCell>{row?.bp_payment_term}</TableCell>
                                   <TableCell>{row?.docno}</TableCell>
                                   <TableCell>{row?.docdate}</TableCell>
-                                  <TableCell>{row?.sino}</TableCell>
                                   <TableCell>{row?.drno}</TableCell>
+                                  <TableCell>{row?.sino}</TableCell>
+                                  <TableCell>{row?.form}</TableCell>
                                   <TableCell>{row?.vatsum}</TableCell>
                                   <TableCell>{row?.doctotal}</TableCell>
                                 </TableRow>
                               )) 
                             ) : (
                               <TableRow>
-                                <TableCell colSpan={6} align="center">Data not available</TableCell>
+                                <TableCell colSpan={8} align="center">Data not available</TableCell>
                               </TableRow>
                             )} 
                             <TableRow>
-                              <TableCell colSpan={4}></TableCell>
+                              <TableCell colSpan={6}></TableCell>
                               <TableCell  align="left">TOTAL</TableCell>
                               <TableCell align="left" sx={{ fontWeight: "bold" }}>
                                 {Number(amount).toLocaleString("en-US", { minimumFractionDigits: 4, maximumFractionDigits: 4 })}
@@ -353,14 +393,24 @@ let CheckCollection = (props) => {
                         disableElevation
                         aria-label="Disabled button group"
                       >
-                          <ButtonComponent
+                         <Button 
+                            variant="contained" 
+                            startIcon={<AddCircle />}
+                            sx={ configure.default_button } 
+                            onClick={check.onClickOpenViewModal} 
+                            disabled={state.advancePayment}
+                          >
+                            Add Invoice 
+                          </Button>
+                          {/* <ButtonComponent 
+                            disabled={advancePayment}
                             stx={configure.default_button }
                             iconType="add"
-                            type="button"
+                            type="button" 
                             fullWidth={true}
-                            children={"Add Invoice"}
+                            children={""}
                             click={check.onClickOpenViewModal}
-                          />
+                          /> */}
                           <ButtonComponent  
                             stx={configure.default_button }
                             iconType="delete"
@@ -402,9 +452,8 @@ let CheckCollection = (props) => {
   })(CheckCollection);
   const selector = formValueSelector(formName);
   export default connect((state) => {
-    const refresh = state.EpayCheckReducer.refresh;
-    const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
-    return { refresh, customerDetails };
+     const refresh =  state.EpayCheckReducer.refresh; 
+    return { refresh };
   }, {})(ReduxFormComponent);
   
   
