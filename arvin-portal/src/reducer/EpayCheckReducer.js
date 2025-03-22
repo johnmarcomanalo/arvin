@@ -25,9 +25,11 @@ const initialState = {
   viewModal: false,
   viewModal2: false,
   viewModal3: false,
+  viewModal4: false,
   reportData:[],
   printData:{},
-  dataListFormat:[]
+  dataListFormat:[],
+  forPrint:{}
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

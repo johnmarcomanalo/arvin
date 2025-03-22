@@ -68,11 +68,16 @@ class EPayCheckCheckSalesInvoiceDetailsController extends Controller
     }
 
     public function get_sales_invoice_list(Request $request){
-        $page   = $request->query('p', 1); // Default to page 1
+        // Retrieve query parameters
+        $search = $request->query('q');
+        // Reset page to 1 if search is provided
+        $page = !empty($search) ? 1 : $request->query('p', 1);
         $sap    = $request->query('s');
         $code   = $request->query('c');
-        $search = $request->query('q');
-        $limit  = $request->query('lmt', 10); // Default to 10 items per page
+        $limit  = $request->query('lmt', 10);
+        // Get sorting column and direction
+        $sortColumn = $request->query('sort_by', 'drno'); // Default column to sort by
+        $sortDirection = strtolower($request->query('order', 'asc')) === 'desc' ? 'desc' : 'asc';
     
         // Execute stored procedure
         if (!is_null($code) && !is_null($sap)) {
@@ -89,6 +94,13 @@ class EPayCheckCheckSalesInvoiceDetailsController extends Controller
                        stripos($item->docno, $search) !== false ||
                        stripos($item->sino, $search) !== false;
             });
+        }
+
+        // Apply sorting
+        if ($sortDirection === 'desc') {
+            $collection = $collection->sortByDesc($sortColumn);
+        } else {
+            $collection = $collection->sortBy($sortColumn);
         }
     
         // Get total count after filtering
@@ -113,16 +125,39 @@ class EPayCheckCheckSalesInvoiceDetailsController extends Controller
     
         return Crypt::encryptString(json_encode($response));
     }
-    
 
-    public function generate_code(){
-        $code = 1;
-        $current_date = date('Y-m-d');
-         $latest_code = EPayCheckCheckSalesInvoiceDetails::latest('code')->first('code')->code ?? NULL;
-        if(!empty($latest_code)){
-            $code = $latest_code + 1;
+    public static function store_sales_invoice_details($invoice_list, $check_details_code)
+    {
+        $results = [];
+        $success = true;
+    
+        foreach ($invoice_list as $key => $value) {
+            $code =  MainController::generate_code('App\Models\EPayCheckCheckSalesInvoiceDetails', "code"); 
+            $fields = [
+                'code'                     => $code,
+                'check_details_code'       => $check_details_code,
+                'sales_invoice'            => $value->sino,     
+                'dr_number'                => $value->drno,     
+                'doc_number'               => $value->docno,    
+                'doc_date'                 => $value->docdate,  
+                'doc_total'                => $value->doctotal, 
+                'amount'                   => 0, 
+                'form'                     => $value->form,
+                'bp_payment_term'          => $value->bp_payment_term,
+                'internal_approved_term'   => $value->internal_approved_term,
+            ];
+    
+            $result    = EPayCheckCheckSalesInvoiceDetails::create($fields);
+            $results[] = $result;
+    
+            // Check if saving was unsuccessful
+            if (!$result) {
+                $success = false;
+                break; // Exit loop on failure
+            }
         }
-        return $code;
+    
+        return $success ? $results : false; // Return results if successful, otherwise false
     }
 
 }

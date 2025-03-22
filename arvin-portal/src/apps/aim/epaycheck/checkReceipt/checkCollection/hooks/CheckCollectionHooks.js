@@ -1,19 +1,19 @@
-import { useDispatch, useSelector } from "react-redux";
-import React from "react";
-import { useDebounce } from "utils/HelperUtils";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import { reset } from "redux-form";
-import { Constants } from "reducer/Contants";
-import { decryptaes } from "utils/LightSecurity";
 import { cancelRequest } from "api/api";
-import {
-  getSalesInvoiceDetails,
-  postCheckCollection,
-  getReceiptFormat,
-} from "../actions/CheckCollectionActions";
+import React, { useCallback, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Constants } from "reducer/Contants";
+import { change, reset } from "redux-form";
 import swal from "sweetalert";
+import { useDebounce } from "utils/HelperUtils";
+import { decryptaes } from "utils/LightSecurity";
+import {
+  getReceiptDetails,
+  getReceiptFormatList,
+  postCheckCollection,
+} from "../actions/CheckCollectionActions";
 let formName = "CheckCollection";
-const CheckCollectionHooks = (props) => {
+const CheckCollectionHooks = (props) => { 
   const navigate          = useNavigate();
   const refresh           = useSelector((state) => state.EpayCheckReducer.refresh);
   const dispatch          = useDispatch();
@@ -34,80 +34,87 @@ const CheckCollectionHooks = (props) => {
   const viewModal         = useSelector((state) => state.EpayCheckReducer.viewModal);
   const viewModal2        = useSelector((state) => state.EpayCheckReducer.viewModal2);
   const viewModal3        = useSelector((state) => state.EpayCheckReducer.viewModal3);
-  const selectedDataList  = useSelector((state) => state.EpayCheckReducer.selectedDataList);
   const printData         = useSelector((state) => state.EpayCheckReducer.printData); 
   const dataListFormat    = useSelector((state) => state.EpayCheckReducer.dataListFormat); 
-  const banks           = useSelector((state) => state.ReferenceReducer.phbanks);
-  
-  const customerDetails   = {}
+  const selectedItem      = useSelector((state) => state.EpayCheckReducer.selectedItem); 
+  const banks             = useSelector((state) => state.ReferenceReducer.phbanks);
+  const receipt_code      = props.receipt_code
+  const receipt_number    = props.receipt_number
+  const receipt_description = props.receipt_description ?? ""
   const [state, setState] = React.useState({
     debounceTimer: null,
-    debounceDelay: 1000,
+    debounceDelay: 800,
     invoice_list: [],
+    advancePayment: false
   });
-
-  const epay_selection = [
-    { description: "NO" }, 
-    { description: "YES" }
-  ];
-  const print_format   = [
-    { value:"CR" ,description:"COLLECTION RECEIPT" },
-    { value:"PR" ,description:"PROVISIONAL RECEIPT"}
-  ]
 
   const columns = [
     { id: "docno", label: "Document Number", align: "left" },
-    { id: "sino", label: "SI Number", align: "left" },
     { id: "drno", label: "DR Number", align: "left" },
+    { id: "sino", label: "SI Number", align: "left" },
     { id: "docdate", label: "Document Date", align: "left" },
     { id: "totalbeforetax", label: "Total Before Tax", align: "left" },
     { id: "vatsum", label: "Vat", align: "left" },
     { id: "doctotal", label: "Total Invoice", align: "left" },
+    { id: "form", label: "Form Type", align: "left" },
   ];
 
-  const getListParam = () => {
-    const data = {
-      c: code,
-      d: customer_name,
-      s: sap,
-      q: search,
-      p: page == null ? 1 : page,
-    };
-    return data;
-  };
+  const column_headers = [
+    { id: "bp_payment_term", label: "PAYMENT MODE" }, 
+    { id: "docno", label: "DOCUMENT NUMBER" },
+    { id: "docdate", label: "DOCUMENT DATE" },
+    { id: "drno", label: "DR NUMBER" },
+    { id: "sino", label: "SI NUMBER" },
+    { id: "form", label: "FORM" },
+    { id: "vatsum", label: "VAT" },
+    { id: "doctotal", label: "TOTAL INVOICE" }
+  ];
 
-  const debounce = (func, delay) => {
+  const form_type = [
+    {  value: "INV", description: "COLLECTION RECEIPT" },
+    {  value: "STA", description: "PROVISIONAL RECEIPT" },
+  ]
+
+ 
+  const debounce = useCallback((func, delay) => {
     clearTimeout(state.debounceTimer);
-    state.debounceTimer = setTimeout(func, delay);
-  };
-
-  const GetInvoiceList = async () => {
+    const timer = setTimeout(func, delay);
+    setState((prev) => ({ ...prev, debounceTimer: timer }));
+  }, []);
+  const GetReceiptDetailsList = async () => {
     try {
-      const data = getListParam();
-      await debounce(() => {
-        dispatch(getSalesInvoiceDetails(data));
-        dispatch(getReceiptFormat());
+      const data = {
+        subsection_code:account_details.subsection_code,
+        receipt_code:receipt_code ?? "",
+        receipt_number:receipt_number ?? ""
+      }
+      await debounce(() => { 
+        dispatch(getReceiptDetails(data)); 
       }, state.debounceDelay);
     } catch (error) {
       await console.error(error);
     }
   };
 
-  React.useEffect(() => {
-    GetInvoiceList();
-    return () => cancelRequest();
-  }, [refresh, debounceSearch]);
+    React.useEffect(() => {
+      if (receipt_number && receipt_code){
+        GetReceiptDetailsList(); 
+      }  
+      dispatch(getReceiptFormatList()); 
 
-  const onChangeSearch = (event) => {
-    const search = event.target.value;
-    setSearchParams({
-      c: code,
-      d: customer_name,
-      s: sap,
-      q: search,
-      p: page,
-    });
-  };
+      // if there is a selected item, reset the state
+      if (selectedItem) {
+        setState({
+          invoice_list: [],
+        });
+      }
+      props.change("card_code", selectedItem?.cardcode);
+      props.change("card_name", selectedItem?.cardname); 
+      props.change("sap", selectedItem?.sap);
+      
+      return () => cancelRequest();
+    }, [receipt_number,receipt_code,selectedItem]);
+  
 
   // ADD CHECK START FUNCTION AND PROCESS
   const onClickOpenViewModal = () => {
@@ -126,63 +133,7 @@ const CheckCollectionHooks = (props) => {
       },
     });
   };
-
-  // const GetCustomerDetails = async (value) => {
-  //   try {
-  //     let data = {
-  //       customer_code: value.customer_code,
-  //       type: value.type,
-  //       status: value.status,
-  //     };
-  //     localStorage.setItem("customerDetails", JSON.stringify(value));
-  //     const res = await dispatch(getEmployeeCustomerAccessDetails(data));
-  //     const decrypted = decryptaes(res.data);
-  //     const customer_details = decrypted.data;
-  //     setSearchParams({
-  //       c: customer_details.cardcode,
-  //       d: customer_details.cardname,
-  //       s: customer_details.sap,
-  //       q: search,
-  //       p: "1",
-  //     });
-
-  //     await dispatch({
-  //       type: Constants.ACTION_EPAY_CHECK,
-  //       payload: {
-  //         dataList: [],
-  //         dataListCount: 0,
-  //       },
-  //     });
-
-  //     setState((prev) => ({
-  //       ...prev,
-  //       invoice_list: [],
-  //     }));
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  const getInvoiceList = (data) =>{
-    setSearchParams({
-      c: data.cardcode,
-      d: data.cardname,
-      s: data.sap,
-      q: search,
-      p: "1",
-    });
-  }
-
-  const handleChangePage = (event, newPage) => {
-    setSearchParams({
-      c: code,
-      d: customer_name,
-      s: sap,
-      q: search,
-      p: page == null ? 1 : newPage,
-    });
-  };
-
+  
   const onSelectItem = (row, index) => {
     const isExisting = state.invoice_list.some(
       (item) => item.docno === row.docno && item.sino === row.sino
@@ -196,6 +147,9 @@ const CheckCollectionHooks = (props) => {
         totalbeforetax: row.totalbeforetax,
         vatsum: row.vatsum,
         doctotal: row.doctotal,
+        form: row.form,
+        bp_payment_term: row.bp_payment_term,
+        internal_approved_term: row.internal_approved_term,
       });
       swal("Success", "Details added successfully", "success");
       setState((prev) => ({
@@ -210,42 +164,175 @@ const CheckCollectionHooks = (props) => {
     }));
   };
 
+  const validateForm = (values) => {
+    const errors = {};
+    if (!values.check_number) {
+      errors.check_number = "Check number is required";
+    }
+    if (!values.check_amount || values.check_amount <= 0) {
+      errors.check_amount = "Valid check amount is required";
+    }
+    // Add more validations
+    return errors;
+  };
+
+  // const submit = async (values, dispatch, props) => {
+  //   try {
+  //     // First confirmation: "Are you sure you want to submit?" 
+  //     const isConfirm = await swal({
+  //       title: "Verify check details before submitting",
+  //       text: "Are you sure you want to submit?",
+  //       icon: "info",
+  //       buttons: true,
+  //       closeOnClickOutside: false,
+  //     });
+  //     if (!isConfirm) return;
+  
+  //     // Submit normally
+  //     let res = await dispatch(postCheckCollection(values));
+  //     let decrypted = await decryptaes(res?.data);
+  
+  //     // If backend returned a warning, show a prompt to override
+  //     if (decrypted.status === 'warning') {
+  //       const override = await swal({
+  //         title: decrypted.title,
+  //         text:  decrypted.message + " Do you want to proceed anyway?",
+  //         icon: "warning",
+  //         buttons: ["Cancel", "Proceed"],
+  //         dangerMode: true,
+  //         customClass: {
+  //           htmlContainer: 'custom-swal' // This class is applied to the text container
+  //         },
+  //         closeOnClickOutside: false,
+  //       });
+        
+  //       if (!override) {
+  //         // User canceled; stop the process.
+  //         return;
+  //       } else {
+  //         // Resend the request with the override flag set
+  //         values.override_warning = true;
+  //         res = await dispatch(postCheckCollection(values));
+  //         decrypted = await decryptaes(res?.data);
+  //       }
+  //     }
+  
+  //     // If success, proceed with further actions (reset form, show success, etc.)
+  //     if (decrypted.result === true) { 
+  //       await dispatch(reset(formName));
+  //       props.change("bank_description", "");
+  //       setSearchParams({});
+  //       await dispatch({
+  //         type: Constants.ACTION_EPAY_CHECK,
+  //         payload: {
+  //           refresh: !props.refresh,
+  //           selectedItem: {},
+  //         },
+  //       });
+  //       setState((prev) => ({
+  //         ...prev,
+  //         invoice_list: [],
+  //         advancePayment: false
+  //       })); 
+  //       swal(decrypted.title, decrypted.message, decrypted.status, {
+  //         buttons: false,
+  //         timer: 1000,
+  //       }).then(() => {
+  //         if (!decrypted.print.advance_payment) {
+  //           setTimeout(() => {
+  //             askToPrintReceipt(decrypted.print);
+  //           }, 1200);
+  //         }
+  //       });
+  //     }
+  //   } catch (error) {
+  //     swal({
+  //       title: "Error",
+  //       text: "An error occurred while processing your request. Please try again.",
+  //       icon: "error",
+  //     });
+  //     console.error("Submit error:", error);
+  //   }
+  // };
+
   const submit = async (values, dispatch, props) => {
     try {
+      // First confirmation: "Are you sure you want to submit?" 
       const isConfirm = await swal({
         title: "Verify check details before submitting",
         text: "Are you sure you want to submit?",
-        icon: "warning",
+        icon: "info",
         buttons: true,
-        dangerMode: true,
+        closeOnClickOutside: false,
       });
-      if (isConfirm) {
-        const res = await dispatch(postCheckCollection(values));
+      if (isConfirm){
+         // Submit normally
+        let res = await dispatch(postCheckCollection(values));
         let decrypted = await decryptaes(res?.data);
-
-        await dispatch({
-          type: Constants.ACTION_EPAY_CHECK,
-          payload: {
-            refresh: !props.refresh,
-          },
-        });
-
-        await swal(decrypted.title, decrypted.message, decrypted.status, {
-          buttons: false,
-          timer: 2000,
-        });
-
-        if (decrypted.result === true) {
-          localStorage.removeItem("customerDetails");
-          await dispatch(reset(formName));
-          setSearchParams({ c: "", d: "",s:"", q: "", p: "" });
-          window.location.reload();
+        console.log(decrypted,"dasda");
+        
+        if (decrypted && decrypted.result){
+            await dispatch(reset(formName));
+            props.change("bank_description", "");
+            props.change("document_type", "");
+            props.change("form_description", "");
+            setSearchParams({});
+            await dispatch({
+              type: Constants.ACTION_EPAY_CHECK,
+              payload: {
+                refresh: !props.refresh,
+                selectedItem: {},
+              },
+            });
+            setState((prev) => ({
+              ...prev,
+              invoice_list: [],
+              advancePayment: false
+            })); 
+            swal(decrypted.title, decrypted.message, decrypted.status, {
+              buttons: false,
+              timer: 1000,
+            }).then(() => {
+              setTimeout(() => {
+                askToPrintReceipt(decrypted.print);
+              }, 1200);
+            });
         }
+       
       }
+  
     } catch (error) {
-      console.log(error);
+      swal({
+        title: "Error",
+        text: error.message,
+        icon: "error",
+      });
     }
   };
+  
+
+  const askToPrintReceipt = (data) => { 
+    swal({
+      title: "Print Receipt",
+      text: "Do you want to print the receipt?",
+      icon: "info",
+      buttons: ["Cancel", "Print"], // Array format: cancel first, then confirm
+      dangerMode: false,
+      closeOnClickOutside: false,
+    }).then((willPrint) => {
+      if (willPrint) { // willPrint is `true` if "Print" is clicked, `false` if "Cancel" is clicked
+        
+        dispatch(change("ReceiptDetailsForm", "receipt_number", data.receipt_number));
+        dispatch(change("ReceiptDetailsForm", "receipt_description", data.receipt_description));
+        dispatch(change("ReceiptDetailsForm", "receipt_code", data.receipt_code));
+        onClickOpenReceiptDetailsModal()
+        
+      } else {
+        console.log("Printing cancelled.");
+      }
+    });
+  };
+  
 
   const onClickOpenReceiptDetailsModal = () => {
     dispatch({
@@ -264,8 +351,8 @@ const CheckCollectionHooks = (props) => {
     });
   };
 
-  const onClickOpenAccessCustomerModal = () => {
-    setSearchParams({});
+  const onClickOpenCustomerModal = () => {
+    setSearchParams({})
     dispatch({
       type: Constants.ACTION_EPAY_CHECK,
       payload: {
@@ -273,7 +360,7 @@ const CheckCollectionHooks = (props) => {
       },
     });
   };
-  const onClickCloseAccessCustomerModal = () => {
+  const onClickCloseCustomerModal = () => {
     dispatch({
       type: Constants.ACTION_EPAY_CHECK,
       payload: {
@@ -281,19 +368,35 @@ const CheckCollectionHooks = (props) => {
       },
     });
   };
-  
-  const getCustomerDetails = (value) =>{  
-    getInvoiceList(value);
-    props.change("card_code", value.cardcode);
-    props.change("card_name", value.cardname); 
-    props.change("sap", value.sap); 
-    onClickCloseAccessCustomerModal();
-    swal("Success", "Customer Details has been selected", "success", {
-      buttons: false,
-      timer: 800,
-    });
-  }
-  
+
+  // React.useEffect(() => {
+  //   const beforeUnloadHandler = (ev) => {
+  //     ev.preventDefault();
+  //     return ev.returnValue = "Changes you made may not be saved.";
+  //   };
+    
+  //   window.addEventListener("beforeunload", beforeUnloadHandler);
+  //   return () => {
+  //     window.removeEventListener("beforeunload", beforeUnloadHandler);
+  //   };
+  // }, []);
+
+  const handleCheckboxChange = (event) => {
+    setState(prevState => ({
+      ...prevState,
+      advancePayment: event.target.checked
+    }));
+
+    props.change("form_type", "");
+    props.change("prefix", "");
+
+    if (event.target.checked) {
+      setState(prevState => ({
+        ...prevState,
+        invoice_list: []
+      }));
+    }
+  };
 
   return {
     banks,
@@ -312,24 +415,23 @@ const CheckCollectionHooks = (props) => {
     search,
     code,
     state,
-    epay_selection,
-    print_format,
     printData,
+    receipt_description,
+    receipt_code,
+    column_headers, 
+    form_type,
     submit,
     dispatch,
-    setSearchParams,
-    GetInvoiceList, 
-    getCustomerDetails,
-    handleChangePage,
+    setSearchParams, 
     onClickOpenViewModal,
     onClickCloseViewModal,
-    onChangeSearch,
     onSelectItem,
     onClickRemoveInvoiceList,
     onClickOpenReceiptDetailsModal,
     onClickCloseReceiptDetailsModal,
-    onClickOpenAccessCustomerModal,
-    onClickCloseAccessCustomerModal,
+    onClickOpenCustomerModal,
+    onClickCloseCustomerModal,
+    handleCheckboxChange,
   };
 };
 

@@ -1,45 +1,36 @@
 import {
-    ButtonGroup,
-    Grid,
-    Stack,
-    useMediaQuery,
-    Table,
-    TableBody,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableContainer,
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Select,
-    Checkbox
-  } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import * as React from "react";  
-import { change, Field, formValueSelector, reduxForm } from "redux-form";
+  ButtonGroup,
+  Checkbox,
+  Grid,
+  Stack,
+  useMediaQuery
+} from "@mui/material";
+import * as React from "react";
 import { connect } from "react-redux";
+import { Field, formValueSelector, reduxForm } from "redux-form";
 //component
-import ButtonComponent from "components/button/Button";
-import TableComponent from "components/table/Table";
-import SearchField from "components/inputFIeld/SearchField";
-import InputField from "components/inputFIeld/InputField";
+import configure from "apps/configure/configure.json";
 import ComboBox from "components/autoComplete/AutoComplete";
+import ButtonComponent from "components/button/Button";
+import InputField from "components/inputFIeld/InputField";
+import SearchField from "components/inputFIeld/SearchField";
+import Loading from "components/loading/Loading";
 import Modal from "components/modal/Modal";
 import Page from "components/pagination/Pagination";
-import CheckMonitoringHooks from "../hooks/CheckMonitoringHooks"; 
-import moment from "moment";
-import configure from "apps/configure/configure.json";
-import Deposit from "./components/Deposit";
-import CheckDetails from "./components/CheckDetails";
-import Reject from "./components/Reject";
+import TableComponent from "components/table/Table";
+import CheckMonitoringHooks from "../hooks/CheckMonitoringHooks";
+const Deposit = React.lazy(() => import("./components/Deposit"));
+const CheckDetails = React.lazy(() => import("./components/CheckDetails"));
+const Reject = React.lazy(() => import("./components/Reject"));
 let formName = "CheckMonitoring"
 const CheckMonitoring = (props) => {
     const { ...check } = CheckMonitoringHooks(props); 
-    const matches = useMediaQuery("(min-width:600px)");
-    const state = check.state
+    const matches      = useMediaQuery("(min-width:600px)");
+    const state        = check?.state
+    const account      = check?.account_details 
     return (
       <React.Fragment>
+          <React.Suspense fallback={<Loading/>}>
           <Modal
               open={check.viewModal}
               fullScreen={matches ? false : true}
@@ -50,6 +41,8 @@ const CheckMonitoring = (props) => {
             >
             <Deposit/>
           </Modal>
+          </React.Suspense>
+          <React.Suspense fallback={<Loading/>}>
           <Modal
               open={check.editModal}
               fullScreen={matches ? false : true}
@@ -60,6 +53,8 @@ const CheckMonitoring = (props) => {
             >
             <CheckDetails details={check.selectedItem}/>
           </Modal> 
+          </React.Suspense>
+          <React.Suspense fallback={<Loading/>}>
           <Modal
               open={check.viewModal2}
               fullScreen={matches ? false : true}
@@ -69,7 +64,9 @@ const CheckMonitoring = (props) => {
               handleClose={check.onClickCloseRejectModal}
             >
             <Reject/>
-          </Modal>
+          </Modal> 
+          </React.Suspense>
+
          <Grid container spacing={2}>   
             <Grid item xs={12} sm={12} md={12} lg={12}>
                 <Stack
@@ -78,24 +75,7 @@ const CheckMonitoring = (props) => {
                     alignItems={matches ? "flex-end" : "center"}
                     flexDirection={matches ? "row" : "column"}
                     spacing={1}
-                >       
-                    <Grid item xs={12} sm={12} md={3} lg={1}>
-                        <Field
-                          id="filterStatus"
-                          name="filterStatus"
-                          label="Status"
-                          options={check?.status}
-                          getOptionLabel={(option) =>
-                            option?.description ? option?.description : check.filterStatus
-                          }
-                          component={ComboBox}
-                          onChangeHandle={(e, newValue) => {
-                            if (newValue?.description) {
-                              check.onChangeFilterStatus(newValue?.description);
-                            }
-                          }}
-                        />
-                    </Grid>
+                >    
                     <Grid item xs={12} sm={12} md={2} lg={1}>
                       <Field
                         id="filter_date_start"
@@ -111,6 +91,7 @@ const CheckMonitoring = (props) => {
                             check.onChangeFilterStart(new Date(selectedDate));
                           }
                         }}
+                        disabled={check.filterStatus=='ON-HAND'}
                       />
                     </Grid>
                     <Grid item xs={12} sm={12} md={2} lg={1}>
@@ -128,8 +109,26 @@ const CheckMonitoring = (props) => {
                             check.onChangeFilterEnd(new Date(selectedDate));
                           }
                         }}
+                        disabled={check.filterStatus=='ON-HAND'}
                       />
                     
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={3} lg={1}>
+                        <Field
+                          id="filterStatus"
+                          name="filterStatus"
+                          label="Status"
+                          options={check?.status}
+                          getOptionLabel={(option) =>
+                            option?.description ? option?.description : check.filterStatus
+                          }
+                          component={ComboBox}
+                          onChangeHandle={(e, newValue) => {
+                            if (newValue?.description) {
+                              check.onChangeFilterStatus(newValue?.description);
+                            }
+                          }}
+                        />
                     </Grid>
                     <Grid item xs={12} sm={12} md={3} lg={1}>
                       <Field
@@ -144,6 +143,8 @@ const CheckMonitoring = (props) => {
                         onChangeHandle={(e, newValue) => {
                           if (newValue?.description) { 
                             check.onChangeFilteSubsection(newValue?.code);
+                          }else{
+                            check.onChangeFilteSubsection(account.subsection_code);
                           }
                         }}
                       />
@@ -192,70 +193,83 @@ const CheckMonitoring = (props) => {
                     rowCount={check.dataListCount}
                     actionshow={true}
                     paginationShow={false}
-                    subAction1Show={(check.filterStatus=="ON-HAND") ? true : false}
+                    // subAction1Show={(check.filterStatus=="ON-HAND")}
+                    subAction1Show={false}
                     subAction2Show={true}
                     action={(row, index) => {
                       return (
-                        <Checkbox  
+                        <Checkbox 
+                          checked={check.selectedDataList.includes(row.code)}
                           onChange={async (e) => { 
                               check.handleCheckboxChange(row,e.target.checked); 
                           }}
                           size="medium"
                           sx={{ height: "23px", margin: "-10px" }}
+                          disabled={row.status === "CLOSED"}
                         />
                       )
 
                     }}
                 /> 
             </Grid> 
-                <Grid item xs={12} sm={12} md={12} lg={12}>
-                    <Stack
-                      direction="row"
-                      justifyContent="flex-end"
-                      alignItems="flex-end" 
-                    >
-                    {check.filterStatus === "ON-HAND" ? (
-                      <ButtonGroup disableElevation aria-label="Disabled button group">
-                          <ButtonComponent
-                            stx={configure.default_button}
-                            iconType="add"
-                            type="button"
-                            fullWidth={true}
-                            children={"Deposit"}
-                            click={check.onClickOpenViewModalDeposit}
-                          />
-                          <ButtonComponent
-                            stx={configure.default_button}
-                            iconType="add"
-                            type="button"
-                            fullWidth={true}
-                            children={"Transmit"}
-                            click={check.onClickTransmit}
-                          />
-                           <ButtonComponent
-                              stx={configure.default_button}
-                              iconType="add"
-                              type="button"
-                              fullWidth={true}
-                              children={"Reject"}
-                              click={check.onClickOpenRejectModal}
-                            />
-                      </ButtonGroup>
-                    ) :  
+               <Grid item xs={12} sm={12} md={12} lg={12}>
+                <Stack direction="row" justifyContent="flex-end" alignItems="flex-end">
+                  {check.filterStatus === "ON-HAND" ? (
+                    <ButtonGroup disableElevation aria-label="Disabled button group">
+                      <ButtonComponent
+                        stx={configure.default_button}
+                        iconType="add"
+                        type="button"
+                        fullWidth={true}
+                        children={"Deposit"}
+                        click={check.onClickOpenViewModalDeposit}
+                      />
+                      <ButtonComponent
+                        stx={configure.default_button}
+                        iconType="add"
+                        type="button"
+                        fullWidth={true}
+                        children={"Transmit"}
+                        click={check.onClickTransmit}
+                      />
+                     {Array.isArray(check.subsection_allowed_to_reject) &&
+                        check.subsection_allowed_to_reject.includes(Number(account?.subsection_code)) && (
+                        <ButtonComponent
+                          stx={configure.default_button}
+                          iconType="add"
+                          type="button"
+                          fullWidth={true}
+                          children={"Reject"}
+                          click={check.onClickOpenRejectModal}
+                        />
+                      )}
+                    </ButtonGroup>
+                  ) : (check.filterStatus === "REJECTED" && check.subsection_allowed_to_reject.includes(Number(account?.subsection_code))) ? ( 
+                    <ButtonGroup disableElevation aria-label="Disabled button group">
+                        <ButtonComponent
+                          stx={configure.default_button}
+                          iconType="update"
+                          type="button"
+                          fullWidth={true}
+                          children={"Close Rejected"}
+                          click={check.onClickRejectToClose}
+                        />
+                    </ButtonGroup>
+                  ) : (
                     <ButtonGroup disableElevation aria-label="Disabled button group">
                         <ButtonComponent
                           stx={configure.default_button}
                           iconType="delete"
                           type="button"
                           fullWidth={true}
-                          children={"Undo "+ check.filterStatus}
+                          children={"Undo " + check.filterStatus}
                           click={check.onClickUndo}
                         />
                     </ButtonGroup>
-                    }
-                    </Stack>
+                  )}
+                </Stack>
               </Grid>
-           
+ 
           </Grid>
       </React.Fragment>
     );

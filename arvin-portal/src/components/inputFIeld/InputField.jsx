@@ -37,7 +37,12 @@ const InputField = (props) => {
       ) : null}
       <TextField
         onClick={onClick}
-        InputProps={{ readOnly: props.readOnly }}
+        InputProps={{ 
+          readOnly: props.readOnly, 
+          minLength: props.minLength,
+          maxLength: props.maxLength,
+          pattern: props.pattern,
+        }}
         {...props.input}
         error={props.meta.touched && props.meta.error ? true : false}
         fullWidth
@@ -48,7 +53,7 @@ const InputField = (props) => {
         multiline={props.multiline}
         rows={props.multiline ? props.linerow : undefined}
         disabled={props.disabled}
-        placeholder={props.placeholder}
+        placeholder={props.placeholder} 
         sx={{
           "& input": {
             backgroundColor: props.disabled ? "#e8e8e8" : "transparent",

@@ -1,15 +1,13 @@
-import { useDispatch, useSelector } from "react-redux";
-import React from "react";
-import { useDebounce } from "utils/HelperUtils";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import { reset } from "redux-form";
-import { Constants } from "reducer/Contants";
-import { decryptaes } from "utils/LightSecurity";
 import { cancelRequest } from "api/api";
-import { 
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Constants } from "reducer/Contants";
+import swal from "sweetalert";
+import { useDebounce } from "utils/HelperUtils";
+import {
   getCheckCustomer,
 } from "../actions/CheckCollectionActions";
-import swal from "sweetalert"; 
 const CheckCustomerHooks = (props) => {
   const navigate          = useNavigate();
   const refresh           = useSelector((state) => state.EpayCheckReducer.refresh);
@@ -18,8 +16,8 @@ const CheckCustomerHooks = (props) => {
       searchParams, 
       setSearchParams
   ] = useSearchParams();
-  const search            = searchParams.get("q") != null ? String(searchParams.get("q")) : ""; 
-  const page              = searchParams.get("p") != null ? searchParams.get("p") : 1;
+  const search            = searchParams.get("query") != null ? String(searchParams.get("query")) : ""; 
+  const page              = searchParams.get("page") != null ? searchParams.get("page") : 1;
   const debounceSearch    = useDebounce(searchParams, 500);
   const account_details   = useSelector((state) => state.AuthenticationReducer.account_details); 
   const dataList          = useSelector((state) => state.EpayCheckReducer.dataList2);
@@ -39,9 +37,9 @@ const CheckCustomerHooks = (props) => {
 
   const getListParam = () => {
     const data = {
-      u: user_code,
-      q: search,
-      p: page == null ? 1 : page,
+      uc: user_code,
+      query: search,
+      page: page == null ? 1 : page,
     };
     return data;
   };
@@ -70,9 +68,9 @@ const CheckCustomerHooks = (props) => {
   const onChangeSearch = (event) => {
     const search = event.target.value;
     setSearchParams({
-        u: user_code, 
-        q: search,
-        p: 1,
+        uc: user_code, 
+        query: search,
+        page: 1,
     });
   };
 
@@ -95,14 +93,32 @@ const CheckCustomerHooks = (props) => {
   }; 
 
   const handleChangePage = (event, newPage) => { 
+    console.log("handleChangePage",event,newPage);
     setSearchParams({
-      u: user_code, 
-      q: search,
-      p: page == null ? 1 : newPage,
+      uc: user_code, 
+      query: search,
+      page: newPage,
     });
   };
+
+  const onClickGetCustomer = (value) =>{  
+    dispatch({
+      type: Constants.ACTION_EPAY_CHECK,
+      payload: {
+        selectedItem: {
+          ...value
+        }, 
+        viewModal3: false,
+      },
+    });
+    swal("Success", "Customer Details has been selected", "success", {
+      buttons: false,
+      timer: 1000,
+    });
+  }
   
-  return { 
+  return {
+    page,
     columns,
     viewModal,  
     dataList,
@@ -113,6 +129,7 @@ const CheckCustomerHooks = (props) => {
     onClickOpenViewModal,
     onClickCloseViewModal,
     onChangeSearch,
+    onClickGetCustomer,
     
   };
 };

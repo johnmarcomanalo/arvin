@@ -48,7 +48,7 @@ let Reject = (props) => {
                         fullWidth
                       />
                   </Grid>  
-                  <Grid  item xs={12} sm={12} md={12} lg={12}> 
+                  {/* <Grid  item xs={12} sm={12} md={12} lg={12}> 
                       <Field
                           id="rejected_remarks"
                           name="rejected_remarks"
@@ -56,6 +56,22 @@ let Reject = (props) => {
                           required={true}
                           component={InputField} 
                           multiline={true}
+                      />
+                  </Grid>   */}
+                   <Grid  item xs={12} sm={12} md={12} lg={12}> 
+                      <Field
+                          id="rejected_remarks"
+                          name="rejected_remarks"
+                          label="Remarks"
+                          options={check?.reject_remarks}
+                          getOptionLabel={(option) =>
+                          option?.description ? option?.description: ""
+                          } 
+                          required={true}
+                          component={ComboBox}
+                          onChangeHandle={(e, newValue) => {  
+                            
+                          }}
                       />
                   </Grid>  
                   <Grid item xs={12} sm={12} md={12} lg={12}>

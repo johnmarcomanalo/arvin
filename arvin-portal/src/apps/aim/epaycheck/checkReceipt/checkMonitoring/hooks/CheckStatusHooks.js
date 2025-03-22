@@ -13,6 +13,7 @@ import {
 import {
     getCheckDetails,
     postCheckDetailsStatus,
+    postCheckRejectToClose,
 } from "../actions/CheckMonitoringAction"
 import swal from "sweetalert";
 let formName = "Deposit";
@@ -23,8 +24,11 @@ const CheckStatusHooks = (props) => {
     const refresh          = useSelector((state) => state.EpayCheckReducer.refresh);
     const bank_accounts    = useSelector((state) => state.ReferenceReducer.bank_accounts); 
     const selectedDataList = useSelector((state) => state.EpayCheckReducer.selectedDataList);
-    
-    React.useEffect(() => { 
+    const reject_remarks = [
+      { description: 'RETURNED TO CLIENT' },
+      { description: 'WRONG ENCODING BY CLERK' }, 
+    ];
+    React.useEffect(() => {
       props.initialize({
         code: selectedDataList, 
         deposited_bank: "", 
@@ -32,9 +36,10 @@ const CheckStatusHooks = (props) => {
       });
       dispatch(getAllRefBankAccounts());
       return () => cancelRequest();
-    },[props.code]);
+    },[refresh,props.code]);
 
     const submit = async (values,dispatch) => {  
+ 
       const data = {
         status: values.status, 
         code: values.code,
@@ -43,18 +48,35 @@ const CheckStatusHooks = (props) => {
         rejected_date: values?.rejected_date,
         rejected_remarks: values?.rejected_remarks
       }
+      let stts = ''
+      switch (data?.status) {
+        case 'APPROVED':
+          stts = 'APPROVE'
+          break;
+        case 'DEPOSITED':
+          stts = 'DEPOSIT'
+          break;
+        case 'TRANSMITTED':
+          stts = 'TRANSMIT'
+          break;
+          case 'REJECTED':
+            stts = 'REJECT'
+            break;
+        default:
+          stts='UNDO'
+          break;
+      } 
       // Check if any checks are selected
       if (data.code.length === 0) {
-        await swal("Error", `Please select at least one check to ${data?.status.toLowerCase()}`, "error");
+        await swal("Information", `Please select at least one check to ${data?.status.toLowerCase()}`, "info");
         return;
-      }
-    
+      } 
       try {
         // Ask for confirmation before proceeding
         const isConfirm = await swal({
-          title: data?.status,
-          text: `Are you sure you want to proceed with ${data?.status}? `,
-          icon: "warning",
+          title: stts,
+          text: `Are you sure you want to proceed with ${stts}? `,
+          icon: "info",
           buttons: true,
           dangerMode: true,
         });
@@ -66,16 +88,16 @@ const CheckStatusHooks = (props) => {
     
           // Handle the response
           if (res) {
-            await swal(res.title, res.message, res.status);  
-            await dispatch({
-                type: Constants.ACTION_EPAY_CHECK,
-                payload: {
-                  selectedDataList:[],
-                  refesh: !refresh,
-                  viewModal: false, // Open the deposit modal
-                  viewModal2: false
-                },
+            dispatch({
+              type: Constants.ACTION_EPAY_CHECK,
+              payload: {
+                selectedDataList:[],
+                refesh: !refresh,
+                viewModal: false, // Open the deposit modal
+                viewModal2: false
+              },
             });
+            await swal(res.title, res.message, res.status);  
             if (res.status === "error") {
               window.location.reload();
             }
@@ -86,7 +108,7 @@ const CheckStatusHooks = (props) => {
        
       } catch (error) {
         console.error("Error updating status:", error); // Use console.error for errors
-        swal("Oops!", "Something went wrong, please try again!", "error");
+        swal("Oops!", "Something went wrong, please try again!", "warning");
       }
     }; 
     const clickDepositedModal = async () => { 
@@ -97,8 +119,10 @@ const CheckStatusHooks = (props) => {
         },
       });
     }; 
-     
+
+    
     return {
+      reject_remarks,
       bank_accounts, 
       clickDepositedModal,
       submit

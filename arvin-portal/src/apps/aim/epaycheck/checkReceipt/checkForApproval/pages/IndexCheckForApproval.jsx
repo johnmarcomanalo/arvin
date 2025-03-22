@@ -6,8 +6,8 @@ import configure from "apps/configure/configure.json";
 import BreadCrumbs from "components/breadCrumb/BreadCrumbs";
 import PageTitle from "components/pageTItle/PageTitle";
 import * as React from "react";
-import CheckCollection from "./CheckCollection";
-const title_page = "Check Collection";
+import CheckForApproval from "./CheckForApproval";
+const title_page = "For Approval"
 const breadCrumbArray = [
   {
     name: "Home",
@@ -36,8 +36,8 @@ const breadCrumbArray = [
     ),
   },
   {
-    name: "Check Collection",
-    href: "/Modules/E-PayCheck/CheckCollection",
+    name: "Check Receive",
+    href: "/Modules/E-PayCheck/IndexCheckForApproval",
     icon: (
       <GroupIcon
         sx={{
@@ -49,7 +49,7 @@ const breadCrumbArray = [
     ),
   },
 ];
-export default function IndexCheckCollection() {
+export default function IndexCheckForApproval() {
   return (
     <React.Fragment>
       <Grid container spacing={2}>
@@ -60,7 +60,7 @@ export default function IndexCheckCollection() {
           <PageTitle title={title_page} />
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
-          <CheckCollection />
+          <CheckForApproval />
         </Grid>
       </Grid>
     </React.Fragment>

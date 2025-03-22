@@ -123,8 +123,9 @@ class EPayCheckCheckDetailLogsController extends Controller
         }
     
         $validated            = $validator->validated();
-        $result_body          = $this->execute_report($validated['df'], $validated['dt'], $validated['sc'], "within_range");
+        $result_body          = $this->execute_report($validated['df'], $validated['dt'], $validated['sc'], "date_range");
         $result_footer        = $this->execute_report($validated['df'], $validated['dt'], $validated['sc'], "open");
+        $result_rejected      = $this->execute_report($validated['df'], $validated['dt'], $validated['sc'], "open_rejected");
 
         //HEADER summary data
 
@@ -140,6 +141,7 @@ class EPayCheckCheckDetailLogsController extends Controller
         //BODY
         $transactions     = collect($result_body);
         $beginning_on_hand= collect($result_footer);
+        $open_rejected    = collect($result_rejected);
         $code_exclude     = $transactions->whereIn('check_status',["REJECTED","TRANSMITTED","DEPOSITED"])->pluck('code')->filter()->toArray();
         
         //merging data open status and within range
@@ -151,16 +153,18 @@ class EPayCheckCheckDetailLogsController extends Controller
         });
 
         // data body grouped by date
-        $data_onhand = $this->get_group_data($merge_data, "ON-HAND", $code_exclude, true);
-        $data_transmitted = $this->get_group_data($transactions,"TRANSMITTED",null,true);
-        $data_deposited   = $this->get_group_data($transactions,"DEPOSITED",null,true);
-        $data_rejected    = $this->get_group_data($transactions,"REJECTED",null,true);
+        $data_onhand           = $this->get_group_data($merge_data, "ON-HAND", $code_exclude, true);
+        $data_transmitted      = $this->get_group_data($transactions,"TRANSMITTED",null,true);
+        $data_deposited        = $this->get_group_data($transactions,"DEPOSITED",null,true);
+        $data_rejected         = $this->get_group_data($transactions,"REJECTED",null,true);
+        $data_open_rejected    = $this->get_group_data($open_rejected,"REJECTED",null,true);
  
         $body = [
-            'deposited'        => $data_deposited,
-            'onhand'           => $data_onhand,
-            'transmitted'      => $data_transmitted,
-            'rejected'         => $data_rejected,
+            'deposited'     => $data_deposited,
+            'onhand'        => $data_onhand,
+            'transmitted'   => $data_transmitted,
+            'rejected'      => $data_rejected,
+            'open_rejected' => $data_open_rejected,
         ];
 
         $minus_status =  $transactions->where('check_status', 'DEPOSITED')->count()
@@ -169,12 +173,13 @@ class EPayCheckCheckDetailLogsController extends Controller
         
         // FOOTER Compute summary
         $summary = (object) [
-            'beginning_on_hand'=> $data_beg->count(),
-            'collected'        => $transactions->where('check_status', 'ON-HAND')->count(),
-            'deposited'        => $transactions->where('check_status', 'DEPOSITED')->count(),
-            'transmitted'      => $transactions->where('check_status', 'TRANSMITTED')->count(),
-            'rejected'         => $transactions->where('check_status', 'REJECTED')->count(),
-            'ending_on_hand'   => ($data_beg->count() + $transactions->where('check_status', 'ON-HAND')->count())-$minus_status,
+            'beginning_on_hand'     => $data_beg->count(),
+            'collected'             => $transactions->where('check_status', 'ON-HAND')->count(),
+            'deposited'             => $transactions->where('check_status', 'DEPOSITED')->count(),
+            'transmitted'           => $transactions->where('check_status', 'TRANSMITTED')->count(),
+            'rejected'              => $transactions->where('check_status', 'REJECTED')->count(),
+            'ending_on_hand'        => ($data_beg->count() + $transactions->where('check_status', 'ON-HAND')->count())-$minus_status,
+            'open_rejected'         => $open_rejected->count(), 
         ];
         // //FOOTER END
     
@@ -183,6 +188,7 @@ class EPayCheckCheckDetailLogsController extends Controller
             'body'             => $body,
             'footer'           => $summary
         ];
+        
         return Crypt::encryptString(json_encode($response));
 
     }

@@ -131,7 +131,7 @@
         "group": 1
     },
     {
-        "name": "Asia United Bank Corporation",
+        "name": "Asia United Bank (AUB)",
         "type": "Universal Banks (UBs)",
         "group": 1
     },
@@ -151,7 +151,7 @@
         "group": 1
     },
     {
-        "name": "China Banking Corporation (Chinabank)",
+        "name": "China Banking Corporation (Chinabank - CBC)",
         "type": "Universal Banks (UBs)",
         "group": 1
     },
@@ -3163,6 +3163,31 @@
     {
         "name": "Land Bank of the Philippines (LANDBANK)",
         "type": "Land Bank of the Philippines (LANDBANK)",
+        "group": 1
+    },
+    {
+        "name": "Sterling Bank of Asia",
+        "type": "Sterling Bank of Asia",
+        "group": 1
+    },
+    {
+        "name": "Rural Bank of Lebak (Sultan Kudarat), Inc.",
+        "type": "Rural Bank of Lebak (Sultan Kudarat), Inc.",
+        "group": 1
+    },
+    {
+        "name": "1st Valley Bank",
+        "type": "1st Valley Bank",
+        "group": 1
+    },
+    {
+        "name": "ANZ (Bank)",
+        "type": "ANZ (Bank)",
+        "group": 1
+    },
+    {
+        "name": "EastWest Bank (EWB)",
+        "type": "EastWest Bank",
         "group": 1
     },
     {

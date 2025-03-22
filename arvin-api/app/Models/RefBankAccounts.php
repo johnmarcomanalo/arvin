@@ -18,13 +18,13 @@ class RefBankAccounts extends Model
 
         // Set added_by and modified_by during creation
         static::creating(function ($model) {
-            $model->added_by = Auth::id();
-            $model->modified_by = Auth::id();
+            $model->added_by = Auth::user()->code;
+            $model->modified_by = Auth::user()->code;
         });
 
         // Set modified_by during update
         static::updating(function ($model) {
-            $model->modified_by = Auth::id();
+            $model->modified_by = Auth::user()->code;
         });
     }
 }

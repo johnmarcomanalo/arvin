@@ -1,18 +1,16 @@
-import React, { useState, useEffect,useRef } from "react";
 import {
   Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  PDFViewer,
   Font,
+  Page,
+  PDFViewer,
+  StyleSheet,
+  Text
 } from "@react-pdf/renderer";
+import { useEffect, useState } from "react";
+import { NumberToWords, ViewAmountFormatingDecimals } from "utils/AccountingUtils";
+import PoppinsBold from "../../../../../../../utils/font/Poppins-Bold.ttf";
 import PoppinsRegular from "../../../../../../../utils/font/Poppins-Regular.ttf";
-import PoppinsBold from "../../../../../../../utils/font/Poppins-Bold.ttf"; 
-import PoppinsBoldItalic from "../../../../../../../utils/font/Poppins-BoldItalic.ttf";
-import PoppinsSemiBoldItalic from "../../../../../../../utils/font/Poppins-SemiBoldItalic.ttf"; 
-import {NumberToWords,ViewAmountFormatingDecimals} from "utils/AccountingUtils";
+import PoppinsSemiBoldItalic from "../../../../../../../utils/font/Poppins-SemiBoldItalic.ttf";
 // Register fonts
 Font.register({
   family: "PoppinsRegular",
@@ -50,10 +48,11 @@ const ViewPrintReceipt = (props) => {
         <div style={{
           position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
           display: "flex", alignItems: "center", justifyContent: "center",
-          backgroundColor: "rgba(255, 255, 255, 0.9)", // Light overlay
+          backgroundColor: "rgba(82, 86, 89, 0.8)", // Light overlay
           zIndex: 10,
           border: "1px solid black", // Ensure border is visible
-          fontSize:12
+          fontSize:12,
+          color:'white'
         }}>
           <span>Loading PDF...</span>
         </div>

@@ -38,16 +38,16 @@ const styles = StyleSheet.create({
   },
   section: { marginBottom: 10 },
   title: { fontSize: 10, fontWeight: "bold", marginBottom: 0, fontFamily: "PoppinsBold" },
-  subtitle: { fontSize: 7, fontWeight: "bold", marginBottom: 1,marginTop:8, fontFamily: "PoppinsBold" },
-  headerGroup: { marginBottom: 3, textAlign: "center" },
+  subtitle: { fontSize: 7, fontWeight: "bold", marginBottom: 1,marginTop:7, fontFamily: "PoppinsBold" },
+  headerGroup: { marginBottom: 2, textAlign: "left" },
   headerText: { fontSize: 9, margin:1, fontFamily: "PoppinsRegular" },
   table: { display: "flex", flexDirection: "column", border: "0.5px solid black", fontSize: 6 },
   row: { flexDirection: "row", borderBottom: "0.5px solid black",fontWeight: "bold" },
-  cell: { padding: 2, borderRight: "0.5px solid black", flex: 1, textAlign: "center", fontSize: 6 },
-  smallCell: { flex: 0.4, padding: 2, borderRight: "0.5px solid black", textAlign: "center", fontSize: 6 },
+  cell: { padding: 2, borderRight: "0.5px solid black", flex: 1, textAlign: "left", fontSize: 6 },
+  smallCell: { flex: 0.3, padding: 2, borderRight: "0.5px solid black", textAlign: "left", fontSize: 6 },
   footer: {
-    marginTop: 20,
-    paddingBottom:20,
+    marginTop: 15,
+    paddingBottom:15,
     padding: 1,
     borderBottom: "1px solid #000",
     // backgroundColor: "#f5f5f5",
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   footerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 2,
+    marginBottom: 1,
   },
   footerLabel: {
     fontSize: 8,
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   },
   footerDivider: {
     borderBottom: "1px solid black",
-    marginVertical: 5,
+    marginVertical: 4,
   },
 });
 
@@ -81,9 +81,12 @@ const headers = [
   {id:"check_status_date",description:"DATE DEP/TRANS"},
   {id:"check_number",description:"CHECK NUMBER"}, 
   {id:"bank_description",description:"BANK NAME"},
-  {id:"check_amount",description:"CHECK AMOUNT"}, 
   {id:"card_name",description:"CUSTOMER"}, 
-  {id:"crpr",description:"OR/PR"}, 
+  {id:"prefix_crpr",description:"OR/PR"}, 
+  {id:"check_amount",description:"CHECK AMOUNT"}, 
+  {id:"sum_doc_total",description:"SI AMOUNT"}, 
+  {id:"count_sales_invoice",description:"SI COUNT"}, 
+  {id:"stale_check",description:"STALE CHECK"}, 
 ];
 
 
@@ -107,7 +110,7 @@ const Table = ({ title, data }) => {
               {/* Table Header */}
               <View style={[styles.row, { backgroundColor: "#ddd" }]}>
                 {headers.map((header, index) => (
-                  <Text key={index} style={index < 4 || index === 7 ? styles.smallCell : styles.cell}>
+                  <Text key={index} style={index < 4 || index > 5 ? styles.smallCell : styles.cell}>
                     {header.description}
                   </Text>
                 ))}
@@ -118,13 +121,14 @@ const Table = ({ title, data }) => {
                 rows.map((row, rowIndex) => (
                   <View key={rowIndex} style={styles.row}>
                     {headers.map((header, cellIndex) => (
-                      <Text key={cellIndex}  style={cellIndex < 4 || cellIndex === 7 ? styles.smallCell : styles.cell}>
+                      <Text key={cellIndex}  style={cellIndex < 4 ||  cellIndex>5 ? styles.smallCell : styles.cell}>
                         {row[header.id] || ""}
                       </Text>
                     ))}
                   </View>
                 ))}
-              <View style={styles.row}>
+              {/* <View style={styles.row}> 
+                <Text style={[styles.smallCell]}></Text>
                 <Text style={[styles.smallCell]}></Text>
                 <Text style={[styles.smallCell]}></Text>
                 <Text style={[styles.smallCell]}></Text>
@@ -137,7 +141,7 @@ const Table = ({ title, data }) => {
                 </Text> 
                 <Text style={[styles.cell]}></Text>
                 <Text style={[styles.smallCell]}></Text>
-              </View>
+              </View> */}
             </View>
           ))}
         </>
@@ -154,6 +158,7 @@ const Summary = ({data})=>{
     const collected         = data?.collected ? data?.collected :"-"
     const transmitted       = data?.transmitted ? data?.transmitted :"-"
     const rejected          = data?.rejected ? data?.rejected :"-"
+    const open_rejected     = data?.open_rejected ? data?.open_rejected :"-"
     return (  <View style={styles.footer}>
       <View style={styles.footerRow}>
         <Text style={styles.footerLabel}>Beginning ON-HAND:</Text>
@@ -182,6 +187,11 @@ const Summary = ({data})=>{
         <Text style={styles.footerLabel}>Ending ON-HAND:</Text>
         <Text style={styles.footerValue}>{ending_on_hand}</Text>
       </View>
+      <View style={styles.footerDivider} />
+      <View style={styles.footerRow}>
+        <Text style={styles.footerLabel}>Open Rejected:</Text>
+        <Text style={styles.footerValue}>{open_rejected}</Text>
+      </View>
     </View>)
 }
 
@@ -199,22 +209,23 @@ const ViewPrintWeeklyCheckReport = (props) => {
     }, 500); // Simulating API delay
   }, [props.data]);
 
-  const footer_summary    = props.data?.footer
-  const body_data         = props.data?.body
-  const onhand_data       = body_data?.onhand
-  const deposited_data    = body_data?.deposited
-  const transmitted_data  = body_data?.transmitted
-  const rejected_data     = body_data?.rejected
+  const footer_summary     = props.data?.footer
+  const body_data          = props.data?.body
+  const onhand_data        = body_data?.onhand
+  const deposited_data     = body_data?.deposited
+  const transmitted_data   = body_data?.transmitted
+  const rejected_data      = body_data?.rejected
+  const open_rejected_data = body_data?.open_rejected
 
   // FOOTER DATA
  
 
   //HEADER DATA
-  const header_data       = props.data?.header;
-  const header_date_from  = header_data?.date_from
-  const header_date_to    = header_data?.date_to
-  const header_subsection = header_data?.sub_section
-  const header_title      = "WEEKLY CHECK COUNTER RECEIPT"
+  const header_data        = props.data?.header;
+  const header_date_from   = header_data?.date_from
+  const header_date_to     = header_data?.date_to
+  const header_subsection  = header_data?.sub_section
+  const header_title       = "WEEKLY CHECK COUNTER RECEIPT"
 
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
@@ -223,10 +234,11 @@ const ViewPrintWeeklyCheckReport = (props) => {
           <div style={{
             position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
             display: "flex", alignItems: "center", justifyContent: "center",
-            backgroundColor: "rgba(255, 255, 255, 0.9)", // Light overlay
+            backgroundColor: "rgba(82, 86, 89, 0.8)", // Light overlay
             zIndex: 10,
             border: "1px solid black", // Ensure border is visible
-            fontSize:12
+            fontSize:12,
+            color:'white'
           }}>
             <span>Loading PDF...</span>
           </div>
@@ -250,6 +262,15 @@ const ViewPrintWeeklyCheckReport = (props) => {
           {/* Footer */}
           <Summary data={footer_summary} />
         </Page>
+
+        {/* OPEN REJECTED */}
+        <>
+        {open_rejected_data && open_rejected_data.length!==0 && (
+          <Page size={[pageWidth, pageHeight]} style={styles.page} orientation="landscape" wrap>
+            <Table title="OPEN REJECTED" data={open_rejected_data} />
+          </Page>
+        )}
+        </>
       </Document>
     </PDFViewer>
     </div>

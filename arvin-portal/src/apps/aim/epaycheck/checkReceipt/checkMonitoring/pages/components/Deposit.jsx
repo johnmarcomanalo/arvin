@@ -45,18 +45,6 @@ let Deposit = (props) => {
       <React.Fragment> 
             <form autoComplete="off" onSubmit={props.handleSubmit(check.submit)}>
               <Grid container spacing={2}> 
-                  <Grid  item xs={12} sm={12} md={12} lg={12}>
-                    <Field
-                        id="deposited_date"
-                        name="deposited_date"
-                        component={InputField}
-                        type="date"
-                        label="Deposit Date"
-                        size="small"
-                        disabled={true} 
-                        fullWidth
-                      />
-                  </Grid>  
                   <Grid  item xs={12} sm={12} md={12} lg={12}> 
                       <Field
                           id="deposited_bank"
@@ -72,6 +60,19 @@ let Deposit = (props) => {
                           }}
                       />
                   </Grid>  
+                  <Grid  item xs={12} sm={12} md={12} lg={12}>
+                    <Field
+                        id="deposited_date"
+                        name="deposited_date"
+                        component={InputField}
+                        type="date"
+                        label="Deposit Date"
+                        size="small"
+                        disabled={true} 
+                        fullWidth
+                      />
+                  </Grid>  
+                 
                   <Grid item xs={12} sm={12} md={12} lg={12}>
                       <Stack
                         direction="row"

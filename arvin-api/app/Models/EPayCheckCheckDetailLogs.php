@@ -10,32 +10,21 @@ class EPayCheckCheckDetailLogs extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
-    
+    protected $guarded = []; 
     protected static function boot()
     {
         parent::boot();
 
         // Set added_by and modified_by during creation
         static::creating(function ($model) {
-            $model->added_by = Auth::id();
-            $model->modified_by = Auth::id();
+            $model->added_by = Auth::user()->code;
+            $model->modified_by = Auth::user()->code;
         });
 
         // Set modified_by during update
         static::updating(function ($model) {
-            $model->modified_by = Auth::id();
+            $model->modified_by = Auth::user()->code;
         });
-    }
-
-    public static function generate_code(){
-        $code = 1;
-        $current_date = date('Y-m-d');
-         $latest_code = Static::latest('code')->first('code')->code ?? NULL;
-        if(!empty($latest_code)){
-            $code = $latest_code + 1;
-        }
-        return $code;
-    }
+    } 
 
 }

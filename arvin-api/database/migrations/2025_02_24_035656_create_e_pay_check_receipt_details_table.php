@@ -18,6 +18,7 @@ class CreateEPayCheckReceiptDetailsTable extends Migration
             $table->bigInteger('code')->unique();
             $table->string('description',50);
             $table->string('type',50);
+            $table->string('prefix',10);
             $table->boolean('active');
             $table->longText('format');
             $table->timestamp('created_at')->useCurrent();

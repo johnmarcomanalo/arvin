@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEPayCheckRejectTable extends Migration
+class CreateEPayCheckApprovalRequestsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,14 @@ class CreateEPayCheckRejectTable extends Migration
      */
     public function up()
     {
-        Schema::create('e_pay_check_reject', function (Blueprint $table) {
+        Schema::create('e_pay_check_approval_requests', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('code')->unique();
-            $table->string('check_details_code',50);
-            $table->longText('rejected_remarks')->nullable();
-            $table->timestamp('rejected_date')->useCurrent();
+            $table->unsignedBigInteger('check_details_code');
+            $table->string('request_status', 50)->default('PENDING');
+            $table->string('message_type', 50);
+            $table->longText('message');
+            $table->string('approved_by')->nullable(); // Approver’s identifier
+            $table->timestamp('approved_at')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->timestamp('deleted_at')->nullable();
@@ -34,6 +36,6 @@ class CreateEPayCheckRejectTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('e_pay_check_reject');
+        Schema::dropIfExists('e_pay_check_approval_requests');
     }
 }
