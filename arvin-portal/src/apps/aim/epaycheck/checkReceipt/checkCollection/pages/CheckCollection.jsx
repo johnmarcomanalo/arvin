@@ -265,34 +265,23 @@ let CheckCollection = (props) => {
                                }}
                           />
                       </Grid> 
-                      <Grid item xs={12} sm={12} md={6} lg={6}> 
-                          <Field
-                            id="prefix"
-                            name="prefix"
-                            label="Prefix"
-                            required={state.advancePayment}
-                            minLength={1}
-                            type="text"
-                            component={InputField}
-                            pattern={/^[A-Za-z]$/}
-                          />
-                          {/* <Field
-                           key={props.refresh}
-                           id="company_prefix"
-                           name="company_prefix"
-                           label="Company Prefix"
-                           options={check?.form_type}
+                      <Grid item xs={12} sm={12} md={6} lg={6}>  
+                          <Field 
+                           id="company"
+                           name="company"
+                           label="Company (Pay to the order of)"
+                           options={check?.bank_accounts}
                            getOptionLabel={(option) =>
                              option?.description ? option?.description : ""
                            }
                            required={state.advancePayment}
                            component={ComboBox}
                            onChangeHandle={(e, newValue) => {
-                             if (newValue?.value) {
-                               props.change("company_prefix", newValue.value);
+                             if (newValue?.description) {
+                               props.change("prefix", newValue.prefix);
                              }
                            }}
-                          /> */}
+                          />
                       </Grid>
                     </>
                   )}

@@ -19,6 +19,7 @@ class CreateRefBankAccountsTable extends Migration
             $table->string('description',200);
             $table->string('type',50);
             $table->string('bank_account_number',50);
+            $table->string('prefix',5);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->timestamp('deleted_at')->nullable();

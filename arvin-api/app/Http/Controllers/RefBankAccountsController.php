@@ -16,7 +16,7 @@ class RefBankAccountsController extends Controller
     public function index()
     {
         $data = array();
-        $data = RefBankAccounts::whereNull('deleted_at')->get();
+        $data = RefBankAccounts::whereNull('deleted_at')->orderBy('description', 'asc')->get();
         if(!empty($data)){
           return Crypt::encryptString(json_encode($data));
         }
@@ -34,6 +34,7 @@ class RefBankAccountsController extends Controller
             'description' => 'required',
             'bank_account_number' => 'required',
             'type' => 'required',
+            'prefix' => 'required',
             'added_by' => 'required',
             'modified_by' => 'required',
         ]);
@@ -85,6 +86,7 @@ class RefBankAccountsController extends Controller
             'code'        => 'required',
             'description' => 'required',
             'bank_account_number' => 'required',
+            'prefix'      => 'required',
             'type'        => 'required',
         ]);
         $data = RefBankAccounts::where('code','=',$id)->first();
@@ -100,6 +102,7 @@ class RefBankAccountsController extends Controller
         $data->update([
             'modified_by' => $fields['modified_by'],
             'description' => $fields['description'],
+            'prefix'      => $fields['prefix'],
             'bank_account_number' => $fields['bank_account_number'],
             'type'        => $fields['type'],
         ]);

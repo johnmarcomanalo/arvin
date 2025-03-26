@@ -38,6 +38,7 @@ const CheckMonitoringHooks = (props) => {
     const viewModal        = useSelector((state) => state.EpayCheckReducer.viewModal); 
     const viewModal2        = useSelector((state)=> state.EpayCheckReducer.viewModal2); 
     const editModal        = useSelector((state) => state.EpayCheckReducer.editModal); 
+    const rejectCloseModal = useSelector((state) => state.EpayCheckReducer.rejectCloseModal); 
     const bank_accounts    = useSelector((state) => state.ReferenceReducer.bank_accounts); 
     const refresh          = useSelector((state) => state.EpayCheckReducer.refresh);
     const selectedDataList = useSelector((state) => state.EpayCheckReducer.selectedDataList);
@@ -49,6 +50,7 @@ const CheckMonitoringHooks = (props) => {
     });
     const subsection_allowed_to_reject = [12];
     const columns = [
+        { id:"code", label:"Reference", align:"left"},
         { id:"status", label:"Status", align:"left"},
         { id:"stale_check_view", label:"Stale Check", align:"left"},
         { id:"card_code", label:"Customer Code", align:"left"},
@@ -366,6 +368,29 @@ const CheckMonitoringHooks = (props) => {
         });
       };
 
+
+      const onClickOpenCloseRejectedModal = async  (row)=> {
+        if(row?.status === "CLOSED"){
+          swal("Information", "Check is already closed", "info");
+          return;
+        }
+        dispatch({
+          type: Constants.ACTION_EPAY_CHECK,
+          payload: {
+            selectedItem: row,
+            rejectCloseModal: true,
+          },
+        });
+      };
+      const onClickCloseCloseRejectedModal = () => {
+        dispatch({
+          type: Constants.ACTION_EPAY_CHECK,
+          payload: {
+            rejectCloseModal: false,
+          },
+        });
+      };
+
       const onClickOpenRejectModal = async  ()=> { 
         if (!hasSelectedChecks()) return;
         dispatch({
@@ -393,36 +418,40 @@ const CheckMonitoringHooks = (props) => {
       }    
 
 
-      const onClickRejectToClose = async () => {
-        if (!hasSelectedChecks()) return;
-        const values = {
-          code: selectedDataList,
-          // rejected_remarks: values?.rejected_remarks
-        }
-        const isConfirm = await swal({
-          title: "Close",
-          text: `Are you sure you want to proceed with close? (${selectedDataList.length})`,
-          icon: "info",
-          buttons: true,
-          dangerMode: true,
-          closeOnClickOutside: false,
-        });
-    
-        if (isConfirm) {
-        const res = await dispatch(postCheckRejectToClose(values));
-        if (res) {
-          dispatch({
-            type: Constants.ACTION_EPAY_CHECK,
-            payload: {
-              viewModal: false,
-              refresh: !refresh,
-              selectedDataList: [],
-            },
-          }); 
+      const onClickRejectToClose = async (values) => {
+       
+            const value = {
+              code: selectedItem?.code,
+              rejected_reference: values.rejected_reference, 
+            }
 
-          await swal(res.title, res.message, res.status);
-        }
-      }
+            const isConfirm = await swal({
+              title: "For Close",
+              text: `Are you sure you want to proceed with the close action? `,
+              icon: "info",
+              buttons: true,
+              dangerMode: true,
+              closeOnClickOutside: false,
+            });
+            
+            if (isConfirm) {
+            const res = await dispatch(postCheckRejectToClose(value));
+            if (res) { 
+              if(res.result){
+                dispatch({
+                  type: Constants.ACTION_EPAY_CHECK,
+                  payload: {
+                    rejectCloseModal: false,
+                    refresh: !refresh,
+                    selectedDataList: [],
+                  },
+                }); 
+              }
+              await swal(res.title, res.message, res.status);
+            }
+          }
+
+
       }
        
    
@@ -447,6 +476,7 @@ const CheckMonitoringHooks = (props) => {
         selectedDataList,
         editModal,
         subsection_allowed_to_reject,
+        rejectCloseModal,
         onChangeSearch,
         onClickOpenViewModalDeposit,
         onClickCloseViewModalDeposit,
@@ -464,7 +494,9 @@ const CheckMonitoringHooks = (props) => {
         onClickUndo,
         onClickOpenRejectModal,
         onClickCloseRejectModal,
-        onClickRejectToClose
+        onClickRejectToClose,
+        onClickOpenCloseRejectedModal,
+        onClickCloseCloseRejectedModal
     };
 };
 

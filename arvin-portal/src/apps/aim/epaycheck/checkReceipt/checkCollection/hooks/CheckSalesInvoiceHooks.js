@@ -47,7 +47,8 @@ const CheckSalesInvoiceHooks = (props) => {
   });
 
   const columns = [
-    { id: "bp_payment_term", label: "Payment Mode", align: "left", sortable: true },
+    { id: "bp_payment_term", label: "Payment Term", align: "left", sortable: true },
+    { id: "payment_mode", label: "Payment Mode", align: "left", sortable: true },
     { id: "docno", label: "Document Number", align: "left", sortable: true },
     { id: "sino", label: "SI Number", align: "left", sortable: true },
     { id: "drno", label: "DR Number", align: "left", sortable: true },

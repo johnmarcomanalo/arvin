@@ -123,9 +123,7 @@ class EPayCheckCheckDetailsController extends Controller
             $validatedData['check_status_date'] = Carbon::now();
             $validatedData['advance_payment'] = $request->advance_payment ?? 0; 
             $validatedData['stale_check'] = $this->isStaleCheck($validatedData['check_date']);
- 
-       
- 
+  
             if($validatedData['advance_payment']){
                 $validatedData['prefix_crpr'] = $this->getPrefixCrpr(
                     $validatedData['crpr'],
@@ -186,17 +184,17 @@ class EPayCheckCheckDetailsController extends Controller
             ];
             
             if (!$resultData->advance_payment) {
-                $invoices       = EPayCheckCheckSalesInvoiceDetails::where('check_details_code', $resultData['code'])->first();
+                $invoices = EPayCheckCheckSalesInvoiceDetails::where('check_details_code', $resultData['code'])->first();
                 $receiptDetails = EPayCheckReceiptDetails::where([
                     'active'  => true,
-                    'prefix'  => substr($invoices['sales_invoice'], 0, 1),
-                    'form'    => $invoices['form']
+                    'prefix'  => substr($invoices['sales_invoice'] ?? '', 0, 1),
+                    'form'    => $invoices['form'] ?? null
                 ])->first();
             
-               if ($receiptDetails) {
+                if ($receiptDetails) {
                     $printData['receipt_code']        = $receiptDetails['code'];
                     $printData['receipt_description'] = $receiptDetails['description'];
-               }else{
+                } else {
                     $response = [
                         'result'  => true,
                         'status'  => 'success',
@@ -204,16 +202,24 @@ class EPayCheckCheckDetailsController extends Controller
                         'message' => 'Record created successfully.',
                         'print'   => $printData
                     ];
-               }
-            }else{
+                }
+            } else {
                 $receiptDetails = EPayCheckReceiptDetails::where([
                     'active'  => true,
                     'prefix'  => $request->prefix,
                     'form'    => $request->document_type
                 ])->first();
-                $printData['receipt_code']        = $receiptDetails['code'];
-                $printData['receipt_description'] = $receiptDetails['description'];
+            
+                if ($receiptDetails) {
+                    $printData['receipt_code']        = $receiptDetails['code'];
+                    $printData['receipt_description'] = $receiptDetails['description'];
+                } else {
+                    // Handle the case where receiptDetails is null
+                    $printData['receipt_code']        = null;
+                    $printData['receipt_description'] = null;
+                }
             }
+            
             // Commit transaction
              DB::commit();
                         
@@ -462,7 +468,7 @@ class EPayCheckCheckDetailsController extends Controller
                 'stale_check_view'     => $value->stale_check? 'YES' : 'NO',
                 'stale_check'          => $value->stale_check,
                 'sales_invoice'        => $value->sales_invoice,
-                'dr_number'            => $value->dr_number,
+                'dr_number'            => $value->dr_number
             ];
         }
         
@@ -491,12 +497,13 @@ class EPayCheckCheckDetailsController extends Controller
                 'bank_deposit' => 'nullable|string',
                 'deposited_date' => 'nullable|date',
             ]);  
-            $codes            = $request['code'];
-            $check_status     = $request['status'];
-            $deposited_bank   = $request['deposited_bank'];
-            $deposited_date   = $request['deposited_date'];
-            $rejected_date    = $request['rejected_date'];
-            $rejected_remarks = $request['rejected_remarks'];
+            $codes                      = $request['code'];
+            $check_status               = $request['status'];
+            $deposited_bank             = $request['deposited_bank'];
+            $deposited_date             = $request['deposited_date'];
+            $rejected_date              = $request['rejected_date'];
+            $rejected_remarks           = $request['rejected_remarks'];
+            $rejected_addtional_remarks = $request['rejected_addtional_remarks'];
     
             if ($check_status === self::UNDO) {
                 // Check if there are any logs where 'received_date' is null for the given codes
@@ -558,13 +565,14 @@ class EPayCheckCheckDetailsController extends Controller
                 // Generate logs
                 $codeLogs = MainController::generate_code('App\Models\EPayCheckCheckDetailLogs', "code");
                 $logs = [
-                    'code'               => $codeLogs,
-                    'check_details_code' => $code,
-                    'check_status'       => $check_status,
-                    'deposited_bank'     => $deposited_bank,
-                    'deposited_date'     => $deposited_date,
-                    'rejected_date'      => $rejected_date,
-                    'rejected_remarks'   => $rejected_remarks
+                    'code'                        => $codeLogs,
+                    'check_details_code'          => $code,
+                    'check_status'                => $check_status,
+                    'deposited_bank'              => $deposited_bank,
+                    'deposited_date'              => $deposited_date,
+                    'rejected_date'               => $rejected_date,
+                    'rejected_remarks'            => $rejected_remarks,
+                    'rejected_addtional_remarks'  => $rejected_addtional_remarks
                 ];
 
                 // Create log entry
@@ -939,18 +947,26 @@ class EPayCheckCheckDetailsController extends Controller
     {
         $checkDate = Carbon::parse($checkDate);
         $today = Carbon::now();
+        
+        // If the check date is in the future, it's NOT stale
+        if ($checkDate->gt($today)) {
+            return false;
+        }
+    
+        // Calculate difference in days
         $daysDifference = $checkDate->diffInDays($today);
         
         return $daysDifference > 180;
     }
+    
 
     private function getPrefixCrpr($crpr, $invoice_list,$advance_payment=true)
     {
         if($advance_payment){
 
-            $prefix   = isset($invoice_list[0]['prefix']) ? substr($invoice_list[0]['prefix'], 0, 1) : '';
+            $prefix   = isset($invoice_list['prefix']) ? substr($invoice_list['prefix'], 0, 1) : '-';
 
-            $doctype  = isset($invoice_list[0]['document_type']) && $invoice_list[0]['document_type'] === 'INV' ? 'CR' : 'PR';
+            $doctype  = isset($invoice_list['document_type']) && $invoice_list['document_type'] === 'INV' ? 'CR' : 'PR';
 
             $document = $prefix.$doctype.$crpr;
 
@@ -980,12 +996,16 @@ class EPayCheckCheckDetailsController extends Controller
         }
     }
 
-    public function update_reject_for_close(Request $request){
-
+    public function update_reject_for_close(Request $request)
+    {
         try {
+            // Start a transaction
+            DB::beginTransaction();
+    
+            // Validate request
             $validator = Validator::make($request->all(), [
                 'code' => ['required'],
-                // 'remarks' => ['required', 'string'],
+                'rejected_reference' => ['required', 'string'],
             ]);
     
             if ($validator->fails()) {
@@ -997,34 +1017,76 @@ class EPayCheckCheckDetailsController extends Controller
                 ]));
             }
     
-            $validated = $validator->validated();
-    
-            foreach($validated['code'] as $value){
-                EPayCheckCheckDetailLogs::where('check_details_code', $value)
-                ->where('check_status','=', self::REJECTED)
-                ->whereNull('deleted_at')
-                ->update(['rejected_status' => true]);
-            }
-
-            return Crypt::encryptString(json_encode([
-                'result'  => true,
-                'status'  => 'success',
-                'title'   => 'Success',
-                'message' => 'Check details closed successfully.'
-            ]));
+            $validated     = $validator->validated();
+            $checkLogs     = EPayCheckCheckDetailLogs::pluck('rejected_reference');
+            $check_details = EPayCheckCheckDetails::where('code', $validated['rejected_reference'])
+                            ->where('check_status', '<>', self::REJECTED)
+                            ->whereIn('code', $checkLogs)
+                            ->first();
             
+            if (!$check_details) {
+                $res = DB::select('EXEC dbo.sp_e_pay_check_validate_online_verification ?', [$validated['rejected_reference']]);
+            
+                if (!$res) {
+                    return Crypt::encryptString(json_encode([
+                        'result'  => false,
+                        'status'  => 'info',
+                        'title'   => 'No records found',
+                        'message' => 'No matching records found',
+                    ]));
+                }
+            }
+            
+            // Determine the rejected_reference value
+            $rejectedReference = $validated['rejected_reference'];
+            
+            if (!$check_details && $res) {
+                $rejectedReference .= '-OL';
+            }
+            
+            // Perform update
+            $result = EPayCheckCheckDetailLogs::where('check_details_code', $validated['code'])
+                ->where('check_status', '=', self::REJECTED)
+                ->whereNull('deleted_at')
+                ->update([
+                    'rejected_status'   => true,
+                    'rejected_reference' => $rejectedReference
+                ]);
+        
+                
+    
+            // Commit transaction if update was successful
+            if ($result) {
+                DB::commit(); // Ensure changes are saved
+    
+                return Crypt::encryptString(json_encode([
+                    'result'  => true,
+                    'status'  => 'success',
+                    'title'   => 'Success',
+                    'message' => 'Closed successfully.',
+                ]));
+            } else {
+                DB::rollBack(); // Rollback if no rows were updated
+    
+                return Crypt::encryptString(json_encode([
+                    'result'  => false,
+                    'status'  => 'info',
+                    'title'   => 'No records found',
+                    'message' => 'No matching records found or already updated.',
+                ]));
+            }
         } catch (\Exception $e) {
-            DB::rollBack();
+            DB::rollBack(); // Ensure rollback on exception
     
             return Crypt::encryptString(json_encode([
-                'result' => false,
-                'status' => 'error',
-                'title' => 'Error',
+                'result'  => false,
+                'status'  => 'error',
+                'title'   => 'Error',
                 'message' => 'An error occurred: ' . $e->getMessage()
             ]));
-        } 
-
+        }
     }
+    
     
     
 }

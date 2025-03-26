@@ -46,7 +46,8 @@ const CheckStatusHooks = (props) => {
         deposited_date: values?.deposited_date, 
         deposited_bank: values?.deposited_bank,
         rejected_date: values?.rejected_date,
-        rejected_remarks: values?.rejected_remarks
+        rejected_remarks: values?.rejected_remarks,
+        rejected_addtional_remarks: values?.rejected_addtional_remarks
       }
       let stts = ''
       switch (data?.status) {

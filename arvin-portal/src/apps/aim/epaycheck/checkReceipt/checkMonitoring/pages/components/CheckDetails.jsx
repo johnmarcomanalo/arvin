@@ -1,43 +1,23 @@
-import { 
-  Grid,
-  Stack,
-  Card,
-  Divider,
-  IconButton, 
-  Input,  
-  Tab,  
-  Table,  
-  TableBody,  
-  TableCell,  
-  TableContainer,  
-  TableFooter,  
-  TableHead,  
-  TableRow,  
-  Tooltip,  
-  Typography,
-  CardContent,
-  ButtonGroup,
-  Select
-  } from "@mui/material"; 
-  import { useTheme } from "@mui/material/styles";
-  import * as React from "react";  
-  import { connect } from "react-redux";
-  import { change, Field, formValueSelector, reduxForm, reset } from "redux-form"; 
-  //component
-  import TableComponent from "components/table/Table"; 
-  import InputField from "components/inputFIeld/InputField";
-  import SearchField from "components/inputFIeld/SearchField";
-  import ButtonComponent from "components/button/Button";
-  import ComboBox from "components/autoComplete/AutoComplete";
-  import Page from "components/pagination/Pagination";
-  //hoooks and configuration
-  import CheckMonitoringHooks from "../../hooks/CheckMonitoringHooks";
-  import configure from "apps/configure/configure.json";
-  import swal from "sweetalert";
-  import { putCheckMonitoring } from "../../actions/CheckMonitoringAction"; 
-  import { decryptaes } from "utils/LightSecurity";
-  import { Constants } from "reducer/Contants"
-  let formName = "CheckDetails";
+import {
+Grid,
+Stack,
+Typography
+} from "@mui/material";
+import * as React from "react";
+import { connect } from "react-redux";
+import { Field, formValueSelector, reduxForm } from "redux-form";
+//component
+import ComboBox from "components/autoComplete/AutoComplete";
+import ButtonComponent from "components/button/Button";
+import InputField from "components/inputFIeld/InputField";
+//hoooks and configuration
+import configure from "apps/configure/configure.json";
+import { Constants } from "reducer/Contants";
+import swal from "sweetalert";
+import { decryptaes } from "utils/LightSecurity";
+import { putCheckMonitoring } from "../../actions/CheckMonitoringAction";
+import CheckMonitoringHooks from "../../hooks/CheckMonitoringHooks";
+let formName = "CheckDetails";
 
   const submit = async (values, dispatch, props) => {
     try {
@@ -65,11 +45,11 @@ import {
   };
   
   let CheckDetails = (props) => {
+    console.table(props.details);
+    
     const { ...check }    = CheckMonitoringHooks(props);
     const account_details = check.account_details; 
     const details         = props.details;
-    console.log("modified_by",details);
-    console.log("request_status",details);
     React.useEffect(() => {
       props.initialize({
         modified_by: account_details?.code,
@@ -82,106 +62,114 @@ import {
         bank_branch: details?.bank_branch, 
         remarks: details?.remarks,
         account_number: details?.account_number,
-        crpr: details?.crpr,
+        crpr: details?.prefix_crpr,
         subsection_code: details?.subsection_code,
         card_name: details?.card_name,
         card_code: details?.card_code,
-        request_status: details?.request_status
+        request_status: details?.request_status,
+        sales_invoice:(details?.advance_payment==1)?'ADVANCE PAYMENT':details?.sales_invoice,
+        dr_number: details?.dr_number,
+        check_status: details?.check_status,
       }); 
     }, []);
     
     return (
       <React.Fragment> 
-        <Grid container spacing={2}>  
-            <Grid  item xs={12} sm={12} md={12} lg={12}>
-           <form autoComplete="off" onSubmit={props.handleSubmit}>
-                <Typography
-                  align="left"
-                  gutterBottom
-                  sx={{ color: configure.dark_gray_color, fontSize: 12, }}
-                >
-                  Ensure all the required fields are correctly filled out
-                </Typography>
+         <form autoComplete="off" onSubmit={props.handleSubmit}> 
+        <Grid container spacing={2}>
+            <Grid item xs={12} sm={12} md={6} lg={6} >
                 <Grid container spacing={1}>  
-                  <Grid item xs={12} sm={12} md={12} lg={12}>
-                      <Field
-                        id="check_number"
-                        name="check_number"
-                        label="Check Number"
-                        type="number"
-                        value={details?.check_number}
-                        component={InputField}
-                        required={true}
-                      />
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={12} lg={12}>
-                      <Field
-                        id="check_date"
-                        name="check_date"
-                        label="Check Date"
-                        type="date"
-                        component={InputField}
-                        required={true}
-                      />
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={12} lg={12}>
-                      <Field
-                        id="check_amount"
-                        name="check_amount"
-                        label="Amount"
-                        type="number"
-                        component={InputField}
-                        required={true}
-                      />
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={12} lg={12}>
-                      <Field
-                        id="account_number"
-                        name="account_number"
-                        label="Account Number"
-                        type="number"
-                        component={InputField}
-                      />
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={12} lg={12}>
-                      <Field
-                          id="bank_name"
-                          name="bank_name"
-                          label="Bank Name"
-                          options={check?.banks.phbanks}
-                          getOptionLabel={(option) =>
-                            option?.name ? option?.name : details?.bank_description
-                          }
-                          required={true}
-                          component={ComboBox}
-                          onChangeHandle={(e, newValue) => {
-                            if (newValue?.name) {
-                              props.change("bank_description", newValue.name);
-                            }
-                          }}
-                      /> 
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={12} lg={12}>
-                      <Field
-                        id="bank_branch"
-                        name="bank_branch"
-                        label="Branch"
-                        type="text"
-                        component={InputField}
-                        required={true}
-                      />
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={12} lg={12}>
-                      <Field
-                        id="remarks"
-                        name="remarks"
-                        label="Remarks"
-                        type="text"
-                        component={InputField}
-                      />
-                  </Grid>
+                      <Grid item xs={12} sm={12} md={12} lg={12}>
+                          <Field
+                            disabled={true}
+                            id="check_number"
+                            name="check_number"
+                            label="Check Number"
+                            type="number"
+                            value={details?.check_number}
+                            component={InputField}
+                            required={true}
+                          />
+                      </Grid>
+                      <Grid item xs={12} sm={12} md={12} lg={12}>
+                          <Field
+                            disabled={true}
+                            id="check_date"
+                            name="check_date"
+                            label="Check Date"
+                            type="date"
+                            component={InputField}
+                            required={true}
+                          />
+                      </Grid>
+                      <Grid item xs={12} sm={12} md={12} lg={12}>
+                          <Field
+                            disabled={true}
+                            id="check_amount"
+                            name="check_amount"
+                            label="Amount"
+                            type="number"
+                            component={InputField}
+                            required={true}
+                          />
+                      </Grid>
+                      <Grid item xs={12} sm={12} md={12} lg={12}>
+                          <Field
+                            disabled={true}
+                            id="account_number"
+                            name="account_number"
+                            label="Account Number"
+                            type="number"
+                            component={InputField}
+                          />
+                      </Grid>
+                      <Grid item xs={12} sm={12} md={12} lg={12}>
+                          <Field
+                            disabled={true}
+                            id="bank_name"
+                            name="bank_name"
+                            label="Bank Name"
+                            type="text"
+                            component={InputField}
+                          />
+                      </Grid>
+                      {/* <Grid item xs={12} sm={12} md={12} lg={12}>
+                          <Field 
+                              id="bank_name"
+                              name="bank_name"
+                              label="Bank Name"
+                              options={check?.banks.phbanks}
+                              getOptionLabel={(option) =>
+                                option?.name ? option?.name : details?.bank_description
+                              }
+                              required={true}
+                              component={ComboBox}
+                              onChangeHandle={(e, newValue) => {
+                                if (newValue?.name) {
+                                  props.change("bank_description", newValue.name);
+                                }
+                              }}
+                          /> 
+                      </Grid> */}
+                       <Grid item xs={12} sm={12} md={12} lg={12}>
+                          <Field
+                          disabled={true}
+                            id="bank_branch"
+                            name="bank_branch"
+                            label="Branch"
+                            type="text"
+                            component={InputField}
+                            required={true}
+                          />
+                      </Grid>
+                     
+                </Grid>
+            </Grid>
+            <Grid  item xs={12} sm={12} md={6} lg={6}>  
+                <Grid container spacing={1}>
                   <Grid item xs={12} sm={12} md={12} lg={12}>
                         <Field
+                            disabled={true}
                             id="crpr"
                             name="crpr"
                             label="Document (CR/PR)"
@@ -211,8 +199,40 @@ import {
                             disabled={true}
                         />
                   </Grid> 
-                 
                   <Grid item xs={12} sm={12} md={12} lg={12}>
+                        <Field
+                            id="sales_invoice"
+                            name="sales_invoice"
+                            label="Sale Invoice"
+                            type="text"
+                            component={InputField}
+                            required={true}
+                            disabled={true}
+                        />
+                  </Grid>  
+                  <Grid item xs={12} sm={12} md={12} lg={12}>
+                        <Field
+                            id="check_status"
+                            name="check_status"
+                            label="Check Status"
+                            type="text"
+                            component={InputField}
+                            required={true}
+                            disabled={true}
+                        />
+                  </Grid> 
+                  <Grid item xs={12} sm={12} md={12} lg={12}>
+                      <Field
+                        disabled={true}
+                        id="remarks"
+                        name="remarks"
+                        label="Remarks"
+                        type="text"
+                        component={InputField}
+                        multiple={true}
+                      />
+                  </Grid>
+                  {/* <Grid item xs={12} sm={12} md={12} lg={12}>
                       <Stack
                         direction="row"
                         justifyContent="flex-end"
@@ -228,11 +248,11 @@ import {
                           children={"Submit"}
                         />
                       </Stack>
-                    </Grid>
-                </Grid>
-            </form>
+                    </Grid> */}
+                </Grid> 
             </Grid>  
         </Grid> 
+        </form>
       </React.Fragment>
     );
 }

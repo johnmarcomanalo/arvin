@@ -179,6 +179,15 @@ let IndexRefBankAccounts = (props) => {
                     />
                   </Grid>
                   <Grid item xs={12} md={12}>
+                    <Field
+                      id="prefix"
+                      name="prefix"
+                      label="Prefix (Company Prefix)"
+                      component={InputField}
+                      required={true}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={12}>
                     <Stack
                       direction="row"
                       justifyContent="flex-end"

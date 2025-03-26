@@ -26,6 +26,7 @@ const initialState = {
   viewModal2: false,
   viewModal3: false,
   viewModal4: false,
+  rejectCloseModal: false,
   reportData:[],
   printData:{},
   dataListFormat:[],

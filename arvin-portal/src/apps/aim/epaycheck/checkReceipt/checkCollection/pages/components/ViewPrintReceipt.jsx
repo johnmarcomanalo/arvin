@@ -38,7 +38,7 @@ const ViewPrintReceipt = (props) => {
     }, 500); // Simulating API delay
   }, [props.data]);
   const data  = props?.data;
-  const styles = StyleSheet.create(data?.format || {}); // Use database styles
+  const styles = StyleSheet.create(data?.format || {}); // Use database styles 
   const check_amount = data?.check_amount ? ViewAmountFormatingDecimals(data?.check_amount) : ""
   const numtoword    = data?.check_amount ? NumberToWords(parseFloat(data?.check_amount)) : ""
   return (
@@ -62,6 +62,7 @@ const ViewPrintReceipt = (props) => {
         <Page size="Letter" style={styles.page} wrap>
           <Text style={styles?.datePay}>{data?.date_pay}</Text>
           <Text style={styles?.name}>{data?.card_name}</Text>
+          <Text style={styles?.lictradnum}>{data?.lictradnum}</Text>
           <Text style={styles?.address}>{data?.address}</Text>
           <Text style={styles?.numberToWords}>{numtoword}</Text>
           <Text style={styles?.amount}>{check_amount}</Text>

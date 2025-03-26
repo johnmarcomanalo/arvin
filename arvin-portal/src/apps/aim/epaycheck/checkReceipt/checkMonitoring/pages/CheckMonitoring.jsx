@@ -3,12 +3,14 @@ import {
   Checkbox,
   Grid,
   Stack,
+  Tooltip,
   useMediaQuery
 } from "@mui/material";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
-//component
+//component 
+import CancelIcon from '@mui/icons-material/Cancel';
 import configure from "apps/configure/configure.json";
 import ComboBox from "components/autoComplete/AutoComplete";
 import ButtonComponent from "components/button/Button";
@@ -22,6 +24,7 @@ import CheckMonitoringHooks from "../hooks/CheckMonitoringHooks";
 const Deposit = React.lazy(() => import("./components/Deposit"));
 const CheckDetails = React.lazy(() => import("./components/CheckDetails"));
 const Reject = React.lazy(() => import("./components/Reject"));
+const RejectedClose = React.lazy(() => import("./components/RejectedClose"));
 let formName = "CheckMonitoring"
 const CheckMonitoring = (props) => {
     const { ...check } = CheckMonitoringHooks(props); 
@@ -30,6 +33,18 @@ const CheckMonitoring = (props) => {
     const account      = check?.account_details 
     return (
       <React.Fragment>
+          <React.Suspense fallback={<Loading/>}>
+          <Modal
+              open={check.rejectCloseModal}
+              fullScreen={matches ? false : true}
+              title={"Rejected Close Details"}
+              size={"sm"}
+              action={undefined}
+              handleClose={check.onClickCloseCloseRejectedModal}
+            >
+            <RejectedClose onClickRejectToClose={check.onClickRejectToClose}/>
+          </Modal>
+          </React.Suspense>
           <React.Suspense fallback={<Loading/>}>
           <Modal
               open={check.viewModal}
@@ -47,7 +62,7 @@ const CheckMonitoring = (props) => {
               open={check.editModal}
               fullScreen={matches ? false : true}
               title={"Check Details"}
-              size={"sm"}
+              size={"lg"}
               action={undefined}
               handleClose={check.onClickCloseEditModal}
             >
@@ -193,22 +208,35 @@ const CheckMonitoring = (props) => {
                     rowCount={check.dataListCount}
                     actionshow={true}
                     paginationShow={false}
-                    // subAction1Show={(check.filterStatus=="ON-HAND")}
-                    subAction1Show={false}
+                    subAction1Show={true}
                     subAction2Show={true}
                     action={(row, index) => {
-                      return (
-                        <Checkbox 
-                          checked={check.selectedDataList.includes(row.code)}
-                          onChange={async (e) => { 
-                              check.handleCheckboxChange(row,e.target.checked); 
-                          }}
-                          size="medium"
-                          sx={{ height: "23px", margin: "-10px" }}
-                          disabled={row.status === "CLOSED"}
-                        />
-                      )
-
+                      if (row.check_status!=="REJECTED") {
+                        return ( 
+                          <Checkbox 
+                            checked={check.selectedDataList.includes(row.code)}
+                            onChange={async (e) => { 
+                                check.handleCheckboxChange(row,e.target.checked); 
+                            }}
+                            size="medium"
+                            sx={{ height: "23px", margin: "-10px" }}
+                            disabled={row.status === "CLOSED"}
+                          />
+                        )
+                      }else{
+                        return (
+                          <Tooltip title="Close Reject">
+                            <CancelIcon
+                              onClick={() => check.onClickOpenCloseRejectedModal(row)}
+                              style={{
+                                color: "#009197",
+                                cursor: "pointer",
+                              }}
+                            />
+                          </Tooltip>
+                        )
+                      }
+                     
                     }}
                 /> 
             </Grid> 
@@ -245,16 +273,17 @@ const CheckMonitoring = (props) => {
                       )}
                     </ButtonGroup>
                   ) : (check.filterStatus === "REJECTED" && check.subsection_allowed_to_reject.includes(Number(account?.subsection_code))) ? ( 
-                    <ButtonGroup disableElevation aria-label="Disabled button group">
-                        <ButtonComponent
-                          stx={configure.default_button}
-                          iconType="update"
-                          type="button"
-                          fullWidth={true}
-                          children={"Close Rejected"}
-                          click={check.onClickRejectToClose}
-                        />
-                    </ButtonGroup>
+                    // <ButtonGroup disableElevation aria-label="Disabled button group">
+                    //     <ButtonComponent
+                    //       stx={configure.default_button}
+                    //       iconType="update"
+                    //       type="button"
+                    //       fullWidth={true}
+                    //       children={"Close Rejected"}
+                    //       click={check.onClickRejectToClose}
+                    //     />
+                    // </ButtonGroup>
+                    <></>
                   ) : (
                     <ButtonGroup disableElevation aria-label="Disabled button group">
                         <ButtonComponent

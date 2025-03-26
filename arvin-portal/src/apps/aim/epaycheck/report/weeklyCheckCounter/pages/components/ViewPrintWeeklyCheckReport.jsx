@@ -254,9 +254,9 @@ const ViewPrintWeeklyCheckReport = (props) => {
           </View>
   
           {/* Tables */}
+          <Table title="ON-HAND" data={onhand_data} />
           <Table title="DEPOSITED" data={deposited_data}/>
           <Table title="TRANSMITTED" data={transmitted_data}/>
-          <Table title="ON-HAND" data={onhand_data} />
           <Table title="REJECTED" data={rejected_data} />
   
           {/* Footer */}

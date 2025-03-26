@@ -26,6 +26,7 @@ const RefBankAccountsHooks = (props) => {
     { id: "description", label: "Description", align: "left" },
     { id: "type", label: "Type", align: "left" },
     { id: "bank_account_number", label: "Bank Accont Number", align: "left" },
+    { id: "prefix", label: "Prefix (Document Prefix)", align: "left" },
   ];
   const [state, setState] = React.useState({
     debounceTimer: null,

@@ -12,6 +12,9 @@ import {
   getReceiptFormatList,
   postCheckCollection,
 } from "../actions/CheckCollectionActions";
+import {
+  getAllRefBankAccounts,
+} from "../../../../settings/reference/actions/ReferenceActions";
 let formName = "CheckCollection";
 const CheckCollectionHooks = (props) => { 
   const navigate          = useNavigate();
@@ -38,6 +41,7 @@ const CheckCollectionHooks = (props) => {
   const dataListFormat    = useSelector((state) => state.EpayCheckReducer.dataListFormat); 
   const selectedItem      = useSelector((state) => state.EpayCheckReducer.selectedItem); 
   const banks             = useSelector((state) => state.ReferenceReducer.phbanks);
+  const bank_accounts     = useSelector((state) => state.ReferenceReducer.bank_accounts); 
   const receipt_code      = props.receipt_code
   const receipt_number    = props.receipt_number
   const receipt_description = props.receipt_description ?? ""
@@ -114,6 +118,12 @@ const CheckCollectionHooks = (props) => {
       
       return () => cancelRequest();
     }, [receipt_number,receipt_code,selectedItem]);
+
+    React.useEffect(() => {
+      if (state.advancePayment){
+        dispatch(getAllRefBankAccounts());
+      }
+    }, [state.advancePayment]);
   
 
   // ADD CHECK START FUNCTION AND PROCESS
@@ -420,6 +430,7 @@ const CheckCollectionHooks = (props) => {
     receipt_code,
     column_headers, 
     form_type,
+    bank_accounts,
     submit,
     dispatch,
     setSearchParams, 

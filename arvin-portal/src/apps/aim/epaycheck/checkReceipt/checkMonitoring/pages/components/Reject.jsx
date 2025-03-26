@@ -1,32 +1,19 @@
-import { 
+import {
   Grid,
-  Stack,
-  useMediaQuery,
-  Table,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableContainer,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select
-} from "@mui/material"; 
+  Stack
+} from "@mui/material";
   
+import React from "react";
 import { connect } from "react-redux";
-import React,{ useState, useEffect } from "react"; 
-import { change, Field, formValueSelector, reduxForm, reset } from "redux-form"; 
+import { change, Field, formValueSelector, reduxForm } from "redux-form";
 //component
-import TableComponent from "components/table/Table"; 
-import InputField from "components/inputFIeld/InputField";
-import SearchField from "components/inputFIeld/SearchField";
-import ButtonComponent from "components/button/Button";
 import ComboBox from "components/autoComplete/AutoComplete";
+import ButtonComponent from "components/button/Button";
+import InputField from "components/inputFIeld/InputField";
 //hoooks and configuration 
-import configure from "apps/configure/configure.json"; 
-import CheckStatusHooks from "../../hooks/CheckStatusHooks";
+import configure from "apps/configure/configure.json";
 import moment from "moment";
+import CheckStatusHooks from "../../hooks/CheckStatusHooks";
 let formName = "Reject";
 let Reject = (props) => { 
     const { ...check } = CheckStatusHooks(props);
@@ -47,17 +34,7 @@ let Reject = (props) => {
                         disabled={true} 
                         fullWidth
                       />
-                  </Grid>  
-                  {/* <Grid  item xs={12} sm={12} md={12} lg={12}> 
-                      <Field
-                          id="rejected_remarks"
-                          name="rejected_remarks"
-                          label="Remarks" 
-                          required={true}
-                          component={InputField} 
-                          multiline={true}
-                      />
-                  </Grid>   */}
+                  </Grid>   
                    <Grid  item xs={12} sm={12} md={12} lg={12}> 
                       <Field
                           id="rejected_remarks"
@@ -72,6 +49,16 @@ let Reject = (props) => {
                           onChangeHandle={(e, newValue) => {  
                             
                           }}
+                      />
+                  </Grid>  
+                   <Grid  item xs={12} sm={12} md={12} lg={12}> 
+                      <Field
+                          id="rejected_addtional_remarks"
+                          name="rejected_addtional_remarks"
+                          label="Addtional Remarks" 
+                          required={true}
+                          component={InputField} 
+                          multiline={true}
                       />
                   </Grid>  
                   <Grid item xs={12} sm={12} md={12} lg={12}>

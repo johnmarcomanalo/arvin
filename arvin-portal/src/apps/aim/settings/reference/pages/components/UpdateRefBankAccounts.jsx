@@ -36,6 +36,7 @@ let UpdateRefBankAccounts = (props) => {
       description: selected_ref?.description,
       type: selected_ref?.type,
       bank_account_number: selected_ref?.bank_account_number,
+      prefix: selected_ref?.prefix,
     });
     return () => cancelRequest();
   }, []);
@@ -66,6 +67,15 @@ let UpdateRefBankAccounts = (props) => {
               id="bank_account_number"
               name="bank_account_number"
               label="Bank Account Number"
+              component={InputField}
+              required={true}
+            />
+          </Grid>
+          <Grid item xs={12} md={12}>
+            <Field
+              id="prefix"
+              name="prefix"
+              label="Prefix (Document Prefix)"
               component={InputField}
               required={true}
             />
