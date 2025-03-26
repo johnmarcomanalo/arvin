@@ -169,7 +169,7 @@ class AuthController extends Controller
             'account_id' => 'required', 
         ]);
 
-         $user = User::where('code',$fields['account_id'])->first();
+         $user = UsersAccounts::where('code',$fields['account_id'])->first();
 
         if(empty($user)){
             return response([
@@ -198,7 +198,7 @@ class AuthController extends Controller
             'result' => true,
             'status' => 'success',
             'title' => 'Success',
-            'message' => "Today's sales updated successfully",
+            'message' => "Password updated successfully",
         ], 200); 
 
     }

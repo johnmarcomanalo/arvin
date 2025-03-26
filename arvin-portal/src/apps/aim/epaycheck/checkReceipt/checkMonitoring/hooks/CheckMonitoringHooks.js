@@ -168,7 +168,7 @@ const CheckMonitoringHooks = (props) => {
           const newdate = moment(date).format("YYYY-MM-DD");
           setSearchParams({
             q  : search, 
-            p  : page == null ? 1 : page,
+            p  : "1",
             df : newdate,
             dt : filterEndQuery,
             s  : filterStatus, 
