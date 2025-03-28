@@ -223,9 +223,9 @@
   ],
 
   "system": {
-    "port": "8000",
+    "port": "8080",
     "front_end_port": "3000",
-    "apiUrl": "192.168.1.124",
+    "apiUrl": "192.168.3.22",
     "apiDomain": "meralcoecozoneapi.ums-ph.com",
     "apiFrontDomain": "meralcoecozone.ums-ph.com",
     "testApiDomain": "test-meralco-api.ums-ph.com",

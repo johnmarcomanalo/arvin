@@ -150,7 +150,9 @@ class EPayCheckCheckDetailLogsController extends Controller
         $merge_data       = $datax->merge($data_beg)->map(function ($item) {
             $item->check_status_date = null;
             return $item;
-        });
+        })
+        ->unique('code') // Replace 'your_unique_column' with the column that should be unique
+        ->values(); // Reindex the collection
 
         // data body grouped by date
         $data_onhand           = $this->get_group_data($merge_data, "ON-HAND", $code_exclude, true);

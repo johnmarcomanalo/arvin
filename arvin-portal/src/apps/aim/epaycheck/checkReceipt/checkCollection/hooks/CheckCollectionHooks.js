@@ -64,14 +64,15 @@ const CheckCollectionHooks = (props) => {
   ];
 
   const column_headers = [
-    { id: "bp_payment_term", label: "PAYMENT MODE" }, 
-    { id: "docno", label: "DOCUMENT NUMBER" },
-    { id: "docdate", label: "DOCUMENT DATE" },
-    { id: "drno", label: "DR NUMBER" },
-    { id: "sino", label: "SI NUMBER" },
-    { id: "form", label: "FORM" },
-    { id: "vatsum", label: "VAT" },
-    { id: "doctotal", label: "TOTAL INVOICE" }
+    { id: "tag", label: "TAG" , align: "left"}, 
+    { id: "bp_payment_term", label: "PAYMENT MODE" , align: "left"}, 
+    { id: "docno", label: "DOCUMENT NUMBER" , align: "left"},
+    { id: "docdate", label: "DOCUMENT DATE" , align: "left"},
+    { id: "drno", label: "DR NUMBER" , align: "left"},
+    { id: "sino", label: "SI NUMBER" , align: "left"},
+    { id: "form", label: "FORM" , align: "left"},
+    { id: "vatsum", label: "VAT" , align: "left"},
+    { id: "doctotal", label: "TOTAL INVOICE", align: "left"}
   ];
 
   const form_type = [
@@ -150,6 +151,7 @@ const CheckCollectionHooks = (props) => {
     );
     if (!isExisting) {
       state.invoice_list.push({
+        tag: true,
         docno: row.docno,
         sino: row.sino,
         drno: row.drno,
@@ -408,6 +410,17 @@ const CheckCollectionHooks = (props) => {
     }
   };
 
+  const onChangeTag = (index) => {
+    setState((prevState) => ({
+      ...prevState,
+      invoice_list: prevState.invoice_list.map((row, i) =>
+        i === index ? { ...row, tag: !row.tag } : row
+      ),
+    }));
+  };
+  
+  
+  
   return {
     banks,
     dataListFormat,
@@ -443,6 +456,7 @@ const CheckCollectionHooks = (props) => {
     onClickOpenCustomerModal,
     onClickCloseCustomerModal,
     handleCheckboxChange,
+    onChangeTag,
   };
 };
 

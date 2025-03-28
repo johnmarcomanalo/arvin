@@ -145,6 +145,7 @@ class EPayCheckCheckSalesInvoiceDetailsController extends Controller
                 'form'                     => $value->form,
                 'bp_payment_term'          => $value->bp_payment_term,
                 'internal_approved_term'   => $value->internal_approved_term,
+                'tag'                      => $value->tag,
             ];
     
             $result    = EPayCheckCheckSalesInvoiceDetails::create($fields);

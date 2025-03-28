@@ -12,7 +12,8 @@ import {
   TableHead,
   TableRow,
   Typography,
-  useMediaQuery
+  useMediaQuery,
+  Checkbox 
 } from "@mui/material";
 import React, { useState } from 'react';
 import { connect } from "react-redux";
@@ -30,7 +31,7 @@ import configure from "apps/configure/configure.json";
 import CheckCollectionHooks from "../hooks/CheckCollectionHooks";
 import CheckCustomer from "./components/CheckCustomer";
 import InvoiceList from "./components/InvoiceList";
-import ReceiptDetails from "./components/ReceiptDetails";
+import ReceiptDetails from "./components/ReceiptDetails"; 
 let formName = "CheckCollection";
 let CheckCollection = (props) => {
   const { ...check }    = CheckCollectionHooks(props);
@@ -336,7 +337,7 @@ let CheckCollection = (props) => {
                           <TableHead>
                             <TableRow> 
                               {check.column_headers.map((header, index) => (
-                                <TableCell key={index} style={{ backgroundColor: configure.primary_table_color, color: configure.primary_table_text_color, }}>
+                                <TableCell key={index} align={header.align} style={{ backgroundColor: configure.primary_table_color, color: configure.primary_table_text_color, }}>
                                   {header.label}
                                 </TableCell>
                               ))}
@@ -346,6 +347,14 @@ let CheckCollection = (props) => {
                             {check?.state.invoice_list?.length > 0 ? (
                               check.state.invoice_list.map((row, index) => (
                                 <TableRow key={index}>
+                                  <TableCell align="left" sx={{ pt: 0, pr: 0, pb: 0, pl: 1 }}>
+                                    <Checkbox 
+                                      checked={row.tag}  // Ensure row.tag is correctly mapped 
+                                      onChange={() => check.onChangeTag(index)}  // Call function directly
+                                      size="medium"
+                                      sx={{ height: "10px", ml: 2, p: 0 }}
+                                    />
+                                  </TableCell>
                                   <TableCell>{row?.bp_payment_term}</TableCell>
                                   <TableCell>{row?.docno}</TableCell>
                                   <TableCell>{row?.docdate}</TableCell>
@@ -358,11 +367,11 @@ let CheckCollection = (props) => {
                               )) 
                             ) : (
                               <TableRow>
-                                <TableCell colSpan={8} align="center">Data not available</TableCell>
+                                <TableCell colSpan={9} align="center">Data not available</TableCell>
                               </TableRow>
                             )} 
                             <TableRow>
-                              <TableCell colSpan={6}></TableCell>
+                              <TableCell colSpan={7}></TableCell>
                               <TableCell  align="left">TOTAL</TableCell>
                               <TableCell align="left" sx={{ fontWeight: "bold" }}>
                                 {Number(amount).toLocaleString("en-US", { minimumFractionDigits: 4, maximumFractionDigits: 4 })}
