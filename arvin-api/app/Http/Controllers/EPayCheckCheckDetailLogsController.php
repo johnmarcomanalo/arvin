@@ -68,6 +68,7 @@ class EPayCheckCheckDetailLogsController extends Controller
         //
     }
 
+    // add comment
     private function execute_report($df, $dt, $sc, $type) {
         return DB::select("exec dbo.sp_e_pay_check_weekly_check_counter_report ?,?,?,?", [$df, $dt, $sc, $type]);
     }
