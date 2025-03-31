@@ -1,0 +1,351 @@
+{
+  "systemName": "AIM PORTAL",
+  "companyName": "ARVIN INTERNATIONAL",
+  "systemSubTitle": "THE NUMBER #1 SALT PROVIDER IN THE PHILIPPINES",
+  "color": ["danger", "primary", "danger", "warning", "light", "dark"],
+  "card_body": {
+    "height": "420px",
+    "#F1FAFF-space": "nowrap"
+  },
+  "table_header_design": {
+    "background-color": "#ff7700",
+    "color": "#F1FAFF",
+    "border-top": "#ff7700"
+  },
+  "table_green_arrow": {
+    "width": "10px"
+  },
+  "days": [
+    {
+      "id": "MONDAY",
+      "description": "MONDAY"
+    },
+    {
+      "id": "TUESDAY",
+      "description": "TUESDAY"
+    },
+    {
+      "id": "WEDNESDAY",
+      "description": "WEDNESDAY"
+    },
+    {
+      "id": "THURSDAY",
+      "description": "THURSDAY"
+    },
+    {
+      "id": "FRIDAY",
+      "description": "FRIDAY"
+    },
+    {
+      "id": "SATURDAY",
+      "description": "SATURDAY"
+    },
+    {
+      "id": "SUNDAY",
+      "description": "SUNDAY"
+    }
+  ],
+  "months": [
+    {
+      "id": "1",
+      "code": 1,
+      "description": "JANUARY"
+    },
+    {
+      "id": "2",
+      "code": 2,
+      "description": "FEBRUARY"
+    },
+    {
+      "id": "3",
+      "code": 3,
+      "description": "MARCH"
+    },
+    {
+      "id": "4",
+      "code": 4,
+      "description": "APRIL"
+    },
+    {
+      "id": "5",
+      "code": 5,
+      "description": "MAY"
+    },
+    {
+      "id": "6",
+      "code": 6,
+      "description": "JUNE"
+    },
+    {
+      "id": "7",
+      "code": 7,
+      "description": "JULY"
+    },
+    {
+      "id": "8",
+      "code": 8,
+      "description": "AUGUST"
+    },
+    {
+      "id": "9",
+      "code": 9,
+      "description": "SEPTEMBER"
+    },
+    {
+      "id": "10",
+      "code": 10,
+      "description": "OCTOBER"
+    },
+    {
+      "id": "11",
+      "code": 11,
+      "description": "NOVEMBER"
+    },
+    {
+      "id": "12",
+      "code": 12,
+      "description": "DECEMBER"
+    }
+  ],
+  "months_names": [
+    "JANUARY",
+    "FEBRUARY",
+    "MARCH",
+    "APRIL",
+    "MAY",
+    "JUNE",
+    "JULY",
+    "AUGUST",
+    "SEPTEMBER",
+    "OCTOBER",
+    "NOVEMBER",
+    "DECEMBER"
+  ],
+  "modules": [
+    {
+      "code": "1",
+      "module_code": "100",
+      "description": "E-Costing",
+      "link": "/Modules/ECosting"
+    },
+    {
+      "code": "2",
+      "module_code": "200",
+      "description": "Quotation",
+      "link": "/Modules/Quotation"
+    },
+    {
+      "code": "3",
+      "module_code": "300",
+      "description": "Sales Daily Out",
+      "link": "/Modules/SalesDailyOut"
+    },
+    {
+      "code": "4",
+      "module_code": "400",
+      "description": "Human Resource",
+      "link": "/Modules/HumanResource"
+    },
+    {
+      "code": "5",
+      "module_code": "500",
+      "description": "Purchasing Request",
+      "link": "/Modules/PurchasingRequest"
+    }
+  ],
+  "component": [
+    {
+      "code": "1",
+      "module_code": "300",
+      "component_code": "300201",
+      "description": "Daily Sales",
+      "link": "/Modules/SalesDailyOut/DailySales"
+    },
+    {
+      "code": "2",
+      "module_code": "300",
+      "component_code": "300202",
+      "description": "Annual Settings Sale",
+      "link": "/Modules/SalesDailyOut/AnnualSettingSale"
+    },
+    {
+      "code": "3",
+      "module_code": "300",
+      "component_code": "300203",
+      "description": "Annual Sales Ranking",
+      "link": "/Modules/SalesDailyOut/AnnualSalesRanking"
+    },
+    {
+      "code": "4",
+      "module_code": "300",
+      "component_code": "300204",
+      "description": "Annual Settings Sales Ranking",
+      "link": "/Modules/SalesDailyOut/AnnualSettingSalesRanking"
+    },
+
+    {
+      "code": "5",
+      "module_code": "100",
+      "component_code": "100101",
+      "description": "Costing",
+      "link": "/Modules/SalesDailyOut/Component4"
+    },
+    {
+      "code": "6",
+      "module_code": "100",
+      "component_code": "100102",
+      "description": "Item List",
+      "link": "/Modules/SalesDailyOut/Component4"
+    },
+    {
+      "code": "7",
+      "module_code": "100",
+      "component_code": "100103",
+      "description": "Trucking Matrix",
+      "link": "/Modules/SalesDailyOut/Component4"
+    }
+  ],
+  "sub_component": [
+    {
+      "code": "1",
+      "component_code": "300301",
+      "sub_component_code": "300301001",
+      "description": "SubComponent 1",
+      "link": "/Modules/SalesDailyOut/Component1/SubComponent1"
+    },
+    {
+      "code": "2",
+      "component_code": "300301",
+      "sub_component_code": "300301002",
+      "description": "SubComponent 2",
+      "link": "/Modules/SalesDailyOut/Component1/SubComponent2"
+    }
+  ],
+
+  "system": {
+    "port": "8080",
+    "front_end_port": "3000",
+    "apiUrl": "192.168.3.22",
+    "apiDomain": "meralcoecozoneapi.ums-ph.com",
+    "apiFrontDomain": "meralcoecozone.ums-ph.com",
+    "testApiDomain": "test-meralco-api.ums-ph.com",
+    "testDomain": "test-meralco.ums-ph.com",
+    "devApiDomain": "dev-meralco-api.ums-ph.com",
+    "devDomain": "dev-meralco.ums-ph.com"
+  },
+  "error_message": {
+    "default": "Something went wrong!"
+  },
+  "files": {
+    "AllowedFileExtensions": ".png, .jpg, .jpeg, .pdf, .docx, .xlsx",
+    "AllowedImageExtensions": ".png, .jpg, .jpeg",
+    "AllowedImportFile": ".csv"
+  },
+  "currency": "₱",
+  "gray_color": "#ecf0f1",
+  "dark_gray_color": "#bdc3c7",
+  "primary_color": "#093a5c",
+  "secondary_color": "#00acd8",
+  "tertiary_color": "#F1FAFF",
+  "primary_bgcolor": "#F1FAFF",
+  "bread_crumbs_font_size": 17,
+  "pending_color": "#e67e22",
+  "denied_color": "#e74c3c",
+  "fullwidth_cart_button": {
+    "backgroundImage": "linear-gradient(to right, #c4280c, #f50404)",
+    "_comment_backgroundImage": "linear-gradient(to right, #c4280c, #f50404)",
+    "color": "#F1FAFF",
+    "padding": "6px 16px",
+    "border": "none",
+    "borderRadius": "5px",
+    "cursor": "pointer",
+    "fontSize": "0.875rem",
+    "transition": "background-color 0.3s",
+    "margin": "2px",
+    "width": "100%"
+  },
+  "fullwidth_wish_button": {
+    "color": "#093a5c",
+    "padding": "6px 16px",
+    "border": "none",
+    "borderRadius": "5px",
+    "cursor": "pointer",
+    "fontSize": "0.875rem",
+    "margin": "2px",
+    "width": "100%"
+  },
+
+  "default_button": {
+    "&:hover": {
+      "backgroundColor": "#00bae6"
+    },
+    "color": "#F1FAFF",
+    "backgroundColor": "#00bae6",
+    "boxShadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;"
+  },
+  "approve_button": {
+    "backgroundImage": "linear-gradient(to right,  #00ac56, #00ac56)",
+    "_comment_backgroundImage": "linear-gradient(to right, #c4280c, #f50404)",
+    "color": "#F1FAFF",
+    "padding": "6px 16px",
+    "border": "none",
+    "borderRadius": "5px",
+    "cursor": "pointer",
+    "fontSize": "0.875rem",
+    "transition": "background-color 0.3s",
+    "margin": "2px"
+  },
+  "disapprove_button": {
+    "backgroundImage": "linear-gradient(to right, #d63031, #d63031)",
+    "_comment_backgroundImage": "linear-gradient(to right, #c4280c, #f50404)",
+    "color": "#F1FAFF",
+    "padding": "6px 16px",
+    "border": "none",
+    "borderRadius": "5px",
+    "cursor": "pointer",
+    "fontSize": "0.875rem",
+    "transition": "background-color 0.3s",
+    "margin": "2px"
+  },
+  "cancel_button": {
+    "backgroundImage": "linear-gradient(to right, #95a5a6, #95a5a6)",
+    "_comment_backgroundImage": "linear-gradient(to right, #95a5a6, #95a5a6)",
+    "color": "#F1FAFF",
+    "padding": "6px 16px",
+    "border": "none",
+    "borderRadius": "5px",
+    "borderColor": "#F1FAFF",
+    "cursor": "pointer",
+    "fontSize": "0.875rem",
+    "transition": "background-color 0.3s",
+    "margin": "2px"
+  },
+  "box_shadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;",
+  "primary_table_color": "#093a5c",
+  "primary_table_text_color": "#F1FAFF",
+  "key": "K8gwPfRm/Q1QIULV2kQUVOcD21VPDYnWws2jBJ2Anmc=",
+  "monthly_colors": [
+    { "name": "January", "hex": "#000080" },
+    { "name": "February", "hex": "#FFDB58" },
+    { "name": "March", "hex": "#228B22" },
+    { "name": "April", "hex": "#800020" },
+    { "name": "May", "hex": "#ADD8E6" },
+    { "name": "June", "hex": "#36454F" },
+    { "name": "July", "hex": "#008080" },
+    { "name": "August", "hex": "#FF7F50" },
+    { "name": "September", "hex": "#6A5ACD" },
+    { "name": "October", "hex": "#E2725B" },
+    { "name": "November", "hex": "#9DC183" },
+    { "name": "December", "hex": "#E0B0FF" }
+  ],
+  "quotation_opening_letter": "In view of your requirements only, we are quoting here under the following details for your perusal, to wit:",
+  "quotation_closing_letter": "We trust that our offer will merit your approval and we look forward to receiving your most favorable reply the soonest.",
+  "holiday_type": [
+    {
+      "description": "SPECIAL"
+    },
+    {
+      "description": "REGULAR"
+    }
+  ]
+}
