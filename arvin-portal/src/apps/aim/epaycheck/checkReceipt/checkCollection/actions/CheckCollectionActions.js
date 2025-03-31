@@ -174,11 +174,14 @@ export const getCheckCustomer = (formValues) => async (dispatch) => {
         loading: true,
       },
     });
+
+    let encodedQuery = encodeURIComponent(formValues.query);
+
     const results = GetSpecificDefaultServices(
       "api/epaycheck/get_check_customer?uc=" +
         formValues.uc +
         "&query=" +
-        formValues.query +
+        encodedQuery +
         "&page=" +
         formValues.page
     );

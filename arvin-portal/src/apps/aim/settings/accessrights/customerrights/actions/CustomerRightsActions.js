@@ -15,13 +15,14 @@ export const getEmployeeCustomerAccessList =
           loading: true,
         },
       });
+      let encodedQuery = encodeURIComponent(formValues.srch);
       const response = GetSpecificDefaultServices(
         "api/reference/get_employee_customer_access_list?pg=" +
           formValues.pg +
           "&lmt=" +
           formValues.lmt +
           "&srch=" +
-          formValues.srch +
+          encodedQuery +
           "&fltr=" +
           formValues.fltr +
           "&uid=" +

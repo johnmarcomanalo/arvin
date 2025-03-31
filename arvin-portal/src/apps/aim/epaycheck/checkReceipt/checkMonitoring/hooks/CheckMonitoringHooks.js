@@ -61,6 +61,7 @@ const CheckMonitoringHooks = (props) => {
         { id:"check_amount_display", label:"Check Amount", align:"left"},
         { id:"bank_description", label:"Bank", align:"left"},
         { id:"bank_branch", label:"Bank Branch", align:"left"},
+        { id:"advance_payment", label:"Adv Payment", align:"left"},
         { id:"prefix_crpr", label:"CR/PR", align:"left"},
         { id:"sales_invoice", label:"Sales Invoice", align:"left"},
         { id:"dr_number", label:"DR Number", align:"left"},
@@ -191,7 +192,7 @@ const CheckMonitoringHooks = (props) => {
       const onChangeFilterStatus = (status) => {
         setSearchParams({
           q  : search, 
-          p  : page == null ? 1 : page,
+          p  : 1,
           df : filterStartQuery,
           dt : filterEndQuery,
           s  : status, 

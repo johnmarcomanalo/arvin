@@ -751,7 +751,7 @@ class EPayCheckCheckDetailsController extends Controller
     {
         $page      = $request->query('page', 1); 
         $limit     = $request->query('limit', 10);
-        $search    = trim($request->query('query')); // Trim extra spaces
+        $search    = $request->query('query'); // Trim extra spaces
         $user_code = $request->query('uc'); 
     
         $userData  =  UsersAccounts::select([
