@@ -50,6 +50,7 @@ class SalesDailyOutHolidayExclusionsController extends Controller
             ->select([
            'sales_daily_out_settings_annual_quotas.*','ref_product_groups.description as ref_product_groups_description'
         ])->get();
+        
         foreach ($annual_quotas as $value) {
             $sales_daily_out = SalesDailyOutTrackers::freshFromSalesDailyOutTrackers($fields,$value,$month)->get();
             $deleted = null;
@@ -190,15 +191,15 @@ class SalesDailyOutHolidayExclusionsController extends Controller
         ]);
         $salesDailyOutTrackersController = new SalesDailyOutTrackersController();
 
-        if($fields['updated_sales_daily_out'] <= $fields['move_to_sales_daily_out']){
-            $response = [
-                    'message' => 'There is inputed out is less than or equals the current is deleted - '.$fields['move_to_sales_date'] ,
-                    'result' => false,
-                    'status' => 'warning',
-                    'title' => 'Oppss!',
-            ];
-            return response($response,409);
-        }
+        // if($fields['updated_sales_daily_out'] <= $fields['move_to_sales_daily_out']){
+        //     $response = [
+        //             'message' => 'There is inputed out is less than or equals the current is deleted - '.$fields['move_to_sales_date'] ,
+        //             'result' => false,
+        //             'status' => 'warning',
+        //             'title' => 'Oppss!',
+        //     ];
+        //     return response($response,409);
+        // }
         
         $check_record_count = SalesDailyOutTrackers::where('sales_daily_out_annual_settings_sales_code', $fields['sales_daily_out_annual_settings_sales_code'])
                             ->where('subsection_code', $fields['subsection_code'])
@@ -295,11 +296,11 @@ class SalesDailyOutHolidayExclusionsController extends Controller
             'modified_by' => $fields['modified_by'],
         ];
 
-        if($fields["move_from_sales_date"] !== $fields["move_to_sales_date"]){
-            if ($move_from_data_to_delete) {
-                $move_from_date_update_details['deleted_at'] = now();
-            }   
-        }
+        // if($fields["move_from_sales_date"] !== $fields["move_to_sales_date"]){
+        //     if ($move_from_data_to_delete) {
+        //         $move_from_date_update_details['deleted_at'] = now();
+        //     }   
+        // }
         
 
         $move_from_date_details->update($move_from_date_update_details);

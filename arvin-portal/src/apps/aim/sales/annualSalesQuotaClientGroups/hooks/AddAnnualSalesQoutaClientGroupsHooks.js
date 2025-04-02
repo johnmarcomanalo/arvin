@@ -7,6 +7,7 @@ import { Constants } from "../../../../../reducer/Contants";
 import { getRefProductGroups } from "../../../settings/reference/actions/ReferenceActions";
 import { fetchGetClientGroups } from "../../clientGroups/actions/ClientGroupsActions";
 import { getMonthlyAndDailyQoutaByTargetAnnualSales } from "../actions/AnnualSalesQoutaClientGroupsActions";
+import moment from "moment";
 const AddAnnualSalesQoutaClientGroupsHooks = (props) => {
   const client_groups = useSelector(
     (state) => state.SalesDailyOutReducer.client_groups
@@ -18,10 +19,13 @@ const AddAnnualSalesQoutaClientGroupsHooks = (props) => {
     (state) => state.ReferenceReducer.product_group_category
   );
   const viewModal = useSelector((state) => state.ReferenceReducer.viewModal);
+  const viewModal2 = useSelector((state) => state.ReferenceReducer.viewModal2);
   const employeeModal = useSelector(
     (state) => state.HumanResourceReducer.viewModal
   );
-
+  const addModal2 = useSelector(
+    (state) => state.SalesDailyOutReducer.addModal2
+  );
   const [state, setState] = React.useState({
     debounceTimer: null,
     debounceDelay: 2000,
@@ -55,7 +59,7 @@ const AddAnnualSalesQoutaClientGroupsHooks = (props) => {
     state.debounceTimer = setTimeout(func, delay);
   };
   React.useEffect(() => {
-    GetClientGroups();
+    // GetClientGroups();
     dispatch(getRefProductGroups());
     return () => cancelRequest();
   }, []);
@@ -81,19 +85,19 @@ const AddAnnualSalesQoutaClientGroupsHooks = (props) => {
     }
   };
 
-  const onClickOpenViewModal = () => {
+  const onClickOpenAddModal2 = () => {
     dispatch({
-      type: Constants.ACTION_REFERENCE,
+      type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {
-        viewModal: true,
+        addModal2: true,
       },
     });
   };
-  const onClickCloseViewModal = () => {
+  const onClickCloseAddModal2 = () => {
     dispatch({
-      type: Constants.ACTION_REFERENCE,
+      type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {
-        viewModal: false,
+        addModal2: false,
       },
     });
   };
@@ -114,15 +118,10 @@ const AddAnnualSalesQoutaClientGroupsHooks = (props) => {
       },
     });
   };
-  const onClickSelectClientList = (data) => {
-    let client = {
-      customer_code: data.customer_code,
-      description: data.description,
-      type: data.type,
-      status: data.status,
-    };
+
+  const onClickSelectGroupList = (data) => {
     props.dispatch(
-      change("AddAnnualSalesQoutaClientGroups", "subgroups", [client])
+      change("AddAnnualSalesQoutaClientGroups", "subgroup", data.subgroup)
     );
     props.dispatch(
       change("AddAnnualSalesQoutaClientGroups", "description", data.description)
@@ -130,18 +129,34 @@ const AddAnnualSalesQoutaClientGroupsHooks = (props) => {
     props.dispatch(
       change(
         "AddAnnualSalesQoutaClientGroups",
-        "customer_code",
-        data.customer_code
+        "sales_daily_out_settings_client_group_code",
+        data.code
       )
+    );
+    props.dispatch(change("AddAnnualSalesQoutaClientGroups", "bdo", data.bdo));
+    props.dispatch(
+      change("AddAnnualSalesQoutaClientGroups", "type", data.type)
+    );
+    props.dispatch(
+      change("AddAnnualSalesQoutaClientGroups", "subsection", data.subsection)
+    );
+    swal("Success", "Client added successfully", "success");
+  };
+  const onClickRemoveSelectGroupList = () => {
+    props.dispatch(change("AddAnnualSalesQoutaClientGroups", "subgroup", []));
+    props.dispatch(
+      change("AddAnnualSalesQoutaClientGroups", "description", "")
     );
     props.dispatch(
       change(
         "AddAnnualSalesQoutaClientGroups",
-        "sales_daily_out_settings_client_group_customer_type",
-        data.type
+        "sales_daily_out_settings_client_group_code",
+        null
       )
     );
-    swal("Success", "Client added successfully", "success");
+    props.dispatch(change("AddAnnualSalesQoutaClientGroups", "bdo", ""));
+    props.dispatch(change("AddAnnualSalesQoutaClientGroups", "type", ""));
+    props.dispatch(change("AddAnnualSalesQoutaClientGroups", "subsection", ""));
   };
 
   const onClickSelectEmployee = (data) => {
@@ -153,6 +168,22 @@ const AddAnnualSalesQoutaClientGroupsHooks = (props) => {
     );
     swal("Success", "BDO added successfully", "success");
   };
+  const onClickOpenClientListViewModal = () => {
+    dispatch({
+      type: Constants.ACTION_REFERENCE,
+      payload: {
+        viewModal2: true,
+      },
+    });
+  };
+  const onClickCloseClientListViewModal = () => {
+    dispatch({
+      type: Constants.ACTION_REFERENCE,
+      payload: {
+        viewModal2: false,
+      },
+    });
+  };
   return {
     state,
     columns,
@@ -161,13 +192,18 @@ const AddAnnualSalesQoutaClientGroupsHooks = (props) => {
     client_groups,
     viewModal,
     employeeModal,
+    viewModal2,
+    addModal2,
     GetMonthlyAndDailyQoutaByAnnualQouta,
-    onClickOpenViewModal,
-    onClickCloseViewModal,
-    onClickSelectClientList,
+    onClickSelectGroupList,
     onClickOpenEmployeeViewModal,
     onClickCloseEmployeeViewModal,
     onClickSelectEmployee,
+    onClickOpenClientListViewModal,
+    onClickCloseClientListViewModal,
+    onClickRemoveSelectGroupList,
+    onClickOpenAddModal2,
+    onClickCloseAddModal2,
   };
 };
 

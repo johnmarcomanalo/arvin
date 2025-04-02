@@ -6,12 +6,13 @@ import swal from "sweetalert";
 import { cancelRequest } from "../../../../../api/api";
 import { Constants } from "../../../../../reducer/Contants";
 import { useDebounce } from "../../../../../utils/HelperUtils";
+import { change } from "redux-form";
 const AddClientGroupsHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
   const refresh2 = useSelector((state) => state.SalesDailyOutReducer.refresh2);
   const addModal = useSelector((state) => state.SalesDailyOutReducer.addModal);
   const viewModal = useSelector((state) => state.ReferenceReducer.viewModal);
-
+  const access = useSelector((state) => state.AuthenticationReducer.access);
   const dataList = useSelector((state) => state.SalesDailyOutReducer.dataList);
   const dataListCount = useSelector(
     (state) => state.SalesDailyOutReducer.dataListCount
@@ -24,6 +25,12 @@ const AddClientGroupsHooks = (props) => {
     debounceDelay: 2000,
     sub_group: [],
   });
+  const user_access_organization_rights =
+    access?.user_access_organization_rights;
+  const employeeModal = useSelector(
+    (state) => state.HumanResourceReducer.viewModal
+  );
+
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("p") != null ? searchParams.get("p") : 1;
   const rowsPerPage =
@@ -51,19 +58,29 @@ const AddClientGroupsHooks = (props) => {
     { id: "placement", label: "Placement", align: "left" },
     { id: "value", label: "Points", align: "left" },
   ];
+
+  const type = [
+    { description: "Manila Branch" },
+    { description: "Provincial" },
+    { description: "Peanut" },
+  ];
   const selected_code = useSelector(
     (state) => state.SalesDailyOutReducer.selected_code
   );
 
   const onClickOpenViewModal = () => {
+    setSearchParams({});
     dispatch({
       type: Constants.ACTION_REFERENCE,
       payload: {
+        search_reference_customer_page_access: [],
+        dataListCount: 0,
         viewModal: true,
       },
     });
   };
   const onClickCloseViewModal = () => {
+    setSearchParams({});
     dispatch({
       type: Constants.ACTION_REFERENCE,
       payload: {
@@ -153,24 +170,61 @@ const AddClientGroupsHooks = (props) => {
       status: data.status,
     };
     // Check if the customer_code already exists in the sub_group
-    const isUnique = !state.sub_group.some(
-      (item) => item.customer_code === client.customer_code
+    const isUnique = state.sub_group.every(
+      (item) =>
+        item.customer_code !== client.customer_code && item.type === client.type
     );
-
     if (isUnique) {
-      state.sub_group.push(client);
       setState((prev) => ({
         ...prev,
+        sub_group: [...prev.sub_group, client],
       }));
+      if (data.type !== "Provincial") {
+        props.dispatch(change("AddClientGroup", "subsection", data.type));
+      }
+      props.dispatch(change("AddClientGroup", "type", data.type));
       swal("Success", "Client added successfully", "success");
     } else {
-      swal("Error", "Client already exists", "error");
+      swal("Error", "Client already exists or type mismatch", "error");
     }
   };
   const onClickRemoveClientList = () => {
     state.sub_group.splice(state.sub_group.length - 1, 1);
     setState((prev) => ({
       ...prev,
+    }));
+  };
+  const onClickOpenEmployeeViewModal = () => {
+    dispatch({
+      type: Constants.ACTION_HUMAN_RESOURCE,
+      payload: {
+        viewModal: true,
+      },
+    });
+  };
+  const onClickCloseEmployeeViewModal = () => {
+    dispatch({
+      type: Constants.ACTION_HUMAN_RESOURCE,
+      payload: {
+        viewModal: false,
+      },
+    });
+  };
+  const onClickSelectEmployee = (bdo) => {
+    props.dispatch(change("AddClientGroup", "bdo", bdo.username));
+    props.dispatch(change("AddClientGroup", "subsection", bdo.subsection));
+    props.dispatch(change("AddClientGroup", "type", ""));
+    props.dispatch(change("AddClientGroup", "sub_group", []));
+    swal("Success", "BDO filtered successfully", "success");
+  };
+  const onClickSelectResetEmployee = () => {
+    props.dispatch(change("AddClientGroup", "bdo", ""));
+    props.dispatch(change("AddClientGroup", "subsection", ""));
+    props.dispatch(change("AddClientGroup", "type", ""));
+    props.dispatch(change("AddClientGroup", "sub_group", []));
+    setState((prev) => ({
+      ...prev,
+      sub_group: [],
     }));
   };
   return {
@@ -187,6 +241,9 @@ const AddClientGroupsHooks = (props) => {
     columns2,
     filterQuery,
     viewModal,
+    type,
+    user_access_organization_rights,
+    employeeModal,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,
@@ -196,6 +253,10 @@ const AddClientGroupsHooks = (props) => {
     onChangeFilter,
     onClickSelectClientList,
     onClickRemoveClientList,
+    onClickOpenEmployeeViewModal,
+    onClickCloseEmployeeViewModal,
+    onClickSelectEmployee,
+    onClickSelectResetEmployee,
   };
 };
 

@@ -9,7 +9,7 @@ import PrivateRoute from "./security/PrivateRoute";
 import { Start } from "@mui/icons-material";
 import IndexRefBankAccounts from "./apps/aim/settings/reference/pages/IndexRefBankAccounts";
 
-const Loader = lazy(() => import("./components/loading/Loading"));
+const Loader = lazy(() => import("components/loading/Loading"));
 const Navigation = lazy(() => import("./apps/navigation/pages/Navigation"));
 const IndexLogin = lazy(() => import("./apps/auth/login/pages/IndexLogin"));
 const NoMatch = lazy(() => import("./apps/aim/home/pages/NoMatch"));

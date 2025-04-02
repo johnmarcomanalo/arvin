@@ -79,8 +79,10 @@ class SalesDailyOutClientSalesTrackersController extends Controller
         $selected_product = $request->query('pr');
         $selected_group_code = $request->query('c');
         $bdo = $request->query('b'); 
+        $type = $request->query('t'); 
+        $warehouse = $request->query('w'); 
 
-        $dataList = DB::select("SET NOCOUNT ON  exec dbo.GetSalesDailyOutClientSalesTrackers ?,?,?,?,?",array($selected_year,$selected_month,$selected_product,$selected_group_code,$bdo));
+        $dataList = DB::select("SET NOCOUNT ON  exec dbo.GetSalesDailyOutClientSalesTrackers ?,?,?,?,?,?,?",array($selected_year,$selected_month,$selected_product,$selected_group_code,$bdo,$type,$warehouse));
 
         $response = [
             "dataList" => $dataList,
@@ -175,101 +177,93 @@ class SalesDailyOutClientSalesTrackersController extends Controller
     }
 
 
-    public function insert_sap_client_sales_tracker($selected_year,$selected_product,$bdo,$selected_group_code){
+    public function insert_sap_client_sales_tracker($selected_year,$code_annual_quota,$json_records,$type,$subsection){
+        try {
+            // DB::transaction(function () use ($selected_year, $selected_group_code, $json_records) {
+                $salesDailyOutTrackersController = new SalesDailyOutTrackersController();
+                $datalist = SalesDailyOutClientSalesTrackers::where('sales_daily_out_settings_annual_quota_client_groups_code', $code_annual_quota)
+                            // ->whereNull('deleted_at')
+                            ->get();
 
-        $salesDailyOutTrackersController = new SalesDailyOutTrackersController();
-        $datalist = SalesDailyOutClientSalesTrackers::where('year_sales_target', $selected_year)
-            ->when(isset($selected_product), function ($qry) use ($selected_product) {
-                    return $qry->where('ref_product_groups_description', $selected_product);
-            })
-            ->when(isset($bdo), function ($qry) use ($bdo) {
-                    return $qry->where('bdo', $bdo);
-            })
-            ->when(isset($selected_group_code), function ($qry) use ($selected_group_code) {
-                    return $qry->where('sales_daily_out_settings_annual_quota_client_groups_code', $selected_group_code);
-            })
-            ->whereNull('deleted_at')
-            ->get();
+                $records = json_decode($json_records);
+                $recordsByDate = [];
+                $final_results = [];
 
-        $subgroups = SalesDailyOutSettingsClientSubGroups::where('sales_daily_out_settings_client_groups_code',$selected_group_code)->get();
-        $card_codes =  $subgroups->pluck('customer_code')->implode("','") ;
+                foreach ($records as $record) {
+                    $date = Carbon::parse($record->createdate)->format('Y-m-d');
 
-        $records = DB::select("exec dbo.sales_daily_out_delivery_return_cm_client_based_v2 ?,?,?",array($selected_year,"'".$card_codes."'",$selected_product));
-        $recordsByDate = [];
-        $final_results = [];
-        
-        // foreach ($records as $record) {
-        //     $date = Carbon::parse($record->createdate)->format('Y-m-d');
-        //     $recordsByDate[$date] = $record;
-        // }
-
-        // foreach ($recordsByDate as $date => $record) {
-        //     $results[] = [
-        //         'sales_date' => $record->createdate,
-        //         'sales_daily_out' => $record->QtyInKg,
-        //         'ref_product_groups_description'=> $record->u_groupcategory
-        //     ];
-        // }
-        // Group records by date and sum QtyInKg
-        foreach ($records as $record) {
-            $date = Carbon::parse($record->createdate)->format('Y-m-d');
-
-            if (!isset($recordsByDate[$date])) {
-                $recordsByDate[$date] = [
-                    'sales_date' => $record->createdate,
-                    'sales_daily_out' => $record->QtyInKg,
-                    'ref_product_groups_description' => $record->u_groupcategory
-                ];
-            } else {
-                $recordsByDate[$date]['sales_daily_out'] += $record->QtyInKg;
-            }
-        }
-        
-        $results = array_values($recordsByDate);
-
-        foreach ($datalist as $value) {
-            $sales_daily_qouta = $value['sales_daily_qouta'];
-             $sales_date = Carbon::parse($value['sales_date'])->format('Y-m-d');
-                foreach ($results as $result) {
-                     $result_date = Carbon::parse($result['sales_date'])->format('Y-m-d');
-                    if($sales_date == $result_date){
-                        $computation = $salesDailyOutTrackersController->get_status_daily_target_and_percentage_daily_target_by_daily_out($result['sales_daily_out'],$sales_daily_qouta);
-                        $final_results[] = [
-                            'year_sales_target' => $selected_year,
-                            'sales_daily_out_settings_annual_quota_client_groups_code' => $selected_group_code,
-                            'sales_daily_out' => $result['sales_daily_out'],
-                            'ref_product_groups_description' => $result['ref_product_groups_description'],
-                            'sales_date' => $result['sales_date'],
-                            'sales_daily_target' => $computation['status_daily_target'],
-                            'daily_sales_target_percentage' => $computation['percentage_daily_target'],
-                            'modified_by' => '1',
-                        ]; 
+                    if (!isset($recordsByDate[$date])) {
+                        $recordsByDate[$date] = [
+                            'sales_date' => $record->createdate,
+                            'sales_daily_out' => $record->QtyInKg,
+                            'ref_product_groups_description' => $record->u_groupcategory
+                        ];
+                    } else {
+                        $recordsByDate[$date]['sales_daily_out'] += $record->QtyInKg;
                     }
                 }
-        }
 
-        $batchSize = 50; // Update 50 records at a time
-        DB::transaction(function () use ($final_results, $batchSize) {
-            $counter = 0;
-            foreach ($final_results as $value) {
-                DB::table('sales_daily_out_client_sales_trackers')
-                    ->where('sales_daily_out_settings_annual_quota_client_groups_code', $value['sales_daily_out_settings_annual_quota_client_groups_code'])
-                    ->where('ref_product_groups_description',  $value['ref_product_groups_description'])
-                    ->where('sales_date',  $value['sales_date'])
-                    ->update([
-                        'sales_daily_out' => $value['sales_daily_out'],
-                        'sales_daily_target' => $value['sales_daily_target'],
-                        'daily_sales_target_percentage' => $value['daily_sales_target_percentage'],
-                        'modified_by' => $value['modified_by']
-                    ]);
-                $counter++;
+                $results = array_values($recordsByDate);
 
-                // Add a delay after every 50 updates
-                if ($counter % $batchSize == 0) {
-                    sleep(2); // Add a 2-second delay to avoid overloading the database
+                foreach ($datalist as $value) {
+                    $sales_daily_qouta = $value['sales_daily_qouta'];
+                    $sales_date = Carbon::parse($value['sales_date'])->format('Y-m-d');
+
+                    foreach ($results as $result) {
+                        $result_date = Carbon::parse($result['sales_date'])->format('Y-m-d');
+
+                        if ($sales_date == $result_date) {
+                            $computation = $salesDailyOutTrackersController
+                                ->get_status_daily_target_and_percentage_daily_target_by_daily_out(
+                                    $result['sales_daily_out'],
+                                    $sales_daily_qouta
+                                );
+
+                            $final_results[] = [
+                                'year_sales_target' => $selected_year,
+                                'sales_daily_out_settings_annual_quota_client_groups_code' => $code_annual_quota,
+                                'sales_daily_out' => $result['sales_daily_out'],
+                                'ref_product_groups_description' => $result['ref_product_groups_description'],
+                                'sales_date' => $result['sales_date'],
+                                'sales_daily_target' => $computation['status_daily_target'],
+                                'daily_sales_target_percentage' => $computation['percentage_daily_target'],
+                                'type' => $type,
+                                'subsection' => $subsection,
+                                'modified_by' => 'SAP',
+                            ];
+                        }
+                    }
+                }  
+
+                $batchSize = 50;
+                $counter = 0;
+                foreach ($final_results as $value) {
+                    DB::table('sales_daily_out_client_sales_trackers')
+                        ->where('sales_daily_out_settings_annual_quota_client_groups_code', $code_annual_quota)
+                        // ->where('ref_product_groups_description',  $value['ref_product_groups_description'])
+                        ->where('sales_date',  $value['sales_date'])
+                        ->update([
+                            'sales_daily_out' => $value['sales_daily_out'],
+                            'sales_daily_target' => $value['sales_daily_target'],
+                            'daily_sales_target_percentage' => $value['daily_sales_target_percentage'],
+                            'modified_by' => $value['modified_by']
+                        ]);
+
+                    $counter++;
+                    if ($counter % $batchSize == 0) {
+                        sleep(2);
+                    }
                 }
-            }
-        });
+            // });
+        } catch (\Throwable $e) {
+            DB::rollBack(); // Rollback transaction on error
+               return response([
+                'message' => 'An error occurred: ' . $e->getMessage(),
+                'result' => false,
+                'status' => 'error',
+                'title' => 'Error',
+            ], 500);
+        }
     } 
     
     public function getFiveDaysClientSalesTrackerbyCurrentDate() {
@@ -278,22 +272,36 @@ class SalesDailyOutClientSalesTrackersController extends Controller
         $currentYear = Carbon::now()->format('Y');
 
 
-        $data_quota = SalesDailyOutSettingsAnnualQuotaClientGroups::where('year_sales_target',$currentYear)->whereNull('deleted_at')->get();
+        // $data_quota = SalesDailyOutSettingsAnnualQuotaClientGroups::where('year_sales_target',$currentYear)->whereNull('deleted_at')->get();
+        return $data_quota = SalesDailyOutSettingsAnnualQuotaClientGroups::join(
+            'sales_daily_out_settings_client_groups', 
+            'sales_daily_out_settings_annual_quota_client_groups.sales_daily_out_settings_client_group_code', 
+            '=', 
+            'sales_daily_out_settings_client_groups.code'
+        )
+        ->where('sales_daily_out_settings_annual_quota_client_groups.year_sales_target', $currentYear)
+        ->where('sales_daily_out_settings_client_groups.description', 'LIKE', '%FIRST PGMC ENTERPRISES INC%')
+        ->whereNull('sales_daily_out_settings_annual_quota_client_groups.deleted_at')
+        ->get();
+
+
         $card_codes = [];
         $datalist = [];
         foreach ($data_quota as $value) {
-            $subgroups = SalesDailyOutSettingsClientSubGroups::where('sales_daily_out_settings_client_groups_code',$value->sales_daily_out_settings_client_group_code)->get();
-            $card_codes =  $subgroups->pluck('customer_code')->implode("','") ;
+            return $value->code;
+             $subgroups = SalesDailyOutSettingsClientSubGroups::where('sales_daily_out_settings_client_groups_code',$value->sales_daily_out_settings_client_group_code)->get();
+             $card_codes =  $subgroups->pluck('customer_code')->implode("','") ;
             $productGroup = RefProductGroups::where('code',$value->ref_product_groups_code)->first();
             
-            $datalist = (SalesDailyOutClientSalesTrackers::where('year_sales_target', $currentYear)
+            return $datalist = (SalesDailyOutClientSalesTrackers::where('year_sales_target', $currentYear)
                     ->where('ref_product_groups_description', $productGroup->description)
-                    ->where('sales_daily_out_settings_annual_quota_client_groups_code', $value->sales_daily_out_settings_client_group_code)
+                    ->where('sales_daily_out_settings_annual_quota_client_groups_code', $value->code)
+                    ->whereBetween('sales_date', [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()])
                     ->whereNull('deleted_at')
                     ->get());
 
             
-            $records = DB::select("exec dbo.sales_daily_out_delivery_return_cm_client_based_v2_5_days ?,?,?",array($currentYear,"'".$card_codes."'",$productGroup->description));
+             $records = DB::select("exec dbo.sales_daily_out_delivery_return_cm_client_based_v2_5_days ?,?,?",array($currentYear,"'".$card_codes."'",$productGroup->description));
         
             if(!empty($records)){
                 foreach ($records as $record) {
@@ -334,7 +342,7 @@ class SalesDailyOutClientSalesTrackersController extends Controller
                 }
                 $batchSize = 50; // Update 50 records at a time
                 $counter = 0;
-
+                // return $final_results;
                 foreach ($final_results as $value) {
                     DB::table('sales_daily_out_client_sales_trackers')
                         ->where('sales_daily_out_settings_annual_quota_client_groups_code', $value['sales_daily_out_settings_annual_quota_client_groups_code'])
@@ -344,6 +352,7 @@ class SalesDailyOutClientSalesTrackersController extends Controller
                             'sales_daily_out' => $value['sales_daily_out'],
                             'sales_daily_target' => $value['sales_daily_target'],
                             'daily_sales_target_percentage' => $value['daily_sales_target_percentage'],
+                            'updated_at' => now(),
                             'modified_by' => $value['modified_by']
                         ]);
                     $counter++;
@@ -356,4 +365,97 @@ class SalesDailyOutClientSalesTrackersController extends Controller
             }
         }
     }
+
+    // public function getFiveDaysClientSalesTrackerbyCurrentDate() {
+    //     $salesDailyOutTrackersController = new SalesDailyOutTrackersController();
+    //     $currentYear = Carbon::now()->format('Y');
+
+    //     // Fetch and process in chunks instead of looping over everything at once
+    //     SalesDailyOutSettingsAnnualQuotaClientGroups::where('year_sales_target', $currentYear)
+    //         ->whereNull('deleted_at')
+    //         ->orderBy('code') 
+    //         ->chunk(50, function ($data_quota_chunk) use ($salesDailyOutTrackersController, $currentYear) {
+
+    //             $final_results = [];
+
+    //             // foreach ($data_quota_chunk as $value) {
+    //             //     // Get related subgroup customer codes in one query
+    //             //     $subgroups = SalesDailyOutSettingsClientSubGroups::where('sales_daily_out_settings_client_groups_code', $value->sales_daily_out_settings_client_group_code)
+    //             //         ->pluck('customer_code')
+    //             //         ->implode("','");
+
+    //             //     $productGroup = RefProductGroups::where('code', $value->ref_product_groups_code)->first();
+
+    //             //     // Get today's sales data
+    //             //     $datalist = SalesDailyOutClientSalesTrackers::where('year_sales_target', $currentYear)
+    //             //         ->where('ref_product_groups_description', $productGroup->description)
+    //             //         ->where('sales_daily_out_settings_annual_quota_client_groups_code', $value->sales_daily_out_settings_client_group_code)
+    //             //         ->whereDate('sales_date', Carbon::now()->toDateString())
+    //             //         ->whereNull('deleted_at')
+    //             //         ->get();
+
+    //             //     // Fetch records from stored procedure
+    //             //     $records = DB::select("exec dbo.sales_daily_out_delivery_return_cm_client_based_v2_5_days ?,?,?", [
+    //             //         $currentYear,
+    //             //         "'".$subgroups."'",
+    //             //         $productGroup->description
+    //             //     ]);
+
+    //             //     if (!empty($records)) {
+    //             //         $recordsByDate = [];
+
+    //             //         foreach ($records as $record) {
+    //             //             $date = Carbon::parse($record->createdate)->format('Y-m-d');
+
+    //             //             if (!isset($recordsByDate[$date])) {
+    //             //                 $recordsByDate[$date] = [
+    //             //                     'sales_date' => $record->createdate,
+    //             //                     'sales_daily_out' => $record->QtyInKg,
+    //             //                     'ref_product_groups_description' => $record->u_groupcategory
+    //             //                 ];
+    //             //             } else {
+    //             //                 $recordsByDate[$date]['sales_daily_out'] += $record->QtyInKg;
+    //             //             }
+    //             //         }
+
+    //             //         $results = array_values($recordsByDate);
+
+    //             //         foreach ($datalist as $datalist_value) {
+    //             //             $sales_date = Carbon::parse($datalist_value['sales_date'])->format('Y-m-d');
+    //             //             foreach ($results as $result) {
+    //             //                 $result_date = Carbon::parse($result['sales_date'])->format('Y-m-d');
+    //             //                 if ($sales_date == $result_date) {
+    //             //                     $computation = $salesDailyOutTrackersController->get_status_daily_target_and_percentage_daily_target_by_daily_out(
+    //             //                         $result['sales_daily_out'],
+    //             //                         $datalist_value['sales_daily_qouta']
+    //             //                     );
+
+    //             //                     $final_results[] = [
+    //             //                         'year_sales_target' => $currentYear,
+    //             //                         'sales_daily_out_settings_annual_quota_client_groups_code' => $value->sales_daily_out_settings_client_group_code,
+    //             //                         'sales_daily_out' => $result['sales_daily_out'],
+    //             //                         'ref_product_groups_description' => $result['ref_product_groups_description'],
+    //             //                         'sales_date' => $result['sales_date'],
+    //             //                         'sales_daily_target' => $computation['status_daily_target'],
+    //             //                         'daily_sales_target_percentage' => $computation['percentage_daily_target'],
+    //             //                         'modified_by' => 'SAP',
+    //             //                         'updated_at' => now(),
+    //             //                     ];
+    //             //                 }
+    //             //             }
+    //             //         }
+    //             //     }
+    //             // }
+
+    //             // // ✅ **Bulk upsert for performance**
+    //             // if (!empty($final_results)) {
+    //             //     DB::table('sales_daily_out_client_sales_trackers')->upsert(
+    //             //         $final_results,
+    //             //         ['sales_daily_out_settings_annual_quota_client_groups_code', 'ref_product_groups_description', 'sales_date'],
+    //             //         ['sales_daily_out', 'sales_daily_target', 'daily_sales_target_percentage', 'updated_at', 'modified_by']
+    //             //     );
+    //             // }
+    //         });
+
+    // }
 }

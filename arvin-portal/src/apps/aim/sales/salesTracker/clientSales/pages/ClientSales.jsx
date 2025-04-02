@@ -7,14 +7,15 @@ import moment from "moment";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
-import ComboBox from "../../../../../../components/autoComplete/AutoComplete";
-import ButtonComponent from "../../../../../../components/button/Button";
-import InputFieldButton from "../../../../../../components/inputFIeld/InputFieldButton";
-import InputMonthYearPicker from "../../../../../../components/inputFIeld/InputMonthYearPicker";
-import Modal from "../../../../../../components/modal/Modal";
-import ComponentTable from "../../../../../../components/table/Table";
-import configure from "../../../../../configure/configure.json";
+import ComboBox from "components/autoComplete/AutoComplete";
+import ButtonComponent from "components/button/Button";
+import InputFieldButton from "components/inputFIeld/InputFieldButton";
+import InputMonthYearPicker from "components/inputFIeld/InputMonthYearPicker";
+import Modal from "components/modal/Modal";
+import ComponentTable from "components/table/Table";
+import configure from "apps/configure/configure.json";
 import ClientSalesHooks from "../hooks/ClientSalesHooks";
+import SearchField from "components/inputFIeld/SearchField";
 const formName = "ClientSales";
 const submit = async (values, dispatch, props) => {
   try {
@@ -61,6 +62,13 @@ let ClientSales = (props) => {
             </Stack>
           </Grid>
           <Grid item xs={12} sm={12} md={3} lg={3}>
+            <SearchField
+              value={salesTracker.search}
+              onChange={salesTracker.onChangeSearch}
+              textHidden={false}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12} md={3} lg={3}>
             <Field
               name="sales_date"
               label="Date"
@@ -83,6 +91,7 @@ let ClientSales = (props) => {
               key={props.refresh}
               id="product_group"
               name="product_group"
+              required={true}
               label="Product"
               options={salesTracker?.user_access_product_group_rights}
               getOptionLabel={(option) =>
@@ -99,30 +108,11 @@ let ClientSales = (props) => {
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={12} md={3} lg={3}>
-            <Field
-              key={props.refresh}
-              id="group_client"
-              name="group_client"
-              label="Group Clients"
-              options={salesTracker?.client_groups}
-              getOptionLabel={(option) =>
-                option.description ? option.description : ""
-              }
-              // required={true}
-              component={ComboBox}
-              onChangeHandle={(e, newValue) => {
-                if (newValue?.description) {
-                  salesTracker.filterClientGroups(newValue.code);
-                } else {
-                  salesTracker.filterClientGroups("");
-                }
-              }}
-            />
-          </Grid>
+
           <Grid item xs={12} sm={12} md={3} lg={3}>
             <Field
               id="bdo_name"
+              required={true}
               name="bdo_name"
               label="BDO"
               component={InputFieldButton}
@@ -178,8 +168,11 @@ const ReduxFormComponent = reduxForm({
 const selector = formValueSelector(formName);
 export default connect((state) => {
   const sales_date = selector(state, "sales_date");
-
+  const product_group = selector(state, "product_group");
+  const bdo_name = selector(state, "bdo_name");
   return {
     sales_date,
+    product_group,
+    bdo_name,
   };
 }, {})(ReduxFormComponent);

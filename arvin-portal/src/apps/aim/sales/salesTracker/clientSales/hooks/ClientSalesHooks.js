@@ -15,6 +15,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { fetchGetClientGroups } from "../../../clientGroups/actions/ClientGroupsActions";
 import { change } from "redux-form";
+import { type } from "@testing-library/user-event/dist/type";
 
 const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
@@ -40,13 +41,21 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       : moment(new Date()).format("MM");
 
   const product =
-    searchParams.get("pr") != null ? String(searchParams.get("pr")) : "";
+    searchParams.get("pr") != null
+      ? String(searchParams.get("pr"))
+      : props.product_group
+      ? props.product_group
+      : "";
 
-  const group_code =
+  const group_description =
     searchParams.get("c") != null ? String(searchParams.get("c")) : "";
 
   const bdo =
-    searchParams.get("b") != null ? String(searchParams.get("b")) : "";
+    searchParams.get("b") != null
+      ? String(searchParams.get("b"))
+      : props.bdo_name
+      ? props.bdo_name
+      : "";
 
   const debounceSearch = useDebounce(searchParams, 500);
   //filtering,search,page,limit end
@@ -207,6 +216,16 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       label: "YTD Balance to Sell",
       align: "left",
     },
+    {
+      id: "type",
+      label: "Type",
+      align: "left",
+    },
+    {
+      id: "subsection",
+      label: "Warehouse",
+      align: "left",
+    },
   ];
   const active_page = JSON.parse(json_active_page);
   const onClickOpenAddModal = () => {
@@ -232,18 +251,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   const onDeleteDeduction = (data) => {
     console.log(data);
   };
-  const onChangeSearch = (event) => {
-    // SEARCH DATA
-    // const search = event.target.value;
-    // setSearchParams({
-    //   q: search,
-    //   p: "1",
-    //   l: String(rowsPerPage),
-    //   f: filterQuery,
-    //   sc: filterSubComponent,
-    //   pg: filterProductGroup,
-    // });
-  };
+
   const debounce = (func, delay) => {
     clearTimeout(state.debounceTimer);
     state.debounceTimer = setTimeout(func, delay);
@@ -267,35 +275,37 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     }
   };
   const filterMonthAndYear = (date) => {
-    let selected_year = moment(date).format("YYYY");
-    let selected_month = moment(date).format("MM");
+    let year = moment(date).format("YYYY");
+    let month = moment(date).format("MM");
     setSearchParams({
-      y: selected_year,
-      m: selected_month,
+      y: year,
+      m: month,
       pr: product,
-      c: group_code,
+      c: group_description,
       b: bdo,
     });
   };
-
+  const onChangeSearch = (event) => {
+    const search = event.target.value;
+    setSearchParams({
+      y: year,
+      m: month,
+      pr: product,
+      c: search,
+      b: bdo,
+    });
+  };
   const getListParam = () => {
     const data = {
       y: year,
       m: month,
       pr: product,
-      c: group_code,
+      c: group_description,
       b: bdo,
     };
     return data;
   };
-  const GetClientSales = async () => {
-    try {
-      const data = await getListParam();
-      await dispatch(getClientSalesTracker(data));
-    } catch (error) {
-      console.error(error);
-    }
-  };
+
   const GetAnnualMonthlyDailyTargetSalesBySectionSubsection = () => {
     // try {
     //   dispatch(
@@ -327,21 +337,22 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     await dispatch(getEmployeeOrganizationAccessList(account_details.code));
   };
 
-  const GetClientGroups = async () => {
+  const GetClientSales = async () => {
     try {
-      dispatch(fetchGetClientGroups());
+      const data = await getListParam();
+      await dispatch(getClientSalesTracker(data));
     } catch (error) {
       console.error(error);
     }
   };
-
   React.useEffect(() => {
     onFetchOrganizationAccess();
-    GetClientGroups();
   }, []);
   React.useEffect(() => {
-    GetClientSales();
-  }, [refresh, year, month, product, group_code, bdo]);
+    if (product && bdo && year && month) {
+      GetClientSales();
+    }
+  }, [refresh, year, month, product, group_description, bdo]);
   const onClickOpenFilterModal = () => {
     dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
@@ -379,7 +390,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       y: year,
       m: month,
       pr: description,
-      c: group_code,
+      c: group_description,
       b: bdo,
     });
   };
@@ -408,7 +419,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       ") " +
       (product ? product : " All Product ") +
       "-" +
-      (group_code ? group_code : " All Group ") +
+      (group_description ? group_description : " All Group ") +
       "-" +
       (bdo ? bdo : "All BDO") +
       ".xlsx";
@@ -431,6 +442,8 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       ytd_total_daily_qouta_amount: "YTD Total Quota",
       ytd_total_daily_out_amount: "YTD Total Out",
       ytd_total_status_daily_target: "YTD Balance to Sell",
+      type: "Type",
+      subsection: "Warehouse",
     };
 
     // Convert data to new format with renamed keys
@@ -482,7 +495,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       y: year,
       m: month,
       pr: product,
-      c: group_code,
+      c: group_description,
       b: bdo.username,
     });
     props.dispatch(change("ClientSales", "bdo_name", bdo.full_name));
@@ -493,7 +506,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       y: year,
       m: month,
       pr: product,
-      c: group_code,
+      c: group_description,
       b: "",
     });
     props.dispatch(change("ClientSales", "bdo_name", ""));

@@ -27,6 +27,7 @@ use App\Http\Controllers\RefSalutationsController;
 use App\Http\Controllers\RefTruckTypesController;
 use App\Http\Controllers\RefProductGroupsController;
 use App\Http\Controllers\RefHolidaysController;
+use App\Http\Controllers\RefClientsSalesOutLogsController;
 
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UserAccessCustomerRightsController;
@@ -137,6 +138,10 @@ use Illuminate\Support\Facades\Route;
         Route::get('reference/get_ref_holidays',[RefHolidaysController::class,'get_ref_holidays']);
         Route::apiResource('reference/ref_bank_accounts',RefBankAccountsController::class)->middleware(['light_decryption']);
         Route::get('reference/get_ref_bank_accounts',[RefBankAccountsController::class,'get_ref_bank_accounts']);
+        Route::get('reference/postRefClientsSalesOutLogs',[RefClientsSalesOutLogsController::class,'postRefClientsSalesOutLogs'])->middleware(['light_decryption']);
+
+
+        
         // REFERENCE END
 
 

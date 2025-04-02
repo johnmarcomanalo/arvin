@@ -2,7 +2,7 @@ import { Grid, TextField } from "@mui/material";
 import * as React from "react";
 import { connect } from "react-redux";
 import { formValueSelector, reduxForm } from "redux-form";
-import Table from "../../../../../../components/table/Table";
+import Table from "components/table/Table";
 import ClientGroupsHooks from "../../hooks/ClientGroupsHooks";
 const formName = "ViewClientGroup";
 const submit = async (values, dispatch, props) => {

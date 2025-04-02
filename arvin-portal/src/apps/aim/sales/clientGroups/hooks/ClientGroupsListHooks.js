@@ -5,19 +5,18 @@ import { useSearchParams } from "react-router-dom";
 import { cancelRequest } from "../../../../../api/api";
 import { Constants } from "../../../../../reducer/Contants";
 import { useDebounce } from "../../../../../utils/HelperUtils";
-import { getClientGroups } from "../actions/ClientGroupsActions";
+import { getRefClientGroups } from "../actions/ClientGroupsActions";
 import { getClientSubGroups } from "../actions/ClientSubgroupsActions";
-const ClientGroupsHooks = (props) => {
+const ClientGroupsListHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
-  const refresh2 = useSelector((state) => state.SalesDailyOutReducer.refresh2);
   const addModal = useSelector((state) => state.SalesDailyOutReducer.addModal);
   const viewModal = useSelector(
     (state) => state.SalesDailyOutReducer.viewModal
   );
 
-  const dataList = useSelector((state) => state.SalesDailyOutReducer.dataList);
+  const dataList = useSelector((state) => state.ReferenceReducer.client_groups);
   const dataListCount = useSelector(
-    (state) => state.SalesDailyOutReducer.dataListCount
+    (state) => state.ReferenceReducer.client_groups_count
   );
 
   const dataSubList = useSelector(
@@ -37,16 +36,21 @@ const ClientGroupsHooks = (props) => {
     debounceDelay: 2000,
   });
   const [searchParams, setSearchParams] = useSearchParams();
-  const page = searchParams.get("p") != null ? searchParams.get("p") : 1;
+  const page =
+    searchParams.get("ref_client_groups_page") != null
+      ? searchParams.get("ref_client_groups_page")
+      : 1;
   const rowsPerPage =
-    searchParams.get("l") != null ? searchParams.get("l") : 10;
+    searchParams.get("ref_client_groups_limit") != null
+      ? searchParams.get("ref_client_groups_limit")
+      : 10;
   const search =
-    searchParams.get("q") != null ? String(searchParams.get("q")) : "";
+    searchParams.get("ref_client_groups_search") != null
+      ? String(searchParams.get("ref_client_groups_search"))
+      : "";
   const filterQuery =
-    searchParams.get("f") != null
-      ? String(searchParams.get("f"))
-      : props.type
-      ? props.type
+    searchParams.get("ref_client_groups_filter") != null
+      ? String(searchParams.get("ref_client_groups_filter"))
       : "";
 
   const debounceSearch = useDebounce(searchParams, 500);
@@ -58,7 +62,7 @@ const ClientGroupsHooks = (props) => {
     { id: "code", label: "Code", align: "left" },
     { id: "description", label: "Description", align: "left" },
     { id: "type", label: "Type", align: "left" },
-    { id: "subsection", label: "Warehouse", align: "left" },
+    { id: "subtype", label: "Warehouse", align: "left" },
   ];
 
   const subcolumns = [
@@ -66,11 +70,13 @@ const ClientGroupsHooks = (props) => {
     { id: "description", label: "Description", align: "left" },
     { id: "type", label: "Type", align: "left" },
   ];
+
   const type = [
     { description: "Manila Branch" },
     { description: "Provincial" },
     { description: "Peanut" },
   ];
+
   const selected_code = useSelector(
     (state) => state.SalesDailyOutReducer.selected_code
   );
@@ -93,11 +99,10 @@ const ClientGroupsHooks = (props) => {
   };
   const handleChangePage = (event, page) => {
     setSearchParams({
-      q: search,
-      p: page,
-      l: String(rowsPerPage),
-      f: filterQuery,
-      ref: false,
+      ref_client_groups_search: search,
+      ref_client_groups_page: page,
+      ref_client_groups_limit: String(rowsPerPage),
+      ref_client_groups_filter: filterQuery,
     });
   };
 
@@ -112,7 +117,7 @@ const ClientGroupsHooks = (props) => {
   const onSelectItem = async (data) => {
     await dispatch(getClientSubGroups(data.code));
     await dispatch({
-      type: Constants.ACTION_SALES_DAILY_OUT,
+      type: Constants.ACTION_REFERENCE,
       payload: {
         selectedDataList: data,
         viewModal: true,
@@ -123,29 +128,27 @@ const ClientGroupsHooks = (props) => {
     // SEARCH DATA
     const search = event.target.value;
     setSearchParams({
-      q: search,
-      p: "1",
-      l: String(rowsPerPage),
-      f: filterQuery,
-      ref: false,
+      ref_client_groups_search: search,
+      ref_client_groups_page: "1",
+      ref_client_groups_limit: String(rowsPerPage),
+      ref_client_groups_filter: filterQuery,
     });
   };
   const onChangeFilter = (filter) => {
+    // SEARCH DATA
     setSearchParams({
-      q: search,
-      p: "1",
-      l: String(rowsPerPage),
-      f: filter,
-      ref: false,
+      ref_client_groups_search: search,
+      ref_client_groups_page: "1",
+      ref_client_groups_limit: String(rowsPerPage),
+      ref_client_groups_filter: filter,
     });
   };
   const getListParam = () => {
     const data = {
-      p: page == null ? 1 : page,
-      q: search,
-      l: rowsPerPage,
-      f: filterQuery,
-      ref: false,
+      ref_client_groups_search: search,
+      ref_client_groups_page: page == null ? 1 : page,
+      ref_client_groups_limit: rowsPerPage,
+      ref_client_groups_filter: filterQuery,
     };
     return data;
   };
@@ -153,7 +156,7 @@ const ClientGroupsHooks = (props) => {
   const GetClientGroups = async () => {
     try {
       const data = getListParam();
-      await dispatch(getClientGroups(data));
+      await dispatch(getRefClientGroups(data));
     } catch (error) {
       console.error(error);
     }
@@ -201,4 +204,4 @@ const ClientGroupsHooks = (props) => {
   };
 };
 
-export default ClientGroupsHooks;
+export default ClientGroupsListHooks;
