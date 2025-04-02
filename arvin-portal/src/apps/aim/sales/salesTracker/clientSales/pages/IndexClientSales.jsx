@@ -4,10 +4,10 @@ import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import RequestPageIcon from "@mui/icons-material/RequestPage";
 import { Grid } from "@mui/material";
 import * as React from "react";
-import BreadCrumbs from "../../../../../../components/breadCrumb/BreadCrumbs";
-import configure from "../../../../../configure/configure.json";
+import BreadCrumbs from "components/breadCrumb/BreadCrumbs";
+import configure from "apps/configure/configure.json";
 import ClientSales from "./ClientSales";
-import PageTitle from "../../../../../../components/pageTItle/PageTitle";
+import PageTitle from "components/pageTItle/PageTitle";
 const title_page = "Client Sales";
 const breadCrumbArray = [
   {

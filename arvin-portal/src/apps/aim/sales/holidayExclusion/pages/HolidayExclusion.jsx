@@ -3,11 +3,11 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import swal from "sweetalert";
-import ComboBox from "../../../../../components/autoComplete/AutoComplete";
-import InputField from "../../../../../components/inputFIeld/InputField";
-import Table from "../../../../../components/table/Table";
+import ComboBox from "components/autoComplete/AutoComplete";
+import InputField from "components/inputFIeld/InputField";
+import Table from "components/table/Table";
 import HolidayExclusionHooks from "../hooks/HolidayExclusionHooks";
-import Modal from "../../../../../components/modal/Modal";
+import Modal from "components/modal/Modal";
 import MoveSaleQuota from "./components/MoveSaleQuota";
 const formName = "HolidayExclusion";
 const submit = async (values, dispatch, props) => {

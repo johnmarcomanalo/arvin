@@ -1,33 +1,22 @@
-import { Grid, Stack, useMediaQuery } from "@mui/material";
+import { Grid, Stack, Tooltip, useMediaQuery } from "@mui/material";
+import Page from "components/pagination/Pagination";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
-import ButtonComponent from "components/button/Button";
 import Modal from "components/modal/Modal";
-import configure from "apps/configure/configure.json";
-import ClientGroupsHooks from "../hooks/ClientGroupsHooks";
-import AddClientGroup from "./components/AddClientGroup";
 import Table from "components/table/Table";
-import ViewClientGroup from "./components/ViewClientGroup";
-import Page from "components/pagination/Pagination";
+import ClientGroupsListHooks from "../../hooks/ClientGroupsListHooks";
+import ViewClientGroup from "./ViewClientGroup";
 import SearchField from "components/inputFIeld/SearchField";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import configure from "apps/configure/configure.json";
 import ComboBox from "components/autoComplete/AutoComplete";
 const formName = "ClientGroups";
 let ClientGroups = (props) => {
-  const { ...clientGroups } = ClientGroupsHooks(props);
+  const { ...clientGroups } = ClientGroupsListHooks(props);
   const matches = useMediaQuery("(min-width:600px)");
   return (
     <React.Fragment>
-      <Modal
-        open={clientGroups?.addModal}
-        fullScreen={matches ? false : true}
-        title={"Add Group"}
-        size={"md"}
-        action={undefined}
-        handleClose={clientGroups.onClickOpenCloseModal}
-      >
-        <AddClientGroup />
-      </Modal>
       <Modal
         open={clientGroups?.viewModal}
         fullScreen={matches ? false : true}
@@ -39,39 +28,28 @@ let ClientGroups = (props) => {
         <ViewClientGroup />
       </Modal>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={12} md={12} lg={12}>
+        {/* <Grid item xs={12} sm={12} md={12} lg={12}>
           <Stack
             direction="row"
-            justifyContent={matches ? "flex-end" : "center"}
-            alignItems={matches ? "flex-end" : "center"}
-            flexDirection={matches ? "row" : "column"}
-            spacing={2}
-          >
-            <ButtonComponent
-              stx={configure.default_button}
-              iconType="add"
-              type="button"
-              fullWidth={true}
-              children={"Add Group"}
-              click={clientGroups.onClickOpenAddModal}
-            />
-          </Stack>
-        </Grid>
-        <Grid item xs={12} sm={12} md={4} lg={4}>
-          <Stack
-            direction="row"
-            justifyContent="space-start"
-            alignItems="flex-end"
+            justifyContent={"space-around"}
+            alignItems={"flex-end"}
             spacing={2}
           >
             <SearchField
               value={clientGroups.search}
               onChange={clientGroups.onChangeSearch}
               textHidden={false}
-              fullwidth={true}
+              fullwidth={false}
+            />
+            <Page
+              page={clientGroups?.page}
+              limit={clientGroups?.dataListCount}
+              status={""}
+              onHandleChange={clientGroups.handleChangePage}
             />
           </Stack>
-        </Grid>
+        </Grid> */}
+
         <Grid item xs={12} sm={12} md={4} lg={4}>
           <Stack
             direction="row"
@@ -100,6 +78,21 @@ let ClientGroups = (props) => {
           </Stack>
         </Grid>
         <Grid item xs={12} sm={12} md={4} lg={4}>
+          <Stack
+            direction="row"
+            justifyContent="space-start"
+            alignItems="flex-end"
+            spacing={2}
+          >
+            <SearchField
+              value={clientGroups.search}
+              onChange={clientGroups.onChangeSearch}
+              textHidden={false}
+              fullwidth={true}
+            />
+          </Stack>
+        </Grid>
+        <Grid item xs={12} sm={12} md={4} lg={4}>
           <Stack justifyContent="flex-end" alignItems="flex-end">
             <Page
               page={clientGroups?.page}
@@ -123,9 +116,19 @@ let ClientGroups = (props) => {
             actionshow={true}
             paginationShow={false}
             subAction1Show={true}
-            subAction2Show={false}
+            subAction2Show={true}
             action={(row) => {
-              return null;
+              return (
+                <Tooltip title="Select">
+                  <AddCircleIcon
+                    onClick={() => props.onClickSelect(row)}
+                    style={{
+                      color: configure.secondary_color,
+                      cursor: "pointer",
+                    }}
+                  />
+                </Tooltip>
+              );
             }}
           />
         </Grid>
@@ -141,9 +144,8 @@ const ReduxFormComponent = reduxForm({
 const selector = formValueSelector(formName);
 export default connect((state) => {
   const refresh = state.SalesDailyOutReducer.refresh;
-  const type = selector(state, "type");
+
   return {
     refresh,
-    type,
   };
 }, {})(ReduxFormComponent);

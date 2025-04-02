@@ -14,14 +14,19 @@ import {
 import * as React from "react";
 import { connect, useDispatch } from "react-redux";
 import { change, Field, formValueSelector, reduxForm } from "redux-form";
-import ButtonComponent from "../../../../../../components/button/Button";
-import InputField from "../../../../../../components/inputFIeld/InputField";
-import configure from "../../../../../configure/configure.json";
+import ButtonComponent from "components/button/Button";
+import InputField from "components/inputFIeld/InputField";
+import configure from "apps/configure/configure.json";
 import AddClientGroupsHooks from "../../hooks/AddClientGroupsHooks";
-import Modal from "../../../../../../components/modal/Modal";
+import Modal from "components/modal/Modal";
 import Customers from "../../../../settings/accessrights/customerrights/pages/components/Customers";
 import { postClientGroup } from "../../actions/ClientGroupsActions";
 import { Constants } from "../../../../../../reducer/Contants";
+import CSRFToken from "security/csrftoken";
+import ComboBox from "components/autoComplete/AutoComplete";
+import AccountList from "apps/aim/humanresource/employeeList/pages/components/AccountList";
+import InputFieldButton from "components/inputFIeld/InputFieldButton";
+import CloseIcon from "@mui/icons-material/Close";
 const formName = "AddClientGroup";
 const submit = async (values, dispatch, props) => {
   try {
@@ -40,7 +45,6 @@ const submit = async (values, dispatch, props) => {
 
 let AddClientGroup = (props) => {
   const { ...addClientGroups } = AddClientGroupsHooks(props);
-  const dispatch = useDispatch();
   const matches = useMediaQuery("(min-width:600px)");
   const state = addClientGroups.state;
   props.dispatch(change(formName, "sub_group", state?.sub_group));
@@ -57,20 +61,95 @@ let AddClientGroup = (props) => {
       >
         <Customers onClickSelect={addClientGroups.onClickSelectClientList} />
       </Modal>
+      <Modal
+        open={addClientGroups.employeeModal}
+        fullScreen={matches ? false : true}
+        title={"Account Search"}
+        size={"md"}
+        action={undefined}
+        handleClose={addClientGroups.onClickCloseEmployeeViewModal}
+      >
+        <AccountList onClickSelect={addClientGroups.onClickSelectEmployee} />
+      </Modal>
       <form onSubmit={props.handleSubmit}>
-        {/* <CSRFToken /> */}
+        <CSRFToken />
         <Grid container spacing={2}>
-          <Grid container item xs={12} sm={12} md={12} lg={12}>
-            <Grid item xs={12} md={12}>
-              <Field
-                id="description"
-                name="description"
-                label="Description"
-                required={true}
-                component={InputField}
-                multiline={true}
-              />
-            </Grid>
+          <Grid item xs={12} sm={12} md={12} lg={12}>
+            <Field
+              id="description"
+              name="description"
+              label="Description"
+              required={true}
+              component={InputField}
+              multiline={true}
+            />
+          </Grid>
+          {/* <Grid
+            item
+            xs={12}
+            sm={12}
+            md={props.type === "Provincial" ? 6 : 6}
+            lg={props.type === "Provincial" ? 6 : 6}
+          >
+            <Field
+              id="type"
+              name="type"
+              label="Type"
+              options={addClientGroups?.type}
+              getOptionLabel={(option) =>
+                option?.description ? option?.description : ""
+              }
+              required={true}
+              component={ComboBox}
+              onChangeHandle={(e, newValue) => {
+                if (newValue?.description) {
+                  if (newValue?.description !== "Provincial") {
+                    props.change("bdo", "");
+                    props.change("subsection", newValue?.description);
+                  } else {
+                    props.change("subsection", "");
+                    props.change("bdo", "");
+                  }
+                }
+              }}
+            />
+          </Grid> */}
+          <Grid item xs={12} sm={12} md={6} lg={6}>
+            <Field
+              id="bdo"
+              name="bdo"
+              label="BDO"
+              component={InputFieldButton}
+              readOnly={true}
+              required={true}
+              multiline={1}
+              onClick={() => {
+                addClientGroups.onClickOpenEmployeeViewModal();
+              }}
+              handleClick={() => {
+                addClientGroups.onClickSelectResetEmployee();
+              }}
+              inputIcon={<CloseIcon />}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={12} md={6} lg={6}>
+            <Field
+              id="subsection"
+              name="subsection"
+              label="Warehouse"
+              options={addClientGroups?.user_access_organization_rights}
+              getOptionLabel={(option) =>
+                option?.description
+                  ? option.description
+                  : props.subsection
+                  ? props.subsection
+                  : ""
+              }
+              required={true}
+              disable={props.type !== "Provincial" ? true : false}
+              component={ComboBox}
+            />
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={12}>
             <Typography
@@ -197,8 +276,11 @@ const ReduxFormComponent = reduxForm({
 const selector = formValueSelector(formName);
 export default connect((state) => {
   const refresh = state.SalesDailyOutReducer.refresh;
-
+  const type = selector(state, "type");
+  const subsection = selector(state, "subsection");
   return {
     refresh,
+    type,
+    subsection,
   };
 }, {})(ReduxFormComponent);

@@ -46,6 +46,7 @@ const HolidayExclusionHooks = (props) => {
       id: "ref_product_groups_description",
       label: "Product Group",
       align: "left",
+      
     },
     { id: "sales_daily_qouta", label: "Daily Quota", align: "left" },
     { id: "sales_daily_out", label: "Daily Out", align: "left" },

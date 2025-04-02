@@ -228,7 +228,7 @@ class UsersController extends Controller
         if (isset($search)) {
             $query->where(DB::raw("UPPER(users.first_name + ' ' + users.last_name)"), 'like', '%' . strtoupper($search) . '%');
         }
-
+        $query->join('ref_sub_sections', 'users_accounts.subsection_code', '=', 'ref_sub_sections.code');
         // $query->orderBy('users.first_name', 'asc');
 
         // Select the necessary fields and get all accounts for the user
@@ -236,7 +236,8 @@ class UsersController extends Controller
             'users_accounts.code as code',
             DB::raw("UPPER(users.first_name + ' ' + users.last_name) AS full_name"),
             'users_accounts.position',
-            'users_accounts.username'
+            'users_accounts.username',
+            'ref_sub_sections.description as subsection',
         ])
         ->paginate($limit); // Use pagination to handle the results
 

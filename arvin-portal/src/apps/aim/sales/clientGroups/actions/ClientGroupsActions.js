@@ -3,10 +3,10 @@ import { Constants } from "../../../../../reducer/Contants";
 import {
   GetDefaultServices,
   GetSpecificDefaultServices,
-  PostDefaultServices
+  PostDefaultServices,
 } from "../../../../../services/apiService";
 import { decryptaes } from "../../../../../utils/LightSecurity";
-import configure from "../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 
 export const postClientGroup = (formValues) => async (dispatch) => {
   try {
@@ -35,9 +35,11 @@ export const postClientGroup = (formValues) => async (dispatch) => {
       },
     });
     var title = configure.error_message.default;
+    var status = "error";
     var message = "";
     if (error.response && error.response.data) {
       if (error.response.data.message) title = error.response.data.message;
+      if (error.response.data.message) status = error.response.data.status;
       if (error.response.data.errors) {
         const formattedErrors = Object.entries(error.response.data.errors)
           .map(([key, value]) => `${value.join(", ")}`)
@@ -45,7 +47,7 @@ export const postClientGroup = (formValues) => async (dispatch) => {
         message = formattedErrors;
       }
     }
-    await swal(title, message, "error");
+    await swal(title, message, status);
   } finally {
     dispatch({
       type: Constants.ACTION_LOADING,
@@ -119,7 +121,9 @@ export const getClientGroups = (values) => async (dispatch) => {
         "&q=" +
         values.q +
         "&f=" +
-        values.f
+        values.f +
+        "&ref=" +
+        values.ref
     );
     response.then((res) => {
       dispatch({
@@ -158,3 +162,59 @@ export const getClientGroups = (values) => async (dispatch) => {
   }
 };
 
+export const getRefClientGroups = (values) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const response = GetSpecificDefaultServices(
+      "api/salesdailyout/client_groups/get_group_clients?ref_client_groups_page=" +
+        values.ref_client_groups_page +
+        "&ref_client_groups_limit=" +
+        values.ref_client_groups_limit +
+        "&ref_client_groups_search=" +
+        values.ref_client_groups_search +
+        "&ref_client_groups_filter=" +
+        values.ref_client_groups_filter +
+        "&ref=" +
+        true
+    );
+    response.then((res) => {
+      dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: false,
+        },
+      });
+      let decrypted = decryptaes(res.data);
+      dispatch({
+        type: Constants.ACTION_REFERENCE,
+        payload: {
+          client_groups: decrypted.dataList.data,
+          client_groups_count: decrypted.dataList.total,
+        },
+      });
+    });
+  } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};

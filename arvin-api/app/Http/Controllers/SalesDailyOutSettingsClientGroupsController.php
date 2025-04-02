@@ -32,70 +32,101 @@ class SalesDailyOutSettingsClientGroupsController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
-            'description' => 'required',
-            'sub_group' => 'required',
+            'description' => 'required|string',
+            'sub_group' => 'required|array|min:1',
+            'type' => 'required',
+            'subsection' => 'required',
+            'bdo' => 'required',
             'added_by' => 'required',
             'modified_by' => 'required',
         ]);
 
-        $check_group = SalesDailyOutSettingsClientGroups::where('description',$fields['description'])
-            ->whereNull('deleted_at')
-            ->count();
+        try {
+            DB::beginTransaction(); // Start the transaction
 
-        if($check_group > 0){
-            $response = [
-                    'message' => 'There is already a existing group for - : '.$fields["description"] ,
+            // Check if the group already exists
+            $check_group = SalesDailyOutSettingsClientGroups::where('description', $fields['description'])
+                ->where('type', $fields['type'])
+                ->where('subsection', $fields['subsection'])
+                ->where('bdo', $fields['bdo'])
+                ->whereNull('deleted_at')
+                ->count();
+
+            if ($check_group > 0) {
+                DB::rollBack(); // Rollback the transaction
+                return response([
+                    'message' => "A group with the same details already exists: {$fields['description']} - {$fields['type']} - {$fields['subsection']} - {$fields['bdo']}.",
                     'result' => false,
                     'status' => 'warning',
-                    'title' => 'Oppss!',
-            ];
-            return response($response,409);
-        }
+                    'title' => 'Oops!',
+                ], 409);
+            }
 
-        $customerCodes = array_column($fields['sub_group'], 'customer_code');
+            // Check if customer codes already exist
+            
+            // $customerCodes = array_column($fields['sub_group'], 'customer_code');
+            // $existingCount = SalesDailyOutSettingsClientSubGroups::whereIn('customer_code', $customerCodes)
+            //     ->whereNull('deleted_at')
+            //     ->count();
 
-        $existingCount = SalesDailyOutSettingsClientSubGroups::whereIn('customer_code', $customerCodes)
-            ->whereNull('deleted_at')
-            ->count();
+            // if ($existingCount > 0) {
+            //     DB::rollBack(); // Rollback the transaction
+            //     return response([
+            //         'message' => 'Some customer codes already exist.',
+            //         'result' => false,
+            //         'status' => 'warning',
+            //         'title' => 'Oops!',
+            //     ], 409);
+            // }
 
-        if ($existingCount > 0) {
-            $response = [
-                    'message' => 'Some customer codes already exist.' ,
-                    'result' => false,
-                    'status' => 'warning',
-                    'title' => 'Oppss!',
-            ];
-            return response($response,409);
-        }
-        $code_group = MainController::generate_code('App\Models\SalesDailyOutSettingsClientGroups',"code");
-
-        SalesDailyOutSettingsClientGroups::create([
-            'code' => $code_group,
-            'description' => $fields["description"],
-            'added_by' => $fields["added_by"],
-            'modified_by' => $fields["modified_by"],
-        ]);
-
-        foreach ($fields['sub_group'] as $value) {
-            $code = MainController::generate_code('App\Models\SalesDailyOutSettingsClientSubGroups',"code");
-            SalesDailyOutSettingsClientSubGroups::create([
-                'code' => $code,
-                'sales_daily_out_settings_client_groups_code' => $code_group,
-                'customer_code' => $value->customer_code,
-                'description' => $value->description,
-                'type' => $value->type,
+            // Generate and insert group
+            $code_group = MainController::generate_code('App\Models\SalesDailyOutSettingsClientGroups', "code");
+            // return $fields;
+            SalesDailyOutSettingsClientGroups::create([
+                'code' => $code_group,
+                'description' => $fields["description"],
+                'type' => $fields["type"],
+                'subsection' => $fields["subsection"],
+                'bdo' => $fields["bdo"],
                 'added_by' => $fields["added_by"],
                 'modified_by' => $fields["modified_by"],
             ]);
-        }
 
-        return response([
-            'message' => 'Group client added successfully',
-            'result' => true,
-            'status' => 'success',
-            'title' => 'Success',
-        ], 200); 
-        
+            // Insert subgroup data
+            
+            foreach ($fields['sub_group'] as $value) {
+                $code = MainController::generate_code('App\Models\SalesDailyOutSettingsClientSubGroups', "code");
+                SalesDailyOutSettingsClientSubGroups::create([
+                    'code' => $code,
+                    'sales_daily_out_settings_client_groups_code' => $code_group,
+                    'customer_code' => $value->customer_code,
+                    'description' => $value->description,
+                    'type' => $value->type,
+                    'subsection' => $fields["subsection"],
+                    'added_by' => $fields["added_by"],
+                    'modified_by' => $fields["modified_by"],
+                ]);
+            }
+
+            DB::commit(); // Commit the transaction
+
+            return response([
+                'message' => 'Group client added successfully',
+                'result' => true,
+                'status' => 'success',
+                'title' => 'Success',
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback transaction on error
+
+            return response([
+                'message' => 'An error occurred: ' . $e->getMessage(),
+                'result' => false,
+                'status' => 'error',
+                'title' => 'Error',
+            ], 500);
+        }
     }
 
     /**
@@ -136,11 +167,11 @@ class SalesDailyOutSettingsClientGroupsController extends Controller
         if (isset($id)) {
             $data = SalesDailyOutSettingsClientGroups::whereNull('deleted_at')->first();
         } else {
-            $data = SalesDailyOutSettingsClientGroups::whereNull('deleted_at')->get(['code','description']);
+            $data = SalesDailyOutSettingsClientGroups::whereNull('deleted_at')->get(['code','description','type as group_type', 'subtype']);
             $data->transform(function ($item) {
             $subgroupData = SalesDailyOutSettingsClientSubGroups::where('sales_daily_out_settings_client_groups_code', $item->code)
                 ->whereNull('deleted_at')
-                ->get(['code','sales_daily_out_settings_client_groups_code','customer_code','description','type']);
+                ->get(['code','sales_daily_out_settings_client_groups_code','customer_code','description','type',]);
             $item->subgroup = $subgroupData; // Add the subgroup to the object
             return $item;
         });
@@ -155,16 +186,70 @@ class SalesDailyOutSettingsClientGroupsController extends Controller
 
     public function get_group_clients(Request $request)
     {
+        $ref = $request->query('ref');    
         //select query from the url parameter
-        $page = $request->query('page');
-        $limit = $request->query('limit');
-        $query = $request->query('q');
-        $filter = $request->query('f');
+        // Set parameter names based on type 
+        $pageParam = $ref == 'true' ? 'ref_client_groups_page' : 'page';
+        $limitParam = $ref == 'true' ? 'ref_client_groups_limit' : 'limit';
+        $queryParam = $ref == 'true' ? 'ref_client_groups_search' : 'q';
+        $filterParam = $ref == 'true' ? 'ref_client_groups_filter' : 'f';
+
+        // Retrieve query parameters
+        $page = $request->query($pageParam);
+        $limit = $request->query($limitParam);
+        $query = $request->query($queryParam);
+        $filter = $request->query($filterParam);
+        
+         $queryBuilder = SalesDailyOutSettingsClientGroups::whereNull('deleted_at');
+        if (!empty($query)) {
+            $queryBuilder = $queryBuilder->where(function ($queryBuilder) use ($query) {
+                    $queryBuilder->where('description', 'like', '%' . $query . '%');
+            });
+        } 
+        if (!empty($filter)) {
+            $queryBuilder = $queryBuilder->where(function ($queryBuilder) use ($filter) {
+                    $queryBuilder->where('type', 'like', '%' . $filter . '%');
+            });
+        } 
+
+         $data_list = $queryBuilder->paginate($limit, ['*'], 'page', $page);
+
+        // Add `subgroup` data to each item in the `data` array
+        $data_list->getCollection()->transform(function ($item) {
+            $subgroupData = SalesDailyOutSettingsClientSubGroups::where('sales_daily_out_settings_client_groups_code', $item->code)
+                ->whereNull('deleted_at')
+                ->get(['sales_daily_out_settings_client_groups_code','customer_code','description','type','subsection']);
+            $item->subgroup = $subgroupData; // Add the subgroup to the object
+            return $item;
+        });
+
+        $response = [  
+            'dataList' => $data_list,
+            'result' => true,
+            'title'=>'Success',
+            'status'=>'success',
+            'message'=> 'Authentication successful.',
+        ];
+        return Crypt::encryptString(json_encode($response));
+    }
+
+    public function get_ref_group_clients(Request $request)
+    {
+        //select query from the url parameter
+        $page = $request->query('ref_client_groups_page');
+        $limit = $request->query('ref_client_groups_limit');
+        $query = $request->query('ref_client_groups_search');
+        $filter = $request->query('ref_client_groups_filter');
         
         $queryBuilder = SalesDailyOutSettingsClientGroups::whereNull('deleted_at');
         if (!empty($query)) {
             $queryBuilder = $queryBuilder->where(function ($queryBuilder) use ($query) {
                     $queryBuilder->where('description', 'like', '%' . $query . '%');
+            });
+        } 
+        if (!empty($filter)) {
+            $queryBuilder = $queryBuilder->where(function ($queryBuilder) use ($filter) {
+                    $queryBuilder->where('type', 'like', '%' . $filter . '%');
             });
         } 
 

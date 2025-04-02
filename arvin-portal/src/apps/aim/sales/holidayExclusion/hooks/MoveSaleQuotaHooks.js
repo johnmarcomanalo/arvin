@@ -86,30 +86,30 @@ const MoveSaleQuotaHooks = (props) => {
   };
   const computeStatusPercentageDailyTarget = async (value, quota) => {
     try {
-      if (value > 0) {
-        await debounce(() => {
-          const response = dispatch(
-            getStatusDailyTargetAndPercentageDailyTargetByDailyOut(value, quota)
+      // if (value > 0) {
+      await debounce(() => {
+        const response = dispatch(
+          getStatusDailyTargetAndPercentageDailyTargetByDailyOut(value, quota)
+        );
+        response.then((res) => {
+          let data = res.data;
+          props.dispatch(
+            change(
+              "MoveSaleQuota",
+              "updated_sales_daily_target",
+              data.status_daily_target
+            )
           );
-          response.then((res) => {
-            let data = res.data;
-            props.dispatch(
-              change(
-                "MoveSaleQuota",
-                "updated_sales_daily_target",
-                data.status_daily_target
-              )
-            );
-            props.dispatch(
-              change(
-                "MoveSaleQuota",
-                "updated_daily_sales_target_percentage",
-                data.percentage_daily_target
-              )
-            );
-          });
-        }, state.debounceDelay);
-      }
+          props.dispatch(
+            change(
+              "MoveSaleQuota",
+              "updated_daily_sales_target_percentage",
+              data.percentage_daily_target
+            )
+          );
+        });
+      }, state.debounceDelay);
+      // }
     } catch (error) {
       console.error(error);
     }

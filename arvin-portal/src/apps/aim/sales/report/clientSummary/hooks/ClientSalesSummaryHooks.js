@@ -38,7 +38,7 @@ const DavaoTKSHooks = (props) => {
   const product =
     searchParams.get("product") != null
       ? String(searchParams.get("product"))
-      : "";
+      : props.product || "";
 
   const group_code =
     searchParams.get("group_code") != null
@@ -245,8 +245,18 @@ const DavaoTKSHooks = (props) => {
       group_code: group_code,
       bdo: bdo.username,
     });
-    props.dispatch(change("ClientSales", "bdo_name", bdo.full_name));
+    props.dispatch(change("ClientSummary", "bdo_name", bdo.full_name));
     swal("Success", "BDO filtered successfully", "success");
+  };
+
+  const onClickSelectResetEmployee = () => {
+    setSearchParams({
+      year: year,
+      product: product,
+      group_code: group_code,
+      bdo: "",
+    });
+    props.dispatch(change("ClientSummary", "bdo_name", ""));
   };
 
   const getListParam = () => {
@@ -275,12 +285,15 @@ const DavaoTKSHooks = (props) => {
     }
   };
   React.useEffect(() => {
-    GetClientGroups();
+    // GetClientGroups();e
   }, []);
   React.useEffect(() => {
     if (product !== "" && bdo !== "") {
       getClientSummary();
     }
+    props.initialize({
+      product: product,
+    });
     return () => cancelRequest();
   }, [refresh, year, product, group_code, bdo]);
   const onClickOpenEmployeeViewModal = () => {
@@ -504,6 +517,7 @@ const DavaoTKSHooks = (props) => {
     onChangeFilterBDO,
     onClickOpenEmployeeViewModal,
     onClickCloseEmployeeViewModal,
+    onClickSelectResetEmployee,
   };
 };
 

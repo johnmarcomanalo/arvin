@@ -6,7 +6,7 @@ import {
 } from "../../../../../services/apiService";
 import { decryptaes } from "../../../../../utils/LightSecurity";
 import swal from "sweetalert";
-import configure from "../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 
 export const getMonthlyAndDailyQoutaByTargetAnnualSales =
   (amount) => async (dispatch) => {
@@ -23,13 +23,13 @@ export const getMonthlyAndDailyQoutaByTargetAnnualSales =
       );
       response.then((res) => {
         try {
-          let decypted = decryptaes(res.data);
+          let decrypted = decryptaes(res.data);
           dispatch({
             type: Constants.ACTION_SALES_DAILY_OUT,
             payload: {
-              annual_sales_target: decypted.annual_sales_target,
-              monthly_sales_target: decypted.monthly_sales_target,
-              daily_sales_target: decypted.daily_sales_target,
+              annual_sales_target: decrypted.annual_sales_target,
+              monthly_sales_target: decrypted.monthly_sales_target,
+              daily_sales_target: decrypted.daily_sales_target,
             },
           });
         } catch (error) {
@@ -120,62 +120,63 @@ export const postSettingsAnnualQuotaClientGroups =
     }
   };
 
-export const getAnnualSettingSaleClientGroups = (values) => async (dispatch) => {
-  try {
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: true,
-      },
-    });
-    const response = GetSpecificDefaultServices(
-      "api/salesdailyout/settings_quota_groups/annual_quota_client_groups?page=" +
-        values.p +
-        "&limit=" +
-        values.l +
-        "&q=" +
-        values.q +
-        "&f=" +
-        values.f +
-        "&uid=" +
-        values.u
-    );
-    response.then((res) => {
-      dispatch({
+export const getAnnualSettingSaleClientGroups =
+  (values) => async (dispatch) => {
+    try {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: {
+          loading: true,
+        },
+      });
+      const response = GetSpecificDefaultServices(
+        "api/salesdailyout/settings_quota_groups/annual_quota_client_groups?page=" +
+          values.p +
+          "&limit=" +
+          values.l +
+          "&q=" +
+          values.q +
+          "&f=" +
+          values.f +
+          "&uid=" +
+          values.u
+      );
+      response.then((res) => {
+        dispatch({
+          type: Constants.ACTION_LOADING,
+          payload: {
+            loading: false,
+          },
+        });
+        let decrypted = decryptaes(res.data);
+        dispatch({
+          type: Constants.ACTION_SALES_DAILY_OUT,
+          payload: {
+            dataList: decrypted.dataList.data,
+            dataListCount: decrypted.dataList.total,
+          },
+        });
+      });
+    } catch (error) {
+      var title = configure.error_message.default;
+      var message = "";
+      if (typeof error.response.data.message !== "undefined")
+        title = error.response.data.message;
+      if (typeof error.response.data.errors !== "undefined") {
+        const formattedErrors = Object.entries(error.response.data.errors)
+          .map(([key, value]) => `${value.join(", ")}`)
+          .join("\n");
+        message = formattedErrors;
+      }
+      await swal(title, message, "error");
+      await dispatch({
         type: Constants.ACTION_LOADING,
         payload: {
           loading: false,
         },
       });
-      let decrypted = decryptaes(res.data);
-      dispatch({
-        type: Constants.ACTION_SALES_DAILY_OUT,
-        payload: {
-          dataList: decrypted.dataList.data,
-          dataListCount: decrypted.dataList.total,
-        },
-      });
-    });
-  } catch (error) {
-    var title = configure.error_message.default;
-    var message = "";
-    if (typeof error.response.data.message !== "undefined")
-      title = error.response.data.message;
-    if (typeof error.response.data.errors !== "undefined") {
-      const formattedErrors = Object.entries(error.response.data.errors)
-        .map(([key, value]) => `${value.join(", ")}`)
-        .join("\n");
-      message = formattedErrors;
     }
-    await swal(title, message, "error");
-    await dispatch({
-      type: Constants.ACTION_LOADING,
-      payload: {
-        loading: false,
-      },
-    });
-  }
-};
+  };
 
 export const getAnnualMonthlyDailyTargetSalesBySectionSubsection =
   (id, year) => async (dispatch) => {

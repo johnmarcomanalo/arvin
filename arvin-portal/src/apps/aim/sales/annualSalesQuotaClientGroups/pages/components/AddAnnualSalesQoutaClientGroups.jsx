@@ -12,20 +12,23 @@ import {
 } from "@mui/material";
 import AccountList from "apps/aim/humanresource/employeeList/pages/components/AccountList";
 import moment from "moment";
+import CloseIcon from "@mui/icons-material/Close";
 import * as React from "react";
 import { connect, useDispatch } from "react-redux";
 import { Field, change, formValueSelector, reduxForm, reset } from "redux-form";
 import swal from "sweetalert";
-import ComboBox from "../../../../../../components/autoComplete/AutoComplete";
-import ButtonComponent from "../../../../../../components/button/Button";
-import InputField from "../../../../../../components/inputFIeld/InputField";
-import InputYearPicker from "../../../../../../components/inputFIeld/InputYearPicker";
-import Modal from "../../../../../../components/modal/Modal";
+import ComboBox from "components/autoComplete/AutoComplete";
+import ButtonComponent from "components/button/Button";
+import InputField from "components/inputFIeld/InputField";
+import InputYearPicker from "components/inputFIeld/InputYearPicker";
+import Modal from "components/modal/Modal";
 import { Constants } from "../../../../../../reducer/Contants";
-import configure from "../../../../../configure/configure.json";
-import Customers from "../../../../settings/accessrights/customerrights/pages/components/Customers";
+import configure from "apps/configure/configure.json";
 import { postSettingsAnnualQuotaClientGroups } from "../../actions/AnnualSalesQoutaClientGroupsActions";
 import AddAnnualSalesQoutaClientGroupsHooks from "../../hooks/AddAnnualSalesQoutaClientGroupsHooks";
+import ClientGroupList from "apps/aim/sales/clientGroups/pages/components/ClientGroupList";
+import InputFieldButton from "components/inputFIeld/InputFieldButton";
+import AddClientGroup from "apps/aim/sales/clientGroups/pages/components/AddClientGroup";
 const formName = "AddAnnualSalesQoutaClientGroups";
 const submit = async (values, dispatch, props) => {
   try {
@@ -40,7 +43,6 @@ const submit = async (values, dispatch, props) => {
     });
     swal(res.data.title, res.data.message, res.data.status);
     reset();
-    console.log(values);
   } catch (error) {
     console.log(error);
   }
@@ -59,7 +61,7 @@ let AddAnnualSalesQoutaClientGroups = (props) => {
   const state = addAnnualSalesQoutaClientGroups.state;
   return (
     <React.Fragment>
-      <Modal
+      {/* <Modal
         open={addAnnualSalesQoutaClientGroups?.viewModal}
         fullScreen={matches ? false : true}
         title={"Client List"}
@@ -68,12 +70,24 @@ let AddAnnualSalesQoutaClientGroups = (props) => {
         handleClose={addAnnualSalesQoutaClientGroups.onClickCloseViewModal}
       >
         <Customers
-          onClickSelect={
-            addAnnualSalesQoutaClientGroups.onClickSelectClientList
-          }
+          // onClickSelect={
+          //   addAnnualSalesQoutaClientGroups.onClickSelectClientList
+          // }
         />
-      </Modal>
+      </Modal> */}
+
       <Modal
+        open={addAnnualSalesQoutaClientGroups?.addModal2}
+        fullScreen={matches ? false : true}
+        title={"Create Group"}
+        size={"lg"}
+        action={undefined}
+        handleClose={addAnnualSalesQoutaClientGroups.onClickCloseAddModal2}
+      >
+        <AddClientGroup />
+      </Modal>
+
+      {/* <Modal
         open={addAnnualSalesQoutaClientGroups.employeeModal}
         fullScreen={matches ? false : true}
         title={"Employee Search"}
@@ -86,76 +100,57 @@ let AddAnnualSalesQoutaClientGroups = (props) => {
         <AccountList
           onClickSelect={addAnnualSalesQoutaClientGroups.onClickSelectEmployee}
         />
+      </Modal> */}
+      <Modal
+        open={addAnnualSalesQoutaClientGroups.viewModal2}
+        fullScreen={matches ? false : true}
+        title={"Group Search"}
+        size={"md"}
+        action={undefined}
+        handleClose={
+          addAnnualSalesQoutaClientGroups.onClickCloseClientListViewModal
+        }
+      >
+        <ClientGroupList
+          onClickSelect={addAnnualSalesQoutaClientGroups.onClickSelectGroupList}
+        />
       </Modal>
       <form onSubmit={props.handleSubmit}>
         {/* <CSRFToken /> */}
         <Grid container spacing={2}>
           <Grid item xs={12} md={12}>
             <Field
-              id="type"
-              name="type"
-              label="Type"
-              options={state?.type}
-              getOptionLabel={(option) =>
-                option.description ? option.description : ""
-              }
+              id="description"
+              name="description"
+              label={"Group Clients"}
               required={true}
-              component={ComboBox}
-              onChangeHandle={(e, newValue) => {
-                props.change("subgroups", []);
-                props.change("type", newValue?.description);
+              readOnly={true}
+              component={InputFieldButton}
+              onClick={() => {
+                addAnnualSalesQoutaClientGroups.onClickOpenClientListViewModal();
               }}
+              handleClick={() => {
+                addAnnualSalesQoutaClientGroups.onClickRemoveSelectGroupList();
+              }}
+              inputIcon={<CloseIcon />}
             />
           </Grid>
-          {props.type === "GROUP" && (
-            <Grid item xs={12} md={12}>
-              <Field
-                id="description"
-                name="description"
-                label="Group Clients"
-                options={addAnnualSalesQoutaClientGroups?.client_groups}
-                getOptionLabel={(option) =>
-                  option.description ? option.description : ""
-                }
-                // required={true}
-                component={ComboBox}
-                onChangeHandle={(e, newValue) => {
-                  if (newValue?.description) {
-                    props.change("subgroups", newValue.subgroup);
-                    props.change(
-                      "sales_daily_out_settings_client_group_code",
-                      newValue.code
-                    );
-                  }
-                }}
-              />
-            </Grid>
-          )}
 
           <Grid item xs={12} sm={12} md={12} lg={12}>
             <Stack
               direction="row"
-              justifyContent="space-between"
-              alignItems="flex-start"
+              justifyContent="flex-end"
+              alignItems="flex-end"
               spacing={2}
             >
-              <Typography
-                align="left"
-                gutterBottom
-                sx={{ color: configure.primary_color }}
-              >
-                Selected Clients
-              </Typography>
-              {props.type === "SINGLE" && (
-                <ButtonComponent
-                  stx={configure.default_button}
-                  iconType="add"
-                  type="button"
-                  fullWidth={true}
-                  children={"Add Client"}
-                  click={addAnnualSalesQoutaClientGroups.onClickOpenViewModal}
-                />
-              )}
+              <ButtonComponent
+                stx={configure.default_button}
+                iconType="add"
+                type="button"
+                fullwidth={false}
+                children={"Create Group"}
+                click={addAnnualSalesQoutaClientGroups.onClickOpenAddModal2}
+              />
             </Stack>
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -185,20 +180,58 @@ let AddAnnualSalesQoutaClientGroups = (props) => {
                     >
                       Description
                     </TableCell>
+                    <TableCell
+                      style={{
+                        backgroundColor: configure.primary_table_color,
+                        color: configure.primary_table_text_color,
+                      }}
+                    >
+                      Type
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        backgroundColor: configure.primary_table_color,
+                        color: configure.primary_table_text_color,
+                      }}
+                    >
+                      Warehouse
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {props.subgroups?.map((value, index) => {
+                  {props.subgroup?.map((value, index) => {
                     return (
                       <TableRow>
                         <TableCell>{value.customer_code}</TableCell>
                         <TableCell>{value.description}</TableCell>
+                        <TableCell>{value.type}</TableCell>
+                        <TableCell>{value.subsection}</TableCell>
                       </TableRow>
                     );
                   })}
                 </TableBody>
               </Table>
             </TableContainer>
+          </Grid>
+          <Grid item xs={12} md={12}>
+            <Field
+              id="type"
+              name="type"
+              label={"Type"}
+              required={true}
+              disabled={true}
+              component={InputField}
+            />
+          </Grid>
+          <Grid item xs={12} md={12}>
+            <Field
+              id="subsection"
+              name="subsection"
+              label={"Warehouse"}
+              required={true}
+              disabled={true}
+              component={InputField}
+            />
           </Grid>
           <Grid item xs={12} md={12}>
             <Field
@@ -268,33 +301,35 @@ let AddAnnualSalesQoutaClientGroups = (props) => {
           </Grid>
           <Grid item xs={12} md={12}>
             <Field
-              id="bdo_name"
-              name="bdo_name"
+              id="bdo"
+              name="bdo"
               label={"BDO"}
               required={true}
               disabled={true}
               component={InputField}
             />
           </Grid>
-          <Grid item xs={12} md={12}>
-            <Stack
-              direction="row"
-              justifyContent="flex-end"
-              alignItems="flex-end"
-              spacing={2}
-            >
-              <ButtonComponent
-                stx={configure.default_button}
-                iconType="add"
-                type="button"
-                fullWidth={true}
-                children={"Add BDO"}
-                click={
-                  addAnnualSalesQoutaClientGroups.onClickOpenEmployeeViewModal
-                }
-              />
-            </Stack>
-          </Grid>
+          {props.type === "SINGLE" && (
+            <Grid item xs={12} md={12}>
+              <Stack
+                direction="row"
+                justifyContent="flex-end"
+                alignItems="flex-end"
+                spacing={2}
+              >
+                <ButtonComponent
+                  stx={configure.default_button}
+                  iconType="add"
+                  type="button"
+                  fullWidth={true}
+                  children={"Add BDO"}
+                  click={
+                    addAnnualSalesQoutaClientGroups.onClickOpenEmployeeViewModal
+                  }
+                />
+              </Stack>
+            </Grid>
+          )}
           <Grid item xs={12} md={12}>
             <Stack
               direction="row"
@@ -325,7 +360,7 @@ const selector = formValueSelector(formName);
 export default connect((state) => {
   const refresh = state.SalesDailyOutReducer.refresh;
   const monthly_sales_target = state.SalesDailyOutReducer.monthly_sales_target;
-  const subgroups = selector(state, "subgroups");
+  const subgroup = selector(state, "subgroup");
   const ref_product_groups_uom_description = selector(
     state,
     "ref_product_groups_uom_description"
@@ -333,7 +368,7 @@ export default connect((state) => {
   const type = selector(state, "type");
   return {
     refresh,
-    subgroups,
+    subgroup,
     ref_product_groups_uom_description,
     monthly_sales_target,
     type,

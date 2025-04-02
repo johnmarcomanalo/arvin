@@ -6,7 +6,7 @@ import {
   PostDefaultServices,
 } from "../../../../../../services/apiService";
 import swal from "sweetalert";
-import configure from "../../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 import { decryptaes } from "../../../../../../utils/LightSecurity";
 import { AuthGetReferencesChild } from "../../../../settings/reference/services/referenceServices";
 export const getClientSalesTracker = (values) => async (dispatch) => {

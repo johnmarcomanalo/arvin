@@ -35,48 +35,52 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
      public function store(Request $request)
     {        
         $salesDailyOutClientSalesTrackersController = new SalesDailyOutClientSalesTrackersController();
-        // $salesDailyOutTrackersController = new SalesDailyOutTrackersController();
-
         $fields = $request->validate([
-            'type' => 'required',
-            'sales_daily_out_settings_client_group_code' => 'required_if:type,GROUP',
-            'description' => 'required_if:type,SINGLE',
-            'customer_code' => 'required_if:type,SINGLE',
-            'subgroups' => 'required_if:type,SINGLE',
+            'sales_daily_out_settings_client_group_code' => 'required',
+            'description' => 'required',
+            'subgroup' => 'required',
             'year_sales_target' => 'required',
             'annual_sales_target' => 'required',
             'monthly_sales_target' => 'required',
             'ref_product_groups_code' => 'required',
             'ref_product_groups_description' => 'required',
             'bdo' => 'required',
+            'type' => 'required',
+            'subsection' => 'required',
             'added_by' => 'required',
             'modified_by' => 'required',
         ]);
+        try {
+            DB::beginTransaction(); // Start the transaction
+            $code_annual_quota = MainController::generate_code('App\Models\SalesDailyOutSettingsAnnualQuotaClientGroups',"code");
 
-        $code_annual_quota = MainController::generate_code('App\Models\SalesDailyOutSettingsAnnualQuotaClientGroups',"code");
-
-        if($fields['type'] == 'GROUP'){
             // check quota if existing
             $check_quota = SalesDailyOutSettingsAnnualQuotaClientGroups::where('year_sales_target',$fields['year_sales_target'])
                 ->where('sales_daily_out_settings_client_group_code',$fields['sales_daily_out_settings_client_group_code'])
                 ->where('ref_product_groups_code',$fields['ref_product_groups_code'])
+                ->where('type',$fields['type'])
+                ->where('subsection',$fields['subsection'])
                 ->whereNull('deleted_at')
                 ->count();
 
             if($check_quota > 0){
-                $response = [
-                        'message' => 'There is already a existing quota for - : '.$check_quota["description"].' Year : '.$fields['year_sales_target'] ,
-                        'result' => false,
-                        'status' => 'warning',
-                        'title' => 'Oppss!',
-                ];
-                return response($response,409);
+                DB::rollBack(); // Rollback the transaction
+                return response([
+                    'message' => 'There is already a existing quota for - : '.$check_quota["description"].' Year : '.$fields['year_sales_target'] ,
+                    'result' => false,
+                    'status' => 'warning',
+                    'title' => 'Oops!',
+                ], 409);
             }
 
             SalesDailyOutSettingsAnnualQuotaClientGroups::create([
                 'code' => $code_annual_quota,
                 'sales_daily_out_settings_client_group_code' =>$fields["sales_daily_out_settings_client_group_code"],
                 'year_sales_target' => $fields["year_sales_target"],
+                'ref_product_groups_code' => $fields["ref_product_groups_code"],
+                'bdo' => $fields["bdo"],
+                'type' => $fields["type"],
+                'subsection' => $fields["subsection"],
                 'annual_sales_target' => $fields["annual_sales_target"],
                 'january_sales_target' => $fields["monthly_sales_target"],
                 'february_sales_target' => $fields["monthly_sales_target"],
@@ -90,8 +94,6 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
                 'october_sales_target' => $fields["monthly_sales_target"],
                 'november_sales_target' => $fields["monthly_sales_target"],
                 'december_sales_target' => $fields["monthly_sales_target"],     
-                'ref_product_groups_code' => $fields["ref_product_groups_code"],
-                'bdo' => $fields["bdo"],
                 'added_by' => $fields["added_by"],
                 'modified_by' => $fields["modified_by"],
             ]);
@@ -112,129 +114,47 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
                             'sales_daily_target' =>  '-'.$sales_daily_quota,
                             'year_sales_target' => $fields["year_sales_target"],
                             'bdo' => $fields["bdo"],
+                            'type' => $fields["type"],
+                            'subsection' => $fields["subsection"],
                             'added_by' => $fields["added_by"],
                             'modified_by' => $fields["modified_by"],
                     ]);
             }
 
-            $subgroups = SalesDailyOutSettingsClientSubGroups::where('sales_daily_out_settings_client_groups_code',$code_annual_quota)->get();
-            
-            $card_codes =  $subgroups->pluck('customer_code')->implode("','") ;
-            
-            $records = count(DB::select("exec dbo.sales_daily_out_delivery_return_cm_client_based_v2 ?,?,?",array($fields["year_sales_target"],"'".$card_codes."'",$fields["ref_product_groups_description"])));
-            
+            $subgroups = SalesDailyOutSettingsClientSubGroups::where('sales_daily_out_settings_client_groups_code',$fields['sales_daily_out_settings_client_group_code'])->get();
+                
+            $card_codes =  $subgroups->pluck('customer_code')->implode("','");
+                
+            $records = DB::select("exec dbo.sales_daily_out_delivery_return_cm_client_based_v2 ?,?,?",array($fields["year_sales_target"],"'".$card_codes."'",$fields["ref_product_groups_description"]));
+                
             if(!empty($records)){
-                $salesDailyOutClientSalesTrackersController->insert_sap_client_sales_tracker($fields["year_sales_target"],$fields["ref_product_groups_description"],$fields["bdo"],$code_annual_quota);
+            // if (count($records) > 0) {
+                $salesDailyOutClientSalesTrackersController->insert_sap_client_sales_tracker(
+                    $fields["year_sales_target"],
+                    $code_annual_quota,
+                    json_encode($records),
+                    $fields["type"],
+                    $fields["subsection"]
+                );
             }
 
-        } else {
-                $check_in_group = SalesDailyOutSettingsClientGroups::where('description',$fields['description'])
-                    ->whereNull('deleted_at')
-                    ->count();
+            DB::commit();
 
-                if($check_in_group > 0){
-                    $response = [
-                            'message' => 'There is already a existing name of group for - : '.$fields["description"] ,
-                            'result' => false,
-                            'status' => 'warning',
-                            'title' => 'Oppss!',
-                    ];
-                    return response($response,409);
-                }
-                $check_in_subgroup = SalesDailyOutSettingsClientSubGroups::where('customer_code',$fields['customer_code'])
-                    ->where('description',$fields['description'])    
-                    ->whereNull('deleted_at')
-                    ->count();
-
-                if($check_in_subgroup > 0){
-                    $response = [
-                            'message' => 'There is already a existing group for - : '.$fields["description"] ,
-                            'result' => false,
-                            'status' => 'warning',
-                            'title' => 'Oppss!',
-                    ];
-                    return response($response,409);
-                }
-                $code_group = MainController::generate_code('App\Models\SalesDailyOutSettingsClientGroups',"code");
-                $card_code = '';
-                SalesDailyOutSettingsClientGroups::create([
-                    'code' => $code_group,
-                    'description' => $fields["description"],
-                    'added_by' => $fields["added_by"],
-                    'modified_by' => $fields["modified_by"],
-                ]);
-
-                foreach ($fields['subgroups'] as $value) {
-                    $code = MainController::generate_code('App\Models\SalesDailyOutSettingsClientSubGroups',"code");
-                    $card_code = $value->customer_code;
-                    SalesDailyOutSettingsClientSubGroups::create([
-                        'code' => $code,
-                        'sales_daily_out_settings_client_groups_code' => $code_group,
-                        'customer_code' => $value->customer_code,
-                        'description' => $value->description,
-                        'type' => $value->type,
-                        'added_by' => $fields["added_by"],
-                        'modified_by' => $fields["modified_by"],
-                    ]);
-                }
-                SalesDailyOutSettingsAnnualQuotaClientGroups::create([
-                    'code' => $code_annual_quota,
-                    'sales_daily_out_settings_client_group_code' =>$code_group,
-                    'year_sales_target' => $fields["year_sales_target"],
-                    'annual_sales_target' => $fields["annual_sales_target"],
-                    'january_sales_target' => $fields["monthly_sales_target"],
-                    'february_sales_target' => $fields["monthly_sales_target"],
-                    'march_sales_target' => $fields["monthly_sales_target"],
-                    'april_sales_target' => $fields["monthly_sales_target"],
-                    'may_sales_target' => $fields["monthly_sales_target"],
-                    'june_sales_target' => $fields["monthly_sales_target"],
-                    'july_sales_target' => $fields["monthly_sales_target"],
-                    'august_sales_target' => $fields["monthly_sales_target"],
-                    'september_sales_target' => $fields["monthly_sales_target"],
-                    'october_sales_target' => $fields["monthly_sales_target"],
-                    'november_sales_target' => $fields["monthly_sales_target"],
-                    'december_sales_target' => $fields["monthly_sales_target"],     
-                    'ref_product_groups_code' => $fields["ref_product_groups_code"],
-                    'bdo' => $fields["bdo"],
-                    'added_by' => $fields["added_by"],
-                    'modified_by' => $fields["modified_by"],
-                ]);
-
-                $dates_to_get = MainController::get_dates_in_selected_year($fields["year_sales_target"]);
-        
-                foreach ($dates_to_get as $value) {
-                    $code = MainController::generate_code('App\Models\SalesDailyOutClientSalesTrackers',"code");
-                    $sales_daily_quota = $this->get_quota_day($value,$fields["monthly_sales_target"]) ;
-                    SalesDailyOutClientSalesTrackers::create([
-                            'code' => $code,
-                            'sales_daily_out_settings_annual_quota_client_groups_code' => $code_annual_quota,
-                            'sales_daily_out_settings_client_groups_description' => $fields["description"],
-                            'ref_product_groups_description' =>$fields["ref_product_groups_description"],
-                            'daily_sales_target_percentage' => -100,
-                            'sales_date' => $value,
-                            'sales_daily_out' => 0,
-                            'sales_daily_qouta' =>  $sales_daily_quota,
-                            'sales_daily_target' =>  '-'.$sales_daily_quota,
-                            'year_sales_target' => $fields["year_sales_target"],
-                            'bdo' => $fields["bdo"],
-                            'added_by' => $fields["added_by"],
-                            'modified_by' => $fields["modified_by"],
-                    ]);
-                }
-
-                $records = count(DB::select("exec dbo.sales_daily_out_delivery_return_cm_client_based_v2 ?,?,?",array($fields["year_sales_target"],"'".$card_code."'",$fields["ref_product_groups_description"])));
-                if(!empty($records)){
-                    $salesDailyOutClientSalesTrackersController->insert_sap_client_sales_tracker($fields["year_sales_target"],$fields["ref_product_groups_description"],$fields["bdo"],$code_group);
-                }
+            return response([
+                'message' => 'Target sales added successfully',
+                'result' => true,
+                'status' => 'success',
+                'title' => 'Success',
+            ], 200); 
+         } catch (\Exception $e) {
+            DB::rollBack(); // Rollback transaction on error
+            return response([
+                'message' => 'An error occurred: ' . $e->getMessage(),
+                'result' => false,
+                'status' => 'error',
+                'title' => 'Error',
+            ], 500);
         }
-
-        return response([
-            'message' => 'Target sales added successfully',
-            'result' => true,
-            'status' => 'success',
-            'title' => 'Success',
-        ], 200); 
-
     }
 
     /**
