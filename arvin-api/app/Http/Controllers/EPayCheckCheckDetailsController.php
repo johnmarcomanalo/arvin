@@ -886,7 +886,7 @@ class EPayCheckCheckDetailsController extends Controller
             });
         }) 
         ->when($status==='RECEIVED', function ($q) use ($df, $dt) {
-            $q->whereBetween(DB::raw("CAST(check_status_date AS DATE)"), [$df, $dt])
+            $q->whereBetween(DB::raw("CAST(received_date AS DATE)"), [$df, $dt])
             ->whereNotNull('received_date'); 
         })
         ->when($status==='TRANSMITTED', function ($q) use ($df, $dt) {
