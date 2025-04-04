@@ -33,8 +33,7 @@ Font.register({
 const styles = StyleSheet.create({
   page: { 
     padding: 15, 
-    fontSize: 10,
-    backgroundColor: "#f0f0f0", // Light gray background while loading
+    fontSize: 10, 
   },
   section: { marginBottom: 10 },
   title: { fontSize: 10, fontWeight: "bold", marginBottom: 0, fontFamily: "PoppinsBold" },
@@ -243,7 +242,7 @@ const ViewPrintWeeklyCheckReport = (props) => {
             <span>Loading PDF...</span>
           </div>
         )}
-       <PDFViewer style={{ width: "100%", height: 900, backgroundColor: "#f3f3f3" }}>
+       <PDFViewer style={{ width: "100%", height: 900 }}>
       <Document>
         <Page size={[pageWidth, pageHeight]} style={styles.page} orientation="landscape" wrap>
           {/* Header Group */}

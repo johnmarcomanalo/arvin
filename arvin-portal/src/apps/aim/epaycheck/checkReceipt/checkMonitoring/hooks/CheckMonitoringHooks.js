@@ -48,7 +48,7 @@ const CheckMonitoringHooks = (props) => {
         debounceDelay: 1000,
         selectedCheck:[]
     });
-    const subsection_allowed_to_reject = [12];
+    const subsection_allowed_to_reject = [12,8];
     const columns = [
         { id:"code", label:"Reference", align:"left"},
         { id:"status", label:"Status", align:"left"},

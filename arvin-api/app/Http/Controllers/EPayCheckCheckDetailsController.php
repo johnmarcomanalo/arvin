@@ -838,8 +838,8 @@ class EPayCheckCheckDetailsController extends Controller
     }
 
     public function get_check_receive(Request $request)
-    { 
- 
+    {  
+        
         $customMessages = [
             'dt.after_or_equal' => 'The selected end date must be the same as or later than the start date.',
             'df.date_format'    => 'The start date must be in YYYY-MM-DD format.',
@@ -872,7 +872,8 @@ class EPayCheckCheckDetailsController extends Controller
         $dt     = $validated['dt'];
         $sc     = $validated['sc']; 
         
-       $check_details =  DB::table('vw_epay_check_get_check_details')
+      
+        $check_details =  DB::table('vw_epay_check_get_check_details')
         ->when($query, function ($q) use ($query) {
             $q->where(function ($subQuery) use ($query) {
                 $subQuery
@@ -889,7 +890,8 @@ class EPayCheckCheckDetailsController extends Controller
             ->whereNotNull('received_date'); 
         })
         ->when($status==='TRANSMITTED', function ($q) use ($df, $dt) {
-            $q->whereBetween(DB::raw("CAST(check_status_date AS DATE)"), [$df, $dt]) 
+            $q
+            // ->whereBetween(DB::raw("CAST(check_status_date AS DATE)"), [$df, $dt]) 
             ->whereNull('received_date'); 
         }) 
         ->where('check_status', 'TRANSMITTED')
@@ -923,7 +925,7 @@ class EPayCheckCheckDetailsController extends Controller
         }
         
         
-           $response = [
+          $response = [
                 'dataList'      => $requests,
                 'dataListCount' => $check_details->total(),
                 'currentPage'   => $check_details->currentPage(),
