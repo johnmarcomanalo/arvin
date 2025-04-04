@@ -41,7 +41,9 @@ const CheckReceiveHooks = (props) => {
         selectedCheck:[]
     }); 
     const columns = [
+        { id:"number", label:"#", align:"left"},
         { id:"received_date", label:"Received Date", align:"left"},
+        { id:"check_status_date", label:"Transmitted Date", align:"left"},
         { id:"card_name", label:"Customer", align:"left"},
         { id:"check_number", label:"Check Number", align:"left"},
         { id:"check_date", label:"Check Date", align:"left"},
@@ -49,7 +51,10 @@ const CheckReceiveHooks = (props) => {
         { id:"account_number", label:"Account Number", align:"left"},
         { id:"bank_description", label:"Bank", align:"left"},
         { id:"bank_branch", label:"Bank Branch", align:"left"},
-        { id:"crpr", label:"CR/PR", align:"left"},
+        { id:"advance_payment", label:"Adv Payment", align:"left"},
+        { id:"prefix_crpr", label:"CR/PR", align:"left"},
+        { id:"sales_invoice", label:"Sales Invoice", align:"left"},
+        { id:"dr_number", label:"DR Number", align:"left"},
     ];
 
     const status = [ 
@@ -128,7 +133,7 @@ const CheckReceiveHooks = (props) => {
       const onChangeFilterStatus = (status) => {
         setSearchParams({
           q  : search, 
-          p  : page == null ? 1 : page,
+          p  : 1,
           df : filterStartQuery,
           dt : filterEndQuery,
           s  : status,
@@ -244,6 +249,17 @@ const CheckReceiveHooks = (props) => {
           },
         });
       };
+
+      const handleChangePage = (event, newPage) => {
+        setSearchParams({  
+          q  : search,
+          p  : page == null ? 1 : newPage,
+          df : filterStartQuery,
+          dt : filterEndQuery,
+          s  : filterStatus,
+          sc : filterSubSection
+        });
+      };
    
     return {
         viewModal, 
@@ -273,6 +289,7 @@ const CheckReceiveHooks = (props) => {
         onChangeFilterStart,
         onChangeFilterEnd,
         onChangeFilterStatus,
+        handleChangePage
     };
 };
 

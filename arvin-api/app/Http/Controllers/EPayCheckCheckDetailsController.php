@@ -901,8 +901,14 @@ class EPayCheckCheckDetailsController extends Controller
         
         $requests = [];
 
-        foreach ($check_details as $value) { 
+        $page = $page; // Current page number (e.g., 2)
+        $perPage = 10; // Items per page (e.g., 10)
+
+        foreach ($check_details as $index => $value) {
+              // Calculate the correct number based on pagination
+            $number = ($page - 1) * $perPage + $index + 1;
             $requests[] = [
+                'number'               => $number, // Numbering adjusted with pagination
                 'code'                 => $value->code,
                 'advance_payment'      => $value->advance_payment, 
                 'bank_branch'          => $value->bank_branch,
@@ -921,6 +927,10 @@ class EPayCheckCheckDetailsController extends Controller
                 'account_number'       => $value->account_number, 
                 'created_at'           => Carbon::parse($value->created_at)->format('Y-m-d'),
                 'received_date'        => $value->received_date ? Carbon::parse($value->received_date)->format('Y-m-d') : null, 
+                'stale_check_view'     => $value->stale_check? 'YES' : 'NO',
+                'stale_check'          => $value->stale_check,
+                'sales_invoice'        => $value->sales_invoice,
+                'dr_number'            => $value->dr_number
             ];
         }
         
