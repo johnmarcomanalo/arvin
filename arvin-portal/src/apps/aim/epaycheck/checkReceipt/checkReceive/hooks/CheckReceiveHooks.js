@@ -116,7 +116,7 @@ const CheckReceiveHooks = (props) => {
       const onChangeFilteSubsection = (subsection) => {
         setSearchParams({
           q  : search, 
-          p  : page == null ? 1 : page,
+          p  : 1,
           df : filterStartQuery,
           dt : filterEndQuery,
           s  : filterStatus, 
