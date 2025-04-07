@@ -1,12 +1,18 @@
+import React, { useEffect, useRef } from "react";
 import { Typography } from "@mui/material";
 import TextField from "@mui/material/TextField";
 
-const styleSheet = {
-  label: { fontSize: 13 },
-  visibility: "invinsible",
-};
 const SearchField = (props) => {
-  const { textHidden = true, ...param } = props;
+  const { textHidden = true, autoFocus = true, ...param } = props;
+  const inputRef = useRef(null);  // Create a reference for the TextField input
+
+  // Focus the input when the component mounts or autoFocus is true
+  useEffect(() => {
+    if (autoFocus && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [autoFocus]);  // Only re-run if autoFocus prop changes
+
   return (
     <div>
       {textHidden === false && (
@@ -28,6 +34,7 @@ const SearchField = (props) => {
             backgroundColor: props.disabled ? "#e8e8e8" : "transparent",
           },
         }}
+        inputRef={inputRef} // Attach the ref to TextField's input
       />
     </div>
   );
