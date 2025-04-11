@@ -4,12 +4,12 @@ import { useTheme } from "@mui/material/styles";
 import * as React from "react";
 import { connect } from "react-redux";
 import { change, Field, formValueSelector, reduxForm } from "redux-form";
-import ComboBox from "../../../../../../components/autoComplete/AutoComplete";
-import InputField from "../../../../../../components/inputFIeld/InputField";
-import SearchField from "../../../../../../components/inputFIeld/SearchField";
-import Table from "../../../../../../components/table/Table";
+import ComboBox from "components/autoComplete/AutoComplete";
+import InputField from "components/inputFIeld/InputField";
+import SearchField from "components/inputFIeld/SearchField";
+import Table from "components/table/Table";
 import QuotedProductsHooks from "../hooks/QuotedProductsHooks";
-import Page from "../../../../../../components/pagination/Pagination";
+import Page from "components/pagination/Pagination";
 const formName = "QuotatedProducts";
 const submit = async (values, dispatch, props, hook) => {
   try {

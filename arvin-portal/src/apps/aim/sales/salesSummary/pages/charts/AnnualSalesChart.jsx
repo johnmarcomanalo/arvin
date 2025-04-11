@@ -8,7 +8,7 @@ import {
 import { LineChart } from "@mui/x-charts/LineChart";
 import moment from "moment";
 import * as React from "react";
-import configure from "../../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 import SalesSummaryHooks from "../../hooks/SalesSummaryHooks";
 
 const chartSetting = {
@@ -32,7 +32,7 @@ export default function AnnualSalesChart() {
   ).format("YYYY");
   const lastYear = moment(
     Object.keys(yearly_sales_line_chart_summary)[0]
-    ).format("YYYY");
+  ).format("YYYY");
 
   // Extract the data for the current year and last year
   const currentYearData = yearly_sales_line_chart_summary[currentYear]

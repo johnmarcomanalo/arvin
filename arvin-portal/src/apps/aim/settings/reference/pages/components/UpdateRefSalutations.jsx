@@ -4,10 +4,10 @@ import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import swal from "sweetalert";
 import { cancelRequest } from "../../../../../../api/api";
-import ButtonComponent from "../../../../../../components/button/Button";
-import InputField from "../../../../../../components/inputFIeld/InputField";
+import ButtonComponent from "components/button/Button";
+import InputField from "components/inputFIeld/InputField";
 import { Constants } from "../../../../../../reducer/Contants";
-import configure from "../../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 import { putRefSalutations } from "../../actions/ReferenceActions";
 const formName = "UpdateRefUnitOfMeasurements";
 const submit = async (values, dispatch, props) => {

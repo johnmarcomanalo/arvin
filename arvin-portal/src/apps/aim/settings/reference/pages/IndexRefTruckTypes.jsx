@@ -14,21 +14,21 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import swal from "sweetalert";
-import BreadCrumbs from "../../../../../components/breadCrumb/BreadCrumbs";
-import ButtonComponent from "../../../../../components/button/Button";
-import InputField from "../../../../../components/inputFIeld/InputField";
-import SearchField from "../../../../../components/inputFIeld/SearchField";
-import PageTitle from "../../../../../components/pageTItle/PageTitle";
-import Page from "../../../../../components/pagination/Pagination";
-import Table from "../../../../../components/table/Table";
+import BreadCrumbs from "components/breadCrumb/BreadCrumbs";
+import ButtonComponent from "components/button/Button";
+import InputField from "components/inputFIeld/InputField";
+import SearchField from "components/inputFIeld/SearchField";
+import PageTitle from "components/pageTItle/PageTitle";
+import Page from "components/pagination/Pagination";
+import Table from "components/table/Table";
 import { Constants } from "../../../../../reducer/Contants";
-import configure from "../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 import {
   postReferenceTruckTypes,
   postReferenceValueAddedTax,
 } from "../actions/ReferenceActions";
 import RefTruckTypesHooks from "../hooks/RefTruckTypesHooks";
-import Modal from "../../../../../components/modal/Modal";
+import Modal from "components/modal/Modal";
 import UpdateRefTruckTypes from "./components/UpdateRefTruckTypes";
 const title_page = "Truck Types";
 const breadCrumbArray = [

@@ -10,7 +10,7 @@ import {
   TextField,
 } from "@mui/material";
 import * as React from "react";
-import configure from "../../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 import SalesLeaderboardHooks from "../../hooks/SalesLeaderboardHooks";
 export default function ViewRanker(props) {
   const { ...salesLeaderboard } = SalesLeaderboardHooks(props);

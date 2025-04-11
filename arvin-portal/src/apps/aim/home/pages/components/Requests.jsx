@@ -1,7 +1,7 @@
 import { Grid, Tooltip } from "@mui/material";
 import * as React from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import Table from "../../../../../components/table/Table";
+import Table from "components/table/Table";
 import HomeComponentRequestsHooks from "../../hooks/HomeComponentRequestsHooks";
 export default function Requests(props) {
   const { ...homeComponentRequests } = HomeComponentRequestsHooks(props);

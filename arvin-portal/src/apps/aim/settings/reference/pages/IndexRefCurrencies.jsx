@@ -14,19 +14,19 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import swal from "sweetalert";
-import BreadCrumbs from "../../../../../components/breadCrumb/BreadCrumbs";
-import ButtonComponent from "../../../../../components/button/Button";
-import InputField from "../../../../../components/inputFIeld/InputField";
-import SearchField from "../../../../../components/inputFIeld/SearchField";
-import PageTitle from "../../../../../components/pageTItle/PageTitle";
-import Page from "../../../../../components/pagination/Pagination";
-import Table from "../../../../../components/table/Table";
+import BreadCrumbs from "components/breadCrumb/BreadCrumbs";
+import ButtonComponent from "components/button/Button";
+import InputField from "components/inputFIeld/InputField";
+import SearchField from "components/inputFIeld/SearchField";
+import PageTitle from "components/pageTItle/PageTitle";
+import Page from "components/pagination/Pagination";
+import Table from "components/table/Table";
 import { Constants } from "../../../../../reducer/Contants";
-import configure from "../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 import { postReferenceCurrencies } from "../actions/ReferenceActions";
 import RefCurrenciesHooks from "../hooks/RefCurrenciesHooks";
 import UpdateRefCurrencies from "./components/UpdateRefCurrencies";
-import Modal from "../../../../../components/modal/Modal";
+import Modal from "components/modal/Modal";
 const title_page = "Currencies";
 const breadCrumbArray = [
   {

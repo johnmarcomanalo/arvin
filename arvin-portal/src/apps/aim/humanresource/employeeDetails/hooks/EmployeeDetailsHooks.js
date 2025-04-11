@@ -1,7 +1,7 @@
 import BadgeIcon from "@mui/icons-material/Badge";
 import FolderIcon from "@mui/icons-material/Folder";
 import PersonIcon from "@mui/icons-material/Person";
-import configure from "../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 import { React } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";

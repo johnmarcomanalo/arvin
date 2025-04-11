@@ -14,22 +14,22 @@ import * as React from "react";
 import swal from "sweetalert";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm, reset } from "redux-form";
-import ComboBox from "../../../../../components/autoComplete/AutoComplete";
-import BreadCrumbs from "../../../../../components/breadCrumb/BreadCrumbs";
-import ButtonComponent from "../../../../../components/button/Button";
-import InputField from "../../../../../components/inputFIeld/InputField";
-import SearchField from "../../../../../components/inputFIeld/SearchField";
-import PageTitle from "../../../../../components/pageTItle/PageTitle";
-import Page from "../../../../../components/pagination/Pagination";
-import Table from "../../../../../components/table/Table";
+import ComboBox from "components/autoComplete/AutoComplete";
+import BreadCrumbs from "components/breadCrumb/BreadCrumbs";
+import ButtonComponent from "components/button/Button";
+import InputField from "components/inputFIeld/InputField";
+import SearchField from "components/inputFIeld/SearchField";
+import PageTitle from "components/pageTItle/PageTitle";
+import Page from "components/pagination/Pagination";
+import Table from "components/table/Table";
 import { Constants } from "../../../../../reducer/Contants";
-import configure from "../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 import {
   postReferenceComponent,
   postReferenceSubsection,
 } from "../actions/ReferenceActions";
 import RefSubSectionsFormHooks from "../hooks/RefSubSectionsFormHooks";
-import Modal from "../../../../../components/modal/Modal";
+import Modal from "components/modal/Modal";
 import UpdateRefSubsections from "./components/UpdateRefSubsections";
 const title_page = "Subsections";
 const breadCrumbArray = [

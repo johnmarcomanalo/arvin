@@ -11,8 +11,8 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import * as React from "react";
-import configure from "../../../../configure/configure.json";
-import FormTitle from "../../../../../components/formTItle/FormTitle";
+import configure from "apps/configure/configure.json";
+import FormTitle from "components/formTItle/FormTitle";
 import HomeComponentInformationHooks from "../../hooks/HomeComponentInformationHooks";
 export default function Information() {
   const { ...homeComponentInformation } = HomeComponentInformationHooks();

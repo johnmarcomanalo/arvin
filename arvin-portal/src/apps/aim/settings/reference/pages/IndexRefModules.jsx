@@ -7,17 +7,17 @@ import { Card, CardContent, Grid, Stack, Typography } from "@mui/material";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
-import BreadCrumbs from "../../../../../components/breadCrumb/BreadCrumbs";
-import ButtonComponent from "../../../../../components/button/Button";
-import InputField from "../../../../../components/inputFIeld/InputField";
-import PageTitle from "../../../../../components/pageTItle/PageTitle";
-import configure from "../../../../configure/configure.json";
+import BreadCrumbs from "components/breadCrumb/BreadCrumbs";
+import ButtonComponent from "components/button/Button";
+import InputField from "components/inputFIeld/InputField";
+import PageTitle from "components/pageTItle/PageTitle";
+import configure from "apps/configure/configure.json";
 import RefModulesHooks from "../hooks/RefModulesHooks";
-import Table from "../../../../../components/table/Table";
+import Table from "components/table/Table";
 import { postReferenceModule } from "../actions/ReferenceActions";
 import { Constants } from "../../../../../reducer/Contants";
-import Page from "../../../../../components/pagination/Pagination";
-import SearchField from "../../../../../components/inputFIeld/SearchField";
+import Page from "components/pagination/Pagination";
+import SearchField from "components/inputFIeld/SearchField";
 const title_page = "Modules";
 const breadCrumbArray = [
   {

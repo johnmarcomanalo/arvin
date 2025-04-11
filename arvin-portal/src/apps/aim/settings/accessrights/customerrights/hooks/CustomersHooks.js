@@ -46,7 +46,11 @@ const CustomersHooks = (props) => {
     { id: "type", label: "Type", align: "left" },
     { id: "status", label: "Status", align: "left" },
   ];
-
+  const type = [
+    { description: "Manila Branch" },
+    { description: "Provincial" },
+    { description: "Peanut" },
+  ];
   const handleChangePage = (event, newPage) => {
     setSearchParams({
       pg: page == null ? 1 : newPage,
@@ -112,12 +116,34 @@ const CustomersHooks = (props) => {
     }
   };
   React.useEffect(() => {
-    GetCustomerList();
+    if (filterQuery !== "") {
+      GetCustomerList();
+    }
   }, [debounceSearch, filterQuery]);
+  // React.useEffect(() => {
+  //   setSearchParams({
+  //     srch: "",
+  //     pg: "1",
+  //     lmt: 10,
+  //     fltr: "",
+  //     uid: account_details.code,
+  //   });
+  // }, []);
 
   const onChangeSearch = (event) => {
     // SEARCH DATA
     const search = event.target.value;
+    setSearchParams({
+      srch: search,
+      pg: "1",
+      lmt: String(rowsPerPage),
+      fltr: filterQuery,
+      uid: account_details.code,
+    });
+  };
+
+  const onChangeFilter = (data) => {
+    const filterQuery = data;
     setSearchParams({
       srch: search,
       pg: "1",
@@ -138,13 +164,15 @@ const CustomersHooks = (props) => {
     columns,
     account_details,
     viewModal,
-    handleChangeRowsPerPage,
+    type,
     handleChangePage,
+    handleChangeRowsPerPage,
     onSelectItem,
     onDeleteDeduction,
     onClickOpenViewModal,
     onClickCloseViewModal,
     onChangeSearch,
+    onChangeFilter,
   };
 };
 

@@ -12,7 +12,7 @@ import { formValueSelector, reduxForm } from "redux-form";
 import swal from "sweetalert";
 import { Constants } from "../../../../../../reducer/Contants";
 import { putRefUnitOfMeasurements } from "../../actions/ReferenceActions";
-import configure from "../../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 const formName = "ViewRefRequestHierarchy";
 const submit = async (values, dispatch, props) => {
   try {

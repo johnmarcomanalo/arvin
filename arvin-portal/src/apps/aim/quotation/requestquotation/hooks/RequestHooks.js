@@ -7,7 +7,7 @@ import { cancelRequest } from "../../../../../api/api";
 import { Constants } from "../../../../../reducer/Contants";
 import { useDebounce } from "../../../../../utils/HelperUtils";
 import { decryptaes } from "../../../../../utils/LightSecurity";
-import configure from "../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 import {
   getAllRefCurrencies,
   getAllRefSalutations,

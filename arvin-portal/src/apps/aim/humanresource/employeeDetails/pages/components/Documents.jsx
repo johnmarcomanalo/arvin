@@ -3,7 +3,7 @@ import * as React from "react";
 import { connect, useDispatch } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import swal from "sweetalert";
-import InputField from "../../../../../../components/inputFIeld/InputField";
+import InputField from "components/inputFIeld/InputField";
 const formName = "Documents";
 const submit = async (values, dispatch, props) => {
   try {

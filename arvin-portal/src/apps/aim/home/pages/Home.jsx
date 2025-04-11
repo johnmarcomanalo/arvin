@@ -15,7 +15,7 @@ import {
 import { useTheme } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import * as React from "react";
-import configure from "../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 import Attendance from "./components/Attendance";
 import Information from "./components/Informations";
 import Requests from "./components/Requests";

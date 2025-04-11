@@ -7,9 +7,9 @@ import { Grid } from "@mui/material";
 import PasswordIcon from "@mui/icons-material/Password";
 import * as React from "react";
 import SettingsIcon from "@mui/icons-material/Settings";
-import BreadCrumbs from "../../../../../../components/breadCrumb/BreadCrumbs";
-import PageTitle from "../../../../../../components/pageTItle/PageTitle";
-import configure from "../../../../../configure/configure.json";
+import BreadCrumbs from "components/breadCrumb/BreadCrumbs";
+import PageTitle from "components/pageTItle/PageTitle";
+import configure from "apps/configure/configure.json";
 import ChangePassword from "./ChangePassword";
 const title_page = "Change Password";
 const breadCrumbArray = [

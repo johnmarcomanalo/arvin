@@ -3,9 +3,9 @@ import * as React from "react";
 import { connect, useDispatch } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import swal from "sweetalert";
-import ComboBox from "../../../../../../../components/autoComplete/AutoComplete";
-import ButtonComponent from "../../../../../../../components/button/Button";
-import configure from "../../../../../../configure/configure.json";
+import ComboBox from "components/autoComplete/AutoComplete";
+import ButtonComponent from "components/button/Button";
+import configure from "apps/configure/configure.json";
 const formName = "FilterSales";
 const submit = async (values, dispatch, props) => {
   try {

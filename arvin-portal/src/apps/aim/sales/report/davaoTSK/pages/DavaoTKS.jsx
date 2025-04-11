@@ -2,13 +2,13 @@ import { Grid, Stack, useMediaQuery } from "@mui/material";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
-import Table from "../../../../../../components/table/Table";
+import Table from "components/table/Table";
 import DavaoTKSHooks from "../hooks/DavaoTKSHooks";
-import ButtonComponent from "../../../../../../components/button/Button";
-import configure from "../../../../../configure/configure.json";
-import InputField from "../../../../../../components/inputFIeld/InputField";
+import ButtonComponent from "components/button/Button";
+import configure from "apps/configure/configure.json";
+import InputField from "components/inputFIeld/InputField";
 import swal from "sweetalert";
-import ComboBox from "../../../../../../components/autoComplete/AutoComplete";
+import ComboBox from "components/autoComplete/AutoComplete";
 const formName = "DavaoTKS";
 
 const submit = async (values, dispatch, props) => {

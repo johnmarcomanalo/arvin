@@ -2,7 +2,7 @@ import { Card, CardContent } from "@mui/material";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { axisClasses } from "@mui/x-charts/ChartsAxis";
 import * as React from "react";
-import configure from "../../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 
 // Dataset with sales data
 const dataset = [

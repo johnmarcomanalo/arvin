@@ -56,6 +56,7 @@ const AccountListHooks = (props) => {
     { id: "code", label: "Account Code", align: "left" },
     { id: "full_name", label: "Complete Name", align: "left" },
     { id: "username", label: "Username", align: "left" },
+    { id: "subsection", label: "Subsection", align: "left" },
   ];
 
   const handleChangePage = (event, newPage) => {

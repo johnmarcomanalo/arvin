@@ -8,11 +8,11 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
-import CardDashComponent from "../../../../../components/card/CardDashComponent";
+import CardDashComponent from "components/card/CardDashComponent";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import configure from "../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 export default function SelectedSalesSummary(props) {
   const { ...salesSummary } = SalesSummaryHooks(props);
   const [screenHeight, setScreenHeight] = React.useState(window.innerHeight);
