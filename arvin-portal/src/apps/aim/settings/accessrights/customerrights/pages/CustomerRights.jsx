@@ -9,15 +9,15 @@ import Typography from "@mui/material/Typography";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
-import ButtonComponent from "../../../../../../components/button/Button";
-import InputField from "../../../../../../components/inputFIeld/InputField";
-import Modal from "../../../../../../components/modal/Modal";
-import Table from "../../../../../../components/table/Table";
-import configure from "../../../../../configure/configure.json";
+import ButtonComponent from "components/button/Button";
+import InputField from "components/inputFIeld/InputField";
+import Modal from "components/modal/Modal";
+import Table from "components/table/Table";
+import configure from "apps/configure/configure.json";
 import UserList from "../../../../humanresource/employeeList/pages/components/UserList";
 import CustomerRightsHooks from "../hooks/CustomerRightsHooks";
-import Page from "../../../../../../components/pagination/Pagination";
-import SearchField from "../../../../../../components/inputFIeld/SearchField";
+import Page from "components/pagination/Pagination";
+import SearchField from "components/inputFIeld/SearchField";
 import AccountList from "apps/aim/humanresource/employeeList/pages/components/AccountList";
 const formName = "PageRights";
 const submit = async (values, dispatch, props) => {
@@ -36,7 +36,7 @@ let CustomerRights = (props) => {
         open={customerRights.viewModal}
         fullScreen={matches ? false : true}
         title={"Account Search"}
-        size={"md"}
+        size={"lg"}
         action={undefined}
         handleClose={customerRights.onClickCloseViewModal}
       >

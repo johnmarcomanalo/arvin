@@ -4,9 +4,9 @@ import HomeIcon from "@mui/icons-material/Home";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { Grid } from "@mui/material";
 import * as React from "react";
-import BreadCrumbs from "../../../../../../components/breadCrumb/BreadCrumbs";
-import PageTitle from "../../../../../../components/pageTItle/PageTitle";
-import configure from "../../../../../configure/configure.json";
+import BreadCrumbs from "components/breadCrumb/BreadCrumbs";
+import PageTitle from "components/pageTItle/PageTitle";
+import configure from "apps/configure/configure.json";
 import OrganizationRights from "./OrganizationRights";
 const title_page = "Organization Rights";
 const breadCrumbArray = [

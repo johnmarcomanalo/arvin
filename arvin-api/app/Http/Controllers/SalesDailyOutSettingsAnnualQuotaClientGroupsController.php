@@ -35,6 +35,7 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
      public function store(Request $request)
     {        
         $salesDailyOutClientSalesTrackersController = new SalesDailyOutClientSalesTrackersController();
+        $refClientsSalesOutLogsController = new RefClientsSalesOutLogsController();
         $fields = $request->validate([
             'sales_daily_out_settings_client_group_code' => 'required',
             'description' => 'required',
@@ -125,10 +126,9 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
                 
             $card_codes =  $subgroups->pluck('customer_code')->implode("','");
                 
-            $records = DB::select("exec dbo.sales_daily_out_delivery_return_cm_client_based_v2 ?,?,?",array($fields["year_sales_target"],"'".$card_codes."'",$fields["ref_product_groups_description"]));
+            $records = DB::select("exec dbo.sales_daily_out_delivery_return_cm_client_based_v2 ?,?,?,?",array($fields["year_sales_target"],"'".$card_codes."'",$fields["ref_product_groups_description"],$fields["subsection"]));
                 
             if(!empty($records)){
-            // if (count($records) > 0) {
                 $salesDailyOutClientSalesTrackersController->insert_sap_client_sales_tracker(
                     $fields["year_sales_target"],
                     $code_annual_quota,
@@ -136,6 +136,9 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
                     $fields["type"],
                     $fields["subsection"]
                 );
+
+                $refClientsSalesOutLogsController->updateRefClientsSalesOutLogs(json_encode($records));//update logs
+
             }
 
             DB::commit();

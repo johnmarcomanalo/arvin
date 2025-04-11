@@ -8,7 +8,7 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import configure from "../../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 const formName = "QuotationColumnList";
 const submit = async (values, dispatch, props) => {
   try {

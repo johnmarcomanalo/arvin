@@ -9,10 +9,10 @@ import TableRow from "@mui/material/TableRow";
 import * as React from "react";
 import { connect } from "react-redux";
 import { formValueSelector, reduxForm } from "redux-form";
-import SearchField from "../../../../../../components/inputFIeld/SearchField";
-import Page from "../../../../../../components/pagination/Pagination";
+import SearchField from "components/inputFIeld/SearchField";
+import Page from "components/pagination/Pagination";
 import RefProductsHooks from "../../hooks/RefProductsHooks";
-import configure from "../../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 const formName = "ProductList";
 const submit = async (values, dispatch, props) => {
   try {

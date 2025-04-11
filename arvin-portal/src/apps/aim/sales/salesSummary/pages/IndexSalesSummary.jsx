@@ -4,9 +4,9 @@ import HomeIcon from "@mui/icons-material/Home";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 import { Grid } from "@mui/material";
 import * as React from "react";
-import BreadCrumbs from "../../../../../components/breadCrumb/BreadCrumbs";
-import PageTitle from "../../../../../components/pageTItle/PageTitle";
-import configure from "../../../../configure/configure.json";
+import BreadCrumbs from "components/breadCrumb/BreadCrumbs";
+import PageTitle from "components/pageTItle/PageTitle";
+import configure from "apps/configure/configure.json";
 import SalesSummary from "./SalesSummary";
 const title_page = "Sales Summary";
 const breadCrumbArray = [

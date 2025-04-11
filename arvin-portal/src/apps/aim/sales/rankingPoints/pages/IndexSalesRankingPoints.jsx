@@ -4,9 +4,9 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import StarIcon from "@mui/icons-material/Star";
 import { Grid } from "@mui/material";
 import * as React from "react";
-import BreadCrumbs from "../../../../../components/breadCrumb/BreadCrumbs";
-import PageTitle from "../../../../../components/pageTItle/PageTitle";
-import configure from "../../../../configure/configure.json";
+import BreadCrumbs from "components/breadCrumb/BreadCrumbs";
+import PageTitle from "components/pageTItle/PageTitle";
+import configure from "apps/configure/configure.json";
 import SalesRankingPoints from "./SalesRankingPoints";
 
 const title_page = "Ranking Points";

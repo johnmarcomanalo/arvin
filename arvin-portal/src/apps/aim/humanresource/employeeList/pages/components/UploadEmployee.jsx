@@ -3,13 +3,13 @@ import * as React from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm, reset } from "redux-form";
-import FormTitle from "../../../../../../components/formTItle/FormTitle";
-import InputField from "../../../../../../components/inputFIeld/InputField";
+import FormTitle from "components/formTItle/FormTitle";
+import InputField from "components/inputFIeld/InputField";
 import UploadEmployeeHooks from "../../hooks/UploadEmployeeHooks";
-import Table from "../../../../../../components/table/Table";
-import SearchField from "../../../../../../components/inputFIeld/SearchField";
-import RenderDropZone from "../../../../../../components/renderDropZone/RenderDropZone";
-import configure from "../../../../../configure/configure.json";
+import Table from "components/table/Table";
+import SearchField from "components/inputFIeld/SearchField";
+import RenderDropZone from "components/renderDropZone/RenderDropZone";
+import configure from "apps/configure/configure.json";
 const formName = "EmployeeList";
 const submit = async (values, dispatch, props) => {
   try {
@@ -35,7 +35,7 @@ let UploadEmployee = (props) => {
               attachedFile={state.attachedFile}
               handleOnDrop={uploadEmployee.handleOnDrop}
               component={RenderDropZone}
-              size_lg={12}  
+              size_lg={12}
               size_xl={12}
             />
           </Grid>

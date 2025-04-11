@@ -10,10 +10,10 @@ import {
 } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 import React, { useState } from "react";
-import InputField from "../../../../components/inputFIeld/InputField";
+import InputField from "components/inputFIeld/InputField";
 import { Field, reduxForm, formValueSelector, reset } from "redux-form";
 import { required } from "../../../../utils/ErrorUtils";
-import ButtonComponent from "../../../../components/button/Button";
+import ButtonComponent from "components/button/Button";
 import { connect } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { onRegister } from "../actions/RegisterActions";
@@ -23,10 +23,10 @@ import { capitalize } from "../../../../utils/HelperUtils";
 import swal from "sweetalert";
 import { LoginConstants } from "../../login/constants/Constants";
 import classNames from "classnames";
-import Modal from "../../../../components/modal/Modal";
+import Modal from "components/modal/Modal";
 import TermsAndConditions from "./TermsAndConditions";
 import PrivacyPolicy from "./PrivacyPolicy";
-import PasswordField from "../../../../components/inputFIeld/PasswordField";
+import PasswordField from "components/inputFIeld/PasswordField";
 const submit = async (values, dispatch) => {
   if (
     values.password != "" &&
@@ -353,10 +353,13 @@ const IndexRegister = (props) => {
   );
 };
 
-const ReduxFormComponent = reduxForm<any>({
-  form: "Register",
-  onSubmit: submit,
-})(IndexRegister);
+const ReduxFormComponent =
+  reduxForm <
+  any >
+  {
+    form: "Register",
+    onSubmit: submit,
+  }(IndexRegister);
 const selector = formValueSelector("Register");
 export default connect((state) => {
   const password = selector(state, "password");

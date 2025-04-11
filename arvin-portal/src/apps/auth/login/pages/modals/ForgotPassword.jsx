@@ -3,8 +3,8 @@ import React from "react";
 import { connect } from "react-redux";
 import { Field, reduxForm } from "redux-form";
 import { required } from "../../../../../utils/ErrorUtils";
-import InputField from "../../../../../components/inputFIeld/InputField";
-import configure from "../../../../configure/configure.json";
+import InputField from "components/inputFIeld/InputField";
+import configure from "apps/configure/configure.json";
 import { forgotPassword } from "../../actions/LoginActions";
 import swal from "sweetalert";
 import { LoginConstants } from "../../constants/Constants";
@@ -59,10 +59,13 @@ let ForgotPassword = (props) => {
     </form>
   );
 };
-const ReduxFormComponent = reduxForm<any>({
-  form: "ForgotPassword",
-  onSubmit: submit,
-})(ForgotPassword);
+const ReduxFormComponent =
+  reduxForm <
+  any >
+  {
+    form: "ForgotPassword",
+    onSubmit: submit,
+  }(ForgotPassword);
 
 export default connect((state) => {
   return {};

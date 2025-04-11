@@ -16,10 +16,10 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import configure from "../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 import NavigationHooks from "../hooks/NavigationHooks";
 import SyncAccess from "./components/SyncAccess";
-import Modal from "../../../components/modal/Modal";
+import Modal from "components/modal/Modal";
 const drawerWidth = 250;
 const ListItemTxt = styled(ListItemText)(({ theme }) => ({
   color: configure.primary_color,

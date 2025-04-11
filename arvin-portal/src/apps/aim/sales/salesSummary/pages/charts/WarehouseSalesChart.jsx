@@ -9,7 +9,7 @@ import {
 import { LineChart } from "@mui/x-charts/LineChart";
 import moment from "moment";
 import * as React from "react";
-import configure from "../../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 
 const chartSetting = {
   height: 150,

@@ -1,7 +1,7 @@
 import { Grid } from "@mui/material";
 import * as React from "react";
-import configure from "../../../configure/configure.json";
-import BreadCrumbs from "../../../../components/breadCrumb/BreadCrumbs";
+import configure from "apps/configure/configure.json";
+import BreadCrumbs from "components/breadCrumb/BreadCrumbs";
 import HomeIcon from "@mui/icons-material/Home";
 import Home from "./Home";
 const breadCrumbArray = [

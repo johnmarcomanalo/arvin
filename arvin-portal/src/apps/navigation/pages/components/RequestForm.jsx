@@ -3,9 +3,9 @@ import * as React from "react";
 import NavigationHooks from "../../hooks/NavigationHooks";
 import { Field, formValueSelector, reduxForm, reset } from "redux-form";
 import { connect } from "react-redux";
-import InputField from "../../../../components/inputFIeld/InputField";
+import InputField from "components/inputFIeld/InputField";
 import { required } from "../../../../utils/ErrorUtils";
-import configure from "../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 const formName = "RequestsForm";
 const submit = async (values, dispatch, props) => {
   try {

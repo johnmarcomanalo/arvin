@@ -3,7 +3,12 @@ import { Typography } from "@mui/material";
 import TextField from "@mui/material/TextField";
 
 const SearchField = (props) => {
-  const { textHidden = true, autoFocus = true, ...param } = props;
+  const {
+    textHidden = true,
+    autoFocus = true,
+    fullwidth = true,
+    ...param
+  } = props;
   const inputRef = useRef(null);  // Create a reference for the TextField input
 
   // Focus the input when the component mounts or autoFocus is true
@@ -14,16 +19,16 @@ const SearchField = (props) => {
   }, [autoFocus]);  // Only re-run if autoFocus prop changes
 
   return (
-    <div>
+    <div style={{ width: "100%" }}>
       {textHidden === false && (
-        <Typography sx={{ fontSize: 13, visibility: "hidden" }} align="left">
+        <Typography sx={{ fontSize: 15, visibility: "hidden" }} align="left">
           Search
         </Typography>
       )}
       <TextField
         autoComplete="off"
         onChange={props.onChange}
-        fullWidth
+        fullWidth={fullwidth}
         value={props.value}
         placeholder="Search..."
         size="small"

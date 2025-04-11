@@ -44,8 +44,14 @@ const initialState = {
   product_group_unit_of_measure_type: null,
   holidays: [],
   viewModal: false,
+  viewModal2: false,
   bank_accounts: [],
-  phbanks:phbanks
+  phbanks:phbanks,
+  client_groups: [],
+  client_groups_count: 0,
+  client_sub_groups: [],
+  client_sub_groups_count: 0,
+  selectedDataList: [],
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

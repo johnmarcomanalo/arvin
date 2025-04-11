@@ -77,7 +77,7 @@ use Illuminate\Support\Facades\Route;
     
     //MODULE SALES DAILY OUT START
 
-     Route::group(['middleware' => ['auth:sanctum']], function () {
+    //  Route::group(['middleware' => ['auth:sanctum']], function () {
         //REFERENCE
         // Route::apiResource('reference/companies',RefCompaniesController::class)->middleware(['light_decryption']);
          Route::post('/users/change-password',[AuthController::class, 'change_password'])->middleware(['light_decryption']);
@@ -220,7 +220,7 @@ use Illuminate\Support\Facades\Route;
 
 
         // Client Sales Tracker START
-        Route::get('salesdailyout/sales_tracker/client/get_client_sales_tracker',[SalesDailyOutClientSalesTrackersController::class, 'get_client_sales_tracker']);
+        Route::get('salesdailyout/sales_tracker/client/client_sales_tracker',[SalesDailyOutClientSalesTrackersController::class, 'client_sales_tracker']);
         Route::get('salesdailyout/sales_tracker/client/insert_sap_client_sales_tracker',[SalesDailyOutClientSalesTrackersController::class, 'insert_sap_client_sales_tracker']);
         Route::get('salesdailyout/sales_tracker/client/getFiveDaysClientSalesTrackerbyCurrentDate',[SalesDailyOutClientSalesTrackersController::class, 'getFiveDaysClientSalesTrackerbyCurrentDate']);
         
@@ -276,7 +276,7 @@ use Illuminate\Support\Facades\Route;
        
         // EPAYCHECK END
 
-    });
+    // });
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return $request->user();
     });

@@ -84,13 +84,7 @@ let AddClientGroup = (props) => {
               multiline={true}
             />
           </Grid>
-          {/* <Grid
-            item
-            xs={12}
-            sm={12}
-            md={props.type === "Provincial" ? 6 : 6}
-            lg={props.type === "Provincial" ? 6 : 6}
-          >
+          <Grid item xs={12} sm={12} md={4} lg={4}>
             <Field
               id="type"
               name="type"
@@ -103,18 +97,13 @@ let AddClientGroup = (props) => {
               component={ComboBox}
               onChangeHandle={(e, newValue) => {
                 if (newValue?.description) {
-                  if (newValue?.description !== "Provincial") {
-                    props.change("bdo", "");
-                    props.change("subsection", newValue?.description);
-                  } else {
-                    props.change("subsection", "");
-                    props.change("bdo", "");
-                  }
+                  props.change("bdo", "");
+                  props.change("subsection", "");
                 }
               }}
             />
-          </Grid> */}
-          <Grid item xs={12} sm={12} md={6} lg={6}>
+          </Grid>
+          <Grid item xs={12} sm={12} md={4} lg={4}>
             <Field
               id="bdo"
               name="bdo"
@@ -133,7 +122,7 @@ let AddClientGroup = (props) => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={12} md={6} lg={6}>
+          <Grid item xs={12} sm={12} md={4} lg={4}>
             <Field
               id="subsection"
               name="subsection"
@@ -147,7 +136,7 @@ let AddClientGroup = (props) => {
                   : ""
               }
               required={true}
-              disable={props.type !== "Provincial" ? true : false}
+              // disable={props.type !== "Provincial" ? true : false}
               component={ComboBox}
             />
           </Grid>

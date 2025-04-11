@@ -39,7 +39,12 @@ export default function Modal(props) {
     <div>
       <BootstrapDialog
         fullScreen={props.fullScreen}
-        onClose={props.handleClose ? props.handleClose : undefined}
+        // onClose={props.handleClose ? props.handleClose : undefined}
+        onClose={(event, reason) => {
+          if (reason !== "backdropClick") {
+            props.handleClose?.();
+          }
+        }}
         open={props.open}
         fullWidth
         maxWidth={props.size}

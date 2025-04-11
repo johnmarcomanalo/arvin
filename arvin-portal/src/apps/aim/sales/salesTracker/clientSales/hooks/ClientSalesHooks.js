@@ -57,6 +57,23 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       ? props.bdo_name
       : "";
 
+  const type =
+    searchParams.get("t") != null
+      ? String(searchParams.get("t"))
+      : props.type
+      ? props.type
+      : "";
+
+  const subsection =
+    searchParams.get("w") != null
+      ? String(searchParams.get("w"))
+      : props.subsection
+      ? props.subsection
+      : "";
+  const rowsPerPage =
+    searchParams.get("tl") != null ? searchParams.get("tl") : 10;
+  const page = searchParams.get("tp") != null ? searchParams.get("tp") : 1;
+
   const debounceSearch = useDebounce(searchParams, 500);
   //filtering,search,page,limit end
 
@@ -130,6 +147,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   const employeeModal = useSelector(
     (state) => state.HumanResourceReducer.viewModal
   );
+
   const columns = [
     {
       id: "bdo",
@@ -144,6 +162,21 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     {
       id: "sales_daily_out_settings_client_groups_description",
       label: "Client",
+      align: "left",
+    },
+    {
+      id: "type",
+      label: "Type",
+      align: "left",
+    },
+    {
+      id: "subsection",
+      label: "warehouse",
+      align: "left",
+    },
+    {
+      id: "sales_month",
+      label: "Month",
       align: "left",
     },
     {
@@ -216,16 +249,6 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       label: "YTD Balance to Sell",
       align: "left",
     },
-    {
-      id: "type",
-      label: "Type",
-      align: "left",
-    },
-    {
-      id: "subsection",
-      label: "Warehouse",
-      align: "left",
-    },
   ];
   const active_page = JSON.parse(json_active_page);
   const onClickOpenAddModal = () => {
@@ -283,6 +306,10 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       pr: product,
       c: group_description,
       b: bdo,
+      t: type,
+      w: subsection,
+      tl: String(rowsPerPage),
+      tp: page,
     });
   };
   const onChangeSearch = (event) => {
@@ -293,6 +320,10 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       pr: product,
       c: search,
       b: bdo,
+      t: type,
+      w: subsection,
+      tl: String(rowsPerPage),
+      tp: "1",
     });
   };
   const getListParam = () => {
@@ -302,6 +333,25 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       pr: product,
       c: group_description,
       b: bdo,
+      t: type,
+      w: subsection,
+      tl: String(rowsPerPage),
+      tp: page,
+    };
+    return data;
+  };
+
+  const getListParam2 = () => {
+    const data = {
+      y: year,
+      m: month,
+      pr: product,
+      c: group_description,
+      b: bdo,
+      t: type,
+      w: subsection,
+      tl: "",
+      tp: "",
     };
     return data;
   };
@@ -349,10 +399,20 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     onFetchOrganizationAccess();
   }, []);
   React.useEffect(() => {
-    if (product && bdo && year && month) {
+    if (product && year && month) {
       GetClientSales();
     }
-  }, [refresh, year, month, product, group_description, bdo]);
+  }, [
+    refresh,
+    year,
+    month,
+    product,
+    group_description,
+    bdo,
+    type,
+    subsection,
+    page,
+  ]);
   const onClickOpenFilterModal = () => {
     dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
@@ -392,6 +452,10 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       pr: description,
       c: group_description,
       b: bdo,
+      t: type,
+      w: subsection,
+      tl: String(rowsPerPage),
+      tp: page,
     });
   };
 
@@ -402,77 +466,96 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       pr: product,
       c: code,
       b: bdo,
+      t: type,
+      w: subsection,
+      tl: String(rowsPerPage),
+      tp: page,
     });
   };
 
-  const exportToExcel = (dataList) => {
-    if (!dataList || dataList.length === 0) {
-      console.warn("No data to export.");
-      return;
-    }
-    let fileName =
-      "Client Sales Tracker " +
-      "(" +
-      year +
-      "-" +
-      month +
-      ") " +
-      (product ? product : " All Product ") +
-      "-" +
-      (group_description ? group_description : " All Group ") +
-      "-" +
-      (bdo ? bdo : "All BDO") +
-      ".xlsx";
-    // Define column mappings based on the updated `columns` array
-    const columnMappings = {
-      bdo: "BDO",
-      // sales_daily_out_settings_annual_quota_client_groups_code: "Code",
-      sales_daily_out_settings_client_groups_description: "Client",
-      month_sales_daily_qouta: "Monthly Quota",
-      "1-7": "1-7",
-      "8-14": "8-14",
-      "15-21": "15-21",
-      "22-30/31": "22-30/31",
-      month_sales_daily_out: "Monthly Out",
-      mtd_total_daily_qouta_amount: "MTD Total Quota",
-      mtd_total_daily_out_amount: "MTD Total Out",
-      mtd_total_status_daily_target: "MTD Balance to Sell",
-      mtd_final_percentage: "MTD Final Percentage",
-      ytd_final_percentage: "YTD Final Percentage",
-      ytd_total_daily_qouta_amount: "YTD Total Quota",
-      ytd_total_daily_out_amount: "YTD Total Out",
-      ytd_total_status_daily_target: "YTD Balance to Sell",
-      type: "Type",
-      subsection: "Warehouse",
-    };
-
-    // Convert data to new format with renamed keys
-    const formattedData = dataList.map((item) => {
-      let newItem = {};
-      Object.keys(columnMappings).forEach((key) => {
-        newItem[columnMappings[key]] = item[key]; // Use mapped column name
+  const exportToExcel = async (dataList) => {
+    try {
+      if (!dataList || dataList.length === 0) {
+        await swal("No Data", "There is no data to export.", "warning");
+        return;
+      }
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: { loading: true },
       });
-      return newItem;
-    });
 
-    // Convert JSON to worksheet with renamed headers
-    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+      const param = await getListParam2();
+      const data = await dispatch(getClientSalesTracker(param));
 
-    // Create a workbook and append the worksheet
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      if (!data || !data.dataList || data.dataList.length === 0) {
+        console.warn("No data to export.");
+        await swal("No Data", "There is no data to export.", "warning");
+        return;
+      }
 
-    // Write the workbook and convert to Blob
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
-    const blob = new Blob([excelBuffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
+      await swal(
+        "Preparing File",
+        "Please wait while we generate the Excel file...",
+        "info"
+      );
 
-    // Save the file
-    saveAs(blob, fileName);
+      const fileName = `Client Sales Tracker (${param.y}-${param.m}).xlsx`;
+
+      const columnMappings = {
+        bdo: "BDO",
+        sales_daily_out_settings_client_groups_description: "Client",
+        type: "Type",
+        subsection: "Warehouse",
+        sales_month: "Month",
+        month_sales_daily_qouta: "Monthly Quota",
+        "1-7": "1-7",
+        "8-14": "8-14",
+        "15-21": "15-21",
+        "22-30/31": "22-30/31",
+        month_sales_daily_out: "Monthly Out",
+        mtd_total_daily_qouta_amount: "MTD Total Quota",
+        mtd_total_daily_out_amount: "MTD Total Out",
+        mtd_total_status_daily_target: "MTD Balance to Sell",
+        mtd_final_percentage: "MTD Final Percentage",
+        ytd_final_percentage: "YTD Final Percentage",
+        ytd_total_daily_qouta_amount: "YTD Total Quota",
+        ytd_total_daily_out_amount: "YTD Total Out",
+        ytd_total_status_daily_target: "YTD Balance to Sell",
+      };
+
+      const formattedData = data.dataList.map((item) => {
+        let newItem = {};
+        Object.keys(columnMappings).forEach((key) => {
+          newItem[columnMappings[key]] = item[key];
+        });
+        return newItem;
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(formattedData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+
+      const blob = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      saveAs(blob, fileName);
+
+      await swal("Success", "Export completed successfully.", "success");
+    } catch (error) {
+      console.error("Export failed:", error);
+      await swal("Error", "Something went wrong while exporting.", "error");
+    } finally {
+      await dispatch({
+        type: Constants.ACTION_LOADING,
+        payload: { loading: false },
+      });
+    }
   };
   const onClickOpenEmployeeViewModal = () => {
     dispatch({
@@ -497,6 +580,10 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       pr: product,
       c: group_description,
       b: bdo.username,
+      t: type,
+      w: subsection,
+      tl: String(rowsPerPage),
+      tp: page,
     });
     props.dispatch(change("ClientSales", "bdo_name", bdo.full_name));
     swal("Success", "BDO filtered successfully", "success");
@@ -508,8 +595,53 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       pr: product,
       c: group_description,
       b: "",
+      t: type,
+      w: subsection,
+      tl: String(rowsPerPage),
+      tp: page,
     });
     props.dispatch(change("ClientSales", "bdo_name", ""));
+  };
+
+  const onClickSelectType = (type) => {
+    setSearchParams({
+      y: year,
+      m: month,
+      pr: product,
+      c: group_description,
+      b: bdo,
+      t: type,
+      w: subsection,
+      tl: String(rowsPerPage),
+      tp: page,
+    });
+  };
+
+  const onClickSelectWarehouse = (subsection) => {
+    setSearchParams({
+      y: year,
+      m: month,
+      pr: product,
+      c: group_description,
+      b: bdo,
+      t: type,
+      w: subsection,
+      tl: String(rowsPerPage),
+      tp: page,
+    });
+  };
+  const handleChangePage = (event, page) => {
+    setSearchParams({
+      y: year,
+      m: month,
+      pr: product,
+      c: group_description,
+      b: bdo,
+      t: type,
+      w: subsection,
+      tl: String(rowsPerPage),
+      tp: page,
+    });
   };
   return {
     dataList,
@@ -537,6 +669,9 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     product_group_unit_of_measure_type,
     client_groups,
     employeeModal,
+    subsection,
+    page,
+    handleChangePage,
     onSelectItem,
     onDeleteDeduction,
     onChangeSearch,
@@ -555,6 +690,8 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     onClickCloseEmployeeViewModal,
     onClickSelectEmployee,
     onClickSelectResetEmployee,
+    onClickSelectType,
+    onClickSelectWarehouse,
   };
 };
 

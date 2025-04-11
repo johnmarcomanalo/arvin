@@ -57,7 +57,4 @@ const ReduxFormComponent = reduxForm({
   form: formName,
 })(InvoiceList);
 const selector = formValueSelector(formName);
-export default connect((state) => {
-}, {})(ReduxFormComponent);
-
-    
+export default connect((state) => {}, {})(ReduxFormComponent);

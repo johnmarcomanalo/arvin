@@ -1,11 +1,12 @@
 import { Grid, Stack, useMediaQuery } from "@mui/material";
 import * as React from "react";
 import { connect } from "react-redux";
-import { formValueSelector, reduxForm } from "redux-form";
-import SearchField from "../../../../../../../components/inputFIeld/SearchField";
-import Page from "../../../../../../../components/pagination/Pagination";
-import Table from "../../../../../../../components/table/Table";
+import { Field, formValueSelector, reduxForm } from "redux-form";
+import SearchField from "components/inputFIeld/SearchField";
+import Page from "components/pagination/Pagination";
+import Table from "components/table/Table";
 import CustomersHooks from "../../hooks/CustomersHooks";
+import ComboBox from "components/autoComplete/AutoComplete";
 const formName = "Customers";
 const submit = async (values, dispatch, props) => {
   try {
@@ -20,15 +21,35 @@ let Customers = (props) => {
   return (
     <React.Fragment>
       <Grid container spacing={2}>
+        <Grid item xs={12} sm={12} md={6} lg={6}>
+          <Field
+            id="type"
+            name="type"
+            label="Type"
+            options={customers?.type}
+            getOptionLabel={(option) =>
+              option?.description ? option?.description : ""
+            }
+            required={true}
+            component={ComboBox}
+            onChangeHandle={(e, newValue) => {
+              if (newValue?.description) {
+                customers.onChangeFilter(newValue?.description);
+              } else {
+                customers.onChangeFilter("");
+              }
+            }}
+          />
+        </Grid>
+        <Grid item xs={12} sm={12} md={6} lg={6}>
+          <SearchField onChange={customers.onChangeSearch} textHidden={false} />
+        </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Stack
             direction="row"
-            justifyContent={matches ? "space-between" : "center"}
-            alignItems={matches ? "flex-start" : "center"}
-            flexDirection={matches ? "row" : "column"}
-            spacing={2}
+            justifyContent="flex-end"
+            alignItems="flex-end"
           >
-            <SearchField onChange={customers.onChangeSearch} />
             <Page
               page={customers?.page}
               limit={customers?.dataListCount}

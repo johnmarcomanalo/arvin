@@ -1,88 +1,56 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Console\Commands;
 
 use App\Models\RefClientsSalesOutLogs;
-use Illuminate\Http\Request;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Crypt;
+use App\Http\Controllers\MainController;
+use App\Http\Controllers\SalesDailyOutTrackersController;
 use App\Models\SalesDailyOutSettingsAnnualQuotaClientGroups;
 use App\Models\SalesDailyOutSettingsClientSubGroups;
 use App\Models\SalesDailyOutClientSalesTrackers;
 
-class RefClientsSalesOutLogsController extends Controller
+class UpdateRefClientsSalesOutLogs extends Command
 {
     /**
-     * Display a listing of the resource.
+     * The name and signature of the console command.
      *
-     * @return \Illuminate\Http\Response
+     * @var string
      */
-    public function index()
+    protected $signature = 'command:update-client-sales-out-logs';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Command description';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
     {
-        //
+        parent::__construct();
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Execute the console command.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return int
      */
-    public function store(Request $request)
+    public function handle()
     {
-        try {
-            //code...
-        } catch (\Throwable $e) {
-            DB::rollBack(); // Rollback transaction on error
-
-            return response([
-                'message' => 'An error occurred: ' . $e->getMessage(),
-                'result' => false,
-                'status' => 'error',
-                'title' => 'Error',
-            ], 500);
-        }
+        return 0;
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\RefClientsSalesOutLogs  $refClientsSalesOutLogs
-     * @return \Illuminate\Http\Response
-     */
-    public function show(RefClientsSalesOutLogs $refClientsSalesOutLogs)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\RefClientsSalesOutLogs  $refClientsSalesOutLogs
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, RefClientsSalesOutLogs $refClientsSalesOutLogs)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\RefClientsSalesOutLogs  $refClientsSalesOutLogs
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(RefClientsSalesOutLogs $refClientsSalesOutLogs)
-    {
-        //
-    }
-
 
     public function postRefClientsSalesOutLogs()
     {
-        try {
+         try {
             DB::beginTransaction();
             $salesDailyOutTrackersController = new SalesDailyOutTrackersController();
 
@@ -250,30 +218,6 @@ class RefClientsSalesOutLogsController extends Controller
                 'status' => 'error',
                 'title' => 'Error',
             ], 500);
-        }
-    }
-
-    public function updateRefClientsSalesOutLogs($json_records)
-    {   
-        $records = json_decode($json_records);
-        foreach ($records as $value) {
-            // $formattedDate = Carbon::parse($value->createdate)->format('Y-m-d');
-
-            $data = RefClientsSalesOutLogs::where('customer_code', $value->CardCode)
-                // ->whereDate('sales_date', $formattedDate)
-                ->where('type', $value->type)
-                ->where('warehouse', $value->warehouse)
-                ->where('product', $value->u_groupcategory)
-                ->where('status', 0)
-                ->first();
-
-            if ($data) {
-                $data->update([
-                    'status' => 1,
-                    'updated_at' => now(),
-                    // 'modified_by' => 'SAP',
-                ]);
-            }
         }
     }
 }

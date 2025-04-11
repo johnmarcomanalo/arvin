@@ -4,9 +4,9 @@ import RequestPageIcon from "@mui/icons-material/RequestPage";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { Grid } from "@mui/material";
 import * as React from "react";
-import BreadCrumbs from "../../../../../components/breadCrumb/BreadCrumbs";
-import PageTitle from "../../../../../components/pageTItle/PageTitle";
-import configure from "../../../../configure/configure.json";
+import BreadCrumbs from "components/breadCrumb/BreadCrumbs";
+import PageTitle from "components/pageTItle/PageTitle";
+import configure from "apps/configure/configure.json";
 import QuotationList from "./QuotationList";
 const title_page = "Quotation List";
 const breadCrumbArray = [

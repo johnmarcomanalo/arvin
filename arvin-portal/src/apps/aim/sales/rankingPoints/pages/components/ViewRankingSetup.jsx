@@ -3,7 +3,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { formValueSelector, reduxForm, reset } from "redux-form";
 import swal from "sweetalert";
-import Table from "../../../../../../components/table/Table";
+import Table from "components/table/Table";
 import { Constants } from "../../../../../../reducer/Contants";
 import { postAnnualSettingSalesRanking } from "../../actions/SalesRankingPointsActions";
 import SalesRankingPointsHooks from "../../hooks/SalesRankingPointsHooks";

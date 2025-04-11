@@ -179,9 +179,6 @@ const AddClientGroupsHooks = (props) => {
         ...prev,
         sub_group: [...prev.sub_group, client],
       }));
-      if (data.type !== "Provincial") {
-        props.dispatch(change("AddClientGroup", "subsection", data.type));
-      }
       props.dispatch(change("AddClientGroup", "type", data.type));
       swal("Success", "Client added successfully", "success");
     } else {

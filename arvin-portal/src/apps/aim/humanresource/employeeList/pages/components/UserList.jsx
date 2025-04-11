@@ -3,11 +3,11 @@ import * as React from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm, reset } from "redux-form";
-import FormTitle from "../../../../../../components/formTItle/FormTitle";
-import InputField from "../../../../../../components/inputFIeld/InputField";
+import FormTitle from "components/formTItle/FormTitle";
+import InputField from "components/inputFIeld/InputField";
 import EmployeeListHooks from "../../hooks/EmployeeListHooks";
-import Table from "../../../../../../components/table/Table";
-import SearchField from "../../../../../../components/inputFIeld/SearchField";
+import Table from "components/table/Table";
+import SearchField from "components/inputFIeld/SearchField";
 const formName = "UserList";
 const submit = async (values, dispatch, props) => {
   try {

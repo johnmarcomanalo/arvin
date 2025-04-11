@@ -2,7 +2,7 @@ import { Constants } from "../../../../../reducer/Contants";
 import { GetSpecificDefaultServices } from "../../../../../services/apiService";
 import { decryptaes } from "../../../../../utils/LightSecurity";
 import swal from "sweetalert";
-import configure from "../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 
 export const getSalesSummaryData = (values) => async (dispatch) => {
   try {

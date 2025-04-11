@@ -18,7 +18,7 @@ import { useTheme } from "@mui/material/styles";
 import * as React from "react";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import MapsHomeWorkOutlinedIcon from "@mui/icons-material/MapsHomeWorkOutlined";
-import configure from "../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 import EmployeeDetailsHooks from "../hooks/EmployeeDetailsHooks";
 export default function EmployeeDetails(props) {
   const { ...employeeDetails } = EmployeeDetailsHooks(props);

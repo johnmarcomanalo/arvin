@@ -4,9 +4,9 @@ import GroupIcon from "@mui/icons-material/Group";
 import HomeIcon from "@mui/icons-material/Home";
 import { Grid } from "@mui/material";
 import * as React from "react";
-import BreadCrumbs from "../../../../../../components/breadCrumb/BreadCrumbs";
-import PageTitle from "../../../../../../components/pageTItle/PageTitle";
-import configure from "../../../../../configure/configure.json";
+import BreadCrumbs from "components/breadCrumb/BreadCrumbs";
+import PageTitle from "components/pageTItle/PageTitle";
+import configure from "apps/configure/configure.json";
 import DavaoTKS from "./DavaoTKS";
 
 const title_page = "Davao TKS";

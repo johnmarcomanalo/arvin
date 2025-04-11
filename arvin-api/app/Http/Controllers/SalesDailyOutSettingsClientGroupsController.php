@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SalesDailyOutSettingsClientGroups;
 use App\Models\SalesDailyOutSettingsClientSubGroups;
+use App\Models\RefSubSections;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -45,6 +46,7 @@ class SalesDailyOutSettingsClientGroupsController extends Controller
             DB::beginTransaction(); // Start the transaction
 
             // Check if the group already exists
+
             $check_group = SalesDailyOutSettingsClientGroups::where('description', $fields['description'])
                 ->where('type', $fields['type'])
                 ->where('subsection', $fields['subsection'])
@@ -80,13 +82,15 @@ class SalesDailyOutSettingsClientGroupsController extends Controller
             // }
 
             // Generate and insert group
+            $subsection = RefSubSections::where('description',$fields["subsection"])->first();
+
             $code_group = MainController::generate_code('App\Models\SalesDailyOutSettingsClientGroups', "code");
             // return $fields;
             SalesDailyOutSettingsClientGroups::create([
                 'code' => $code_group,
                 'description' => $fields["description"],
                 'type' => $fields["type"],
-                'subsection' => $fields["subsection"],
+                'subsection' => $subsection['type'],
                 'bdo' => $fields["bdo"],
                 'added_by' => $fields["added_by"],
                 'modified_by' => $fields["modified_by"],
@@ -102,7 +106,7 @@ class SalesDailyOutSettingsClientGroupsController extends Controller
                     'customer_code' => $value->customer_code,
                     'description' => $value->description,
                     'type' => $value->type,
-                    'subsection' => $fields["subsection"],
+                    'subsection' => $subsection['type'],
                     'added_by' => $fields["added_by"],
                     'modified_by' => $fields["modified_by"],
                 ]);

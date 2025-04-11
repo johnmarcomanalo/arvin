@@ -1,14 +1,14 @@
 import { Grid, Tooltip, Stack } from "@mui/material";
 import * as React from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import Table from "../../../../../components/table/Table";
+import Table from "components/table/Table";
 import HomeComponentAttendanceHooks from "../../hooks/HomeComponentAttendanceHooks";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm, reset } from "redux-form";
 import { required } from "../../../../../utils/ErrorUtils";
-import FormTitle from "../../../../../components/formTItle/FormTitle";
-import InputField from "../../../../../components/inputFIeld/InputField";
-import InputDatePicker from "../../../../../components/inputFIeld/InputDatePicker";
+import FormTitle from "components/formTItle/FormTitle";
+import InputField from "components/inputFIeld/InputField";
+import InputDatePicker from "components/inputFIeld/InputDatePicker";
 const formName = "Attendance";
 const submit = async (values, dispatch, props) => {
   try {

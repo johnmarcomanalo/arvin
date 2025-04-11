@@ -16,6 +16,8 @@ import ComponentTable from "components/table/Table";
 import configure from "apps/configure/configure.json";
 import ClientSalesHooks from "../hooks/ClientSalesHooks";
 import SearchField from "components/inputFIeld/SearchField";
+import FilterClientSalesTracker from "./components/FilterClientSalesTracker";
+import Page from "components/pagination/Pagination";
 const formName = "ClientSales";
 const submit = async (values, dispatch, props) => {
   try {
@@ -29,6 +31,11 @@ let ClientSales = (props) => {
   const { ...salesTracker } = ClientSalesHooks(props);
   const theme = useTheme();
   const matches = useMediaQuery("(min-width:600px)");
+  const types = [
+    { description: "Manila Branch" },
+    { description: "Provincial" },
+    { description: "Peanut" },
+  ];
   return (
     <React.Fragment>
       <Modal
@@ -40,6 +47,16 @@ let ClientSales = (props) => {
         handleClose={salesTracker.onClickCloseEmployeeViewModal}
       >
         <AccountList onClickSelect={salesTracker.onClickSelectEmployee} />
+      </Modal>
+      <Modal
+        open={salesTracker.filterModal}
+        fullScreen={matches ? false : true}
+        title={"Account Search"}
+        size={"md"}
+        action={undefined}
+        handleClose={salesTracker.onClickCloseFilterModal}
+      >
+        <FilterClientSalesTracker />
       </Modal>
       <form onSubmit={props.handleSubmit}>
         <Grid container spacing={2}>
@@ -61,14 +78,14 @@ let ClientSales = (props) => {
               />
             </Stack>
           </Grid>
-          <Grid item xs={12} sm={12} md={3} lg={3}>
+          <Grid item xs={12} sm={12} md={2} lg={2}>
             <SearchField
               value={salesTracker.search}
               onChange={salesTracker.onChangeSearch}
               textHidden={false}
             />
           </Grid>
-          <Grid item xs={12} sm={12} md={3} lg={3}>
+          <Grid item xs={12} sm={12} md={2} lg={2}>
             <Field
               name="sales_date"
               label="Date"
@@ -86,7 +103,7 @@ let ClientSales = (props) => {
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={12} md={3} lg={3}>
+          <Grid item xs={12} sm={12} md={2} lg={2}>
             <Field
               key={props.refresh}
               id="product_group"
@@ -108,8 +125,52 @@ let ClientSales = (props) => {
               }}
             />
           </Grid>
-
-          <Grid item xs={12} sm={12} md={3} lg={3}>
+          <Grid item xs={12} sm={12} md={2} lg={2}>
+            <Field
+              id="type"
+              name="type"
+              label="Type"
+              options={types}
+              getOptionLabel={(option) =>
+                option?.description ? option?.description : ""
+              }
+              required={true}
+              component={ComboBox}
+              onChangeHandle={(e, newValue) => {
+                if (newValue?.description) {
+                  salesTracker.onClickSelectType(newValue?.description);
+                } else {
+                  salesTracker.onClickSelectType("");
+                }
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12} md={2} lg={2}>
+            <Field
+              id="subsection"
+              name="subsection"
+              label="Warehouse"
+              options={salesTracker?.user_access_organization_rights}
+              getOptionLabel={(option) =>
+                option?.description
+                  ? option.description
+                  : props.subsection
+                  ? props.subsection
+                  : ""
+              }
+              required={true}
+              component={ComboBox}
+              onChangeHandle={(e, newValue) => {
+                if (newValue?.description) {
+                  console.log(newValue);
+                  salesTracker.onClickSelectWarehouse(newValue?.type);
+                } else {
+                  salesTracker.onClickSelectWarehouse("");
+                }
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12} md={2} lg={2}>
             <Field
               id="bdo_name"
               required={true}
@@ -126,6 +187,15 @@ let ClientSales = (props) => {
               }}
               inputIcon={<CloseIcon />}
             />
+          </Grid>
+          <Grid item xs={12} sm={12} md={12} lg={12}>
+            <Stack justifyContent="flex-end" alignItems="flex-end">
+              <Page
+                page={salesTracker?.page}
+                limit={salesTracker?.dataListCount}
+                onHandleChange={salesTracker.handleChangePage}
+              />
+            </Stack>
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={12}>
             <ComponentTable
@@ -170,9 +240,13 @@ export default connect((state) => {
   const sales_date = selector(state, "sales_date");
   const product_group = selector(state, "product_group");
   const bdo_name = selector(state, "bdo_name");
+  const type = selector(state, "type");
+  const subsection = selector(state, "subsection");
   return {
     sales_date,
     product_group,
+    type,
     bdo_name,
+    subsection,
   };
 }, {})(ReduxFormComponent);

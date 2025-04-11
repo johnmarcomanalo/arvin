@@ -11,7 +11,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { formValueSelector, reduxForm } from "redux-form";
 import { cancelRequest } from "../../../../../../api/api";
-import configure from "../../../../../configure/configure.json";
+import configure from "apps/configure/configure.json";
 const formName = "ViewAwardedQuotation";
 const submit = async (values, dispatch, props) => {
   try {
