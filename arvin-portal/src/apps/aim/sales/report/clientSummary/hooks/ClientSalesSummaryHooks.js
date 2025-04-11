@@ -56,6 +56,8 @@ const DavaoTKSHooks = (props) => {
       label: "Client Group",
       align: "left",
     },
+    { id: "type", label: "Type", align: "left" },
+    { id: "warehouse", label: "Warehouse", align: "left" },
     { id: "year_sales_target", label: "Year", align: "left" },
     { id: "january_total_out", label: "January Sales", align: "left" },
     { id: "february_total_out", label: "February Sales", align: "left" },
@@ -83,6 +85,8 @@ const DavaoTKSHooks = (props) => {
       label: "Client Group",
       align: "left",
     },
+    { id: "type", label: "Type", align: "left" },
+    { id: "warehouse", label: "Warehouse", align: "left" },
     { id: "year_sales_target", label: "Year", align: "left" },
     {
       id: "mtd_january_final_percentage",
@@ -148,6 +152,8 @@ const DavaoTKSHooks = (props) => {
       label: "Client Group",
       align: "left",
     },
+    { id: "type", label: "Type", align: "left" },
+    { id: "warehouse", label: "Warehouse", align: "left" },
     { id: "year_sales_target", label: "Year", align: "left" },
     {
       id: "ytd_january_final_percentage",

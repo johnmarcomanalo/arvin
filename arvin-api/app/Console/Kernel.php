@@ -19,7 +19,7 @@ class Kernel extends ConsoleKernel
              ->everyFiveMinutes()
              ->withoutOverlapping();
 
-        $schedule->command('update:sales-tracker-client')
+        $schedule->command('update:update-client-sales-out-logs')
              ->everyFiveMinutes()
              ->withoutOverlapping();
     }

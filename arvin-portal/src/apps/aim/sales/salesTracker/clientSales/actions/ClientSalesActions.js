@@ -13,59 +13,25 @@ export const getClientSalesTracker = (values) => async (dispatch) => {
   try {
     await dispatch({
       type: Constants.ACTION_LOADING,
-      payload: {
-        loading: true,
-      },
+      payload: { loading: true },
     });
 
-    const response = GetSpecificDefaultServices(
-      "api/salesdailyout/sales_tracker/client/get_client_sales_tracker/?y=" +
-        values.y +
-        "&m=" +
-        values.m +
-        "&pr=" +
-        values.pr +
-        "&c=" +
-        values.c +
-        "&b=" +
-        values.b
-    );
-    response.then((res) => {
-      try {
-        let decrypted = decryptaes(res.data);
-        dispatch({
-          type: Constants.ACTION_SALES_DAILY_OUT,
-          payload: {
-            dataList: decrypted.dataList,
-            dataListCount: decrypted.dataListCount,
-          },
-        });
-      } catch (error) {
-        var title = configure.error_message.default;
-        var message = "";
-        if (typeof error.response.data.message !== "undefined")
-          title = error.response.data.message;
-        if (typeof error.response.data.errors !== "undefined") {
-          const formattedErrors = Object.entries(error.response.data.errors)
-            .map(([key, value]) => `${value.join(", ")}`)
-            .join("\n");
-          message = formattedErrors;
-        }
-        swal(title, message, "error");
-        dispatch({
-          type: Constants.ACTION_LOADING,
-          payload: {
-            loading: false,
-          },
-        });
-      }
-      dispatch({
-        type: Constants.ACTION_LOADING,
+    const url = `api/salesdailyout/sales_tracker/client/client_sales_tracker/?y=${values.y}&m=${values.m}&pr=${values.pr}&c=${values.c}&b=${values.b}&t=${values.t}&w=${values.w}&tl=${values.tl}&tp=${values.tp}`;
+
+    const response = await GetSpecificDefaultServices(url);
+    const decrypted = decryptaes(response.data);
+    const { data, total } = decrypted.dataList;
+    if (values.tp && values.tl) {
+      await dispatch({
+        type: Constants.ACTION_SALES_DAILY_OUT,
         payload: {
-          loading: false,
+          dataList: data,
+          dataListCount: total,
         },
       });
-    });
+    } else {
+      return decrypted;
+    }
   } catch (error) {
     var title = configure.error_message.default;
     var message = "";
@@ -78,6 +44,13 @@ export const getClientSalesTracker = (values) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {
@@ -118,6 +91,13 @@ export const postSalesDailyOut = (formValues) => async (dispatch) => {
       message = formattedErrors;
     }
     await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
       payload: {

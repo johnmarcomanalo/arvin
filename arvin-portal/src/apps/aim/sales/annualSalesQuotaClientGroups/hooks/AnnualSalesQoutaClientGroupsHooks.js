@@ -62,6 +62,16 @@ const AnnualSalesQoutaHooks = (props) => {
     { id: "year_sales_target", label: "Year", align: "left" },
     { id: "group_description", label: "Group Name", align: "left" },
     {
+      id: "type",
+      label: "Type",
+      align: "left",
+    },
+    {
+      id: "subsection",
+      label: "Warehouse",
+      align: "left",
+    },
+    {
       id: "ref_product_groups_description",
       label: "Product Group",
       align: "left",

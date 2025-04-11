@@ -58,46 +58,46 @@ let ClientGroups = (props) => {
           </Stack>
         </Grid>
         <Grid item xs={12} sm={12} md={4} lg={4}>
-          <Stack
+          {/* <Stack
             direction="row"
             justifyContent="space-start"
             alignItems="flex-end"
             spacing={2}
-          >
-            <SearchField
-              value={clientGroups.search}
-              onChange={clientGroups.onChangeSearch}
-              textHidden={false}
-              fullwidth={true}
-            />
-          </Stack>
+          > */}
+          <SearchField
+            value={clientGroups.search}
+            onChange={clientGroups.onChangeSearch}
+            textHidden={false}
+            fullwidth={true}
+          />
+          {/* </Stack> */}
         </Grid>
         <Grid item xs={12} sm={12} md={4} lg={4}>
-          <Stack
+          {/* <Stack
             direction="row"
             justifyContent="space-between"
             alignItems="flex-end"
             spacing={2}
-          >
-            <Field
-              id="type"
-              name="type"
-              label="Type"
-              options={clientGroups?.type}
-              getOptionLabel={(option) =>
-                option?.description ? option?.description : ""
+          > */}
+          <Field
+            id="type"
+            name="type"
+            label="Type"
+            options={clientGroups?.type}
+            getOptionLabel={(option) =>
+              option?.description ? option?.description : ""
+            }
+            required={true}
+            component={ComboBox}
+            onChangeHandle={(e, newValue) => {
+              if (newValue?.description) {
+                clientGroups.onChangeFilter(newValue?.description);
+              } else {
+                clientGroups.onChangeFilter("");
               }
-              required={true}
-              component={ComboBox}
-              onChangeHandle={(e, newValue) => {
-                if (newValue?.description) {
-                  clientGroups.onChangeFilter(newValue?.description);
-                } else {
-                  clientGroups.onChangeFilter("");
-                }
-              }}
-            />
-          </Stack>
+            }}
+          />
+          {/* </Stack> */}
         </Grid>
         <Grid item xs={12} sm={12} md={4} lg={4}>
           <Stack justifyContent="flex-end" alignItems="flex-end">
