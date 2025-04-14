@@ -58,6 +58,15 @@ const InputField = (props) => {
           "& input": {
             backgroundColor: props.disabled ? "#e8e8e8" : "transparent",
           },
+          "& .MuiOutlinedInput-root": {
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: props.borderColor, // default border color
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: props.borderColor, // focused border color
+            },
+          },
+        
         }}
       />
     </div>

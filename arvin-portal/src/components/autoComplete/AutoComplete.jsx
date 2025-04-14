@@ -47,6 +47,24 @@ export default function ComboBox(props) {
         renderInput={(params) => (
           <TextField {...params} required={param.required} fullWidth />
         )}
+        componentsProps={{
+          paper: {
+            sx: {
+              textAlign: "left", // Align dropdown options to the left
+            },
+          },
+        }}
+        sx={{
+          "& .MuiOutlinedInput-root": {
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: props.borderColor, // default border color
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: props.borderColor, // focused border color
+            },
+          },
+        
+        }}
       />{" "}
     </div>
   );

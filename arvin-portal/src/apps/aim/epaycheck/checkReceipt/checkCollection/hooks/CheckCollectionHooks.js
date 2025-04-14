@@ -39,9 +39,9 @@ const CheckCollectionHooks = (props) => {
   const viewModal3        = useSelector((state) => state.EpayCheckReducer.viewModal3);
   const printData         = useSelector((state) => state.EpayCheckReducer.printData); 
   const dataListFormat    = useSelector((state) => state.EpayCheckReducer.dataListFormat); 
-  const selectedItem      = useSelector((state) => state.EpayCheckReducer.selectedItem); 
+  const selectedItem      = useSelector((state) => state.EpayCheckReducer.selectedItem);
   const banks             = useSelector((state) => state.ReferenceReducer.phbanks);
-  const bank_accounts     = useSelector((state) => state.ReferenceReducer.bank_accounts); 
+  const bank_accounts     = useSelector((state) => state.ReferenceReducer.bank_accounts)?.sort((a, b) => a.description.localeCompare(b.description)); 
   const receipt_code      = props.receipt_code
   const receipt_number    = props.receipt_number
   const receipt_description = props.receipt_description ?? ""

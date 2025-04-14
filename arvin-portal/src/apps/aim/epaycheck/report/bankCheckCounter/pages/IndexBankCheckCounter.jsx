@@ -4,11 +4,11 @@ import HomeIcon from "@mui/icons-material/Home";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 import { Grid } from "@mui/material";
 import * as React from "react";
-import BreadCrumbs from "components/breadCrumb/BreadCrumbs";
-import PageTitle from "components/pageTItle/PageTitle";
-import configure from "apps/configure/configure.json";
-import WeeklyCheckCounter from "./WeeklyCheckCounter";
-const title_page = "Weekly Check Counter";
+import BreadCrumbs from "../../../../../../components/breadCrumb/BreadCrumbs";
+import PageTitle from "../../../../../../components/pageTItle/PageTitle";
+import configure from "../../../../../configure/configure.json";
+import BankCheckCounter from "./BankCheckCounter";
+const title_page = "Bank Check Counter";
 const breadCrumbArray = [
   {
     name: "Home",
@@ -63,7 +63,7 @@ const breadCrumbArray = [
     ),
   },
 ];
-export default function IndexWeeklyCheckCounter() {
+export default function IndexBankCheckCounter() {
   return (
     <React.Fragment>
       <Grid container spacing={1}>
@@ -74,7 +74,7 @@ export default function IndexWeeklyCheckCounter() {
           <PageTitle title={title_page} />
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
-          <WeeklyCheckCounter />
+          <BankCheckCounter />
         </Grid>
       </Grid>
     </React.Fragment>

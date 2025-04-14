@@ -13,7 +13,9 @@ import {
   TableRow,
   Typography,
   useMediaQuery,
-  Checkbox 
+  Checkbox,
+  Box,
+  Chip
 } from "@mui/material";
 import React, { useState } from 'react';
 import { connect } from "react-redux";
@@ -40,6 +42,7 @@ let CheckCollection = (props) => {
   const amount          = check.state.invoice_list.reduce((a, b) => a + parseFloat(b.doctotal), null)
   const access          = check.access;
   const matches         = useMediaQuery("(min-width:600px)"); 
+  const borderColor     = "#ffcccc"
   props.dispatch(change(formName, "invoice_list", state?.invoice_list));
   props.dispatch(change(formName, "subsection_code", account.subsection_code));
   props.dispatch(change(formName, "amount", amount)); 
@@ -142,6 +145,7 @@ let CheckCollection = (props) => {
                       required={true}
                       readOnly={true}
                       onClick={check.onClickOpenCustomerModal}
+                      borderColor={borderColor}
                     />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={6}>
@@ -154,6 +158,7 @@ let CheckCollection = (props) => {
                           required={true}
                           readOnly={true}
                           onClick={check.onClickOpenCustomerModal}
+                          borderColor={borderColor}
                       />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={6}>
@@ -164,6 +169,7 @@ let CheckCollection = (props) => {
                         type="number"
                         component={InputField}
                         required={true}
+                        borderColor={borderColor}
                       />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={6}>
@@ -174,6 +180,7 @@ let CheckCollection = (props) => {
                         type="date"
                         component={InputField}
                         required={true}
+                        borderColor={borderColor}
                       />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={6}>
@@ -184,6 +191,7 @@ let CheckCollection = (props) => {
                         type="number"
                         component={InputField}
                         required={true}
+                        borderColor={borderColor}
                       />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={6}>
@@ -203,6 +211,8 @@ let CheckCollection = (props) => {
                                 props.change("bank_description", newValue.name);
                               }
                             }}
+                            disabled={true}
+                            borderColor={borderColor}
                         /> 
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={6}>
@@ -213,6 +223,7 @@ let CheckCollection = (props) => {
                         type="text"
                         component={InputField}
                         required={true}
+                        borderColor={borderColor}
                       />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={6}>
@@ -223,6 +234,7 @@ let CheckCollection = (props) => {
                           type="number"
                           component={InputField}
                           required={true}
+                          borderColor={borderColor}
                       />
                   </Grid> 
                   <Grid item xs={12} sm={12} md={6} lg={6}>
@@ -233,6 +245,7 @@ let CheckCollection = (props) => {
                           type="number"
                           component={InputField}
                           required={true}
+                          borderColor={borderColor}
                       />
                   </Grid> 
                   <Grid item xs={12} sm={12} md={6} lg={6}> 
@@ -264,6 +277,7 @@ let CheckCollection = (props) => {
                                    props.change("document_type", newValue.value);
                                  }
                                }}
+                               borderColor={borderColor}
                           />
                       </Grid> 
                       <Grid item xs={12} sm={12} md={6} lg={6}>  
@@ -282,6 +296,7 @@ let CheckCollection = (props) => {
                                props.change("prefix", newValue.prefix);
                              }
                            }}
+                           borderColor={borderColor}
                           />
                       </Grid>
                     </>

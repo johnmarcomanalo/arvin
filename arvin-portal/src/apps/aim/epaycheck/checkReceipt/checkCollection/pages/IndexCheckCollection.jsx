@@ -1,7 +1,7 @@
 import GroupIcon from "@mui/icons-material/Group";
 import HomeIcon from "@mui/icons-material/Home";
 import PaidIcon from '@mui/icons-material/Paid';
-import { Grid } from "@mui/material";
+import { Grid,Chip,Box,Typography,Stack,useMediaQuery } from "@mui/material";
 import configure from "apps/configure/configure.json";
 import BreadCrumbs from "components/breadCrumb/BreadCrumbs";
 import PageTitle from "components/pageTItle/PageTitle";
@@ -50,6 +50,7 @@ const breadCrumbArray = [
   },
 ];
 export default function IndexCheckCollection() {
+  const matches         = useMediaQuery("(min-width:600px)"); 
   return (
     <React.Fragment>
       <Grid container spacing={2}>
@@ -57,7 +58,21 @@ export default function IndexCheckCollection() {
           <BreadCrumbs breadCrumbs={breadCrumbArray} />
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
+        <Stack
+                  direction={matches ? "row" : "column"}
+                  alignItems={matches ? "center" : "flex-start"}
+                  justifyContent="space-between"
+                  spacing={1}
+                >
           <PageTitle title={title_page} />
+          <Box display="flex" alignItems="center" mb={3}>
+                    <Typography variant="subtitle2" sx={{ mr: 2 }}>
+                      Legend:
+                    </Typography>
+                    <Chip label="Required Field" sx={{ backgroundColor: '#ffdddd', mr: 1 }} />
+                    <Chip label="Optional Field" sx={{ backgroundColor: '#f0f0f0', mr: 1 }} />
+                  </Box>
+        </Stack>
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <CheckCollection />

@@ -30,7 +30,7 @@ const CheckReceiveHooks = (props) => {
     const selectedItem     = useSelector((state) => state.EpayCheckReducer.selectedItem); 
     const dataList         = useSelector((state) => state.EpayCheckReducer.dataList);
     const dataListCount    = useSelector((state) => state.EpayCheckReducer.dataListCount);
-    const viewModal        = useSelector((state) => state.EpayCheckReducer.viewModal);  
+    const viewModal        = useSelector((state) => state.EpayCheckReducer.viewModal);
     const editModal        = useSelector((state) => state.EpayCheckReducer.editModal); 
     const bank_accounts    = useSelector((state) => state.ReferenceReducer.bank_accounts); 
     const refresh          = useSelector((state) => state.EpayCheckReducer.refresh);

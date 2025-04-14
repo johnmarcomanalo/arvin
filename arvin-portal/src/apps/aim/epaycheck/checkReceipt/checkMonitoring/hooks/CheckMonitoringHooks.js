@@ -39,7 +39,7 @@ const CheckMonitoringHooks = (props) => {
     const viewModal2        = useSelector((state)=> state.EpayCheckReducer.viewModal2); 
     const editModal        = useSelector((state) => state.EpayCheckReducer.editModal); 
     const rejectCloseModal = useSelector((state) => state.EpayCheckReducer.rejectCloseModal); 
-    const bank_accounts    = useSelector((state) => state.ReferenceReducer.bank_accounts); 
+    const bank_accounts    = useSelector((state) => state.ReferenceReducer.bank_accounts)?.sort((a, b) => a.description.localeCompare(b.description));
     const refresh          = useSelector((state) => state.EpayCheckReducer.refresh);
     const selectedDataList = useSelector((state) => state.EpayCheckReducer.selectedDataList);
     const banks            = useSelector((state) => state.ReferenceReducer.phbanks); 
