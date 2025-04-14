@@ -6,7 +6,7 @@ const SearchField = (props) => {
   const {
     textHidden = true,
     autoFocus = true,
-    fullwidth = true,
+    fullwidth = false,
     ...param
   } = props;
   const inputRef = useRef(null);  // Create a reference for the TextField input
