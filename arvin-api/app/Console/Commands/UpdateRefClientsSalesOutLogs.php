@@ -26,7 +26,7 @@ class UpdateRefClientsSalesOutLogs extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Get Logs from SAP to update client tracker';
 
     /**
      * Create a new command instance.
@@ -45,7 +45,11 @@ class UpdateRefClientsSalesOutLogs extends Command
      */
     public function handle()
     {
-        return 0;
+           // Call the function to update sales daily out
+           $this->postRefClientsSalesOutLogs();
+        
+           // Add a message to indicate success
+           return 0;
     }
 
     public function postRefClientsSalesOutLogs()

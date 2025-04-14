@@ -77,7 +77,7 @@ use Illuminate\Support\Facades\Route;
     
     //MODULE SALES DAILY OUT START
 
-    //  Route::group(['middleware' => ['auth:sanctum']], function () {
+     Route::group(['middleware' => ['auth:sanctum']], function () {
         //REFERENCE
         // Route::apiResource('reference/companies',RefCompaniesController::class)->middleware(['light_decryption']);
          Route::post('/users/change-password',[AuthController::class, 'change_password'])->middleware(['light_decryption']);
@@ -276,7 +276,7 @@ use Illuminate\Support\Facades\Route;
        
         // EPAYCHECK END
 
-    // });
+    });
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return $request->user();
     });
