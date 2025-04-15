@@ -3191,6 +3191,11 @@
         "group": 1
     },
     {
+        "name": "Philippine Savings Bank (PSBANK)",
+        "type": "Philippine Savings Bank",
+        "group": 1
+    },
+    {
         "name": "Maya Bank, Inc. (Maya)",
         "type": "Digital Bank",
         "group": 5
