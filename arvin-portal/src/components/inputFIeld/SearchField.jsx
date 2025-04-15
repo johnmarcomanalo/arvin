@@ -19,7 +19,7 @@ const SearchField = (props) => {
   }, [autoFocus]);  // Only re-run if autoFocus prop changes
 
   return (
-    <div style={{ width: "100%" }}>
+    <div>
       {textHidden === false && (
         <Typography sx={{ fontSize: 15, visibility: "hidden" }} align="left">
           Search
