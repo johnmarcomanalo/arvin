@@ -14,7 +14,6 @@ class EPayCheckCheckDetails extends Model
 
     protected $guarded=[];
     protected $table = 'e_pay_check_check_details';
-    protected $primaryKey = 'code';
 
     public function setBankDescriptionAttribute($value)
     {

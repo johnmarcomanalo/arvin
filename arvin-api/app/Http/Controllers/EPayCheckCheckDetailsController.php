@@ -144,6 +144,7 @@ class EPayCheckCheckDetailsController extends Controller
                 unset($validatedData['invoice_list']);
             }
  
+ 
             // Create record for check details
             $resultData = EPayCheckCheckDetails::create($validatedData); 
     
@@ -151,7 +152,7 @@ class EPayCheckCheckDetailsController extends Controller
                 $codeLogs = MainController::generate_code('App\Models\EPayCheckCheckDetailLogs', "code");
                 $logFields = [
                     'code' => $codeLogs,
-                    'check_details_code' => $resultData['code'],
+                    'check_details_code' => $validatedData['code'],
                     'check_status' => $validatedData['check_status'],
                 ];
 
@@ -163,7 +164,7 @@ class EPayCheckCheckDetailsController extends Controller
             if (!$request->advance_payment) {
                 // Validate invoice_list if advance_payment is 'NO'
                 if (isset($request['invoice_list']) && count($request['invoice_list']) > 0) {
-                    $resultInvoices = EPayCheckCheckSalesInvoiceDetailsController::store_sales_invoice_details($request['invoice_list'], $resultData['code']);
+                    $resultInvoices = EPayCheckCheckSalesInvoiceDetailsController::store_sales_invoice_details($request['invoice_list'], $validatedData['code']);
                     if (!$resultInvoices) {
                         DB::rollBack();
                         $response = [
@@ -173,7 +174,7 @@ class EPayCheckCheckDetailsController extends Controller
                             'message' => 'Failed to save invoice list.'
                         ];
                         return Crypt::encryptString(json_encode($response));
-                    }
+                    } 
                 }
             }
      
