@@ -11,19 +11,12 @@ import { NumberToWords, ViewAmountFormatingDecimals } from "utils/AccountingUtil
 import PoppinsBold from "../../../../../../../utils/font/Poppins-Bold.ttf";
 import PoppinsRegular from "../../../../../../../utils/font/Poppins-Regular.ttf";
 import PoppinsSemiBoldItalic from "../../../../../../../utils/font/Poppins-SemiBoldItalic.ttf";
+import CourierPrimeRegular from "../../../../../../../utils/font/CourierPrime-Regular.ttf";
 // Register fonts
 Font.register({
-  family: "PoppinsRegular",
-  src: PoppinsRegular,
-});
-Font.register({
-  family: "PoppinsBold",
-  src: PoppinsBold,
-});
-Font.register({
-  family: "PoppinsSemiBoldItalic",
-  src: PoppinsSemiBoldItalic,
-});
+  family: "CourierPrimeRegular",
+  src: CourierPrimeRegular,
+}); 
 
 const fullWidth = 8.27 * 72; // A4 width in points
 const halfHeight = 11.69 * 72; // A4 height in points

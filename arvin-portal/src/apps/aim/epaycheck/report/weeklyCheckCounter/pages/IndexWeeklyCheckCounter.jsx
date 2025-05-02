@@ -3,10 +3,10 @@ import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import HomeIcon from "@mui/icons-material/Home";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 import { Grid } from "@mui/material";
-import * as React from "react";
+import configure from "apps/configure/configure.json";
 import BreadCrumbs from "components/breadCrumb/BreadCrumbs";
 import PageTitle from "components/pageTItle/PageTitle";
-import configure from "apps/configure/configure.json";
+import * as React from "react";
 import WeeklyCheckCounter from "./WeeklyCheckCounter";
 const title_page = "Weekly Check Counter";
 const breadCrumbArray = [

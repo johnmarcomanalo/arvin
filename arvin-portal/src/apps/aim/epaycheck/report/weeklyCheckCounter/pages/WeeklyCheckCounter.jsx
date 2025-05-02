@@ -1,40 +1,15 @@
 import {
   Grid,
   Stack,
-  useMediaQuery,
-  Table,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableContainer,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
+  useMediaQuery
 } from "@mui/material";
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  pdf,
-  PDFViewer,
-  Font,
-} from "@react-pdf/renderer";
-import { useTheme } from "@mui/material/styles";
 import * as React from "react";
-import { change, Field, formValueSelector, reduxForm } from "redux-form";
 import { connect } from "react-redux";
+import { Field, formValueSelector, reduxForm } from "redux-form";
 //component
-import TableComponent from "components/table/Table";
-import SearchField from "components/inputFIeld/SearchField";
-import InputField from "components/inputFIeld/InputField";
 import ComboBox from "components/autoComplete/AutoComplete";
+import InputField from "components/inputFIeld/InputField";
 import WeeklyCheckCounterHooks from "../hooks/WeeklyCheckCounterHooks";
-import moment from "moment";
-import configure from "apps/configure/configure.json";
 import ViewPrintWeeklyCheckReport from "../pages/components/ViewPrintWeeklyCheckReport";
 let formName = "WeeklyCheckCounter";
 const WeeklyCheckCounter = (props) => {

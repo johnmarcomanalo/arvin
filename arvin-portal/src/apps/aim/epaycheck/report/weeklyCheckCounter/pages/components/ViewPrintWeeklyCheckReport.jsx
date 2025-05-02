@@ -1,20 +1,18 @@
-import React, { useState, useEffect } from "react";
 import {
   Document,
+  Font,
   Page,
+  PDFViewer,
+  StyleSheet,
   Text,
   View,
-  StyleSheet,
-  PDFViewer,
-  Font,
 } from "@react-pdf/renderer";
-import PoppinsRegular from "../../../../../../../utils/font/Poppins-Regular.ttf";
-import PoppinsBold from "../../../../../../../utils/font/Poppins-Bold.ttf";
-import { ViewAmountFormatingDecimals } from 'utils/AccountingUtils'
-import PoppinsBoldItalic from "../../../../../../../utils/font/Poppins-BoldItalic.ttf";
-import PoppinsSemiBoldItalic from "../../../../../../../utils/font/Poppins-SemiBoldItalic.ttf";
-import { CircularProgress } from "@mui/material";
 import moment from "moment";
+import { useEffect, useState } from "react";
+import { ViewAmountFormatingDecimals } from 'utils/AccountingUtils';
+import PoppinsBold from "../../../../../../../utils/font/Poppins-Bold.ttf";
+import PoppinsRegular from "../../../../../../../utils/font/Poppins-Regular.ttf";
+import PoppinsSemiBoldItalic from "../../../../../../../utils/font/Poppins-SemiBoldItalic.ttf";
 // Register fonts
 Font.register({
   family: "PoppinsRegular",
@@ -36,18 +34,26 @@ const styles = StyleSheet.create({
     fontSize: 10, 
   },
   section: { marginBottom: 10 },
-  title: { fontSize: 10, fontWeight: "bold", marginBottom: 0, fontFamily: "PoppinsBold" },
-  subtitle: { fontSize: 7, fontWeight: "bold", marginBottom: 1,marginTop:7, fontFamily: "PoppinsBold" },
+  title: { fontSize: 11, fontWeight: "bold", marginBottom: 0, fontFamily: "PoppinsBold" },
+  subtitle: { fontSize: 9, fontWeight: "bold", marginBottom: 1,marginTop:7, fontFamily: "PoppinsBold" },
   headerGroup: { marginBottom: 2, textAlign: "left" },
-  headerText: { fontSize: 9, margin:1, fontFamily: "PoppinsRegular" },
-  table: { display: "flex", flexDirection: "column", border: "0.5px solid black", fontSize: 6 },
-  row: { flexDirection: "row", borderBottom: "0.5px solid black",fontWeight: "bold" },
-  cell: { padding: 2, borderRight: "0.5px solid black", flex: 1, textAlign: "left", fontSize: 6 },
-  smallCell: { flex: 0.3, padding: 2, borderRight: "0.5px solid black", textAlign: "left", fontSize: 6 },
+  headerText: { fontSize: 10, margin:1, fontFamily: "PoppinsRegular" },
+  table: { display: "flex", flexDirection: "column", 
+    // border: "0.5px solid black", 
+    fontSize: 9 },
+  row: { flexDirection: "row", 
+    // borderBottom: "0.5px solid black",
+    fontWeight: "bold" },
+  cell: { padding: 1.8, 
+    // borderRight: "0.5px solid black", 
+    flex: 1, textAlign: "left", fontSize: 7.5 },
+  smallCell: { flex: 0.3, padding: 1, 
+    // borderRight: "0.5px solid black", 
+    textAlign: "left", fontSize: 7.5 },
   footer: {
     marginTop: 15,
     paddingBottom:15,
-    padding: 1,
+    padding: 1.8,
     borderBottom: "1px solid #000",
     // backgroundColor: "#f5f5f5",
     width: "20%",
@@ -58,18 +64,30 @@ const styles = StyleSheet.create({
     marginBottom: 1,
   },
   footerLabel: {
-    fontSize: 8,
+    fontSize: 10,
     fontFamily: "PoppinsBold",
     color: "black",
   },
   footerValue: {
-    fontSize: 8,
+    fontSize: 10,
     fontFamily: "PoppinsBold",
     color: "black",
   },
   footerDivider: {
     borderBottom: "1px solid black",
     marginVertical: 4,
+  },
+
+  footerHighlight: {
+    borderBottom: "1px solid black",
+    borderTop: "1px solid black",
+    marginVertical: 5,
+    padding:1
+  },
+  footerHighlightTop: { 
+    borderTop: "1px solid black",
+    marginVertical: 5,
+    padding:1
   },
 });
 
@@ -78,7 +96,7 @@ const headers = [
   {id:"created_at",description:"POSTING DATE"},
   {id:"check_date",description:"CHECK DATE"},
   {id:"check_status_date",description:"DATE DEP/TRANS"},
-  {id:"check_number",description:"CHECK NUMBER"}, 
+  {id:"check_number",description:"CHECK NO."}, 
   {id:"bank_description",description:"BANK NAME"},
   {id:"card_name",description:"CUSTOMER"}, 
   {id:"prefix_crpr",description:"OR/PR"}, 
@@ -94,6 +112,17 @@ const Table = ({ title, data }) => {
   if (!data || typeof data !== "object") {
     return null; // Prevent rendering if data is undefined or not an object
   }
+
+  // Compute grand totals from all rows
+  const allRows = Object.values(data).flat();
+  const grandCheckAmount = allRows.reduce(
+    (total, row) => total + (parseFloat(row.check_amount) || 0),
+    0
+  );
+  const grandDocTotal = allRows.reduce(
+    (total, row) => total + (parseFloat(row.sum_doc_total) || 0),
+    0
+  );
 
   return (
     <View style={styles.section}>
@@ -126,23 +155,55 @@ const Table = ({ title, data }) => {
                     ))}
                   </View>
                 ))}
-              {/* <View style={styles.row}> 
-                <Text style={[styles.smallCell]}></Text>
-                <Text style={[styles.smallCell]}></Text>
-                <Text style={[styles.smallCell]}></Text>
-                <Text style={[styles.smallCell]}></Text>
-                <Text style={[styles.smallCell]}></Text>
-                <Text style={[styles.cell]}>TOTAL: </Text>
-                <Text style={styles.cell}>
+              <View style={styles.row}> 
+                <Text style={[styles.smallCell,styles.footerHighlightTop]}>NO OF CHECKS</Text>
+                <Text style={[styles.smallCell,styles.footerHighlightTop]}>{rows.length}</Text>
+                {[1, 2 ].map((_, index) => (
+                  <Text key={index} style={[styles.smallCell]}> </Text>
+                ))}
+                {[1, 2].map((_, index) => (
+                  <Text key={index} style={[styles.cell]}>.</Text>
+                ))} 
+                <Text style={[styles.smallCell,styles.footerHighlightTop]}>TOTAL</Text> 
+                <Text style={[styles.smallCell,styles.footerHighlightTop]}>
                   {ViewAmountFormatingDecimals(
                     rows.reduce((total, row) => total + (parseFloat(row.check_amount) || 0), 0)
                   ,4)}
                 </Text> 
-                <Text style={[styles.cell]}></Text>
-                <Text style={[styles.smallCell]}></Text>
-              </View> */}
+                <Text style={[styles.smallCell,styles.footerHighlightTop]}>
+                  {ViewAmountFormatingDecimals(
+                    rows.reduce((total, row) => total + (parseFloat(row.sum_doc_total) || 0), 0)
+                  ,4)}
+                </Text>
+                {[1, 2].map((_, index) => (
+                  <Text key={index} style={[styles.smallCell]}> </Text>
+                ))}
+              </View>
             </View>
           ))}
+
+
+          {/* Grand Total Row */}
+          <View style={[styles.row]}>
+          <Text style={[styles.smallCell,styles.footerHighlight]}>NO OF CHECKS</Text>
+          <Text style={[styles.smallCell,styles.footerHighlight]}>{allRows.length}</Text>
+            {[1, 2,].map((_, index) => (
+              <Text key={`g1-${index}`} style={styles.smallCell}></Text>
+            ))}
+            {[1, 2].map((_, index) => (
+              <Text key={`g2-${index}`} style={styles.cell}></Text>
+            ))}
+             <Text style={[styles.smallCell,styles.footerHighlight]}>GRAND TOTAL</Text>
+            <Text style={[styles.smallCell,styles.footerHighlight]}>
+              {ViewAmountFormatingDecimals(grandCheckAmount, 4)}
+            </Text>
+            <Text style={[styles.smallCell,styles.footerHighlight]}>
+              {ViewAmountFormatingDecimals(grandDocTotal, 4)}
+            </Text>
+            {[1, 2].map((_, index) => (
+              <Text key={`g3-${index}`} style={styles.smallCell}></Text>
+            ))}
+          </View>
         </>
       )}
     </View>
@@ -194,8 +255,8 @@ const Summary = ({data})=>{
     </View>)
 }
 
-const pageWidth = 8.5 * 72; // Convert inches to points
-const pageHeight = 13 * 72; // Convert inches to points
+const pageWidth = 13 * 72;   // 936 pt
+const pageHeight = 8.5 * 72; // 612 pt
 
 const ViewPrintWeeklyCheckReport = (props) => {
   const [loading, setLoading] = useState(true);
@@ -244,7 +305,7 @@ const ViewPrintWeeklyCheckReport = (props) => {
         )}
        <PDFViewer style={{ width: "100%", height: 900 }}>
       <Document>
-        <Page size={[pageWidth, pageHeight]} style={styles.page} orientation="landscape" wrap>
+        <Page size="FOLIO" orientation="landscape" style={styles.page}   wrap>
           {/* Header Group */}
           <View style={styles.headerGroup}>
             <Text style={styles.title}>{header_title}</Text>
@@ -253,9 +314,9 @@ const ViewPrintWeeklyCheckReport = (props) => {
           </View>
   
           {/* Tables */}
-          <Table title="ON-HAND" data={onhand_data} />
           <Table title="DEPOSITED" data={deposited_data}/>
           <Table title="TRANSMITTED" data={transmitted_data}/>
+          <Table title="ON-HAND" data={onhand_data} />
           <Table title="REJECTED" data={rejected_data} />
   
           {/* Footer */}
