@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Crypt;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 
 class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
 {
@@ -124,9 +125,10 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
 
             $subgroups = SalesDailyOutSettingsClientSubGroups::where('sales_daily_out_settings_client_groups_code',$fields['sales_daily_out_settings_client_group_code'])->get();
                 
-            $card_codes =  $subgroups->pluck('customer_code')->implode("','");
+            $card_codes =  $subgroups->pluck('customer_code')->implode(",");
                 
-            $records = DB::select("exec dbo.sales_daily_out_delivery_return_cm_client_based_v2 ?,?,?,?",array($fields["year_sales_target"],"'".$card_codes."'",$fields["ref_product_groups_description"],$fields["subsection"]));
+            // $records = DB::select("exec dbo.sales_daily_out_delivery_return_cm_client_based_v2 ?,?,?,?",array($fields["year_sales_target"],"'".$card_codes."'",$fields["ref_product_groups_description"],$fields["subsection"]));
+            $records = DB::select("exec dbo.sales_daily_out_delivery_return_cm_client_based_v2 ?,?,?,?",array($fields["year_sales_target"],"".$card_codes."",$fields["ref_product_groups_description"],$fields["subsection"]));
                 
             if(!empty($records)){
                 $salesDailyOutClientSalesTrackersController->insert_sap_client_sales_tracker(
@@ -405,9 +407,11 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
 
     public function do_show($id = null) {
         if (isset($id)) {
-            $data = SalesDailyOutSettingsAnnualQuotaClientGroups::where('code', '=', $id)->get();
+            $data = SalesDailyOutSettingsAnnualQuotaClientGroups::join('ref_product_groups', 'sales_daily_out_settings_annual_quota_client_groups.ref_product_groups_code', '=', 'ref_product_groups.code')
+            ->where('sales_daily_out_settings_annual_quota_client_groups.code', '=', $id)->get();
         } else {
-            $data = SalesDailyOutSettingsAnnualQuotaClientGroups::all();
+            $data = SalesDailyOutSettingsAnnualQuotaClientGroups::join('ref_product_groups', 'sales_daily_out_settings_annual_quota_client_groups.ref_product_groups_code', '=', 'ref_product_groups.code')
+            ->all();
         }
         if ($data->isEmpty()) {
             $data = array();
@@ -416,18 +420,159 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
     }
 
     public function get_quota_day($sales_date, $quota) 
-{
-    $carbonDate = Carbon::parse($sales_date);
-    $month = $carbonDate->month;
-    $year = $carbonDate->year;
+    {
+        $carbonDate = Carbon::parse($sales_date);
+        $month = $carbonDate->month;
+        $year = $carbonDate->year;
 
-    // Create a Carbon instance for the first day of the month
-    $date = Carbon::create($year, $month, 1);
+        // Create a Carbon instance for the first day of the month
+        $date = Carbon::create($year, $month, 1);
 
-    // Get the number of days in the month
-    $daysInMonth = $date->daysInMonth;
+        // Get the number of days in the month
+        $daysInMonth = $date->daysInMonth;
 
-    // Calculate and return the quota per total days in the month (including Sundays)
-    return $quota / $daysInMonth;
-}
+        // Calculate and return the quota per total days in the month (including Sundays)
+        return $quota / $daysInMonth;
+    }
+
+    public function refresh_annual_group_client_out(Request $request){
+        $fields = $request->validate([
+            'code' => 'required',
+        ]);
+        try {
+            DB::beginTransaction();
+
+            $salesDailyOutClientSalesTrackersController = new SalesDailyOutClientSalesTrackersController();
+            $refClientsSalesOutLogsController = new RefClientsSalesOutLogsController();
+
+            $quota_data = SalesDailyOutSettingsAnnualQuotaClientGroups::
+                join('ref_product_groups', 'sales_daily_out_settings_annual_quota_client_groups.ref_product_groups_code', '=', 'ref_product_groups.code')
+                ->where('sales_daily_out_settings_annual_quota_client_groups.code',$fields['code'])
+                ->first([
+                    'sales_daily_out_settings_annual_quota_client_groups.code',
+                    'sales_daily_out_settings_annual_quota_client_groups.sales_daily_out_settings_client_group_code',
+                    'sales_daily_out_settings_annual_quota_client_groups.year_sales_target',
+                    'sales_daily_out_settings_annual_quota_client_groups.type',
+                    'sales_daily_out_settings_annual_quota_client_groups.subsection',
+                    'ref_product_groups.description as ref_product_groups_description',
+                ]);
+
+            if(!empty($quota_data)){
+                $subgroups = SalesDailyOutSettingsClientSubGroups::where('sales_daily_out_settings_client_groups_code', $quota_data->sales_daily_out_settings_client_group_code)->get();
+                $card_codes =  $subgroups->pluck('customer_code')->implode(",");
+                $records = DB::select("exec dbo.sales_daily_out_delivery_return_cm_client_based_v2 ?,?,?,?", [
+                    $quota_data->year_sales_target,
+                    $card_codes,
+                    $quota_data->ref_product_groups_description,
+                    $quota_data->subsection
+                ]);
+            }
+
+            if(!empty($records)){
+                DB::statement("EXEC dbo.ResetSalesDailyOutClientSalesTrackers ?", [$fields['code']]);
+
+                $salesDailyOutClientSalesTrackersController->insert_sap_client_sales_tracker(
+                    $quota_data->year_sales_target,
+                    $fields['code'],
+                    json_encode($records),
+                    $quota_data->type,
+                    $quota_data->subsection,
+                );
+
+                $refClientsSalesOutLogsController->updateRefClientsSalesOutLogs(json_encode($records));//update logs
+            }
+
+            DB::commit();
+
+            return response([
+                'message' => 'Sales updated successfully',
+                'result' => true,
+                'status' => 'success',
+                'title' => 'Success',
+            ], 200); 
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback transaction on error
+            return response([
+                'message' => 'An error occurred: ' . $e->getMessage(),
+                'result' => false,
+                'status' => 'error',
+                'title' => 'Error',
+            ], 500);
+        }
+    }
+
+    public function update_annual_quota_client_group(Request $request){
+        $fields = $request->validate([
+            'code' => 'required',
+            'annual_sales_target' => 'required|numeric|min:1',
+            'january_sales_target' => 'required|numeric|min:1',
+            'february_sales_target' => 'required|numeric|min:1',
+            'march_sales_target' => 'required|numeric|min:1',
+            'april_sales_target' => 'required|numeric|min:1',
+            'may_sales_target' => 'required|numeric|min:1',
+            'june_sales_target' => 'required|numeric|min:1',
+            'july_sales_target' => 'required|numeric|min:1',
+            'august_sales_target' => 'required|numeric|min:1',
+            'september_sales_target' => 'required|numeric|min:1',
+            'october_sales_target' => 'required|numeric|min:1',
+            'november_sales_target' => 'required|numeric|min:1',
+            'december_sales_target' => 'required|numeric|min:1',
+        ]);
+        try {
+            DB::beginTransaction();
+
+            $quota_data = SalesDailyOutSettingsAnnualQuotaClientGroups::where('code',$fields['code'])->first();
+
+            $months = [
+                'january', 'february', 'march', 'april', 'may', 'june',
+                'july', 'august', 'september', 'october', 'november', 'december'
+            ];
+
+            $monthlyTargets = [];
+            $annualTotal = 0;
+
+            foreach ($months as $month) {
+                $key = "{$month}_sales_target";
+                $value = $fields[$key] ?? 0;
+                $monthlyTargets[$key] = $value;
+                $annualTotal += $value;
+            }
+            
+            $quota_data->update([
+                    'annual_sales_target' =>  $annualTotal,
+                    'january_sales_target' => $fields['january_sales_target'],
+                    'february_sales_target' => $fields['february_sales_target'],
+                    'march_sales_target' => $fields['march_sales_target'],
+                    'april_sales_target' => $fields['april_sales_target'],
+                    'may_sales_target' => $fields['may_sales_target'],
+                    'june_sales_target' => $fields['june_sales_target'],
+                    'july_sales_target' => $fields['july_sales_target'],
+                    'august_sales_target' => $fields['august_sales_target'],
+                    'september_sales_target' => $fields['september_sales_target'],
+                    'october_sales_target' => $fields['october_sales_target'],
+                    'november_sales_target' => $fields['november_sales_target'],
+                    'december_sales_target' => $fields['december_sales_target'],
+                    'updated_at' => now(),
+            ]);
+
+
+
+            DB::commit();
+
+            return response([
+                'message' => 'Sales updated successfully',
+                'result' => true,
+                'status' => 'success',
+                'title' => 'Success',
+            ], 200); 
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback transaction on error
+            return response([
+                'message' => 'An error occurred: ' . $e->getMessage(),
+                'result' => false,
+                'status' => 'error',
+                'title' => 'Error',
+            ], 500);
+        }
+    }
 }

@@ -7,11 +7,12 @@ import { Constants } from "../../../../../reducer/Contants";
 import { useDebounce } from "../../../../../utils/HelperUtils";
 import { decryptaes } from "../../../../../utils/LightSecurity";
 import {
-  getAnnualSettingSale,
-  getMonthlyAndDailyQoutaByTargetAnnualSales,
-  ViewSalesQuota,
   getAnnualSettingSaleClientGroups,
+  getMonthlyAndDailyQoutaByTargetAnnualSales,
+  RefreshAnnualGroupClientOut,
+  ViewSalesQuota,
 } from "../actions/AnnualSalesQoutaClientGroupsActions";
+import swal from "sweetalert";
 const AnnualSalesQoutaHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
   const [state, setState] = React.useState({
@@ -33,8 +34,8 @@ const AnnualSalesQoutaHooks = (props) => {
 
   const dispatch = useDispatch();
   const addModal = useSelector((state) => state.SalesDailyOutReducer.addModal);
-  const editModal = useSelector(
-    (state) => state.SalesDailyOutReducer.editModal
+  const updateModal = useSelector(
+    (state) => state.SalesDailyOutReducer.updateModal
   );
   const dataList = useSelector((state) => state.SalesDailyOutReducer.dataList);
   const dataListCount = useSelector(
@@ -205,24 +206,38 @@ const AnnualSalesQoutaHooks = (props) => {
   //   return () => cancelRequest();
   // }, []);
 
-  const onClickOpenEditModal = (data) => {
-    const response = dispatch(ViewSalesQuota(data.code));
-    response.then((res) => {
-      let sales_date = decryptaes(res.data);
-      dispatch({
-        type: Constants.ACTION_SALES_DAILY_OUT,
-        payload: {
-          selectedDataList: sales_date,
-          editModal: true,
-        },
+  const onClickUpdateClientOut = async (data) => {
+    try {
+      let formValues = {
+        code: data.code,
+      };
+      const isConfirm = await swal({
+        title:
+          "This quota will be updated from SAP. Any changes you’ve made will be overwritten.",
+        text: "Are you sure you want to submit?",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
       });
-    });
+      if (isConfirm) {
+        const response = await dispatch(
+          RefreshAnnualGroupClientOut(formValues)
+        );
+        let res = response.data;
+        await swal(res.title, res.message, res.status, {
+          buttons: false,
+          timer: 2000,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
-  const onClickCloseEditModal = () => {
+  const onClickCloseUpdateModal = () => {
     dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {
-        editModal: false,
+        updateModal: false,
       },
     });
   };
@@ -240,7 +255,7 @@ const AnnualSalesQoutaHooks = (props) => {
     account_details,
     product_group_category,
     sections,
-    editModal,
+    updateModal,
     active_page,
     handleChangeRowsPerPage,
     handleChangePage,
@@ -251,8 +266,8 @@ const AnnualSalesQoutaHooks = (props) => {
     onClickCloseAddModal,
     GetMonthlyAndDailyQoutaByAnnualQouta,
     onChangeFilter,
-    onClickOpenEditModal,
-    onClickCloseEditModal,
+    onClickUpdateClientOut,
+    onClickCloseUpdateModal,
   };
 };
 

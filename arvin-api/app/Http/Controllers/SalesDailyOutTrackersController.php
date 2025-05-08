@@ -72,7 +72,7 @@ class SalesDailyOutTrackersController extends Controller
     public function destroy(SalesDailyOutTrackers $salesDailyOutTrackers){
         //
     }
-    public function insert_sap_sales_daily_out($product_groups_description,$year_sales_target,$ref_sub_section_type,$settings_annual_quota_code) { 
+    public function insert_sap_sales_daily_out($product_groups_description,$year_sales_target,$ref_sub_section_type,$settings_annual_quota_code, $record_data) { 
         $salesDailyOutsController = new SalesDailyOutsController();
         $sub_section = RefSubSections::where('type', $ref_sub_section_type)->first();
         $sub_section_annual_settings_sales = SalesDailyOutSettingsAnnualQuota::where('code', $settings_annual_quota_code)->first();
@@ -84,7 +84,8 @@ class SalesDailyOutTrackersController extends Controller
             ->whereNull('deleted_at')
             ->get();
 
-        return $records = collect(DB::select("SET NOCOUNT ON exec dbo.sp_sales_daily_out_delivery_return_cm_v3 ?,?,?",array($product_groups_description,$year_sales_target,$ref_sub_section_type)));
+        $records = $record_data;
+        // $records = collect(DB::select("SET NOCOUNT ON exec dbo.sp_sales_daily_out_delivery_return_cm_v3 ?,?,?",array($product_groups_description,$year_sales_target,$ref_sub_section_type)));
         // Step 2: Process records to add Sunday's QtyInKg to Monday's QtyInKg
        
         $recordsByDate = [];
