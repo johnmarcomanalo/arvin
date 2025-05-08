@@ -387,106 +387,126 @@ class EPayCheckCheckDetailsController extends Controller
     }
      
     public function get_check_details(Request $request)
-    { 
- 
-        $customMessages = [
-            'dt.after_or_equal' => 'The selected end date must be the same as or later than the start date.',
-            'df.date_format'    => 'The start date must be in YYYY-MM-DD format.',
-            'dt.date_format'    => 'The end date must be in YYYY-MM-DD format.',
-        ];
-        $validator = Validator::make($request->all(), [
-            'q'  => ['nullable','string'],
-            's'  => ['nullable','string'],
-            'p'  => ['nullable','integer','min:1'],
-            'df' => ['required', 'date', 'date_format:Y-m-d'],
-            'dt' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:df'], 
-            'sc' => ['required', 'string'],
-        ], $customMessages); // Pass custom messages here
-        
-        if ($validator->fails()) {
-            return response()->json([
-                'result'  => false,
-                'status'  => 'warning',
-                'title'   => 'Error',
-                'message' => $validator->errors()->first(),
-            ], 422);
-        }
-        
-        $validated = $validator->validated();
-    
-        $query  = $validated['q']  ?? '';
-        $status = $validated['s'];
-        $page   = $validated['p']  ?? 1;
-        $df     = $validated['df'];
-        $dt     = $validated['dt'];
-        $sc     = $validated['sc']; 
-        
-       $check_details =  DB::table('vw_epay_check_get_check_details')
-        ->when($query, function ($q) use ($query) {
-            $q->where(function ($subQuery) use ($query) {
-                $subQuery
-                    ->where('card_name', 'like', "%{$query}%")
-                    ->orWhere('card_code', 'like', "%{$query}%")
-                    ->orWhere('bank_description', 'like', "%{$query}%")
-                    ->orWhere('bank_branch', 'like', "%{$query}%") 
-                    ->orWhereRaw("CAST(check_amount AS VARCHAR) LIKE ?", ["%{$query}%"])
-                    ->orWhere('check_number', 'like', "%{$query}%");
-            });
-        }) 
-        ->when(in_array($status, ['DEPOSITED', 'TRANSMITTED','REJECTED']), function ($q) use ($df, $dt) {
-            $q->whereBetween(DB::raw("CAST(check_status_date AS DATE)"), [$df, $dt]);
-        })
-        ->where('check_status', $status)
-        // ->whereIn('request_status',['APPROVED','NONE'])
-        ->where('subsection_code', $sc)
-        ->paginate(10, ['*'], 'page', $page);
-    
-        
-        $requests = [];
+{ 
 
-        foreach ($check_details as $value) { 
-            $requests[] = [
-                'code'                 => $value->code,
-                'advance_payment'      => $value->advance_payment, 
-                'bank_branch'          => $value->bank_branch,
-                'bank_description'     => $value->bank_description,
-                'crpr'                 => $value->crpr,
-                'check_amount'         => $value->check_amount,
-                'check_amount_display' => number_format($value->check_amount, 4),
-                'check_date'           => Carbon::parse($value->check_date)->format('Y-m-d'),
-                'check_number'         => $value->check_number,
-                'check_status'         => $value->check_status,
-                'check_status_date'    => Carbon::parse($value->check_status_date)->format('Y-m-d'),
-                'card_code'            => $value->card_code,
-                'card_name'            => $value->card_name,
-                'prefix_crpr'          => $value->prefix_crpr,
-                'remarks'              => $value->remarks,
-                'subsection_code'      => $value->subsection_code,
-                'account_number'       => $value->account_number,
-                'created_at'           => Carbon::parse($value->created_at)->format('Y-m-d'),
-                'received_date'        => $value->received_date ? Carbon::parse($value->received_date)->format('Y-m-d') : null, 
-                'status'               => $value->check_status === 'REJECTED' ? (($value->rejected_status)?'CLOSED': 'OPEN' ): $value->check_status,
-                'stale_check_view'     => $value->stale_check? 'YES' : 'NO',
-                'stale_check'          => $value->stale_check,
-                'sales_invoice'        => $value->sales_invoice,
-                'dr_number'            => $value->dr_number
-            ];
-        }
-        
-        
-           $response = [
-                'dataList'      => $requests,
-                'dataListCount' => $check_details->total(),
-                'currentPage'   => $check_details->currentPage(),
-                'perPage'       => $check_details->perPage(),
-                'result'        => true,
-                'title'         => 'Success',
-                'status'        => 'success',
-                'message'       => 'Fetched successfully.',
-            ];
-        
-            return Crypt::encryptString(json_encode($response));
+    $customMessages = [
+        'dt.after_or_equal' => 'The selected end date must be the same as or later than the start date.',
+        'df.date_format'    => 'The start date must be in YYYY-MM-DD format.',
+        'dt.date_format'    => 'The end date must be in YYYY-MM-DD format.',
+    ];
+    $validator = Validator::make($request->all(), [
+        'q'  => ['nullable','string'],
+        's'  => ['nullable','string'],
+        'p'  => ['nullable','integer','min:1'],
+        'df' => ['required', 'date', 'date_format:Y-m-d'],
+        'dt' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:df'], 
+        'sc' => ['required', 'string'],
+    ], $customMessages); // Pass custom messages here
+
+    $sortColumn = $request->query('sort_by', 'check_status_date'); // Default column to sort by
+    $sortDirection = strtolower($request->query('order', 'asc')) === 'desc' ? 'desc' : 'asc';
+    
+    if ($validator->fails()) {
+        return response()->json([
+            'result'  => false,
+            'status'  => 'warning',
+            'title'   => 'Error',
+            'message' => $validator->errors()->first(),
+        ], 422);
     }
+    
+    $validated = $validator->validated();
+
+    $query  = $validated['q']  ?? '';
+    $status = $validated['s'];
+    $page   = $validated['p']  ?? 1;
+    $df     = $validated['df'];
+    $dt     = $validated['dt'];
+    $sc     = $validated['sc']; 
+    
+   $check_details =  DB::table('vw_epay_check_get_check_details')
+    ->when($query, function ($q) use ($query) {
+        $q->where(function ($subQuery) use ($query) {
+            $subQuery
+                ->where('card_name', 'like', "%{$query}%")
+                ->orWhere('card_code', 'like', "%{$query}%")
+                ->orWhere('bank_description', 'like', "%{$query}%")
+                ->orWhere('bank_branch', 'like', "%{$query}%") 
+                ->orWhereRaw("CAST(check_amount AS VARCHAR) LIKE ?", ["%{$query}%"])
+                ->orWhere('check_number', 'like', "%{$query}%")
+                ->orWhere('prefix_crpr', 'like', "%{$query}%");
+        });
+    }) 
+    ->when(in_array($status, ['DEPOSITED', 'TRANSMITTED','REJECTED']), function ($q) use ($df, $dt) {
+        $q->whereBetween(DB::raw("CAST(check_status_date AS DATE)"), [$df, $dt]);
+    })
+    ->where('check_status', $status)
+    // ->whereIn('request_status',['APPROVED','NONE'])
+    ->where('subsection_code', $sc)
+    ->get(); // Get all data (without pagination)
+
+    // Convert to Collection
+    $collection = collect($check_details);
+    
+    // Apply sorting
+    if ($sortDirection === 'desc') {
+        $collection = $collection->sortByDesc($sortColumn);
+    } else {
+        $collection = $collection->sortBy($sortColumn);
+    }
+
+    // Get total count after filtering
+    $total = $collection->count();
+    
+    // Apply manual pagination
+    $limit = 10;
+    $paginatedData = $collection->slice(($page - 1) * $limit, $limit)->values();
+    
+    $requests = [];
+    foreach ($paginatedData  as $value) { 
+        $requests[] = [
+            'code'                 => $value->code,
+            'advance_payment'      => $value->advance_payment, 
+            'bank_branch'          => $value->bank_branch,
+            'bank_description'     => $value->bank_description,
+            'crpr'                 => $value->crpr,
+            'check_amount'         => $value->check_amount,
+            'check_amount_display' => number_format($value->check_amount, 4),
+            'check_date'           => Carbon::parse($value->check_date)->format('Y-m-d'),
+            'check_number'         => $value->check_number,
+            'check_status'         => $value->check_status,
+            'check_status_date'    => Carbon::parse($value->check_status_date)->format('Y-m-d'),
+            'card_code'            => $value->card_code,
+            'card_name'            => $value->card_name,
+            'prefix_crpr'          => $value->prefix_crpr,
+            'remarks'              => $value->remarks,
+            'subsection_code'      => $value->subsection_code,
+            'account_number'       => $value->account_number,
+            'created_at'           => Carbon::parse($value->created_at)->format('Y-m-d'),
+            'received_date'        => $value->received_date ? Carbon::parse($value->received_date)->format('Y-m-d') : null, 
+            'status'               => $value->check_status === 'REJECTED' ? (($value->rejected_status)?'CLOSED': 'OPEN' ): $value->check_status,
+            'stale_check_view'     => $value->stale_check? 'YES' : 'NO',
+            'stale_check'          => $value->stale_check,
+            'sales_invoice'        => $value->sales_invoice,
+            'dr_number'            => $value->dr_number,
+            'deposited_bank'       => $value->deposited_bank
+        ];
+    }
+    
+    
+       $response = [
+            'dataList'      => $requests,
+            'dataListCount' => $total,
+            'currentPage'   => $page,
+            'perPage'       => $limit,
+            'result'        => true,
+            'title'         => 'Success',
+            'status'        => 'success',
+            'message'       => 'Fetched successfully.',
+        ];
+    
+        return Crypt::encryptString(json_encode($response));
+}
 
     public function update_check_status(Request $request)
     {

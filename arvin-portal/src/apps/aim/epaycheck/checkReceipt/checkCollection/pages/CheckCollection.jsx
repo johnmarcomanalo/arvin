@@ -206,9 +206,9 @@ let CheckCollection = (props) => {
                             }
                             required={true}
                             component={ComboBox}
-                            onChangeHandle={(e, newValue) => {
-                              if (newValue?.name) {
-                                props.change("bank_description", newValue.name);
+                            onChangeHandle={(e, newValue) => { 
+                              if (newValue?.shortname) {
+                                props.change("bank_description", newValue.shortname);
                               }
                             }}
                             disabled={true}
