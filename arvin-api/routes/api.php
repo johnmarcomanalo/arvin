@@ -76,7 +76,7 @@ use Illuminate\Support\Facades\Route;
     
     //MODULE SALES DAILY OUT START
 
-    //  Route::group(['middleware' => ['auth:sanctum']], function () {
+     Route::group(['middleware' => ['auth:sanctum']], function () {
         //REFERENCE
         // Route::apiResource('reference/companies',RefCompaniesController::class)->middleware(['light_decryption']);
          Route::post('/users/change-password',[AuthController::class, 'change_password'])->middleware(['light_decryption']);
@@ -213,6 +213,7 @@ use Illuminate\Support\Facades\Route;
 
 
         // Sales Daily Out Settings Annual Quota Client Groups START
+        Route::post('salesdailyout/settings_quota_groups/refresh_annual_group_client_out',[SalesDailyOutSettingsAnnualQuotaClientGroupsController::class,'refresh_annual_group_client_out'])->middleware(['light_decryption']);//for pagination
         Route::get('salesdailyout/settings_quota_groups/annual_quota_client_groups',[SalesDailyOutSettingsAnnualQuotaClientGroupsController::class,'annual_quota_client_groups']);//for pagination
         Route::apiResource('salesdailyout/settings_quota_groups',SalesDailyOutSettingsAnnualQuotaClientGroupsController::class)->middleware(['light_decryption']);
         // Sales Daily Out Settings Annual Quota Client Groups END
@@ -264,7 +265,7 @@ use Illuminate\Support\Facades\Route;
 
         // EPAYCHECK END
 
-    // });
+    });
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return $request->user();
     });

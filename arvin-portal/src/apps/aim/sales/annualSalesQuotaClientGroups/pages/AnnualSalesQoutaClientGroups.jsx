@@ -1,4 +1,4 @@
-import EditIcon from "@mui/icons-material/Edit";
+import SyncIcon from "@mui/icons-material/Sync";
 import { Grid, IconButton, Stack, Tooltip, useMediaQuery } from "@mui/material";
 import moment from "moment";
 import * as React from "react";
@@ -13,6 +13,7 @@ import Table from "components/table/Table";
 import configure from "apps/configure/configure.json";
 import AnnualSalesQoutaClientGroupsHooks from "../hooks/AnnualSalesQoutaClientGroupsHooks";
 import AddAnnualSalesQoutaClientGroups from "./components/AddAnnualSalesQoutaClientGroups";
+import UpdateAnnualSalesQoutaClientGroups from "./components/UpdateAnnualSalesQoutaClientGroups";
 const formName = "AnnualSalesQoutaClientGroups";
 let AnnualSalesQoutaClientGroups = (props) => {
   const { ...annualSalesQuotaClientGroups } =
@@ -33,14 +34,14 @@ let AnnualSalesQoutaClientGroups = (props) => {
         <AddAnnualSalesQoutaClientGroups />
       </Modal>
       <Modal
-        open={annualSalesQuotaClientGroups?.editModal}
+        open={annualSalesQuotaClientGroups?.updateModal}
         fullScreen={matches ? false : true}
-        title={"Edit Monthly Sale Quota"}
+        title={"Update from SAP"}
         size={"xs"}
         action={undefined}
-        handleClose={annualSalesQuotaClientGroups.onClickCloseEditModal}
+        handleClose={annualSalesQuotaClientGroups.onClickCloseUpdateModal}
       >
-        {/* <EditMonthlySaleQuota /> */}
+        <UpdateAnnualSalesQoutaClientGroups />
       </Modal>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -120,7 +121,7 @@ let AnnualSalesQoutaClientGroups = (props) => {
               annualSalesQuotaClientGroups.handleChangeRowsPerPage
             }
             onSelectItem={annualSalesQuotaClientGroups.onSelectItem}
-            id={"home_attendance"}
+            id={"AnnualSalesQoutaClientGroups"}
             localStorage={""}
             rowCount={annualSalesQuotaClientGroups.dataListCount}
             actionshow={active_page.update === "1" ? true : false}
@@ -129,11 +130,11 @@ let AnnualSalesQoutaClientGroups = (props) => {
             subAction2Show={active_page.update === "1" ? true : false}
             action={(row) => {
               return (
-                <Tooltip title="Edit">
+                <Tooltip title="Update">
                   <IconButton size="small">
-                    <EditIcon
+                    <SyncIcon
                       onClick={() =>
-                        annualSalesQuotaClientGroups.onClickOpenEditModal(row)
+                        annualSalesQuotaClientGroups.onClickUpdateClientOut(row)
                       }
                       style={{
                         color: "#009197",

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
 
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class SalesDailyOutReportClientsSummaryController extends Controller
 {
@@ -69,14 +70,24 @@ class SalesDailyOutReportClientsSummaryController extends Controller
         $p_product = $request->query('product');
         $p_group_code = $request->query('group_code');
         $p_bdo = $request->query('bdo');
+        $p_type = $request->query('t');
+        $p_subsection = $request->query('w');
+        $limit = $request->query('tl');
+        $page = $request->query('tp');
 
-        $records = DB::select("exec dbo.ClientSalesTrackerSummary ?,?,?,?",array($p_year,$p_product,$p_group_code,$p_bdo));
+        $dataListArray = DB::select("SET NOCOUNT ON exec dbo.ClientSalesTrackerSummary ?,?,?,?,?,?",array($p_year,$p_product,$p_group_code,$p_bdo,$p_type,$p_subsection));
+        $dataListCollection = collect($dataListArray);
+        $currentPageItems = $dataListCollection->slice(($page - 1) * $limit, $limit)->values();
+        $dataList = new LengthAwarePaginator($currentPageItems, $dataListCollection->count(), $limit, $page, [
+            'path' => url()->current(),
+            'query' => $request->query(),
+        ]);
         $response = [
-                "dataList"=>$records,
-                'result'=>True,
-                'title'=>'Success',
-                'status'=>'success',
-                'message'=> '',
+            "dataList" => $dataList,
+            'result' => true,
+            'title' => 'Success',
+            'status' => 'success',
+            'message' => 'Data retrieved successfully.',
         ];
         return Crypt::encryptString(json_encode($response));
     }

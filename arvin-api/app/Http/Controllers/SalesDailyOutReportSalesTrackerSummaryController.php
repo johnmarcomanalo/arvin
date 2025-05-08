@@ -293,9 +293,10 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
         $dateYear = MainController::formatYearOnly($currentDate); //format date to year
         $dateYear = MainController::formatYearOnly($currentDate); //format date to year
         $product = RefProductGroups::where('description',$product_group)->first();
-        $subSectionsWithAnnualSalesQuota = SalesDailyOutSettingsAnnualQuota::join('ref_sub_sections', 'sales_daily_out_settings_annual_quotas.subsection_code', '=', 'ref_sub_sections.code')
+        return $subSectionsWithAnnualSalesQuota = SalesDailyOutSettingsAnnualQuota::join('ref_sub_sections', 'sales_daily_out_settings_annual_quotas.subsection_code', '=', 'ref_sub_sections.code')
             ->where('year_sales_target', $dateYear)
             ->where('ref_product_groups_code', $product['code'])
+            ->whereNull('sales_daily_out_settings_annual_quotas.deleted_at')
             ->when(isset($code), function ($query) use ($code) {
              return $query->where('subsection_code', $code);
         }, function ($qry) use ($access_subsection_codes) {

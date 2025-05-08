@@ -50,6 +50,7 @@ const initialState = {
   client_groups: [],
   showprovTable: true,
   showbdoTable: false,
+  updateModal: false,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

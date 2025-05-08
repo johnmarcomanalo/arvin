@@ -20,6 +20,10 @@ export const geClientSalesSummaryReport = (formValues) => async (dispatch) => {
         "&group_code=" +
         formValues.group_code +
         "&bdo=" +
+        formValues.bdo +
+        "&type=" +
+        formValues.group_code +
+        "&subsection=" +
         formValues.bdo
     );
     let decrypted = decryptaes(response.data);

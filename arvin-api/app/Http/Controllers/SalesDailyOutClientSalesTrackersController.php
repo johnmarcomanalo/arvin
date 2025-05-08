@@ -418,4 +418,5 @@ class SalesDailyOutClientSalesTrackersController extends Controller
 
         return Crypt::encryptString(json_encode($response));
     }
+
 }
