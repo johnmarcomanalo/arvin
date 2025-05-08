@@ -29,7 +29,11 @@ export const getCheckDetails = (formValues) => async (dispatch) => {
             "&s=" +
             formValues.s +
             "&sc=" +
-            formValues.sc
+            formValues.sc+
+            "&sort_by=" +
+            formValues.sort_by +
+            "&order=" +
+            formValues.order
         );
   
         let decrypted = decryptaes(results?.data)

@@ -46,25 +46,28 @@ const CheckMonitoringHooks = (props) => {
     const [state, setState]= React.useState({
         debounceTimer: null,
         debounceDelay: 1000,
-        selectedCheck:[]
+        selectedCheck:[],
+        sort_by: "check_status", // Default sorting order
+        order: "asc", // Default sorting field
     });
     const subsection_allowed_to_reject = [12,8];
     const columns = [
-        { id:"code", label:"Reference", align:"left"},
-        { id:"status", label:"Status", align:"left"},
-        { id:"stale_check_view", label:"Stale Check", align:"left"},
-        { id:"card_code", label:"Customer Code", align:"left"},
-        { id:"card_name", label:"Customer", align:"left"},
-        { id:"account_number", label:"Account No.", align:"left"},
-        { id:"check_number", label:"Check No.", align:"left"},
-        { id:"check_date", label:"Check Date", align:"left"},
-        { id:"check_amount_display", label:"Check Amount", align:"left"},
-        { id:"bank_description", label:"Bank", align:"left"},
-        { id:"bank_branch", label:"Bank Branch", align:"left"},
-        { id:"advance_payment", label:"Adv Payment", align:"left"},
-        { id:"prefix_crpr", label:"CR/PR", align:"left"},
-        { id:"sales_invoice", label:"Sales Invoice", align:"left"},
-        { id:"dr_number", label:"DR Number", align:"left"},
+        { id:"code", label:"Reference", align:"left", sortable: false},
+        { id:"status", label:"Status", align:"left", sortable: false},
+        { id:"stale_check_view", label:"Stale Check", align:"left", sortable: false},
+        { id:"card_code", label:"Customer Code", align:"left", sortable: true},
+        { id:"card_name", label:"Customer", align:"left", sortable: true},
+        { id:"account_number", label:"Account No.", align:"left", sortable: true},
+        { id:"check_number", label:"Check No.", align:"left", sortable: true},
+        { id:"check_date", label:"Check Date", align:"left", sortable: true},
+        { id:"check_amount_display", label:"Check Amount", align:"left", sortable: true},
+        { id:"bank_description", label:"Bank", align:"left", sortable: true},
+        { id:"bank_branch", label:"Bank Branch", align:"left", sortable: true},
+        { id:"advance_payment", label:"Adv Payment", align:"left", sortable: false},
+        { id:"deposited_bank", label:"Bank Deposited", align:"left", sortable: true},
+        { id:"prefix_crpr", label:"CR/PR", align:"left", sortable: true},
+        { id:"sales_invoice", label:"Sales Invoice", align:"left", sortable: false},
+        { id:"dr_number", label:"DR Number", align:"left", sortable: false},
     ];
      
     const status = [ 
@@ -86,7 +89,9 @@ const CheckMonitoringHooks = (props) => {
         df : filterStartQuery,
         dt : filterEndQuery,
         s  : filterStatus,
-        sc : filterSubSection
+        sc : filterSubSection,
+        sort_by: state.sort_by,
+        order: state.order,
       };
       return data;
     };
@@ -163,6 +168,11 @@ const CheckMonitoringHooks = (props) => {
           s  : filterStatus,
           sc : filterSubSection
         });
+        setState((prevState) => ({
+          ...prevState,
+          sort_by: "check_status",
+          order: "asc",
+        }));
       };
 
       const onChangeFilterStart = (date) => {
@@ -454,6 +464,35 @@ const CheckMonitoringHooks = (props) => {
 
 
       }
+
+      
+  const onChangeSorting = (field, direction) => { 
+    setState((prevState) => ({
+      ...prevState,
+      sort_by: field,
+      order: direction,
+    }));
+  
+    setSearchParams({
+      q  : search, 
+      p  : page == null ? 1 : page,
+      df : filterStartQuery,
+      dt : filterEndQuery,
+      s  : filterStatus, 
+      sc : filterSubSection,
+      sort_by: field,
+      order: direction,
+    });
+
+    dispatch({
+      type: Constants.ACTION_EPAY_CHECK,
+      payload: {
+        selectedDataList: [], 
+      },
+    })
+   
+  };
+  
        
    
     return {
@@ -497,7 +536,8 @@ const CheckMonitoringHooks = (props) => {
         onClickCloseRejectModal,
         onClickRejectToClose,
         onClickOpenCloseRejectedModal,
-        onClickCloseCloseRejectedModal
+        onClickCloseCloseRejectedModal,
+        onChangeSorting
     };
 };
 

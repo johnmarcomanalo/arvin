@@ -13,9 +13,8 @@ export const getMonitoringCheckCounterData = (formValues) => async (dispatch) =>
 
     // Ensure await is correctly used
     const response = await GetSpecificDefaultServices(
-      `api/epaycheck/report/get_monitoring_check_counter_data?df=${formValues.df}&dt=${formValues.dt}&sc=${formValues.sc}&st=${formValues.st}`
+      `api/epaycheck/report/get_monitoring_check_counter?df=${formValues.df}&dt=${formValues.dt}&sc=${formValues.sc}&st=${formValues.st}`
     );
-    
     const decrypted = decryptaes(response?.data);
     dispatch({
       type: Constants.ACTION_EPAY_CHECK,

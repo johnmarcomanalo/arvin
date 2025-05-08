@@ -264,6 +264,8 @@ use Illuminate\Support\Facades\Route;
         Route::apiResource('epaycheck/check_approval',EpayCheckForApprovalController::class)->middleware(['light_decryption']); 
         Route::post('epaycheck/check_approval/update_request_status',[EpayCheckForApprovalController::class,'update_request_status'])->middleware(['light_decryption']); 
         
+       
+
         Route::get('epaycheck/get_sales_invoice_list',[EPayCheckCheckSalesInvoiceDetailsController::class,'get_sales_invoice_list']);
         Route::get('epaycheck/get_check_details',[EPayCheckCheckDetailsController::class,'get_check_details']);
         Route::get('epaycheck/get_check_receive',[EPayCheckCheckDetailsController::class,'get_check_receive']);

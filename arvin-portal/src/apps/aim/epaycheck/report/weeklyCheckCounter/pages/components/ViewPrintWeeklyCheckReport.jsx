@@ -46,8 +46,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold" },
   cell: { padding: 1.8, 
     // borderRight: "0.5px solid black", 
-    flex: 1, textAlign: "left", fontSize: 7.5 },
-  smallCell: { flex: 0.3, padding: 1, 
+    flex: 0.7, textAlign: "left", fontSize: 7.5 },
+  smallCell: { flex: 0.2, padding: 1, 
     // borderRight: "0.5px solid black", 
     textAlign: "left", fontSize: 7.5 },
   footer: {
@@ -97,13 +97,15 @@ const headers = [
   {id:"check_date",description:"CHECK DATE"},
   {id:"check_status_date",description:"DATE DEP/TRANS"},
   {id:"check_number",description:"CHECK NO."}, 
-  {id:"bank_description",description:"BANK NAME"},
   {id:"card_name",description:"CUSTOMER"}, 
+  {id:"bank_description",description:"BANK NAME"},
   {id:"prefix_crpr",description:"OR/PR"}, 
   {id:"check_amount",description:"CHECK AMOUNT"}, 
   {id:"sum_doc_total",description:"SI AMOUNT"}, 
   {id:"count_sales_invoice",description:"SI COUNT"}, 
   {id:"stale_check",description:"STALE CHECK"}, 
+  {id:"check_status",description:"STATUS"}, 
+  {id:"remarks",description:"REMARKS"}, 
 ];
 
 
@@ -138,7 +140,7 @@ const Table = ({ title, data }) => {
               {/* Table Header */}
               <View style={[styles.row, { backgroundColor: "#ddd" }]}>
                 {headers.map((header, index) => (
-                  <Text key={index} style={index < 4 || index > 5 ? styles.smallCell : styles.cell}>
+                  <Text key={index} style={index < 4 || index > 4 ? styles.smallCell : styles.cell}>
                     {header.description}
                   </Text>
                 ))}
@@ -149,7 +151,7 @@ const Table = ({ title, data }) => {
                 rows.map((row, rowIndex) => (
                   <View key={rowIndex} style={styles.row}>
                     {headers.map((header, cellIndex) => (
-                      <Text key={cellIndex}  style={cellIndex < 4 ||  cellIndex>5 ? styles.smallCell : styles.cell}>
+                      <Text key={cellIndex}  style={cellIndex < 4 ||  cellIndex>4 ? styles.smallCell : styles.cell}>
                         {row[header.id] || ""}
                       </Text>
                     ))}
@@ -157,11 +159,8 @@ const Table = ({ title, data }) => {
                 ))}
               <View style={styles.row}> 
                 <Text style={[styles.smallCell,styles.footerHighlightTop]}>NO OF CHECKS</Text>
-                <Text style={[styles.smallCell,styles.footerHighlightTop]}>{rows.length}</Text>
-                {[1, 2 ].map((_, index) => (
-                  <Text key={index} style={[styles.smallCell]}> </Text>
-                ))}
-                {[1, 2].map((_, index) => (
+                <Text style={[styles.smallCell,styles.footerHighlightTop]}>{rows.length}</Text> 
+                {[1 ,2].map((_, index) => (
                   <Text key={index} style={[styles.cell]}>.</Text>
                 ))} 
                 <Text style={[styles.smallCell,styles.footerHighlightTop]}>TOTAL</Text> 
@@ -175,7 +174,7 @@ const Table = ({ title, data }) => {
                     rows.reduce((total, row) => total + (parseFloat(row.sum_doc_total) || 0), 0)
                   ,4)}
                 </Text>
-                {[1, 2].map((_, index) => (
+                {[1, 2,3,4].map((_, index) => (
                   <Text key={index} style={[styles.smallCell]}> </Text>
                 ))}
               </View>
@@ -187,9 +186,7 @@ const Table = ({ title, data }) => {
           <View style={[styles.row]}>
           <Text style={[styles.smallCell,styles.footerHighlight]}>NO OF CHECKS</Text>
           <Text style={[styles.smallCell,styles.footerHighlight]}>{allRows.length}</Text>
-            {[1, 2,].map((_, index) => (
-              <Text key={`g1-${index}`} style={styles.smallCell}></Text>
-            ))}
+            
             {[1, 2].map((_, index) => (
               <Text key={`g2-${index}`} style={styles.cell}></Text>
             ))}
@@ -200,7 +197,7 @@ const Table = ({ title, data }) => {
             <Text style={[styles.smallCell,styles.footerHighlight]}>
               {ViewAmountFormatingDecimals(grandDocTotal, 4)}
             </Text>
-            {[1, 2].map((_, index) => (
+            {[1, 2,3,4].map((_, index) => (
               <Text key={`g3-${index}`} style={styles.smallCell}></Text>
             ))}
           </View>

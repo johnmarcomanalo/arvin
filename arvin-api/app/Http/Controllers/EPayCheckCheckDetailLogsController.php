@@ -77,12 +77,18 @@ class EPayCheckCheckDetailLogsController extends Controller
             ->reject(function ($item) use ($exclude) {
                 return !empty($exclude) && in_array($item->code, (array) $exclude);
             })
-            ->when($group_by_date, function ($filteredData) {
+            ->when($group_by_date, function ($filteredData)  use ($type) {
                 return $filteredData->groupBy(function ($item) {
-                    return \Carbon\Carbon::parse($item->created_at)->format('Y-m-d'); // Group by date
-                })->map(function ($items) {
+                    return \Carbon\Carbon::parse($item->check_status_date)->format('Y-m-d'); // Group by date
+                })->map(function ($items) use ($type) {
+                    if ($type == 'ON-HAND') {
+                        // Set check_status_date to null for each item in the group
+                        $items->each(function ($item) {
+                            $item->check_status_date = null;
+                        });
+                    }
                     return $items->values(); // Reset array indexes
-                });
+                }); 
             }, function ($filteredData) {
                 return $filteredData->values(); // If no grouping, just return as a collection
             });
@@ -148,7 +154,7 @@ class EPayCheckCheckDetailLogsController extends Controller
         $data_beg         = $this->check_summary($beginning_on_hand);
         $datax            = $transactions->where('check_status', 'ON-HAND');
         $merge_data       = $datax->merge($data_beg)->map(function ($item) {
-            $item->check_status_date = null;
+            $item->check_status_date = $item->created_at;
             return $item;
         })
         ->unique('code') // Replace 'your_unique_column' with the column that should be unique
@@ -160,6 +166,7 @@ class EPayCheckCheckDetailLogsController extends Controller
         $data_deposited        = $this->get_group_data($transactions,"DEPOSITED",null,true);
         $data_rejected         = $this->get_group_data($transactions,"REJECTED",null,true);
         $data_open_rejected    = $this->get_group_data($open_rejected,"REJECTED",null,true);
+  
  
         $body = [
             'deposited'     => $data_deposited,
