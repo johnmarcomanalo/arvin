@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class EPayCheckReport extends Controller
@@ -99,40 +100,30 @@ class EPayCheckReport extends Controller
             }
 
             $validated            = $validator->validated();
-
+            $df     = $validated['df'];
+            $dt     = $validated['dt'];
             
             if ($validated['sc']=='ALL') {      
                 $get_user_login = Auth::user()->code;
                 $allSection     = UserAccessOrganizationRights::where('subsection_code',$get_user_login)->pluck('subsection_code');
            }
   
-           $query = EPayCheckCheckDetails::select(
-                    'account_number',
-                    'card_name',
-                    'check_number',
-                    'check_date',
-                    'check_amount',
-                    'check_status_date',
-                    'prefix_crpr',
-                    'bank_description',
-                    'subsection_code',
-                    'deposited_date',
-                    'deposited_bank',
-                    'rejected_date',
-                    'received_date',
-                    'e_pay_check_check_details.created_at',
-                    'e_pay_check_check_details.check_status',
-                )
-                ->join('e_pay_check_check_detail_logs ', 'e_pay_check_check_details.code', '=', 'e_pay_check_check_detail_logs.check_details_code');
+           $query =  DB::table('vw_epay_check_get_check_details')
+                    ->select(
+                        'account_number','card_name','check_number','check_date','check_amount','check_status_date','prefix_crpr','bank_description',
+                        'subsection_code','deposited_date','deposited_bank','rejected_date','received_date','created_at','check_status'
+                    );
 
             if ($validated['sc'] === 'ALL') {
-                $query->whereIn('e_pay_check_check_details.subsection_code', $allSection);
+                $query->whereIn('subsection_code', $allSection);
             }else{
-                $query->where('e_pay_check_check_details.subsection_code',$validated['sc']); 
+                $query->where('subsection_code',$validated['sc']); 
             }
 
-            $query->where('e_pay_check_check_detail_logs.check_status', $validated['st'])
-                  ->whereBetween('e_pay_check_check_detail_logs.created_at', [$validated['df'], $validated['dt']]);
+            $query->when(in_array($validated['st'], ['DEPOSITED', 'TRANSMITTED','REJECTED']), function ($q) use ($df, $dt) {
+                $q->whereBetween(DB::raw("CAST(check_status_date AS DATE)"), [$df, $dt]);
+            })
+            ->where('check_status', $validated['st']);
 
             $results = $query->get();
             $data = [];
