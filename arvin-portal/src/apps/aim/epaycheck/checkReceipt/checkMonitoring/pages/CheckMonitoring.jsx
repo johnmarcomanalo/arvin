@@ -19,7 +19,7 @@ import SearchField from "components/inputFIeld/SearchField";
 import Loading from "components/loading/Loading";
 import Modal from "components/modal/Modal";
 import Page from "components/pagination/Pagination";
-import TableComponent from "components/table/TableSorting";
+import TableComponent from "components/table/Table";
 import CheckMonitoringHooks from "../hooks/CheckMonitoringHooks";
 const Deposit = React.lazy(() => import("./components/Deposit"));
 const CheckDetails = React.lazy(() => import("./components/CheckDetails"));
@@ -210,7 +210,7 @@ const CheckMonitoring = (props) => {
                     paginationShow={false}
                     subAction1Show={true}
                     subAction2Show={true}
-                    onSortChange={check.onChangeSorting}
+                    // onSortChange={check.onChangeSorting}
                     action={(row, index) => {
                       if (row.check_status!=="REJECTED") {
                         return ( 
