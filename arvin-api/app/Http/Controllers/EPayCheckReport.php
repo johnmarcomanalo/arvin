@@ -139,7 +139,7 @@ class EPayCheckReport extends Controller
                     'bank_description'   => $value->bank_description,
                     'subsection_code'    => $value->subsection_code,
                     'deposited_date'     => !empty($value->deposited_date) ? Carbon::parse($value->deposited_date)->format("Y-m-d") : "",
-                    'deposited_bank'     => $value->deposited_bank,
+                    'deposited_bank'     => explode(" ",$value->deposited_bank)[0] ?? '',
                     'check_status'     => $value->check_status,
                     'rejected_date'      => !empty($value->rejected_date) ? Carbon::parse($value->rejected_date)->format("Y-m-d") : "",
                     'received_date'      => !empty($value->received_date) ? Carbon::parse($value->received_date)->format("Y-m-d") : "",

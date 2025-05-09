@@ -44,12 +44,16 @@ const styles = StyleSheet.create({
   row: { flexDirection: "row", 
     // borderBottom: "0.5px solid black",
     fontWeight: "bold" },
-  cell: { padding: 1.8, 
+  cell: { 
+    adding: 1.8, 
     // borderRight: "0.5px solid black", 
-    flex: 0.7, textAlign: "left", fontSize: 7.5 },
-  smallCell: { flex: 0.2, padding: 1, 
+    flex: 0.7, 
+    textAlign: "left", 
+    fontSize: 8 },
+  smallCell: { 
+    flex: 0.2, padding: 1.5, 
     // borderRight: "0.5px solid black", 
-    textAlign: "left", fontSize: 7.5 },
+    textAlign: "left", fontSize: 8 },
   footer: {
     marginTop: 15,
     paddingBottom:15,
@@ -82,12 +86,15 @@ const styles = StyleSheet.create({
     borderBottom: "1px solid black",
     borderTop: "1px solid black",
     marginVertical: 5,
-    padding:1
+    padding:2
   },
   footerHighlightTop: { 
     borderTop: "1px solid black",
     marginVertical: 5,
-    padding:1
+    padding:2
+  }, 
+  trwBG:{
+    backgroundColor: "#f4f2f2",
   },
 });
 
@@ -149,10 +156,22 @@ const Table = ({ title, data }) => {
               {/* Table Rows */}
               {Array.isArray(rows) &&
                 rows.map((row, rowIndex) => (
-                  <View key={rowIndex} style={styles.row}>
+                  <View key={rowIndex} style={[styles.row ]}>
                     {headers.map((header, cellIndex) => (
-                      <Text key={cellIndex}  style={cellIndex < 4 ||  cellIndex>4 ? styles.smallCell : styles.cell}>
-                        {row[header.id] || ""}
+                      // <Text key={cellIndex}  style={cellIndex < 4 ||  cellIndex>4 ? rowIndex % 2 === 1 ? [styles.smallCell,style.trwBG]  : {rowIndex % 2 === 1 ? [styles.cell,style.trwoBG]} }>
+                      <Text
+                        key={cellIndex}
+                        style={[
+                          cellIndex < 4 || cellIndex > 4
+                            ? rowIndex % 2 === 1
+                              ? [styles.smallCell, styles.trwBG]
+                              : styles.smallCell
+                            : rowIndex % 2 === 1
+                              ? [styles.cell, styles.trwBG]
+                              : styles.cell
+                        ]}
+                      >  
+                      {row[header.id] || ""}
                       </Text>
                     ))}
                   </View>
@@ -167,12 +186,12 @@ const Table = ({ title, data }) => {
                 <Text style={[styles.smallCell,styles.footerHighlightTop]}>
                   {ViewAmountFormatingDecimals(
                     rows.reduce((total, row) => total + (parseFloat(row.check_amount) || 0), 0)
-                  ,4)}
+                  ,2)}
                 </Text> 
                 <Text style={[styles.smallCell,styles.footerHighlightTop]}>
                   {ViewAmountFormatingDecimals(
                     rows.reduce((total, row) => total + (parseFloat(row.sum_doc_total) || 0), 0)
-                  ,4)}
+                  ,2)}
                 </Text>
                 {[1, 2,3,4].map((_, index) => (
                   <Text key={index} style={[styles.smallCell]}> </Text>
@@ -192,10 +211,10 @@ const Table = ({ title, data }) => {
             ))}
              <Text style={[styles.smallCell,styles.footerHighlight]}>GRAND TOTAL</Text>
             <Text style={[styles.smallCell,styles.footerHighlight]}>
-              {ViewAmountFormatingDecimals(grandCheckAmount, 4)}
+              {ViewAmountFormatingDecimals(grandCheckAmount, 2)}
             </Text>
             <Text style={[styles.smallCell,styles.footerHighlight]}>
-              {ViewAmountFormatingDecimals(grandDocTotal, 4)}
+              {ViewAmountFormatingDecimals(grandDocTotal, 2)}
             </Text>
             {[1, 2,3,4].map((_, index) => (
               <Text key={`g3-${index}`} style={styles.smallCell}></Text>
