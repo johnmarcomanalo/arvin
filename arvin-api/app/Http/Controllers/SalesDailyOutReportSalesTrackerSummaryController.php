@@ -231,15 +231,15 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
         }
         if($product_group === null){
               $response = [
-            "total_daily_out_amount"=>0,
-            "yearly_sales_line_chart_summary"=>[],
-            "annual_sales_out_summary"=>[],
-            "current_sales_mtd_ytd_subsections"=>[],
-            "annual_sales_mtd_ytd_subsections"=>[],
-            "annual_set_total_count_subsections"=>[],
-            "annual_set_subsections"=>[],
-        ];
-        return Crypt::encryptString(json_encode($response));
+                "total_daily_out_amount"=>0,
+                "yearly_sales_line_chart_summary"=>[],
+                "annual_sales_out_summary"=>[],
+                "current_sales_mtd_ytd_subsections"=>[],
+                "annual_sales_mtd_ytd_subsections"=>[],
+                "annual_set_total_count_subsections"=>[],
+                "annual_set_subsections"=>[],
+            ];
+            return Crypt::encryptString(json_encode($response));
         }
 
         $queryRawData = SalesDailyOutTrackers::where('year_sales_target', $filter)
@@ -293,7 +293,7 @@ class SalesDailyOutReportSalesTrackerSummaryController extends Controller
         $dateYear = MainController::formatYearOnly($currentDate); //format date to year
         $dateYear = MainController::formatYearOnly($currentDate); //format date to year
         $product = RefProductGroups::where('description',$product_group)->first();
-        return $subSectionsWithAnnualSalesQuota = SalesDailyOutSettingsAnnualQuota::join('ref_sub_sections', 'sales_daily_out_settings_annual_quotas.subsection_code', '=', 'ref_sub_sections.code')
+        $subSectionsWithAnnualSalesQuota = SalesDailyOutSettingsAnnualQuota::join('ref_sub_sections', 'sales_daily_out_settings_annual_quotas.subsection_code', '=', 'ref_sub_sections.code')
             ->where('year_sales_target', $dateYear)
             ->where('ref_product_groups_code', $product['code'])
             ->whereNull('sales_daily_out_settings_annual_quotas.deleted_at')
