@@ -71,11 +71,13 @@ class EPayCheckCheckDetailsController extends Controller
                 'crpr'             => 'required|string|min:0',
                 'check_amount'     => 'required|numeric|min:0',
                 'check_date'       => 'required|date|after_or_equal:' . Carbon::now()->subYears(1)->toDateString() . '|before_or_equal:' . Carbon::now()->addYears(2)->toDateString(),
-                'check_number'     => [
+                'check_number' => [
                     'required',
-                    Rule::unique('e_pay_check_check_details', 'check_number')->where(function ($query) use ($request) {
-                        return $query->where('card_code', $request->card_code);
-                    })
+                    Rule::unique('e_pay_check_check_details', 'check_number')
+                        ->where(function ($query) use ($request) {
+                            return $query->where('card_code', $request->card_code)
+                                            ->whereIn('check_status', ['ONHAND', 'TRANSMITTED', 'DEPOSITED']);
+                        }),
                 ],
                 'card_name'        => 'required',
                 'card_code'        => 'required',
@@ -489,7 +491,7 @@ class EPayCheckCheckDetailsController extends Controller
                 'stale_check'          => $value->stale_check,
                 'sales_invoice'        => $value->sales_invoice,
                 'dr_number'            => $value->dr_number,
-                'deposited_bank'       => $value->deposited_bank
+                'deposited_bank'       => explode(" ",$value->deposited_bank)[0] ?? '',
             ];
         }
         
