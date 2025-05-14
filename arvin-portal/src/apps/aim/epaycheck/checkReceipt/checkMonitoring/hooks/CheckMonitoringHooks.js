@@ -53,9 +53,10 @@ const CheckMonitoringHooks = (props) => {
     const subsection_allowed_to_reject = [12,8];
     const columns = [
         { id:"code", label:"Reference", align:"left", sortable: false},
+        { id:"created_at", label:"Created At", align:"left", sortable: true},
         { id:"status", label:"Status", align:"left", sortable: false},
         { id:"stale_check_view", label:"Stale Check", align:"left", sortable: false},
-        { id:"card_code", label:"Customer Code", align:"left", sortable: true},
+        { id:"card_code", label:"Customer Code", align:"left", sortable: false},
         { id:"card_name", label:"Customer", align:"left", sortable: true},
         { id:"account_number", label:"Account No.", align:"left", sortable: true},
         { id:"check_number", label:"Check No.", align:"left", sortable: true},

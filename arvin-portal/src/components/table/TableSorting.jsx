@@ -32,6 +32,7 @@ const TableSorting = (props) => {
     subAction2Show = true,
     heightLimit = true,
     extraLayer,
+    action,
   } = props;
 
   const [screenHeight, setScreenHeight] = React.useState(window.innerHeight);
@@ -119,6 +120,7 @@ const TableSorting = (props) => {
                           <LaunchIcon onClick={() => onSelectItem(row)} style={{ color: "#009197", cursor: "pointer" }} />
                         </Tooltip>
                       )}
+                      {subAction2Show ? action(row) : null}
                     </Stack>
                   </TableCell>
                 )}

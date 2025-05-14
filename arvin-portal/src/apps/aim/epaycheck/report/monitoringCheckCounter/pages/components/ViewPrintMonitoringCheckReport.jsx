@@ -49,6 +49,9 @@ const styles = StyleSheet.create({
   cell: { padding: 3, 
     // borderBottom: "0.5px solid black", 
     flex: 1.5, textAlign: "left", fontSize: 10.5, },
+    tinyCell: { padding: 2, 
+      // borderBottom: "0.5px solid black", 
+      flex:.5, textAlign: "left", fontSize: 10.5, },
   smallCell: { flex: 1, padding: 3, 
     // borderBottom: "0.5px solid black", 
     textAlign: "left", fontSize:10.5,  },
@@ -118,6 +121,7 @@ const Table = ({ data,status }) => {
         {/* Table Header */}
         <View style={[styles.row, { backgroundColor: "#ddd" }]}> 
           <>
+            <Text style={styles.tinyCell}>#</Text>  
             <Text style={styles.smallCell}>{headers[0].description}</Text>  
             <Text style={styles.smallCell}>{headers[1].description}</Text>  
             <Text style={styles.smallCell}>{headers[2].description}</Text>  
@@ -143,6 +147,7 @@ const Table = ({ data,status }) => {
         {Array.isArray(data) &&
           data.map((row, rowIndex) => (
             <View key={rowIndex} style={styles.row}>
+              <Text style={styles.tinyCell}>{++rowIndex}</Text>
               <Text style={styles.smallCell}>{row.created_at}</Text>
               <Text style={styles.smallCell}>{row.account_number}</Text>
               <Text style={styles.smallCell}>{row.check_number}</Text>
