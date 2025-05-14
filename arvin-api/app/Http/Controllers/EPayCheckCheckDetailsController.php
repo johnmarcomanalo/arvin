@@ -1056,7 +1056,7 @@ class EPayCheckCheckDetailsController extends Controller
             $checkLogs     = EPayCheckCheckDetailLogs::pluck('rejected_reference');
             $check_details = EPayCheckCheckDetails::where('code', $validated['rejected_reference'])
                             ->where('check_status', '<>', self::REJECTED)
-                            ->whereIn('code', $checkLogs)
+                            // ->whereIn('code', $checkLogs)
                             ->first();
             
             if (!$check_details) {
