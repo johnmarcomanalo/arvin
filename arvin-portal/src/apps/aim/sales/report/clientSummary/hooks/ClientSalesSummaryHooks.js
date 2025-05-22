@@ -11,6 +11,7 @@ import { saveAs } from "file-saver";
 import swal from "sweetalert";
 import { change } from "redux-form";
 import { fetchGetClientGroups } from "apps/aim/sales/clientGroups/actions/ClientGroupsActions";
+import { Warehouse } from "@mui/icons-material";
 const DavaoTKSHooks = (props) => {
   const refresh = useSelector((state) => state.SalesDailyOutReducer.refresh);
   const dataList = useSelector((state) => state.SalesDailyOutReducer.dataList);
@@ -26,6 +27,9 @@ const DavaoTKSHooks = (props) => {
   const employeeModal = useSelector(
     (state) => state.HumanResourceReducer.viewModal
   );
+  const user_access_organization_rights =
+    access?.user_access_organization_rights;
+
   const [state, setState] = React.useState({
     debounceTimer: null,
     debounceDelay: 2000,
@@ -46,7 +50,31 @@ const DavaoTKSHooks = (props) => {
       : "";
 
   const bdo =
-    searchParams.get("bdo") != null ? String(searchParams.get("bdo")) : "";
+    searchParams.get("bdo") != null
+      ? String(searchParams.get("bdo"))
+      : props.bdo_name
+      ? props.bdo_name
+      : "";
+
+  const type =
+    searchParams.get("t") != null
+      ? String(searchParams.get("t"))
+      : props.type
+      ? props.type
+      : "";
+
+  const warehouse =
+    searchParams.get("w") != null
+      ? String(searchParams.get("w"))
+      : props.subsection
+      ? props.subsection
+      : "";
+
+  const limit =
+    searchParams.get("tl") != null ? String(searchParams.get("tl")) : 10;
+
+  const page =
+    searchParams.get("tp") != null ? String(searchParams.get("tp")) : "1";
 
   const dispatch = useDispatch();
 
@@ -57,7 +85,7 @@ const DavaoTKSHooks = (props) => {
       align: "left",
     },
     { id: "type", label: "Type", align: "left" },
-    { id: "warehouse", label: "Warehouse", align: "left" },
+    { id: "subsection", label: "Warehouse", align: "left" },
     { id: "year_sales_target", label: "Year", align: "left" },
     { id: "january_total_out", label: "January Sales", align: "left" },
     { id: "february_total_out", label: "February Sales", align: "left" },
@@ -86,7 +114,7 @@ const DavaoTKSHooks = (props) => {
       align: "left",
     },
     { id: "type", label: "Type", align: "left" },
-    { id: "warehouse", label: "Warehouse", align: "left" },
+    { id: "subsection", label: "Warehouse", align: "left" },
     { id: "year_sales_target", label: "Year", align: "left" },
     {
       id: "mtd_january_final_percentage",
@@ -153,7 +181,7 @@ const DavaoTKSHooks = (props) => {
       align: "left",
     },
     { id: "type", label: "Type", align: "left" },
-    { id: "warehouse", label: "Warehouse", align: "left" },
+    { id: "subsection", label: "Warehouse", align: "left" },
     { id: "year_sales_target", label: "Year", align: "left" },
     {
       id: "ytd_january_final_percentage",
@@ -223,6 +251,10 @@ const DavaoTKSHooks = (props) => {
       product: product,
       group_code: group_code,
       bdo: bdo,
+      t: type,
+      w: warehouse,
+      tl: limit,
+      tp: "1",
     });
   };
 
@@ -232,6 +264,10 @@ const DavaoTKSHooks = (props) => {
       product: product,
       group_code: group_code,
       bdo: bdo,
+      t: type,
+      w: warehouse,
+      tl: limit,
+      tp: "1",
     });
   };
 
@@ -241,6 +277,10 @@ const DavaoTKSHooks = (props) => {
       product: product,
       group_code: group_code,
       bdo: bdo,
+      t: type,
+      w: warehouse,
+      tl: limit,
+      tp: "1",
     });
   };
 
@@ -250,6 +290,10 @@ const DavaoTKSHooks = (props) => {
       product: product,
       group_code: group_code,
       bdo: bdo.username,
+      t: type,
+      w: warehouse,
+      tl: limit,
+      tp: "1",
     });
     props.dispatch(change("ClientSummary", "bdo_name", bdo.full_name));
     swal("Success", "BDO filtered successfully", "success");
@@ -261,16 +305,76 @@ const DavaoTKSHooks = (props) => {
       product: product,
       group_code: group_code,
       bdo: "",
+      t: type,
+      w: warehouse,
+      tl: limit,
+      tp: "1",
     });
     props.dispatch(change("ClientSummary", "bdo_name", ""));
   };
 
+  const onClickSelectType = (type) => {
+    setSearchParams({
+      year: year,
+      product: product,
+      group_code: group_code,
+      bdo: bdo,
+      t: type,
+      w: warehouse,
+      tl: limit,
+      tp: "1",
+    });
+    props.dispatch(change("ClientSummary", "type", type));
+  };
+  const onClickSelectWarehouse = (subsection) => {
+    setSearchParams({
+      year: year,
+      product: product,
+      group_code: group_code,
+      bdo: bdo,
+      t: type,
+      w: subsection,
+      tl: limit,
+      tp: "1",
+    });
+    props.dispatch(change("ClientSummary", "subsection", subsection));
+  };
+  const onChangeSearch = (event) => {
+    const search = event.target.value;
+    setSearchParams({
+      year: year,
+      product: product,
+      group_code: search,
+      bdo: bdo,
+      t: type,
+      w: warehouse,
+      tl: limit,
+      tp: "1",
+    });
+    props.dispatch(change("ClientSummary", "type", type));
+  };
+  const handleChangePage = (event, page) => {
+    setSearchParams({
+      year: year,
+      product: product,
+      group_code: group_code,
+      bdo: bdo,
+      t: type,
+      w: warehouse,
+      tl: limit,
+      tp: page,
+    });
+  };
   const getListParam = () => {
     const data = {
       year: year,
       product: product,
       group_code: group_code,
       bdo: bdo,
+      t: type,
+      w: warehouse,
+      tl: limit,
+      tp: page,
     };
     return data;
   };
@@ -290,18 +394,18 @@ const DavaoTKSHooks = (props) => {
       console.error(error);
     }
   };
-  React.useEffect(() => {
-    // GetClientGroups();e
-  }, []);
+  // React.useEffect(() => {
+  //   // GetClientGroups();e
+  // }, []);
   React.useEffect(() => {
     if (product !== "" && bdo !== "") {
       getClientSummary();
     }
-    props.initialize({
-      product: product,
-    });
+    // props.initialize({
+    //   product: product,
+    // });
     return () => cancelRequest();
-  }, [refresh, year, product, group_code, bdo]);
+  }, [refresh, searchParams]);
   const onClickOpenEmployeeViewModal = () => {
     dispatch({
       type: Constants.ACTION_HUMAN_RESOURCE,
@@ -487,19 +591,19 @@ const DavaoTKSHooks = (props) => {
     // Save the file
     saveAs(blob, fileName);
   };
-  const initialization = async () => {
-    try {
-      props.initialize({
-        year: year,
-      });
-    } catch (error) {
-      await console.error(error);
-    }
-  };
+  // const initialization = async () => {
+  //   try {
+  //     props.initialize({
+  //       year: year,
+  //     });
+  //   } catch (error) {
+  //     await console.error(error);
+  //   }
+  // };
 
-  React.useEffect(() => {
-    initialization();
-  }, []);
+  // React.useEffect(() => {
+  //   initialization();
+  // }, []);
   return {
     year,
     product,
@@ -513,6 +617,9 @@ const DavaoTKSHooks = (props) => {
     user_access_product_group_rights,
     client_groups,
     employeeModal,
+    user_access_organization_rights,
+    dataListCount,
+    page,
     onSelectItem,
     exportToExcelMonthlySalesSummary,
     exportToExcelMonthlyMTDSummary,
@@ -524,6 +631,10 @@ const DavaoTKSHooks = (props) => {
     onClickOpenEmployeeViewModal,
     onClickCloseEmployeeViewModal,
     onClickSelectResetEmployee,
+    onClickSelectType,
+    onClickSelectWarehouse,
+    handleChangePage,
+    onChangeSearch,
   };
 };
 
