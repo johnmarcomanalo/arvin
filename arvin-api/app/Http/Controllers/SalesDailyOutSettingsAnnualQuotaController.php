@@ -230,9 +230,15 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
         if (!empty($filter)) {
                 $queryBuilder->where('year_sales_target', $filter);
         }
+        // if (!empty($query)) {
+        //     $queryBuilder = $queryBuilder->where(function ($queryBuilder) use ($query) {
+        //             $queryBuilder->where('ref_sub_sections.description', 'like', '%' . $query . '%');
+        //     });
+        // } 
+
         if (!empty($query)) {
             $queryBuilder = $queryBuilder->where(function ($queryBuilder) use ($query) {
-                    $queryBuilder->where('ref_sub_sections.description', 'like', '%' . $query . '%');
+                    $queryBuilder->where('ref_product_groups.description', 'like', '%' . $query . '%');
             });
         } 
  

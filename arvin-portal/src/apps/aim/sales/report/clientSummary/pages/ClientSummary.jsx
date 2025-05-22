@@ -15,6 +15,8 @@ import InputYearPicker from "components/inputFIeld/InputYearPicker";
 import ClientSalesSummaryHooks from "../hooks/ClientSalesSummaryHooks";
 import configure from "apps/configure/configure.json";
 import ButtonComponent from "components/button/Button";
+import Page from "components/pagination/Pagination";
+import SearchField from "components/inputFIeld/SearchField";
 const formName = "ClientSummary";
 const submit = async (values, dispatch, props) => {
   try {
@@ -26,6 +28,11 @@ const submit = async (values, dispatch, props) => {
 let ClientSummary = (props) => {
   const { ...clientSalesSummary } = ClientSalesSummaryHooks(props);
   const matches = useMediaQuery("(min-width:600px)");
+  const types = [
+    { description: "Manila Branch" },
+    { description: "Provincial" },
+    { description: "Peanut" },
+  ];
   return (
     <React.Fragment>
       <Modal
@@ -40,7 +47,14 @@ let ClientSummary = (props) => {
       </Modal>
       <form onSubmit={props.handleSubmit}>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={12} md={3} lg={3}>
+          <Grid item xs={12} sm={12} md={2} lg={2}>
+            <SearchField
+              value={clientSalesSummary.search}
+              onChange={clientSalesSummary.onChangeSearch}
+              textHidden={false}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12} md={2} lg={2}>
             {" "}
             <Field
               id="filter_year"
@@ -61,7 +75,7 @@ let ClientSummary = (props) => {
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={12} md={3} lg={3}>
+          <Grid item xs={12} sm={12} md={2} lg={2}>
             <Field
               id="bdo_name"
               name="bdo_name"
@@ -78,7 +92,7 @@ let ClientSummary = (props) => {
               inputIcon={<CloseIcon />}
             />
           </Grid>
-          <Grid item xs={12} sm={12} md={3} lg={3}>
+          <Grid item xs={12} sm={12} md={2} lg={2}>
             {" "}
             <Field
               key={props.refresh}
@@ -102,29 +116,60 @@ let ClientSummary = (props) => {
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={12} md={3} lg={3}>
-            {" "}
+          <Grid item xs={12} sm={12} md={2} lg={2}>
             <Field
-              key={props.refresh}
-              id="group_client"
-              name="group_client"
-              label="Group Clients"
-              options={clientSalesSummary?.client_groups}
+              id="type"
+              name="type"
+              label="Type"
+              options={types}
               getOptionLabel={(option) =>
-                option.description ? option.description : ""
+                option?.description ? option?.description : ""
               }
-              // required={true}
+              required={true}
               component={ComboBox}
               onChangeHandle={(e, newValue) => {
                 if (newValue?.description) {
-                  clientSalesSummary.onChangeFilterGroupCode(newValue.code);
+                  clientSalesSummary.onClickSelectType(newValue?.description);
                 } else {
-                  clientSalesSummary.onChangeFilterGroupCode("");
+                  clientSalesSummary.onClickSelectType("");
                 }
               }}
             />
           </Grid>
-
+          <Grid item xs={12} sm={12} md={2} lg={2}>
+            <Field
+              id="subsection"
+              name="subsection"
+              label="Warehouse"
+              options={clientSalesSummary?.user_access_organization_rights}
+              getOptionLabel={(option) =>
+                option?.description
+                  ? option.description
+                  : props.subsection
+                  ? props.subsection
+                  : ""
+              }
+              required={true}
+              component={ComboBox}
+              onChangeHandle={(e, newValue) => {
+                if (newValue?.description) {
+                  console.log(newValue);
+                  clientSalesSummary.onClickSelectWarehouse(newValue?.type);
+                } else {
+                  clientSalesSummary.onClickSelectWarehouse("");
+                }
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12} md={12} lg={12}>
+            <Stack justifyContent="flex-end" alignItems="flex-end">
+              <Page
+                page={clientSalesSummary?.page}
+                limit={clientSalesSummary?.dataListCount}
+                onHandleChange={clientSalesSummary.handleChangePage}
+              />
+            </Stack>
+          </Grid>
           <Grid item xs={12} sm={12} md={6} lg={6}>
             <Stack
               direction="row"
@@ -312,5 +357,8 @@ const ReduxFormComponent = reduxForm({
 const selector = formValueSelector(formName);
 export default connect((state) => {
   const product = selector(state, "product");
-  return { product };
+  const bdo_name = selector(state, "bdo_name");
+  const type = selector(state, "type");
+  const subsection = selector(state, "subsection");
+  return { product, type, bdo_name, subsection };
 }, {})(ReduxFormComponent);

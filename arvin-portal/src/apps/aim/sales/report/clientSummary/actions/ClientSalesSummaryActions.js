@@ -12,6 +12,7 @@ export const geClientSalesSummaryReport = (formValues) => async (dispatch) => {
         loading: true,
       },
     });
+    console.log(formValues);
     const response = await GetSpecificDefaultServices(
       "api/salesdailyout/report/get_client_sales_tracker_summary?year=" +
         formValues.year +
@@ -21,17 +22,21 @@ export const geClientSalesSummaryReport = (formValues) => async (dispatch) => {
         formValues.group_code +
         "&bdo=" +
         formValues.bdo +
-        "&type=" +
-        formValues.group_code +
-        "&subsection=" +
-        formValues.bdo
+        "&t=" +
+        formValues.t +
+        "&w=" +
+        formValues.w +
+        "&tp=" +
+        formValues.tp +
+        "&tl=" +
+        formValues.tl
     );
     let decrypted = decryptaes(response.data);
     dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {
-        dataList: decrypted.dataList,
-        dataListCount: decrypted.dataListCount,
+        dataList: decrypted.dataList?.data,
+        dataListCount: decrypted.dataList?.total,
       },
     });
   } catch (error) {
