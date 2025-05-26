@@ -278,6 +278,7 @@ use Illuminate\Support\Facades\Route;
 
         //REPORT
         Route::get('epaycheck/report/get_monitoring_check_counter',[EPayCheckReport::class,'get_monitoring_check_counter']);
+        Route::get('epaycheck/report/get_received_check_counter',[EPayCheckReport::class,'get_received_check_counter']);
         Route::get('epaycheck/check_detail_logs/get_weekly_check_counter_data',[EPayCheckCheckDetailLogsController::class,'get_weekly_check_counter_data']);
         Route::apiResource('epaycheck/report',EPayCheckReport::class)->middleware(['light_decryption']);
 

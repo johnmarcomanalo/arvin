@@ -33,6 +33,7 @@ const TableSorting = (props) => {
     heightLimit = true,
     extraLayer,
     action,
+    getRowStyle,
   } = props;
 
   const [screenHeight, setScreenHeight] = React.useState(window.innerHeight);
@@ -111,7 +112,7 @@ const TableSorting = (props) => {
           </TableHead>
           <TableBody>
             {dataList.map((row) => (
-              <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+              <TableRow hover role="checkbox" tabIndex={-1} key={row.code} style={getRowStyle ? getRowStyle(row) : {}}>
                 {actionshow && (
                   <TableCell>
                     <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-start", alignItems: "center" }}>
