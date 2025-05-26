@@ -166,5 +166,87 @@ class EPayCheckReport extends Controller
             
             return Crypt::encryptString(json_encode($response));
     }
+
+    public function get_received_check_counter(Request $request){
+        $customMessages = [
+            'df.required'         => 'The start date is required.',
+            'df.date'             => 'The start date must be a valid date.',
+            'df.date_format'      => 'The start date must be in MM/DD/YYYY format.', 
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'df'   => ['required', 'date', 'date_format:Y-m-d'],
+            'dt'   => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:df'], 
+            'sc'   => ['required', 'string'],
+        ], $customMessages); // Pass custom messages here
+
+        if ($validator->fails()) {
+            return response()->json([
+                'result'      => false,
+                'status'      => 'warning',
+                'title'       => 'Error',
+                'message'     => $validator->errors()->first(),
+            ], 422);
+        }
+
+        $validated = $validator->validated();
+        $df = $validated['df'];
+        $dt = $validated['dt'];
+
+        $query = DB::table('vw_epay_check_get_check_details')
+        ->select(
+            'account_number','card_name','check_number','check_date','check_amount','check_status_date','prefix_crpr','bank_description',
+            'subsection_code','deposited_date','deposited_bank','rejected_date','received_date','created_at','check_status'
+        );
+
+        if ($validated['sc'] === 'ALL') {
+            $get_user_login = Auth::user()->code;
+            $allSection     = UserAccessOrganizationRights::where('subsection_code',$get_user_login)->pluck('subsection_code');
+            $query->whereIn('subsection_code', $allSection);
+        }else{
+            $query->where('subsection_code',$validated['sc']); 
+        }
+
+        $query->whereBetween('received_date', [$df, $dt]);
+        $query->where('check_status', 'TRANSMITTED');
+        $results = $query->get();
+        $data = [];
+        foreach ($results as $key => $value) {
+            $data[] = [
+                'account_number'     => $value->account_number,
+                'card_name'          => $value->card_name,
+                'check_number'       => $value->check_number,
+                'check_date'         => !empty($value->check_date) ? Carbon::parse($value->check_date)->format("Y-m-d") : "",
+                'check_amount'       => $value->check_amount,
+                'check_status_date'  => !empty($value->check_status_date) ? Carbon::parse($value->check_status_date)->format("Y-m-d") : "",
+                'prefix_crpr'        => $value->prefix_crpr,
+                'bank_description'   => $value->bank_description,
+                'subsection_code'    => $value->subsection_code,
+                'deposited_date'     => !empty($value->deposited_date) ? Carbon::parse($value->deposited_date)->format("Y-m-d") : "",
+                'deposited_bank'     => explode(" ",$value->deposited_bank)[0] ?? '',
+                'rejected_date'      => !empty($value->rejected_date) ? Carbon::parse($value->rejected_date)->format("Y-m-d") : "",
+                'received_date'      => !empty($value->received_date) ? Carbon::parse($value->received_date)->format("Y-m-d") : "",
+                'created_at'      => !empty($value->created_at) ? Carbon::parse($value->created_at)->format("Y-m-d") : "",
+            ];
+        }
+            
+        $warehouse = RefSubSections::where('code',$validated['sc'])->first();
+
+        $header = [
+            'title'       =>'RECEIVED CHECK COUNTER',
+            'date_from'   => Carbon::parse($validated['df'])->format('M d, Y'), // Feb 10, 2023
+            'date_to'     => Carbon::parse($validated['dt'])->format('M d, Y'), // Feb 10, 2023  
+            'sub_section' => $warehouse->description,
+        ];
+
+        $response = [
+            'header'           => $header,
+            'body'             => $data,
+            'footer'           => []
+        ];
+
+        return Crypt::encryptString(json_encode($response));
+    }
+    
     
 }

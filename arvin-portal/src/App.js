@@ -206,6 +206,11 @@ const IndexMonitoringCheckCounter = lazy(() =>
     "./apps/aim/epaycheck/report/monitoringCheckCounter/pages/IndexMonitoringCheckCounter"
   )
 );
+const IndexReceivedCheckCounter = lazy(() =>
+  import(
+    "./apps/aim/epaycheck/report/ReceivedCheckCounter/pages/IndexReceivedCheckCounter"
+  )
+);
 //EPAYCHECK END
 
 const theme = createTheme({
@@ -918,6 +923,20 @@ function App() {
                           })}
                         >
                           <IndexMonitoringCheckCounter/>
+                        </PrivateRoute>
+                      }
+                    />
+                     <Route
+                      path="/Modules/E-PayCheck/Reports/ReceivedCheck"
+                      element={
+                        <PrivateRoute
+                          accessChecker={getAccessChecker({
+                            module: "E-Pay Check",
+                            component: "Reports",
+                            subComponent: "Received Check",
+                          })}
+                        >
+                          <IndexReceivedCheckCounter/>
                         </PrivateRoute>
                       }
                     />

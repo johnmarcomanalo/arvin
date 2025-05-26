@@ -139,6 +139,8 @@ const Table = ({ title, data }) => {
         <>
           <Text style={styles.title}>{title}</Text>
           {Object.entries(data).map(([date, rows]) => (
+            console.log(rows),
+            
             <View key={date} style={styles.dateSection}>
               <Text style={styles.subtitle}>
                 {moment(date).format("MMMM DD, YYYY")} (Count: {rows.length})
@@ -176,6 +178,7 @@ const Table = ({ title, data }) => {
                     ))}
                   </View>
                 ))}
+                
               <View style={styles.row}> 
                 <Text style={[styles.smallCell,styles.footerHighlightTop]}>NO OF CHECKS</Text>
                 <Text style={[styles.smallCell,styles.footerHighlightTop]}>{rows.length}</Text> 

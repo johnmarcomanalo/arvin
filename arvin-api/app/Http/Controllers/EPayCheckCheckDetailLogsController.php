@@ -78,7 +78,11 @@ class EPayCheckCheckDetailLogsController extends Controller
                 return !empty($exclude) && in_array($item->code, (array) $exclude);
             })
             ->when($group_by_date, function ($filteredData)  use ($type) {
-                return $filteredData->groupBy(function ($item) {
+                return $filteredData
+                ->sortByDesc(function ($item) {
+                    return \Carbon\Carbon::parse($item->check_status_date);
+                })
+                ->groupBy(function ($item) {
                     return \Carbon\Carbon::parse($item->check_status_date)->format('Y-m-d'); // Group by date
                 })->map(function ($items) use ($type) {
                     if ($type == 'ON-HAND') {

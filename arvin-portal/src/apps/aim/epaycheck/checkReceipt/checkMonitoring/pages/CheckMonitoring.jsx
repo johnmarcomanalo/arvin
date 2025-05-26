@@ -210,7 +210,13 @@ const CheckMonitoring = (props) => {
                     paginationShow={false}
                     subAction1Show={true}
                     subAction2Show={true}
-                    onSortChange={check.onChangeSorting}
+                    onSortChange={check.onChangeSorting} 
+                    getRowStyle={(row) => {
+                      if (row.check_status === "ON-HAND" && row.current_date_is_less_than_check_date) {
+                        return { backgroundColor: "#FFEAEA" };
+                      }
+                      return {}; // default style
+                    }}
                     action={(row, index) => {
                       if (row.check_status!=="REJECTED") {
                         return ( 
