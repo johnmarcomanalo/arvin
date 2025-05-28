@@ -21,6 +21,14 @@ const ReceivedCheckCounterHooks = (props) => {
   const access           = useSelector((state) => state.AuthenticationReducer.access);
   const refresh          = useSelector((state) => state.EpayCheckReducer.refresh);
   const reportData       = useSelector((state) => state.EpayCheckReducer.reportData);
+  const listWarehouse    =[
+    {
+      description:"ALL",
+      code: "ALL"
+    },
+    ...access.user_access_organization_rights
+  ]; 
+ 
   
   const [state, setState] = React.useState({
     debounceTimer: null,
@@ -106,6 +114,7 @@ const ReceivedCheckCounterHooks = (props) => {
     status,
     reportData,
     filterStatus,
+    listWarehouse,
     onChangeFilterStart,
     onChangeFilterEnd, 
     onChangeFilteSubsection,
