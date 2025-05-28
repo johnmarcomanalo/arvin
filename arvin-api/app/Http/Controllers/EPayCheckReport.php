@@ -201,11 +201,13 @@ class EPayCheckReport extends Controller
 
         if ($validated['sc'] === 'ALL') {
             $get_user_login = Auth::user()->code;
-            $allSection     = UserAccessOrganizationRights::where('subsection_code',$get_user_login)->pluck('subsection_code');
+            $allSection     = UserAccessOrganizationRights::where('user_id',$get_user_login)->pluck('subsection_code')->unique();
             $query->whereIn('subsection_code', $allSection);
+            $warehouse = 'ALL';
         }else{
+            $warehouse = RefSubSections::where('code',$validated['sc'])->first()->description;
             $query->where('subsection_code',$validated['sc']); 
-        }
+        }   
 
         $query->whereBetween('received_date', [$df, $dt]);
         $query->where('check_status', 'TRANSMITTED');
@@ -226,17 +228,16 @@ class EPayCheckReport extends Controller
                 'deposited_bank'     => explode(" ",$value->deposited_bank)[0] ?? '',
                 'rejected_date'      => !empty($value->rejected_date) ? Carbon::parse($value->rejected_date)->format("Y-m-d") : "",
                 'received_date'      => !empty($value->received_date) ? Carbon::parse($value->received_date)->format("Y-m-d") : "",
-                'created_at'      => !empty($value->created_at) ? Carbon::parse($value->created_at)->format("Y-m-d") : "",
+                'created_at'         => !empty($value->created_at) ? Carbon::parse($value->created_at)->format("Y-m-d") : "",
             ];
         }
-            
-        $warehouse = RefSubSections::where('code',$validated['sc'])->first();
+        
 
         $header = [
-            'title'       =>'RECEIVED CHECK COUNTER',
+            'title'       => 'RECEIVED CHECK COUNTER',
             'date_from'   => Carbon::parse($validated['df'])->format('M d, Y'), // Feb 10, 2023
             'date_to'     => Carbon::parse($validated['dt'])->format('M d, Y'), // Feb 10, 2023  
-            'sub_section' => $warehouse->description,
+            'sub_section' =>  $warehouse,
         ];
 
         $response = [

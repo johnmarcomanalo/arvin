@@ -72,7 +72,7 @@ const ReceivedCheckCounter = (props) => {
                     id="filter_user_access_organization_rights"
                     name="filter_user_access_organization_rights"
                     label="Warehouse"
-                    options={check?.access.user_access_organization_rights}
+                    options={check?.listWarehouse}
                     getOptionLabel={(option) =>
                       option?.description ? option?.description : ""
                     }
