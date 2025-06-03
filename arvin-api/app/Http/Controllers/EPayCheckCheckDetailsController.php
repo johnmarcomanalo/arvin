@@ -436,13 +436,19 @@ class EPayCheckCheckDetailsController extends Controller
                     ->orWhere('bank_branch', 'like', "%{$query}%") 
                     ->orWhereRaw("CAST(check_amount AS VARCHAR) LIKE ?", ["%{$query}%"])
                     ->orWhere('check_number', 'like', "%{$query}%")
+                    ->orWhere('account_number', 'like', "%{$query}%")
                     ->orWhere('prefix_crpr', 'like', "%{$query}%");
             });
         }) 
-        ->when(in_array($status, ['DEPOSITED', 'TRANSMITTED','REJECTED']), function ($q) use ($df, $dt) {
+        ->when(in_array($status, ['DEPOSITED', 'TRANSMITTED','REJECTED']), function ($q) use ($df, $dt,$status) {
+            $q->whereBetween(DB::raw("CAST(check_status_date AS DATE)"), [$df, $dt])->where('check_status', $status);
+        })
+        ->when($status=="ON-HAND", function($q) use ($status) {
+            $q->where('check_status', $status);
+        })
+        ->when($status=="ALL", function($q) use ($df, $dt) {
             $q->whereBetween(DB::raw("CAST(check_status_date AS DATE)"), [$df, $dt]);
         })
-        ->where('check_status', $status)
         // ->whereIn('request_status',['APPROVED','NONE'])
         ->where('subsection_code', $sc)
         ->get(); // Get all data (without pagination)

@@ -218,31 +218,36 @@ const CheckMonitoring = (props) => {
                       return {}; // default style
                     }}
                     action={(row, index) => {
-                      if (row.check_status!=="REJECTED") {
-                        return ( 
-                          <Checkbox 
-                            checked={check.selectedDataList.includes(row.code)}
-                            onChange={async (e) => { 
-                                check.handleCheckboxChange(row,e.target.checked); 
-                            }}
-                            size="medium"
-                            sx={{ height: "23px", margin: "-10px" }}
-                            disabled={row.status === "CLOSED"}
-                          />
-                        )
+                      if(check.filterStatus!="ALL"){
+                          if (row.check_status!=="REJECTED") {
+                            return ( 
+                              <Checkbox 
+                                checked={check.selectedDataList.includes(row.code)}
+                                onChange={async (e) => { 
+                                    check.handleCheckboxChange(row,e.target.checked); 
+                                }}
+                                size="medium"
+                                sx={{ height: "23px", margin: "-10px" }}
+                                disabled={row.status === "CLOSED"}
+                              />
+                            )
+                          }else{
+                            return (
+                              <Tooltip title="Close Reject">
+                                <CancelIcon
+                                  onClick={() => check.onClickOpenCloseRejectedModal(row)}
+                                  style={{
+                                    color: "#009197",
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              </Tooltip>
+                            )
+                          }
                       }else{
-                        return (
-                          <Tooltip title="Close Reject">
-                            <CancelIcon
-                              onClick={() => check.onClickOpenCloseRejectedModal(row)}
-                              style={{
-                                color: "#009197",
-                                cursor: "pointer",
-                              }}
-                            />
-                          </Tooltip>
-                        )
+                        <></>
                       }
+                     
                      
                     }}
                 /> 
@@ -292,16 +297,20 @@ const CheckMonitoring = (props) => {
                     // </ButtonGroup>
                     <></>
                   ) : (
-                    <ButtonGroup disableElevation aria-label="Disabled button group">
-                        <ButtonComponent
-                          stx={configure.default_button}
-                          iconType="delete"
-                          type="button"
-                          fullWidth={true}
-                          children={"Undo " + check.filterStatus}
-                          click={check.onClickUndo}
-                        />
-                    </ButtonGroup>
+                   check.filterStatus!="ALL" && (
+                    <>
+                      <ButtonGroup disableElevation aria-label="Disabled button group">
+                          <ButtonComponent
+                            stx={configure.default_button}
+                            iconType="delete"
+                            type="button"
+                            fullWidth={true}
+                            children={"Undo " + check.filterStatus}
+                            click={check.onClickUndo}
+                          />
+                      </ButtonGroup>
+                    </>
+                   )
                   )}
                 </Stack>
               </Grid>

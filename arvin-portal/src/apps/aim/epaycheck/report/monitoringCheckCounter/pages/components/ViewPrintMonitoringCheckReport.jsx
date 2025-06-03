@@ -1,20 +1,16 @@
-import React, { useState, useEffect } from "react";
 import {
   Document,
+  Font,
   Page,
+  PDFViewer,
+  StyleSheet,
   Text,
   View,
-  StyleSheet,
-  PDFViewer,
-  Font,
 } from "@react-pdf/renderer";
-import PoppinsRegular from "../../../../../../../utils/font/Poppins-Regular.ttf";
+import { useEffect, useState } from "react";
 import PoppinsBold from "../../../../../../../utils/font/Poppins-Bold.ttf";
-import { ViewAmountFormatingDecimals } from 'utils/AccountingUtils'
-import PoppinsBoldItalic from "../../../../../../../utils/font/Poppins-BoldItalic.ttf";
+import PoppinsRegular from "../../../../../../../utils/font/Poppins-Regular.ttf";
 import PoppinsSemiBoldItalic from "../../../../../../../utils/font/Poppins-SemiBoldItalic.ttf";
-import { CircularProgress } from "@mui/material";
-import moment from "moment";
 // Register fonts
 Font.register({
   family: "PoppinsRegular",

@@ -14,7 +14,8 @@ import ViewPrintMonitoringCheckReport from "../pages/components/ViewPrintMonitor
 let formName = "MonitoringCheckCounter";
 const MonitoringCheckCounter = (props) => {
   const { ...check } = MonitoringCheckCounterHooks(props);
-  const matches = useMediaQuery("(min-width:600px)");
+  const matches = useMediaQuery("(min-width:600px)"); 
+  
   return (
     <React.Fragment>
       <Grid container spacing={1}>
@@ -88,7 +89,7 @@ const MonitoringCheckCounter = (props) => {
                     id="filter_user_access_organization_rights"
                     name="filter_user_access_organization_rights"
                     label="Warehouse"
-                    options={check?.access.user_access_organization_rights}
+                    options={check?.access.user_access_organization_rights?.sort((a, b) => a.description.localeCompare(b.description))}
                     getOptionLabel={(option) =>
                       option?.description ? option?.description : ""
                     }
