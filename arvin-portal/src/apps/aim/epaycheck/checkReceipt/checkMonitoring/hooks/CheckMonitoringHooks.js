@@ -71,11 +71,12 @@ const CheckMonitoringHooks = (props) => {
         { id:"dr_number", label:"DR Number", align:"left", sortable: false},
     ];
      
-    const status = [ 
+    const status = [
         { status:true , description: 'ON-HAND'},
         { status:true  , description: 'DEPOSITED'},
         { status:true  , description: 'TRANSMITTED'},
         { status:false  , description: 'REJECTED'},
+        { status:false  , description: 'ALL'},
     ]
 
     const epay_selection = [
@@ -132,7 +133,7 @@ const CheckMonitoringHooks = (props) => {
         const search = event.target.value;
         setSearchParams({ 
           q  : search,
-          p  : page,
+          p  : 1,
           df : filterStartQuery,
           dt : filterEndQuery,
           s  : filterStatus,
