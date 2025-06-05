@@ -76,7 +76,7 @@ class EPayCheckCheckDetailsController extends Controller
                     Rule::unique('e_pay_check_check_details', 'check_number')
                         ->where(function ($query) use ($request) {
                             return $query->where('card_code', $request->card_code)
-                                            ->whereIn('check_status', ['ONHAND', 'TRANSMITTED', 'DEPOSITED']);
+                                            ->whereIn('check_status', ['ON-HAND', 'TRANSMITTED', 'DEPOSITED']);
                         }),
                 ],
                 'card_name'        => 'required',
