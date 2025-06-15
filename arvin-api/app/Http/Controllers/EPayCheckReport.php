@@ -102,11 +102,16 @@ class EPayCheckReport extends Controller
             $validated            = $validator->validated();
             $df     = $validated['df'];
             $dt     = $validated['dt'];
+            $sc     = $validated['sc'];
             
-            if ($validated['sc']=='ALL') {      
-                $get_user_login = Auth::user()->code;
-                $allSection     = UserAccessOrganizationRights::where('subsection_code',$get_user_login)->pluck('subsection_code');
-           }
+        //     if ($validated['sc']=='ALL') {      
+        //         $get_user_login = Auth::user()->code;
+        //         $allSection     = UserAccessOrganizationRights::where('subsection_code',$get_user_login)->pluck('subsection_code');
+        //    }
+           if(in_array($sc, ['Provincial','Manila Branch'])){
+                $organization_rights = UserAccessOrganizationRights::where('user_id', auth()->user()->code)->where('department_description',$sc)->get();
+                $sc = $organization_rights->pluck('subsection_code')->toArray();
+            }
   
            $query =  DB::table('vw_epay_check_get_check_details')
                     ->select(
@@ -114,47 +119,91 @@ class EPayCheckReport extends Controller
                         'subsection_code','deposited_date','deposited_bank','rejected_date','received_date','created_at','check_status'
                     );
 
-            if ($validated['sc'] === 'ALL') {
-                $query->whereIn('subsection_code', $allSection);
-            }else{
-                $query->where('subsection_code',$validated['sc']); 
-            }
-
-            $query->when(in_array($validated['st'], ['DEPOSITED', 'TRANSMITTED','REJECTED']), function ($q) use ($df, $dt) {
+            // if ($validated['sc'] === 'ALL') {
+            //     $query->whereIn('subsection_code', $allSection);
+            // }else{
+            //     $query->where('subsection_code',$validated['sc']); 
+            // }
+            $query->when(is_array($sc), function ($query) use ($sc) {
+                $query->whereIn('subsection_code', $sc);
+            }, function ($q) use ($sc) {
+                $q->where('subsection_code', $sc);
+            })
+            ->when(in_array($validated['st'], ['DEPOSITED', 'TRANSMITTED','REJECTED']), function ($q) use ($df, $dt) {
                 $q->whereBetween(DB::raw("CAST(check_status_date AS DATE)"), [$df, $dt]);
             })
             ->where('check_status', $validated['st']);
 
             $results = $query->get();
-            $data = [];
-            foreach ($results as $key => $value) {
-                $data[] = [
-                    'account_number'     => $value->account_number,
-                    'card_name'          => $value->card_name,
-                    'check_number'       => $value->check_number,
-                    'check_date'         => !empty($value->check_date) ? Carbon::parse($value->check_date)->format("Y-m-d") : "",
-                    'check_amount'       => $value->check_amount,
-                    'check_status_date'  => !empty($value->check_status_date) ? Carbon::parse($value->check_status_date)->format("Y-m-d") : "",
-                    'prefix_crpr'        => $value->prefix_crpr,
-                    'bank_description'   => $value->bank_description,
-                    'subsection_code'    => $value->subsection_code,
-                    'deposited_date'     => !empty($value->deposited_date) ? Carbon::parse($value->deposited_date)->format("Y-m-d") : "",
-                    'deposited_bank'     => explode(" ",$value->deposited_bank)[0] ?? '',
-                    'check_status'     => $value->check_status,
-                    'rejected_date'      => !empty($value->rejected_date) ? Carbon::parse($value->rejected_date)->format("Y-m-d") : "",
-                    'received_date'      => !empty($value->received_date) ? Carbon::parse($value->received_date)->format("Y-m-d") : "",
-                    'created_at'      => !empty($value->created_at) ? Carbon::parse($value->created_at)->format("Y-m-d") : "",
-                ];
+            $data = []; 
+            if (is_array($sc)) {
+                $groupedData = []; 
+                foreach ($results as $value) {
+                    // Retrieve warehouse name using subsection_code
+                    $warehouseInfo = UserAccessOrganizationRights::where('subsection_code', $value->subsection_code)->first();
+                    $warehouse = $warehouseInfo ? strtoupper($warehouseInfo->subsection_description) : 'UNKNOWN';
+            
+                    $groupedData[$warehouse][] = [
+                        'account_number'     => $value->account_number,
+                        'card_name'          => $value->card_name,
+                        'check_number'       => $value->check_number,
+                        'check_date'         => !empty($value->check_date) ? Carbon::parse($value->check_date)->format("Y-m-d") : "",
+                        'check_amount'       => $value->check_amount,
+                        'check_status_date'  => !empty($value->check_status_date) ? Carbon::parse($value->check_status_date)->format("Y-m-d") : "",
+                        'prefix_crpr'        => $value->prefix_crpr,
+                        'bank_description'   => $value->bank_description,
+                        'subsection_code'    => $value->subsection_code,
+                        'deposited_date'     => !empty($value->deposited_date) ? Carbon::parse($value->deposited_date)->format("Y-m-d") : "",
+                        'deposited_bank'     => explode(" ", $value->deposited_bank)[0] ?? '',
+                        'check_status'       => $value->check_status,
+                        'rejected_date'      => !empty($value->rejected_date) ? Carbon::parse($value->rejected_date)->format("Y-m-d") : "",
+                        'received_date'      => !empty($value->received_date) ? Carbon::parse($value->received_date)->format("Y-m-d") : "",
+                        'created_at'         => !empty($value->created_at) ? Carbon::parse($value->created_at)->format("Y-m-d") : "",
+                    ];
+                }
+            
+                // Sort the grouped data by warehouse name (ascending)
+                ksort($groupedData);
+            
+                $data = $groupedData;
+            
+            } else {
+                foreach ($results as $value) {
+                    $data[] = [
+                        'account_number'     => $value->account_number,
+                        'card_name'          => $value->card_name,
+                        'check_number'       => $value->check_number,
+                        'check_date'         => !empty($value->check_date) ? Carbon::parse($value->check_date)->format("Y-m-d") : "",
+                        'check_amount'       => $value->check_amount,
+                        'check_status_date'  => !empty($value->check_status_date) ? Carbon::parse($value->check_status_date)->format("Y-m-d") : "",
+                        'prefix_crpr'        => $value->prefix_crpr,
+                        'bank_description'   => $value->bank_description,
+                        'subsection_code'    => $value->subsection_code,
+                        'deposited_date'     => !empty($value->deposited_date) ? Carbon::parse($value->deposited_date)->format("Y-m-d") : "",
+                        'deposited_bank'     => explode(" ", $value->deposited_bank)[0] ?? '',
+                        'check_status'       => $value->check_status,
+                        'rejected_date'      => !empty($value->rejected_date) ? Carbon::parse($value->rejected_date)->format("Y-m-d") : "",
+                        'received_date'      => !empty($value->received_date) ? Carbon::parse($value->received_date)->format("Y-m-d") : "",
+                        'created_at'         => !empty($value->created_at) ? Carbon::parse($value->created_at)->format("Y-m-d") : "",
+                    ];
+                }
             }
             
-            $warehouse = RefSubSections::where('code',$validated['sc'])->first();
+            
+            
+            if (is_array($sc)) {
+                $warehouse = $validated['sc']==='Provincial'? 'WHS PROVINCE': 'WHS MANILA';
+            }else{ 
+                $warehouse = RefSubSections::where('code',$validated['sc'])->first()->description;
+            }
 
             $header = [
                 'title'       =>'MONITORING CHECK COUNTER',
                 'date_from'   => Carbon::parse($validated['df'])->format('M d, Y'), // Feb 10, 2023
                 'date_to'     => Carbon::parse($validated['dt'])->format('M d, Y'), // Feb 10, 2023 
                 'status'      => $validated['st'],
-                'sub_section' => $warehouse->description,
+                'sub_section' => strtoupper($warehouse),
+                'group'       => is_array($sc)
             ];
         
 
@@ -237,7 +286,7 @@ class EPayCheckReport extends Controller
             'title'       => 'RECEIVED CHECK COUNTER',
             'date_from'   => Carbon::parse($validated['df'])->format('M d, Y'), // Feb 10, 2023
             'date_to'     => Carbon::parse($validated['dt'])->format('M d, Y'), // Feb 10, 2023  
-            'sub_section' =>  $warehouse,
+            'sub_section' => strtoupper($warehouse),
         ];
 
         $response = [

@@ -109,9 +109,14 @@ const CheckCollectionHooks = (props) => {
 
       // if there is a selected item, reset the state
       if (selectedItem) {
-        setState({
+        // setState({
+        //   invoice_list: [],
+        // });
+        setState((prev) => ({
+          ...prev,
           invoice_list: [],
-        });
+          advancePayment: prev.advancePayment
+        })); 
       }
       props.change("card_code", selectedItem?.cardcode);
       props.change("card_name", selectedItem?.cardname); 

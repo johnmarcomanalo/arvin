@@ -77,6 +77,8 @@
     { "name": "Tonik Digital Bank, Inc. (Tonik) (Tonik)", "shortname": "Tonik" },
     { "name": "UNO Digital Bank (UNO Bank) (UNO Bank)", "shortname": "UNO Bank" },
     { "name": "Overseas Filipino Bank, Inc. (OFBank) (OFBank)", "shortname": "OFBank" },
-    { "name": "Philippine Business Bank (PBB)", "shortname": "PBB" }
+    { "name": "Philippine Business Bank (PBB)", "shortname": "PBB" },
+    { "name": "Bank of Commerce (BankCom)", "shortname": "BankCom" },
+    { "name": "ASPAC Bank (ASPAC)", "shortname": "ASPAC" }
   ]
 }
