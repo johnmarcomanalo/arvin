@@ -7,6 +7,7 @@ use App\Models\EPayCheckCheckDetailLogs;
 use App\Models\EPayCheckCheckDetails;
 use App\Models\EPayCheckCheckSalesInvoiceDetails;
 use App\Models\EPayCheckReceiptDetails;
+use App\Models\UserAccessOrganizationRights;
 use App\Models\EPayCheckReject;
 use App\Models\RefDepartments;
 use App\Models\RefSubSections;
@@ -389,8 +390,7 @@ class EPayCheckCheckDetailsController extends Controller
     }
      
     public function get_check_details(Request $request)
-    { 
-    
+    {  
         $customMessages = [
             'dt.after_or_equal' => 'The selected end date must be the same as or later than the start date.',
             'df.date_format'    => 'The start date must be in YYYY-MM-DD format.',
@@ -425,6 +425,11 @@ class EPayCheckCheckDetailsController extends Controller
         $df     = $validated['df'];
         $dt     = $validated['dt'];
         $sc     = $validated['sc']; 
+
+        if(in_array($sc, ['Provincial','Manila Branch'])){
+            $organization_rights = UserAccessOrganizationRights::where('user_id', auth()->user()->code)->where('department_description',$sc)->get();
+            $sc = $organization_rights->pluck('subsection_code')->toArray();
+        }
         
        $check_details =  DB::table('vw_epay_check_get_check_details')
         ->when($query, function ($q) use ($query) {
@@ -450,7 +455,11 @@ class EPayCheckCheckDetailsController extends Controller
             $q->whereBetween(DB::raw("CAST(check_status_date AS DATE)"), [$df, $dt]);
         })
         // ->whereIn('request_status',['APPROVED','NONE'])
-        ->where('subsection_code', $sc)
+        ->when(is_array($sc), function ($query) use ($sc) {
+            $query->whereIn('subsection_code', $sc);
+        }, function ($q) use ($sc) {
+            $q->where('subsection_code', $sc);
+        })
         ->get(); // Get all data (without pagination)
     
         // Convert to Collection

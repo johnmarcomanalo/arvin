@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
   },
   section: { marginBottom: 10 },
   title: { fontSize: 11, fontWeight: "bold", marginBottom: 0, fontFamily: "PoppinsBold" },
+  warehouseTitle: { fontSize: 11, fontWeight: "bold", marginBottom: 0, fontFamily: "PoppinsBold" },
   subtitle: { fontSize: 9, fontWeight: "bold", marginBottom: 1,marginTop:7, fontFamily: "PoppinsBold" },
   headerGroup: { marginBottom: 2, textAlign: "left" },
   headerText: { fontSize: 10, margin:1, fontFamily: "PoppinsRegular" },
@@ -44,13 +45,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold" },
   cell: { padding: 3, 
     // borderBottom: "0.5px solid black", 
-    flex: 1.5, textAlign: "left", fontSize: 10.5, },
+    flex: 1.5, textAlign: "left", fontSize: 9, },
     tinyCell: { padding: 2, 
       // borderBottom: "0.5px solid black", 
-      flex:.5, textAlign: "left", fontSize: 10.5, },
+      flex:.3, textAlign: "left", fontSize: 9, },
   smallCell: { flex: 1, padding: 3, 
     // borderBottom: "0.5px solid black", 
-    textAlign: "left", fontSize:10.5,  },
+    textAlign: "left", fontSize:9,  },
   footer: {
     marginTop: 15,
     paddingBottom:15,
@@ -108,67 +109,125 @@ const headers = [
   {id:"check_status_date",description:"STATUS DATE"}, //11
 ];
 
-
-const Table = ({ data,status }) => {
-  
-  return (
-    <View style={styles.section}>
-      <View>
-        {/* Table Header */}
-        <View style={[styles.row, { backgroundColor: "#ddd" }]}> 
-          <>
-            <Text style={styles.tinyCell}>#</Text>  
-            <Text style={styles.smallCell}>{headers[0].description}</Text>  
-            <Text style={styles.smallCell}>{headers[1].description}</Text>  
-            <Text style={styles.smallCell}>{headers[2].description}</Text>  
-            <Text style={styles.smallCell}>{headers[3].description}</Text>  
-            <Text style={styles.smallCell}>{headers[4].description}</Text>  
-            <Text style={styles.cell}>{headers[5].description}</Text>  
-            <Text style={styles.smallCell}>{headers[6].description}</Text>  
-            <Text style={styles.smallCell}>{headers[7].description}</Text>  
-            {status === 'DEPOSITED' && (
-              <>
-              <Text style={styles.smallCell}>{headers[8].description}</Text>
-                <Text style={styles.cell}>{headers[9].description}</Text>  
-              </>
-            )}
-            {status === 'TRANSMITTED' && (
-            <Text style={styles.smallCell}>{headers[10].description}</Text>   
-          )}
-          <Text style={styles.smallCell}>{headers[11].description}</Text>    
-          </> 
  
-      </View> 
-        {/* Table Rows */}
-        {Array.isArray(data) &&
-          data.map((row, rowIndex) => (
-            <View key={rowIndex} style={styles.row}>
-              <Text style={styles.tinyCell}>{++rowIndex}</Text>
-              <Text style={styles.smallCell}>{row.created_at}</Text>
-              <Text style={styles.smallCell}>{row.account_number}</Text>
-              <Text style={styles.smallCell}>{row.check_number}</Text>
-              <Text style={styles.smallCell}>{row.check_date}</Text>
-              <Text style={styles.smallCell}>{row.check_amount}</Text>
-              <Text style={styles.cell}>{row.card_name}</Text>
-              <Text style={styles.smallCell}>{row.prefix_crpr}</Text>
-              <Text style={styles.smallCell}>{row.bank_description}</Text> 
+  const Table = ({ data, group, status }) => {
+    return (
+      <View style={styles.section}>
+        {group ? (
+          data && typeof data === 'object' ? (
+            Object.entries(data).map(([warehouse, rows], index) => (
+              <View key={index}>
+                {/* Warehouse Header */}
+                <Text style={styles.warehouseTitle}>{warehouse}</Text>
+  
+                {/* Table Header */}
+                <View style={[styles.row, { backgroundColor: "#ddd" }]}>
+                  <Text style={styles.tinyCell}>#</Text>
+                  <Text style={styles.smallCell}>{headers[0]?.description}</Text>
+                  <Text style={styles.smallCell}>{headers[1]?.description}</Text>
+                  <Text style={styles.smallCell}>{headers[2]?.description}</Text>
+                  <Text style={styles.smallCell}>{headers[3]?.description}</Text>
+                  <Text style={styles.smallCell}>{headers[4]?.description}</Text>
+                  <Text style={styles.cell}>{headers[5]?.description}</Text>
+                  <Text style={styles.smallCell}>{headers[6]?.description}</Text>
+                  <Text style={styles.smallCell}>{headers[7]?.description}</Text>
+                  {status === 'DEPOSITED' && (
+                    <>
+                      <Text style={styles.smallCell}>{headers[8]?.description}</Text>
+                      <Text style={styles.cell}>{headers[9]?.description}</Text>
+                    </>
+                  )}
+                  {status === 'TRANSMITTED' && (
+                    <Text style={styles.smallCell}>{headers[10]?.description}</Text>
+                  )}
+                  <Text style={styles.smallCell}>{headers[11]?.description}</Text>
+                </View>
+  
+                {/* Table Rows */}
+                {Array.isArray(rows) &&
+                  rows.map((row, rowIndex) => (
+                    <View key={rowIndex} style={styles.row}>
+                      <Text style={styles.tinyCell}>{rowIndex + 1}</Text>
+                      <Text style={styles.smallCell}>{row.created_at}</Text>
+                      <Text style={styles.smallCell}>{row.account_number}</Text>
+                      <Text style={styles.smallCell}>{row.check_number}</Text>
+                      <Text style={styles.smallCell}>{row.check_date}</Text>
+                      <Text style={styles.smallCell}>{row.check_amount}</Text>
+                      <Text style={styles.cell}>{row.card_name}</Text>
+                      <Text style={styles.smallCell}>{row.prefix_crpr}</Text>
+                      <Text style={styles.smallCell}>{row.bank_description}</Text>
+                      {status === 'DEPOSITED' && (
+                        <>
+                          <Text style={styles.smallCell}>{row.deposited_date}</Text>
+                          <Text style={styles.cell}>{row.deposited_bank}</Text>
+                        </>
+                      )}
+                      {status === 'TRANSMITTED' && (
+                        <Text style={styles.smallCell}>{row.received_date}</Text>
+                      )}
+                      <Text style={styles.smallCell}>{row.check_status_date}</Text>
+                    </View>
+                  ))}
+              </View>
+            ))
+          ) : (
+            <Text>No data available</Text>
+          )
+        ) : (
+          <>
+            {/* Table Header */}
+            <View style={[styles.row, { backgroundColor: "#ddd" }]}>
+              <Text style={styles.tinyCell}>#</Text>
+              <Text style={styles.smallCell}>{headers[0]?.description}</Text>
+              <Text style={styles.smallCell}>{headers[1]?.description}</Text>
+              <Text style={styles.smallCell}>{headers[2]?.description}</Text>
+              <Text style={styles.smallCell}>{headers[3]?.description}</Text>
+              <Text style={styles.smallCell}>{headers[4]?.description}</Text>
+              <Text style={styles.cell}>{headers[5]?.description}</Text>
+              <Text style={styles.smallCell}>{headers[6]?.description}</Text>
+              <Text style={styles.smallCell}>{headers[7]?.description}</Text>
               {status === 'DEPOSITED' && (
                 <>
-                  <Text style={styles.smallCell}>{row.deposited_date}</Text>
-                   <Text style={styles.cell}>{row.deposited_bank}</Text> 
+                  <Text style={styles.smallCell}>{headers[8]?.description}</Text>
+                  <Text style={styles.cell}>{headers[9]?.description}</Text>
                 </>
               )}
               {status === 'TRANSMITTED' && (
-                <Text style={styles.smallCell}>{row.received_date}</Text>
+                <Text style={styles.smallCell}>{headers[10]?.description}</Text>
               )}
-             
-              <Text style={styles.smallCell}>{row.check_status_date}</Text>
+              <Text style={styles.smallCell}>{headers[11]?.description}</Text>
             </View>
-          ))}
+  
+            {/* Table Rows */}
+            {Array.isArray(data) &&
+              data.map((row, rowIndex) => (
+                <View key={rowIndex} style={styles.row}>
+                  <Text style={styles.tinyCell}>{rowIndex + 1}</Text>
+                  <Text style={styles.smallCell}>{row.created_at}</Text>
+                  <Text style={styles.smallCell}>{row.account_number}</Text>
+                  <Text style={styles.smallCell}>{row.check_number}</Text>
+                  <Text style={styles.smallCell}>{row.check_date}</Text>
+                  <Text style={styles.smallCell}>{row.check_amount}</Text>
+                  <Text style={styles.cell}>{row.card_name}</Text>
+                  <Text style={styles.smallCell}>{row.prefix_crpr}</Text>
+                  <Text style={styles.smallCell}>{row.bank_description}</Text>
+                  {status === 'DEPOSITED' && (
+                    <>
+                      <Text style={styles.smallCell}>{row.deposited_date}</Text>
+                      <Text style={styles.cell}>{row.deposited_bank}</Text>
+                    </>
+                  )}
+                  {status === 'TRANSMITTED' && (
+                    <Text style={styles.smallCell}>{row.received_date}</Text>
+                  )}
+                  <Text style={styles.smallCell}>{row.check_status_date}</Text>
+                </View>
+              ))}
+          </>
+        )}
       </View>
-    </View>
-  );
-};
+    );
+  }; 
  
  
 const pageWidth = 13 * 72;   // 936 pt
@@ -198,7 +257,8 @@ const ViewPrintWeeklyCheckReport = (props) => {
   const header_date_to     = header_data?.date_to
   const header_subsection  = header_data?.sub_section
   const header_title       = header_data?.title 
-  const header_status       = header_data?.status 
+  const header_status      = header_data?.status 
+  const header_group       = header_data?.group 
 
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
@@ -227,7 +287,7 @@ const ViewPrintWeeklyCheckReport = (props) => {
           </View>
   
           {/* Tables */}
-          <Table data={body} status={header_status}/>
+          <Table data={body} group={header_group} status={header_status}/>
    
         </Page>
 

@@ -69,6 +69,7 @@ const CheckMonitoringHooks = (props) => {
         { id:"prefix_crpr", label:"CR/PR", align:"left", sortable: true},
         { id:"sales_invoice", label:"Sales Invoice", align:"left", sortable: false},
         { id:"dr_number", label:"DR Number", align:"left", sortable: false},
+        { id:"received_date", label:"Received Date", align:"left", sortable: false},
     ];
      
     const status = [
@@ -78,6 +79,35 @@ const CheckMonitoringHooks = (props) => {
         { status:false  , description: 'REJECTED'},
         { status:false  , description: 'ALL'},
     ]
+
+    const groupedSorted = (data) => {
+      if (data.length === 0) return [];
+    
+      const sortByDescription = (arr) =>
+        arr.sort((a, b) => a.description.localeCompare(b.description));
+    
+      const manila = sortByDescription(
+        data.filter((item) => item.department_description === "Manila Branch")
+      );
+    
+      const provincial = sortByDescription(
+        data.filter((item) => item.department_description === "Provincial")
+      );
+    
+      if (manila.length === 0 && provincial.length === 0) return []; 
+      if (manila.length === 0) return [...provincial];
+      if (provincial.length === 0) return [...manila];
+    
+      return [
+        { code: "Provincial", description: "ALL PROVINCE" },
+        ...provincial,
+        { code: "Manila Branch", description: "ALL MANILA" },
+        ...manila,
+      ];
+    };    
+    
+    const warehouseList = groupedSorted(access.user_access_organization_rights); 
+ 
 
     const epay_selection = [
       {  description:'NO'},
@@ -519,6 +549,7 @@ const CheckMonitoringHooks = (props) => {
         editModal,
         subsection_allowed_to_reject,
         rejectCloseModal,
+        warehouseList,
         onChangeSearch,
         onClickOpenViewModalDeposit,
         onClickCloseViewModalDeposit,
