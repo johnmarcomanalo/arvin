@@ -94,17 +94,31 @@ const CheckMonitoringHooks = (props) => {
         data.filter((item) => item.department_description === "Provincial")
       );
     
-      if (manila.length === 0 && provincial.length === 0) return []; 
-      if (manila.length === 0) return [...provincial];
-      if (provincial.length === 0) return [...manila];
+      const others = sortByDescription(
+        data.filter(
+          (item) =>
+            item.department_description !== "Manila Branch" &&
+            item.department_description !== "Provincial"
+        )
+      );
     
-      return [
-        { code: "Provincial", description: "ALL PROVINCE" },
-        ...provincial,
-        { code: "Manila Branch", description: "ALL MANILA" },
-        ...manila,
-      ];
-    };    
+      const result = [];
+    
+      if (provincial.length > 0) {
+        result.push({ code: "Provincial", description: "- ALL PROVINCE" }, ...provincial);
+      }
+    
+      if (manila.length > 0) {
+        result.push({ code: "Manila Branch", description: "- ALL MANILA" }, ...manila);
+      }
+    
+      if (others.length > 0) {
+        result.push({ code: "Manila Branch", description: "- ALL OTHERS" }, ...others);
+      }
+    
+      return result;
+    };
+        
     
     const warehouseList = groupedSorted(access.user_access_organization_rights); 
  

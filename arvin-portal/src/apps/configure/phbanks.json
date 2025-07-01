@@ -79,6 +79,8 @@
     { "name": "Overseas Filipino Bank, Inc. (OFBank) (OFBank)", "shortname": "OFBank" },
     { "name": "Philippine Business Bank (PBB)", "shortname": "PBB" },
     { "name": "Bank of Commerce (BankCom)", "shortname": "BankCom" },
-    { "name": "ASPAC Bank (ASPAC)", "shortname": "ASPAC" }
+    { "name": "ASPAC Bank (ASPAC)", "shortname": "ASPAC" },
+    { "name": "Mindanao Consolidated Cooperative Bank (MCCB)", "shortname": "MCCB" },
+    { "name": "The Hongkong and Shanghai Banking Corporation Limited (HSBC)", "shortname": "HSBC" }
   ]
 }
