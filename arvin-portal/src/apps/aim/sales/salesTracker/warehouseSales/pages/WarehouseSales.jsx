@@ -57,7 +57,7 @@ let WarehouseSales = (props) => {
   const selected_subsection = salesTracker?.selected_subsection;
   const active_page = salesTracker?.active_page;
   const state = salesTracker?.state;
-  const borrow_data = salesTracker.borrow_data;
+  const borrow_data = salesTracker?.borrow_data;
   const theme = useTheme();
   const matches = useMediaQuery("(min-width:600px)");
   const [open, setOpen] = React.useState(false);
@@ -903,7 +903,9 @@ let WarehouseSales = (props) => {
         <Grid item xs={12} sm={12} md={6} lg={6} id="borrower">
           <ComponentTable
             columns={salesTracker.borrower_columns}
-            dataList={borrow_data.borrower}
+            dataList={
+              borrow_data?.borrower?.length > 0 ? borrow_data.borrower : []
+            }
             page={salesTracker.page}
             rowsPerPage={salesTracker.rowsPerPage}
             handleChangePage={salesTracker.handleChangePage}
@@ -931,7 +933,11 @@ let WarehouseSales = (props) => {
         <Grid item xs={12} sm={12} md={6} lg={6} id="borrower_from">
           <ComponentTable
             columns={salesTracker.borrower_from_columns}
-            dataList={borrow_data.borrower_from}
+            dataList={
+              borrow_data?.borrower_from?.length > 0
+                ? borrow_data.borrower_from
+                : []
+            }
             page={salesTracker.page}
             rowsPerPage={salesTracker.rowsPerPage}
             handleChangePage={salesTracker.handleChangePage}
