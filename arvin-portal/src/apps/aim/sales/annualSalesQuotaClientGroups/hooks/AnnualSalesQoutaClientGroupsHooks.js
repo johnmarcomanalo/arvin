@@ -129,7 +129,17 @@ const AnnualSalesQoutaHooks = (props) => {
     });
   };
   const onSelectItem = (data) => {
-    console.log(data);
+    const res = dispatch(ViewSalesQuota(data.code));
+    res.then((res) => {
+      let decrypted = decryptaes(res.data);
+      dispatch({
+        type: Constants.ACTION_SALES_DAILY_OUT,
+        payload: {
+          updateModal: true,
+          selectedDataList: decrypted,
+        },
+      });
+    });
   };
   const onDeleteDeduction = (data) => {
     console.log(data);
@@ -233,6 +243,7 @@ const AnnualSalesQoutaHooks = (props) => {
       console.log(error);
     }
   };
+  const onClickOpenUpdateModal = () => {};
   const onClickCloseUpdateModal = () => {
     dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
@@ -268,6 +279,7 @@ const AnnualSalesQoutaHooks = (props) => {
     onChangeFilter,
     onClickUpdateClientOut,
     onClickCloseUpdateModal,
+    onClickOpenUpdateModal,
   };
 };
 

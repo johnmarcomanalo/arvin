@@ -276,11 +276,11 @@ class UsersController extends Controller
         // return $employee;
 
             $account_code = MainController::generate_code('App\Models\UsersAccounts',"code");
-            return $password = bcrypt("welcome123");
+            $password = bcrypt("welcome123");
             UsersAccounts::create([
             'code' => $account_code,
-            'user_code' => '1',
-            'username' => 'johnmarcomanalo10',
+            'user_code' => '75',
+            'username' => 'a.bonaagua_peanut',
             'password' => $password,
             // 'company_code' => '1',
             // 'business_unit_code' => '1',
@@ -290,8 +290,8 @@ class UsersController extends Controller
             // 'subsection_code' => '12',
             // 'position' => 'SENIOR PROGRAMMER',
             // 'position_level' =>' ',
-            // 'added_by' => '2',
-            // 'modified_by' => '2',
+            'added_by' => '1',
+            'modified_by' => '1',
         ]);
 
 

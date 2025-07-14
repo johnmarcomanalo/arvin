@@ -114,6 +114,10 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   const today_data = useSelector(
     (state) => state.SalesDailyOutReducer.today_data
   );
+  const borrow_data = useSelector(
+    (state) => state.SalesDailyOutReducer.borrow_data
+  );
+
   const columns = [
     { id: "sales_date", label: "Date", align: "left" },
     { id: "sales_daily_qouta", label: "Daily Quota", align: "left" },
@@ -128,6 +132,17 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       label: "Percent Daily Target",
       align: "left",
     },
+  ];
+  const borrower_columns = [
+    { id: "warehouse", label: "Stock From" },
+    { id: "QtyInKg", label: "Daily Out" },
+    { id: "createdate", label: "Date" },
+  ];
+
+  const borrower_from_columns = [
+    { id: "warehouse2", label: "Borrower" },
+    { id: "QtyInKg", label: "Daily Out" },
+    { id: "createdate", label: "Date" },
   ];
   const active_page = JSON.parse(json_active_page);
   const onClickOpenAddModal = () => {
@@ -360,6 +375,9 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     ytdTotalDailyOutAmount,
     ytdTotalDailyQoutaAmount,
     today_data,
+    borrow_data,
+    borrower_columns,
+    borrower_from_columns,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,

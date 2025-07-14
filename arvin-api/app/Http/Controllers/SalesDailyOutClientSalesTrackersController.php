@@ -87,7 +87,7 @@ class SalesDailyOutClientSalesTrackersController extends Controller
         $page = $request->query('tp'); 
 
         $dataListArray = DB::select("SET NOCOUNT ON  exec dbo.GetSalesDailyOutClientSalesTrackers ?,?,?,?,?,?,?",array($selected_year,$selected_month,$selected_product,$selected_group_code,$bdo,$type,$warehouse));
-        $dataListCollection = collect($dataListArray);
+         $dataListCollection = collect($dataListArray);
         $currentPageItems = $dataListCollection->slice(($page - 1) * $limit, $limit)->values();
         $dataList = new LengthAwarePaginator($currentPageItems, $dataListCollection->count(), $limit, $page, [
             'path' => url()->current(),
@@ -394,9 +394,32 @@ class SalesDailyOutClientSalesTrackersController extends Controller
             [$selected_year, $selected_month, $selected_product, $selected_group_code, $bdo, $type, $warehouse]
         );
 
+        if(!empty($dataListArray)){
+            $dataListCollection = collect($dataListArray)->map(function ($item) {
+                $item = (array) $item; // Convert stdClass to array
+        
+                $item['1-7'] = number_format((float) $item['1-7'], 2);
+                $item['8-14'] = number_format((float) $item['8-14'], 2);
+                $item['15-21'] = number_format((float) $item['15-21'], 2);
+                $item['22-30/31'] = number_format((float) $item['22-30/31'], 2);
+                $item['month_sales_daily_out'] = number_format((float) $item['month_sales_daily_out'], 2);
+                $item['month_sales_daily_qouta'] = number_format((float) $item['month_sales_daily_qouta'], 2);
+                $item['mtd_final_percentage'] = number_format((float) $item['mtd_final_percentage'], 2);
+                $item['mtd_total_daily_out_amount'] = number_format((float) $item['mtd_total_daily_out_amount'], 2);
+                $item['mtd_total_daily_qouta_amount'] = number_format((float) $item['mtd_total_daily_qouta_amount'], 2);
+                $item['mtd_total_status_daily_target'] = number_format((float) $item['mtd_total_status_daily_target'], 2);
+                $item['ytd_total_daily_out_amount'] = number_format((float) $item['ytd_total_daily_out_amount'], 2);
+                $item['ytd_total_daily_qouta_amount'] = number_format((float) $item['ytd_total_daily_qouta_amount'], 2);
+                $item['ytd_total_status_daily_target'] = number_format((float) $item['ytd_total_status_daily_target'], 2);
+                $item['ytd_final_percentage'] = number_format((float) $item['ytd_final_percentage'], 2);
+        
+                return $item;
+            });
+        }
+        
         // Check if pagination parameters exist
         if (!empty($limit) && !empty($page)) {
-            $dataListCollection = collect($dataListArray);
+            // return $dataListCollection = collect($dataListArray);
             $currentPageItems = $dataListCollection->slice(($page - 1) * $limit, $limit)->values();
 
             $dataList = new LengthAwarePaginator($currentPageItems, $dataListCollection->count(), $limit, $page, [
@@ -405,10 +428,11 @@ class SalesDailyOutClientSalesTrackersController extends Controller
             ]);
         } else {
             // No pagination, return all
-            $dataList = $dataListArray;
+            // $dataList = $dataListArray;
+            $dataList = $dataListCollection->values();
         }
 
-        $response = [
+         $response = [
             "dataList" => $dataList,
             'result' => true,
             'title' => 'Success',

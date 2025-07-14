@@ -51,6 +51,7 @@ const initialState = {
   showprovTable: true,
   showbdoTable: false,
   updateModal: false,
+  borrow_data: [],
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
