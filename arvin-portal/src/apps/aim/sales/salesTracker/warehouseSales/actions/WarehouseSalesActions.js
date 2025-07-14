@@ -49,6 +49,7 @@ export const getSalesDailyOut = (values) => async (dispatch) => {
             ytdTotalDailyOutAmount: decrypted.ytdTotalDailyOutAmount,
             ytdTotalDailyQoutaAmount: decrypted.ytdTotalDailyQoutaAmount,
             today_data: decrypted.today_data,
+            borrow_data: decrypted.borrow_data
           },
         });
       } catch (error) {

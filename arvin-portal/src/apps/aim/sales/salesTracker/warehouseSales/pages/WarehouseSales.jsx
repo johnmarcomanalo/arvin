@@ -57,13 +57,25 @@ let WarehouseSales = (props) => {
   const selected_subsection = salesTracker?.selected_subsection;
   const active_page = salesTracker?.active_page;
   const state = salesTracker?.state;
+  const borrow_data = salesTracker.borrow_data;
   const theme = useTheme();
   const matches = useMediaQuery("(min-width:600px)");
   const [open, setOpen] = React.useState(false);
+  const [domBorrowerContent, setDomBorrowerContent] = React.useState("");
+  const [domBorrowFromContent, setDomBorrowFromContent] = React.useState("");
   const today_data = salesTracker?.today_data;
   const handleClickOpen = async () => {
     await setOpen(true);
     await alert("Press 'esc' to exit view mode");
+    const borrower = await document.getElementById("borrower");
+    const borrowFrom = await document.getElementById("borrower_from");
+    if (borrower) {
+      setDomBorrowerContent(borrower.innerHTML); // or element.outerHTML if you want the tag as well
+      setDomBorrowFromContent(borrowFrom.innerHTML); // or element.outerHTML if you want the tag as well
+      setOpen(true);
+    } else {
+      alert("Element not found");
+    }
   };
   const handleClose = () => {
     setOpen(false);
@@ -111,7 +123,7 @@ let WarehouseSales = (props) => {
         TransitionComponent={Transition}
       >
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={12} md={4}></Grid>
+          <Grid item xs={12} sm={12} md={2}></Grid>
           <Grid item xs={12} sm={12} md={4}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={12} md={6}>
@@ -276,7 +288,87 @@ let WarehouseSales = (props) => {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={12} sm={12} md={4}></Grid>
+          <Grid item xs={12} sm={12} md={4}>
+            <Grid container spacing={2}>
+              <Grid
+                item
+                xs={12}
+                sm={12}
+                md={6}
+                style={{ visibility: "hidden" }}
+              >
+                <CardComponent
+                  icon={
+                    <PercentIcon
+                      sx={{
+                        backgroundColor: "white",
+                        color: configure.primary_color,
+                      }}
+                    />
+                  }
+                  title={"Day"}
+                  icon_color={configure.primary_color}
+                  icon_bg_color={"white"}
+                  subtitle={
+                    "% MTD (" +
+                    moment(dateFilter).format("MMMM").toUpperCase() +
+                    ")"
+                  }
+                  value={
+                    typeof present_mtd_data?.mtdFinal !== "undefined"
+                      ? present_mtd_data?.mtdFinal
+                      : 0
+                  }
+                  fontSizeValue={30}
+                  subvalue={"this is sub value"}
+                  enableSubHeaderVariant={false}
+                  changeColorValue={true}
+                />
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                sm={12}
+                md={6}
+                style={{ visibility: "hidden" }}
+              >
+                <CardComponent
+                  icon={
+                    <PercentIcon
+                      sx={{
+                        backgroundColor: "white",
+                        color: configure.primary_color,
+                      }}
+                    />
+                  }
+                  title={"Day"}
+                  icon_color={configure.primary_color}
+                  icon_bg_color={"white"}
+                  subtitle={
+                    "FINAL YTD (" + moment(dateFilter).format("YYYY") + ")"
+                  }
+                  value={
+                    typeof final_ytd_data !== "undefined"
+                      ? parseFloat(final_ytd_data).toFixed(2)
+                      : 0
+                  }
+                  fontSizeValue={30}
+                  subvalue={"this is sub value"}
+                  changeColorValue={true}
+                  enableSubHeaderVariant={false}
+                />
+              </Grid>
+              <Grid item xs={12} sm={12} md={12}>
+                <div dangerouslySetInnerHTML={{ __html: domBorrowerContent }} />
+              </Grid>
+              <Grid item xs={12} sm={12} md={12}>
+                <div
+                  dangerouslySetInnerHTML={{ __html: domBorrowFromContent }}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={12} sm={12} md={2}></Grid>
         </Grid>
       </Dialog>
       <Grid container spacing={2}>
@@ -790,6 +882,62 @@ let WarehouseSales = (props) => {
             handleChangeRowsPerPage={salesTracker.handleChangeRowsPerPage}
             onSelectItem={salesTracker.onSelectItem}
             id={"home_attendance"}
+            localStorage={""}
+            rowCount={salesTracker.dataListCount}
+            paginationShow={false}
+            action={(row) => {
+              return (
+                <Tooltip title="Delete">
+                  <DeleteOutlineIcon
+                    onClick={() => salesTracker.onDeleteDeduction(row)}
+                    style={{
+                      color: "#009197",
+                      cursor: "pointer",
+                    }}
+                  />
+                </Tooltip>
+              );
+            }}
+          />
+        </Grid>
+        <Grid item xs={12} sm={12} md={6} lg={6} id="borrower">
+          <ComponentTable
+            columns={salesTracker.borrower_columns}
+            dataList={borrow_data.borrower}
+            page={salesTracker.page}
+            rowsPerPage={salesTracker.rowsPerPage}
+            handleChangePage={salesTracker.handleChangePage}
+            handleChangeRowsPerPage={salesTracker.handleChangeRowsPerPage}
+            onSelectItem={salesTracker.onSelectItem}
+            id={"borrower"}
+            localStorage={""}
+            rowCount={salesTracker.dataListCount}
+            paginationShow={false}
+            action={(row) => {
+              return (
+                <Tooltip title="Delete">
+                  <DeleteOutlineIcon
+                    onClick={() => salesTracker.onDeleteDeduction(row)}
+                    style={{
+                      color: "#009197",
+                      cursor: "pointer",
+                    }}
+                  />
+                </Tooltip>
+              );
+            }}
+          />
+        </Grid>
+        <Grid item xs={12} sm={12} md={6} lg={6} id="borrower_from">
+          <ComponentTable
+            columns={salesTracker.borrower_from_columns}
+            dataList={borrow_data.borrower_from}
+            page={salesTracker.page}
+            rowsPerPage={salesTracker.rowsPerPage}
+            handleChangePage={salesTracker.handleChangePage}
+            handleChangeRowsPerPage={salesTracker.handleChangeRowsPerPage}
+            onSelectItem={salesTracker.onSelectItem}
+            id={"borrower_from"}
             localStorage={""}
             rowCount={salesTracker.dataListCount}
             paginationShow={false}

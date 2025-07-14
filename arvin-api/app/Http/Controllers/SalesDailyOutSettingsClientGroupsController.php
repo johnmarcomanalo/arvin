@@ -175,7 +175,7 @@ class SalesDailyOutSettingsClientGroupsController extends Controller
             $data->transform(function ($item) {
             $subgroupData = SalesDailyOutSettingsClientSubGroups::where('sales_daily_out_settings_client_groups_code', $item->code)
                 ->whereNull('deleted_at')
-                ->get(['code','sales_daily_out_settings_client_groups_code','customer_code','description','type',]);
+                ->get(['code','sales_daily_out_settings_client_groups_code','customer_code','description','type','subsection']);
             $item->subgroup = $subgroupData; // Add the subgroup to the object
             return $item;
         });

@@ -14,6 +14,7 @@ use App\Models\SalesDailyOutSettingsAnnualQuota;
 use App\Models\SalesDailyOutHolidayExclusionLogs;
 
 
+
 class SalesDailyOutTrackersController extends Controller
 {
     /**
@@ -338,7 +339,8 @@ class SalesDailyOutTrackersController extends Controller
 
             $ytd_final_mtd = $this->get_final_ytd($date_year,$date_month,$user_data,$date_month,$product_group);
 
-
+            $borrow_data = $this->getBorrowedStocksWarehousetoWarehouse($date_month,$date_year,$product_group,$user_data["subsection_code"]);
+            
             $report_data = [
                 "total_target_daily_quota_amount"=>$totalTargetDailyQuotaAmount,
                 "total_daily_out_amount"=>$totalDailyOutAmount,
@@ -355,6 +357,7 @@ class SalesDailyOutTrackersController extends Controller
                 "ytdTotalDailyOutAmount"=>$ytd_final_mtd['ytdTotalDailyOutAmount'],
                 "ytdTotalDailyQoutaAmount"=>$ytd_final_mtd['ytdTotalDailyQoutaAmount'], 
                 "today_data"=> $today_data,
+                "borrow_data"=>$borrow_data,
                 'result'=>True,
                 'title'=>'Success',
                 'status'=>'success',
@@ -771,5 +774,34 @@ class SalesDailyOutTrackersController extends Controller
             }
         });
     }
+
+    public function getBorrowedStocksWarehousetoWarehouse($month,$year,$product_group,$warehouse) {
+        $startDate = Carbon::create($year, $month, 1)->startOfMonth()->toDateString();
+        $endDate = Carbon::create($year, $month, 1)->endOfMonth()->toDateString();
+        $warehouse_type = RefSubSections::where('code', $warehouse)->first('type');
+        $results = collect(DB::select(
+            "exec dbo.sp_sales_daily_out_warehouse_borrowed ?, ?",
+            [$startDate, $endDate]
+        ));
+        $borrower = $results->where('warehouse2',$warehouse_type->type)->where('u_groupcategory',$product_group)->values();
+
+        $borrower = $borrower->transform(function($item) {
+            $item->createdate = Carbon::parse($item->createdate)->format('Y-m-d');
+            return $item;
+        });
+
+        $borrowed_from = $results->where('warehouse',$warehouse_type->type)->where('u_groupcategory',$product_group)->values();
+
+        $borrowed_from = $borrowed_from->transform(function($item) {
+            $item->createdate = Carbon::parse($item->createdate)->format('Y-m-d');
+            return $item;
+        });
+
+        return $data = [
+            'borrower' => $borrower,
+            'borrower_from' => $borrowed_from
+        ];
+      }
+
 
 }

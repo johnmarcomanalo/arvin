@@ -111,4 +111,23 @@ class MainController extends Controller
 
             return $dates;
     }
+
+    public static function get_dates_in_month($year, $month)
+        {
+            $dates = [];
+
+            // Create a Carbon instance for the first day of the month
+            $date = Carbon::create($year, $month, 1);
+
+            // Get the number of days in the specified month
+            $daysInMonth = $date->daysInMonth;
+
+            // Loop through each day and add the formatted date to the array
+            for ($day = 1; $day <= $daysInMonth; $day++) {
+                $currentDate = $date->copy()->day($day);
+                $dates[] = $currentDate->format('Y-m-d');
+            }
+
+            return $dates;
+        }
 }

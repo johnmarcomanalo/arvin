@@ -36,8 +36,8 @@ let AnnualSalesQoutaClientGroups = (props) => {
       <Modal
         open={annualSalesQuotaClientGroups?.updateModal}
         fullScreen={matches ? false : true}
-        title={"Update from SAP"}
-        size={"xs"}
+        title={"Update Quota"}
+        size={"md"}
         action={undefined}
         handleClose={annualSalesQuotaClientGroups.onClickCloseUpdateModal}
       >
@@ -126,11 +126,11 @@ let AnnualSalesQoutaClientGroups = (props) => {
             rowCount={annualSalesQuotaClientGroups.dataListCount}
             actionshow={active_page.update === "1" ? true : false}
             paginationShow={false}
-            subAction1Show={false}
+            subAction1Show={true}
             subAction2Show={active_page.update === "1" ? true : false}
             action={(row) => {
               return (
-                <Tooltip title="Update">
+                <Tooltip title="Refresh">
                   <IconButton size="small">
                     <SyncIcon
                       onClick={() =>
