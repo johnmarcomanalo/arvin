@@ -513,18 +513,18 @@ class EPayCheckCheckDetailsController extends Controller
         }
         
         
-           $response = [
-                'dataList'      => $requests,
-                'dataListCount' => $total,
-                'currentPage'   => $page,
-                'perPage'       => $limit,
-                'result'        => true,
-                'title'         => 'Success',
-                'status'        => 'success',
-                'message'       => 'Fetched successfully.',
-            ];
-        
-            return Crypt::encryptString(json_encode($response));
+        $response = [
+            'dataList'      => $requests,
+            'dataListCount' => $total,
+            'currentPage'   => $page,
+            'perPage'       => $limit,
+            'result'        => true,
+            'title'         => 'Success',
+            'status'        => 'success',
+            'message'       => 'Fetched successfully.',
+        ];
+    
+        return Crypt::encryptString(json_encode($response));
     }
 
     public function update_check_status(Request $request)
@@ -863,7 +863,7 @@ class EPayCheckCheckDetailsController extends Controller
         }
         if (strtoupper($sub_section) === "PEANUT") {
             return "PEANUT";
-        } 
+        }
         return "MANILA"; 
     }
 
