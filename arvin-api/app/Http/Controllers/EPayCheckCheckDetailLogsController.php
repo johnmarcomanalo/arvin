@@ -173,11 +173,19 @@ class EPayCheckCheckDetailLogsController extends Controller
   
  
         $body = [
-            'deposited'     => $data_deposited,
-            'onhand'        => $data_onhand,
-            'transmitted'   => $data_transmitted,
-            'rejected'      => $data_rejected,
-            'open_rejected' => $data_open_rejected,
+            'deposited'                 => $data_deposited,
+            'deposited_grand_total'     => $data_deposited->sum('check_amount'),
+            'deposited_grand_count'     => $data_deposited->count(),
+            'onhand'                    => $data_onhand,
+            'transmitted'               => $data_transmitted,
+            'transmitted_grand_total'   => $data_transmitted->sum('check_amount'),
+            'transmitted_grand_count'   => $data_transmitted->count(),
+            'rejected'                  => $data_rejected,
+            'rejected_grand_total'      => $data_rejected->sum('check_amount'),
+            'rejected_grand_count'      => $data_rejected->count(),
+            'open_rejected'             => $data_open_rejected,
+            'open_rejected_grand_total' => $data_open_rejected->sum('check_amount'),
+            'open_rejected_grand_count' => $data_open_rejected->count(),
         ];
 
         $minus_status =  $transactions->where('check_status', 'DEPOSITED')->count()

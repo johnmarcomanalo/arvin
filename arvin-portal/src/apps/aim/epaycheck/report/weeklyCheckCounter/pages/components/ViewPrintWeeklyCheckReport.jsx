@@ -274,8 +274,8 @@ const Summary = ({data})=>{
     </View>)
 }
 
-const pageWidth = 13 * 72;   // 936 pt
-const pageHeight = 8.5 * 72; // 612 pt
+// const pageWidth = 13 * 72;   // 936 pt
+// const pageHeight = 8.5 * 72; // 612 pt
 
 const ViewPrintWeeklyCheckReport = (props) => {
   const [loading, setLoading] = useState(true);
@@ -345,7 +345,7 @@ const ViewPrintWeeklyCheckReport = (props) => {
         {/* OPEN REJECTED */}
         <>
         {open_rejected_data && open_rejected_data.length!==0 && (
-          <Page size={[pageWidth, pageHeight]} style={styles.page} orientation="landscape" wrap>
+          <Page size="FOLIO" style={styles.page} orientation="landscape" wrap>
             <Table title="OPEN REJECTED" data={open_rejected_data} />
           </Page>
         )}
