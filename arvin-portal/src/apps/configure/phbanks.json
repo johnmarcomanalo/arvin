@@ -81,6 +81,10 @@
     { "name": "Bank of Commerce (BankCom)", "shortname": "BankCom" },
     { "name": "ASPAC Bank (ASPAC)", "shortname": "ASPAC" },
     { "name": "Mindanao Consolidated Cooperative Bank (MCCB)", "shortname": "MCCB" },
-    { "name": "The Hongkong and Shanghai Banking Corporation Limited (HSBC)", "shortname": "HSBC" }
+    { "name": "The Hongkong and Shanghai Banking Corporation Limited (HSBC)", "shortname": "HSBC" },
+    { "name": "China Bank Corporation (CBC)", "shortname": "CBC" },
+    { "name": "Philtrust Bank (PTC)", "shortname": "PTC" },
+    { "name": "AllBank (A Thrift Bank), Inc.", "shortname": "ALLBANK" },
+    { "name": "Banco Makiling(Makiling Development Bank Corporation)", "shortname": "BANCO MAKILING" }
   ]
 }
