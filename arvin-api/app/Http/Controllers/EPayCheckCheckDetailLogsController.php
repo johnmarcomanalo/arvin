@@ -171,21 +171,37 @@ class EPayCheckCheckDetailLogsController extends Controller
         $data_rejected         = $this->get_group_data($transactions,"REJECTED",null,true);
         $data_open_rejected    = $this->get_group_data($open_rejected,"REJECTED",null,true);
   
+        $allOnhand             =  collect($data_onhand)->flatten(1);
+        $allTransmitted        =  collect($data_transmitted)->flatten(1);
+        $allDeposited          =  collect($data_deposited)->flatten(1);
+        $allRejected           =  collect($data_rejected)->flatten(1);
+        $allOpenRejected           =  collect($data_open_rejected)->flatten(1);
  
         $body = [
-            'deposited'                 => $data_deposited,
-            'deposited_grand_total'     => $data_deposited->sum('check_amount'),
-            'deposited_grand_count'     => $data_deposited->count(),
-            'onhand'                    => $data_onhand,
-            'transmitted'               => $data_transmitted,
-            'transmitted_grand_total'   => $data_transmitted->sum('check_amount'),
-            'transmitted_grand_count'   => $data_transmitted->count(),
-            'rejected'                  => $data_rejected,
-            'rejected_grand_total'      => $data_rejected->sum('check_amount'),
-            'rejected_grand_count'      => $data_rejected->count(),
-            'open_rejected'             => $data_open_rejected,
-            'open_rejected_grand_total' => $data_open_rejected->sum('check_amount'),
-            'open_rejected_grand_count' => $data_open_rejected->count(),
+            'deposited'                        => $data_deposited,
+            'deposited_grand_total'            => $allDeposited->sum('check_amount'),
+            'deposited_grand_sum_doc_total'    => $allDeposited->sum('sum_doc_total'),
+            'deposited_grand_count'            => $allDeposited->count(),
+
+            'onhand'                           => $data_onhand,
+            'onhand_grand_total'               => $allOnhand->sum('check_amount'),
+            'onhand_grand_sum_doc_total'       => $allOnhand->sum('sum_doc_total'),
+            'onhand_grand_count'               => $allOnhand->count(),
+
+            'transmitted'                      => $data_transmitted,
+            'transmitted_grand_total'          => $allTransmitted->sum('check_amount'),
+            'transmitted_grand_sum_doc_total'  => $allTransmitted->sum('sum_doc_total'),
+            'transmitted_grand_count'          => $allTransmitted->count(),
+
+            'rejected'                         => $data_rejected,
+            'rejected_grand_total'             => $allRejected->sum('check_amount'),
+            'rejected_grand_sum_doc_total'     => $allRejected->sum('sum_doc_total'),
+            'rejected_grand_count'             => $allRejected->count(),
+
+            'open_rejected'                    => $data_open_rejected,
+            'open_rejected_grand_total'        => $allOpenRejected->sum('check_amount'),
+            'open_rejected_grand_sum_doc_total'=> $allOpenRejected->sum('sum_doc_total'),
+            'open_rejected_grand_count'        => $allOpenRejected->count(),
         ];
 
         $minus_status =  $transactions->where('check_status', 'DEPOSITED')->count()

@@ -112,26 +112,27 @@ const headers = [
   {id:"count_sales_invoice",description:"SI COUNT"}, 
   {id:"stale_check",description:"STALE CHECK"}, 
   {id:"check_status",description:"STATUS"}, 
+  {id:"payment_terms",description:"TERMS"}, 
   {id:"remarks",description:"REMARKS"}, 
 ];
 
 
 
-const Table = ({ title, data }) => {
+const Table = ({ title, data, grandTotal,grandCount,grandSumTotal }) => {
   if (!data || typeof data !== "object") {
     return null; // Prevent rendering if data is undefined or not an object
   }
 
   // Compute grand totals from all rows
-  const allRows = Object.values(data).flat();
-  const grandCheckAmount = allRows.reduce(
-    (total, row) => total + (parseFloat(row.check_amount) || 0),
-    0
-  );
-  const grandDocTotal = allRows.reduce(
-    (total, row) => total + (parseFloat(row.sum_doc_total) || 0),
-    0
-  );
+  // const allRows = Object.values(data).flat();
+  // const grandCheckAmount = allRows.reduce(
+  //   (total, row) => total + (parseFloat(row.check_amount) || 0),
+  //   0
+  // );
+  // const grandDocTotal = allRows.reduce(
+  //   (total, row) => total + (parseFloat(row.sum_doc_total) || 0),
+  //   0
+  // );
 
   return (
     <View style={styles.section}>
@@ -196,7 +197,7 @@ const Table = ({ title, data }) => {
                     rows.reduce((total, row) => total + (parseFloat(row.sum_doc_total) || 0), 0)
                   ,2)}
                 </Text>
-                {[1, 2,3,4].map((_, index) => (
+                {[1, 2,3,4,5].map((_, index) => (
                   <Text key={index} style={[styles.smallCell]}> </Text>
                 ))}
               </View>
@@ -207,19 +208,22 @@ const Table = ({ title, data }) => {
           {/* Grand Total Row */}
           <View style={[styles.row]}>
           <Text style={[styles.smallCell,styles.footerHighlight]}>NO OF CHECKS</Text>
-          <Text style={[styles.smallCell,styles.footerHighlight]}>{allRows.length}</Text>
+          {/* <Text style={[styles.smallCell,styles.footerHighlight]}>{allRows.length}</Text> */}
+          <Text style={[styles.smallCell,styles.footerHighlight]}>{grandCount}</Text>
             
             {[1, 2].map((_, index) => (
               <Text key={`g2-${index}`} style={styles.cell}></Text>
             ))}
              <Text style={[styles.smallCell,styles.footerHighlight]}>GRAND TOTAL</Text>
             <Text style={[styles.smallCell,styles.footerHighlight]}>
-              {ViewAmountFormatingDecimals(grandCheckAmount, 2)}
+              {/* {ViewAmountFormatingDecimals(grandCheckAmount, 2)} */}
+              {ViewAmountFormatingDecimals(grandTotal, 2)}
             </Text>
             <Text style={[styles.smallCell,styles.footerHighlight]}>
-              {ViewAmountFormatingDecimals(grandDocTotal, 2)}
+              {/* {ViewAmountFormatingDecimals(grandDocTotal, 2)} */}
+              {ViewAmountFormatingDecimals(grandSumTotal, 2)}
             </Text>
-            {[1, 2,3,4].map((_, index) => (
+            {[1, 2,3,4,5].map((_, index) => (
               <Text key={`g3-${index}`} style={styles.smallCell}></Text>
             ))}
           </View>
@@ -288,13 +292,32 @@ const ViewPrintWeeklyCheckReport = (props) => {
     }, 500); // Simulating API delay
   }, [props.data]);
 
-  const footer_summary     = props.data?.footer
-  const body_data          = props.data?.body
-  const onhand_data        = body_data?.onhand
-  const deposited_data     = body_data?.deposited
-  const transmitted_data   = body_data?.transmitted
+  const footer_summary          = props.data?.footer
+  const body_data               = props.data?.body
+  const onhand_data             = body_data?.onhand
+  const onhand_grand_total   = body_data?.onhand_grand_total
+  const onhand_grand_count   = body_data?.onhand_grand_count
+  const onhand_grand_sum_doc_total   = body_data?.onhand_grand_sum_doc_total
+  
+  const deposited_data          = body_data?.deposited
+  const deposited_grand_total   = body_data?.deposited_grand_total
+  const deposited_grand_count   = body_data?.deposited_grand_count
+  const deposited_grand_sum_doc_total   = body_data?.deposited_grand_sum_doc_total
+
+  const transmitted_data        = body_data?.transmitted
+  const transmitted_grand_total = body_data?.transmitted_grand_total
+  const transmitted_grand_count = body_data?.transmitted_grand_count
+  const transmitted_grand_sum_doc_total = body_data?.transmitted_grand_sum_doc_total
+
   const rejected_data      = body_data?.rejected
+  const rejected_grand_total = body_data?.rejected_grand_total
+  const rejected_grand_count = body_data?.rejected_grand_count
+  const rejected_grand_sum_doc_total = body_data?.rejected_grand_sum_doc_total
+
   const open_rejected_data = body_data?.open_rejected
+  const open_rejected_grand_total = body_data?.open_rejected_grand_total
+  const open_rejected_grand_count = body_data?.open_rejected_grand_count
+  const open_rejected_grand_sum_doc_total = body_data?.open_rejected_grand_sum_doc_total
 
   // FOOTER DATA
  
@@ -333,10 +356,30 @@ const ViewPrintWeeklyCheckReport = (props) => {
           </View>
   
           {/* Tables */}
-          <Table title="DEPOSITED" data={deposited_data}/>
-          <Table title="TRANSMITTED" data={transmitted_data}/>
-          <Table title="ON-HAND" data={onhand_data} />
-          <Table title="REJECTED" data={rejected_data} />
+          <Table title="DEPOSITED" 
+                 data={deposited_data} 
+                 grandTotal={deposited_grand_total} 
+                 grandCount={deposited_grand_count} 
+                 grandSumTotal={deposited_grand_sum_doc_total}
+          />
+          <Table title="TRANSMITTED" 
+                 data={transmitted_data}
+                 grandTotal={transmitted_grand_total} 
+                 grandCount={transmitted_grand_count} 
+                 grandSumTotal={transmitted_grand_sum_doc_total}
+          />
+          <Table title="ON-HAND" 
+                 data={onhand_data} 
+                 grandTotal={onhand_grand_total} 
+                 grandCount={onhand_grand_count} 
+                 grandSumTotal={onhand_grand_sum_doc_total}
+          />
+          <Table title="REJECTED" 
+                 data={rejected_data} 
+                 grandTotal={rejected_grand_total} 
+                 grandCount={rejected_grand_count} 
+                 grandSumTotal={rejected_grand_sum_doc_total} 
+          />
   
           {/* Footer */}
           <Summary data={footer_summary} />
@@ -346,7 +389,12 @@ const ViewPrintWeeklyCheckReport = (props) => {
         <>
         {open_rejected_data && open_rejected_data.length!==0 && (
           <Page size="FOLIO" style={styles.page} orientation="landscape" wrap>
-            <Table title="OPEN REJECTED" data={open_rejected_data} />
+            <Table title="OPEN REJECTED" 
+                   data={open_rejected_data} 
+                   grandTotal={open_rejected_grand_total} 
+                   grandCount={open_rejected_grand_count} 
+                   grandSumTotal={open_rejected_grand_sum_doc_total} 
+            />
           </Page>
         )}
         </>

@@ -283,8 +283,12 @@ const CheckCollectionHooks = (props) => {
         closeOnClickOutside: false,
       });
       if (isConfirm){
+        const cleanedValues = {
+          ...values,
+          check_amount: values.check_amount?.replace(/,/g, ''),
+        }; 
          // Submit normally
-        let res = await dispatch(postCheckCollection(values));
+        let res = await dispatch(postCheckCollection(cleanedValues));
         let decrypted = await decryptaes(res?.data);
         console.log(decrypted,"dasda");
         

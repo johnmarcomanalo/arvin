@@ -473,3 +473,186 @@ export const postCheckRejectToClose = (formValues) => async (dispatch) => {
       });
     } 
 };
+
+
+export const getCheckReceivedBy = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+
+      const results = await GetSpecificDefaultServices(
+        "api/epaycheck/get_check_received_by?q=" +
+          formValues.q +
+          "&p=" +
+          formValues.p +
+          "&df=" +
+          formValues.df +
+          "&dt=" +
+          formValues.dt +
+          "&s=" +
+          formValues.s +
+          "&sc=" +
+          formValues.sc +
+          "&r=" +
+          formValues.r
+      );
+
+      let decrypted = decryptaes(results?.data)
+      let data  = decrypted?.dataList;
+      let total = decrypted?.dataListCount;
+        dispatch({
+            type: Constants.ACTION_EPAY_CHECK,
+            payload: {
+              dataList: data, 
+              dataListCount: total
+            },
+        });
+   
+  } catch (error) {
+    let title = configure.error_message.default;
+    let message = "";
+    let status  ="error"
+
+    if (error.response?.data?.message) {
+      title = error.response.data.message;
+    }
+
+    if (error.response?.data?.status) {
+      status = error.response.data.status;
+    }
+
+    if (error.response?.data?.errors) {
+      message = Object.values(error.response.data.errors).flat().join("\n");
+    }
+    
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: { loading: false },
+    });
+    
+    await swal(title, message, status);
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } 
+}
+
+export const postReceivedCheckByArAt = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PostDefaultServices(
+      "api/epaycheck/check_details/update_received_check_by_ar_at",
+      formValues
+    );  
+  
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    }); 
+    
+    let decrypted = decryptaes(res?.data)
+    return decrypted;
+  } catch (error) {
+    let title = configure.error_message.default;
+    let message = "";
+    let status  ="error"
+
+    if (error.response?.data?.message) {
+      title = error.response.data.message;
+    }
+
+    if (error.response?.data?.status) {
+      status = error.response.data.status;
+    }
+
+    if (error.response?.data?.errors) {
+      message = Object.values(error.response.data.errors).flat().join("\n");
+    }
+    
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: { loading: false },
+    });
+    
+    await swal(title, message, status);
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } 
+}
+
+
+export const postAppliedAR = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PostDefaultServices(
+      "api/epaycheck/check_details/update_applied_at",
+      formValues
+    );  
+  
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    }); 
+    
+    let decrypted = decryptaes(res?.data)
+    return decrypted;
+  } catch (error) {
+    let title = configure.error_message.default;
+    let message = "";
+    let status  ="error"
+
+    if (error.response?.data?.message) {
+      title = error.response.data.message;
+    }
+
+    if (error.response?.data?.status) {
+      status = error.response.data.status;
+    }
+
+    if (error.response?.data?.errors) {
+      message = Object.values(error.response.data.errors).flat().join("\n");
+    }
+    
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: { loading: false },
+    });
+    
+    await swal(title, message, status);
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } 
+}
+ 
