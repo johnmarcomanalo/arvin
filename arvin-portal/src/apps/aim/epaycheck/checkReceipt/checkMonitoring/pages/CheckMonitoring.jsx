@@ -300,6 +300,8 @@ const CheckMonitoring = (props) => {
                    check.filterStatus!="ALL" && (
                     <>
                       <ButtonGroup disableElevation aria-label="Disabled button group">
+                      {Array.isArray(check.subsection_allowed_to_reject) &&
+                      check.subsection_allowed_to_undo.includes(Number(account?.subsection_code)) && (
                           <ButtonComponent
                             stx={configure.default_button}
                             iconType="delete"
@@ -308,7 +310,8 @@ const CheckMonitoring = (props) => {
                             children={"Undo " + check.filterStatus}
                             click={check.onClickUndo}
                           />
-                          {Array.isArray(check.subsection_allowed_to_reject) &&
+                        )}
+                        {Array.isArray(check.subsection_allowed_to_reject) &&
                             check.subsection_allowed_to_reject.includes(Number(account?.subsection_code)) && (
                             <ButtonComponent
                               stx={configure.default_button}
@@ -318,7 +321,7 @@ const CheckMonitoring = (props) => {
                               children={"Reject"}
                               click={check.onClickOpenRejectModal}
                           />
-                      )}
+                        )}
                       </ButtonGroup>
                     </>
                    )

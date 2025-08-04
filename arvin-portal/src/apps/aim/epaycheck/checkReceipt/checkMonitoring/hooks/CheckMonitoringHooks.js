@@ -51,6 +51,7 @@ const CheckMonitoringHooks = (props) => {
         order: "asc", // Default sorting field
     });
     const subsection_allowed_to_reject = [12,25];
+    const subsection_allowed_to_undo = [12];
     const columns = [
         { id:"code", label:"Reference", align:"left", sortable: false},
         { id:"created_at", label:"Created At", align:"left", sortable: true},
@@ -562,6 +563,7 @@ const CheckMonitoringHooks = (props) => {
         selectedDataList,
         editModal,
         subsection_allowed_to_reject,
+        subsection_allowed_to_undo,
         rejectCloseModal,
         warehouseList,
         onChangeSearch,
