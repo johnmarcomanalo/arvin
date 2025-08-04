@@ -85,6 +85,7 @@
     { "name": "China Bank Corporation (CBC)", "shortname": "CBC" },
     { "name": "Philtrust Bank (PTC)", "shortname": "PTC" },
     { "name": "AllBank (A Thrift Bank), Inc.", "shortname": "ALLBANK" },
-    { "name": "Banco Makiling(Makiling Development Bank Corporation)", "shortname": "BANCO MAKILING" }
+    { "name": "Banco Makiling(Makiling Development Bank Corporation)", "shortname": "BANCO MAKILING" },
+    { "name": "Producers Savings Bank Corporation", "shortname": "Producers Savings Bank" }
   ]
 }
