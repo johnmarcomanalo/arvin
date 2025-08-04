@@ -50,7 +50,7 @@ const CheckMonitoringHooks = (props) => {
         sort_by: "check_status", // Default sorting order
         order: "asc", // Default sorting field
     });
-    const subsection_allowed_to_reject = [12,8];
+    const subsection_allowed_to_reject = [12,25];
     const columns = [
         { id:"code", label:"Reference", align:"left", sortable: false},
         { id:"created_at", label:"Created At", align:"left", sortable: true},
