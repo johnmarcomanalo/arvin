@@ -210,7 +210,9 @@ const CheckMonitoring = (props) => {
                     paginationShow={false}
                     subAction1Show={true}
                     subAction2Show={true}
-                    onSortChange={check.onChangeSorting} 
+                    onSortChange={check.onChangeSorting}
+                    initialSortBy={check.filter_sort_by}
+                    initialSortDirection={check.filter_order}
                     getRowStyle={(row) => {
                       if (row.check_status === "ON-HAND" && row.current_date_is_less_than_check_date) {
                         return { backgroundColor: "#FFEAEA" };

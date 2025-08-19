@@ -469,17 +469,14 @@ class EPayCheckCheckDetailsController extends Controller
         }, function ($q) use ($sc) {
             $q->where('subsection_code', $sc);
         })
+        ->orderBy($sortColumn, $sortDirection)
+        // ->when($sortColumn !== 'code', function ($query) {
+        //     return $query->orderBy('code', 'asc'); // Secondary sort for stability only if not already sorting by code
+        // }) // Prevents "A column has been specified more than once in the order by list" error
         ->get(); // Get all data (without pagination)
     
-        // Convert to Collection
+        // Convert to Collection (data is already sorted at database level)
         $collection = collect($check_details);
-        
-        // Apply sorting
-        if ($sortDirection === 'desc') {
-            $collection = $collection->sortByDesc($sortColumn);
-        } else {
-            $collection = $collection->sortBy($sortColumn);
-        }
     
         // Get total count after filtering
         $total = $collection->count();
@@ -744,6 +741,7 @@ class EPayCheckCheckDetailsController extends Controller
     }
     
     public function get_receipt_details(Request $request){
+ 
         try {
             $validator = Validator::make($request->all(), [
                 'receipt_number'  => 'required',
@@ -767,7 +765,7 @@ class EPayCheckCheckDetailsController extends Controller
     
             // If no check details found, return an error message
             if (!$checkDetails) {
-                throw new \Exception("No check details found for the given receipt number and subsection code.");
+                throw new \Exception("There are no check details for the given receipt number under your account.");
             }
     
             // Execute stored procedure
@@ -780,7 +778,7 @@ class EPayCheckCheckDetailsController extends Controller
 
              // If no check details found, return an error message
              if (empty($res)) {
-                throw new \Exception("No check details found for the given receipt number and subsection code.");
+                throw new \Exception("There are no check details for the given receipt number under your account.");
             }
     
             // Fetch receipt details
@@ -809,12 +807,12 @@ class EPayCheckCheckDetailsController extends Controller
             return Crypt::encryptString(json_encode($response));
     
         } catch (\Exception $e) {
-            return Crypt::encryptString(json_encode([
+            return response()->json([
                 'result'  => false,
                 'status'  => 'warning',
-                'title'   => 'Warning',
+                'title'   => 'Error',
                 'message' => $e->getMessage(),
-            ]));
+            ], 422); 
         }
     }
 

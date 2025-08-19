@@ -30,6 +30,8 @@ const CheckMonitoringHooks = (props) => {
     const filterEndQuery   = searchParams.get("dt") != null ? String(searchParams.get("dt")): moment(new Date()).format("YYYY-MM-DD");
     const filterStatus     = searchParams.get("s")  != null ? String(searchParams.get("s")) : "ON-HAND";
     const filterSubSection = searchParams.get("sc") != null ? String(searchParams.get("sc")) : account_details.subsection_code;
+    const filter_order     = searchParams.get("order") != null ? String(searchParams.get("order")) : "asc";
+    const filter_sort_by   = searchParams.get("sort_by") != null ? String(searchParams.get("sort_by")) : "code";
     const debounceSearch   = useDebounce(searchParams, 100);
     const access           = useSelector((state) => state.AuthenticationReducer.access); 
     const selectedItem     = useSelector((state) => state.EpayCheckReducer.selectedItem); 
@@ -137,8 +139,8 @@ const CheckMonitoringHooks = (props) => {
         dt : filterEndQuery,
         s  : filterStatus,
         sc : filterSubSection,
-        sort_by: state.sort_by,
-        order: state.order,
+        sort_by: filter_sort_by,
+        order: filter_order,
       };
       return data;
     };
@@ -182,7 +184,9 @@ const CheckMonitoringHooks = (props) => {
           df : filterStartQuery,
           dt : filterEndQuery,
           s  : filterStatus,
-          sc : filterSubSection
+          sc : filterSubSection,
+          sort_by: filter_sort_by,
+          order: filter_order,
         });
       };
 
@@ -213,7 +217,9 @@ const CheckMonitoringHooks = (props) => {
           df : filterStartQuery,
           dt : filterEndQuery,
           s  : filterStatus,
-          sc : filterSubSection
+          sc : filterSubSection,
+          sort_by: filter_sort_by,
+          order: filter_order,
         });
         setState((prevState) => ({
           ...prevState,
@@ -230,7 +236,9 @@ const CheckMonitoringHooks = (props) => {
             df : newdate,
             dt : filterEndQuery,
             s  : filterStatus, 
-            sc : filterSubSection
+            sc : filterSubSection,
+            sort_by: filter_sort_by,
+            order: filter_order,
           });
       };
     
@@ -242,7 +250,9 @@ const CheckMonitoringHooks = (props) => {
           df : filterStartQuery,
           dt : newdate,
           s  : filterStatus, 
-          sc : filterSubSection
+          sc : filterSubSection,
+          sort_by: filter_sort_by,
+          order: filter_order,
         });
       };
     
@@ -253,7 +263,9 @@ const CheckMonitoringHooks = (props) => {
           df : filterStartQuery,
           dt : filterEndQuery,
           s  : status, 
-          sc : filterSubSection
+          sc : filterSubSection,
+          sort_by: filter_sort_by,
+          order: filter_order,
         });
         
         dispatch({
@@ -271,7 +283,9 @@ const CheckMonitoringHooks = (props) => {
           df : filterStartQuery,
           dt : filterEndQuery,
           s  : filterStatus, 
-          sc : subsection
+          sc : subsection,
+          sort_by: filter_sort_by,
+          order: filter_order,
         });
         dispatch({
           type: Constants.ACTION_EPAY_CHECK,
@@ -370,7 +384,9 @@ const CheckMonitoringHooks = (props) => {
                 df : filterStartQuery,
                 dt : filterEndQuery,
                 s  : filterStatus, 
-                sc : filterSubSection
+                sc : filterSubSection,
+                sort_by: filter_sort_by,
+                order: filter_order,
               });
             }
           } else {
@@ -522,7 +538,7 @@ const CheckMonitoringHooks = (props) => {
   
     setSearchParams({
       q  : search, 
-      p  : page == null ? 1 : page,
+      p  : 1, // Reset to page 1 when sorting changes
       df : filterStartQuery,
       dt : filterEndQuery,
       s  : filterStatus, 

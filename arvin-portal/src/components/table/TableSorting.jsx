@@ -34,11 +34,23 @@ const TableSorting = (props) => {
     extraLayer,
     action,
     getRowStyle,
+    initialSortBy = null, // Accept initial sort field from props
+    initialSortDirection = "asc", // Accept initial sort direction from props
   } = props;
 
   const [screenHeight, setScreenHeight] = React.useState(window.innerHeight);
-  const [sortBy, setSortBy] = React.useState(null); // Sorting column
-  const [sortDirection, setSortDirection] = React.useState("asc"); // Sorting order
+  const [sortBy, setSortBy] = React.useState(initialSortBy); // Use prop values
+  const [sortDirection, setSortDirection] = React.useState(initialSortDirection); // Use prop values
+
+  // Sync local state with props when they change
+  React.useEffect(() => {
+    if (initialSortBy !== sortBy) {
+      setSortBy(initialSortBy);
+    }
+    if (initialSortDirection !== sortDirection) {
+      setSortDirection(initialSortDirection);
+    }
+  }, [initialSortBy, initialSortDirection]);
 
   React.useEffect(() => {
     const handleResize = () => setScreenHeight(window.innerHeight);
