@@ -9,12 +9,12 @@ const styleSheet = {
 };
 
 export default function ComboBox(props) {
-  const { showLabel = true, disable = false, ...param } = props;
+  const { showLabel = true, disable = false,input, ...param  } = props;
   const handleInputChange = (event, newInputValue) => {
     if (!newInputValue) {
       param.input.onChange(""); // Clear the field when the input is empty
     }
-  };
+  }; 
   return (
     <div style={{ width: "100%" }}>
       {showLabel ? (
@@ -39,8 +39,11 @@ export default function ComboBox(props) {
         // PopperComponent={CustomPopper}
         {...param.input}
         onChange={param.onChangeHandle}
-        value={param.value}
-        defaultValue={{ [param.initialValue]: param.input.value }}
+        // value={param.value}
+        value={
+          param.options.find((opt) => opt.description === input.value) || null
+        } // ensures value is matched
+        // defaultValue={{ [param.initialValue]: param.input.value }}
         isOptionEqualToValue={(option, value) => option.value === value.value}
         getOptionLabel={param.getOptionLabel}
         onInputChange={handleInputChange}

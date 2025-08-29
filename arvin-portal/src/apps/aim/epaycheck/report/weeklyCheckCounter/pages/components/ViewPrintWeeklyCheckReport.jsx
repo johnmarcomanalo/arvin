@@ -234,7 +234,7 @@ const Table = ({ title, data, grandTotal,grandCount,grandSumTotal }) => {
 };
 // Table Component (keep your existing Table component)
 
-const Summary = ({data})=>{
+const Summary = ({data,onhand})=>{
     const beginning_on_hand = data?.beginning_on_hand ? data?.beginning_on_hand : "-"
     const ending_on_hand    = data?.ending_on_hand ? data?.ending_on_hand :"-"
     const deposited         = data?.deposited ? data?.deposited :"-"
@@ -382,7 +382,7 @@ const ViewPrintWeeklyCheckReport = (props) => {
           />
   
           {/* Footer */}
-          <Summary data={footer_summary} />
+          <Summary data={footer_summary} onhand={onhand_grand_count}/>
         </Page>
 
         {/* OPEN REJECTED */}

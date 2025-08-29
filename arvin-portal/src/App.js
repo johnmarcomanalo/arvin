@@ -63,6 +63,9 @@ const IndexWarehouseSales = lazy(() =>
 const IndexClientSummary = lazy(() =>
   import("./apps/aim/sales/report/clientSummary/pages/IndexClientSummary")
 );
+const IndexClientSalesSummary = lazy(() =>
+  import("./apps/aim/sales/report/clientSalesSummary/pages/IndexClientSalesSummary")
+);
 // SALES END
 
 // QUOTATION START
@@ -463,6 +466,20 @@ function App() {
                         })}
                       >
                         <IndexClientSummary />
+                      </PrivateRoute>
+                    }
+                  />
+                   <Route
+                    path="/Modules/Sales/Reports/ClientSalesSummary"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Sales",
+                          component: "Reports",
+                          subComponent: "Client Sales Summary",
+                        })}
+                      >
+                        <IndexClientSalesSummary />
                       </PrivateRoute>
                     }
                   />

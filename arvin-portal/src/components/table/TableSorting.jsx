@@ -33,7 +33,7 @@ const TableSorting = (props) => {
     heightLimit = true,
     extraLayer,
     action,
-    getRowStyle,
+    getRowStyle= null,
     initialSortBy = null, // Accept initial sort field from props
     initialSortDirection = "asc", // Accept initial sort direction from props
   } = props;
