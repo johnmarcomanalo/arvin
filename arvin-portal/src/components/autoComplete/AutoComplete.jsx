@@ -40,9 +40,9 @@ export default function ComboBox(props) {
         {...param.input}
         onChange={param.onChangeHandle}
         // value={param.value}
-        value={
-          param.options.find((opt) => opt.description === input.value) || null
-        } // ensures value is matched
+        // value={
+        //   param.options.find((opt) => opt.description === input.value) || null
+        // } // ensures value is matched
         // defaultValue={{ [param.initialValue]: param.input.value }}
         isOptionEqualToValue={(option, value) => option.value === value.value}
         getOptionLabel={param.getOptionLabel}
