@@ -254,7 +254,7 @@ const ClientSalesSummaryHooks = (props) => {
   React.useEffect(() => {
     onFetchOrganizationAccess();
     props.initialize({
-      sales_date: moment(new Date()).format("MM-DD-YYYY"),
+      sales_date: moment(new Date()),
       product_group: 'INDUSTRIAL SALT',
     });
 

@@ -71,7 +71,7 @@ export default function IndexClientSalesSummary(props) {
           <BreadCrumbs breadCrumbs={breadCrumbArray} />
         </Grid>{" "}
         <Grid item xs={12} sm={12} md={12} lg={12}>
-          <PageTitle title={"Client Sale Summary"} subtitle={null} />
+          <PageTitle title={"Weekly & Monthly Sales Summary Report"} subtitle={null} />
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <ClientSalesSummary />

@@ -202,7 +202,7 @@ let CheckCollection = (props) => {
                             label="Bank Name"
                             options={check?.banks.phbanks}
                             getOptionLabel={(option) =>
-                              option?.name ? option?.name : ""
+                              option?.description ? option?.description : ""
                             }
                             required={true}
                             component={ComboBox}

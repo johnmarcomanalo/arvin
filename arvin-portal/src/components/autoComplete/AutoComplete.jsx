@@ -11,10 +11,16 @@ const styleSheet = {
 export default function ComboBox(props) {
   const { showLabel = true, disable = false,input, ...param  } = props;
   const handleInputChange = (event, newInputValue) => {
+    console.log("newInputValue",newInputValue);
+    
     if (!newInputValue) {
-      param.input.onChange(""); // Clear the field when the input is empty
+      if (input?.onChange) {
+        input.onChange(""); // safe update redux-form state
+      }
     }
+    
   }; 
+  
   return (
     <div style={{ width: "100%" }}>
       {showLabel ? (
@@ -38,11 +44,15 @@ export default function ComboBox(props) {
         options={param.options}
         // PopperComponent={CustomPopper}
         {...param.input}
-        onChange={param.onChangeHandle}
-        // value={param.value}
-        // value={
-        //   param.options.find((opt) => opt.description === input.value) || null
-        // } // ensures value is matched
+        // onChange={param.onChangeHandle}
+
+        onChange={(e, newValue) => {
+          input?.onChange(newValue?.description || ""); // update redux-form
+          param.onChangeHandle?.(e, newValue); // trigger your custom handler
+        }}        // value={param.value}
+        value={
+          param.options.find((opt) => opt.description === input.value) || null
+        } // ensures value is matched
         // defaultValue={{ [param.initialValue]: param.input.value }}
         isOptionEqualToValue={(option, value) => option.value === value.value}
         getOptionLabel={param.getOptionLabel}

@@ -476,7 +476,7 @@ function App() {
                         accessChecker={getAccessChecker({
                           module: "Sales",
                           component: "Reports",
-                          subComponent: "Client Sales Summary",
+                          subComponent: "Weekly & Monthly Sales Summary",
                         })}
                       >
                         <IndexClientSalesSummary />

@@ -73,12 +73,12 @@ let ClientSalesSummary = (props) => {
                   label="Date"
                   required={true}
                   component={InputMonthYearPicker}
-                  placeholder="Date"
-                  value={moment(new Date()).format("MMMM YYYY")}
+                  placeholder="Date" 
                   disablePast={false}
                   disableFuture={true}
                   disableSunday={true}
                   showText={true}
+                  defaultValue={new Date()}
                   onChange={(date) => {
                     salesTracker.filterMonthAndYear(
                       moment(date).format("YYYY"),
