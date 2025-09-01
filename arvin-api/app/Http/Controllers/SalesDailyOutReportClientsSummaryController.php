@@ -64,7 +64,7 @@ class SalesDailyOutReportClientsSummaryController extends Controller
     }
 
 
-    public function  get_client_sales_tracker_summary(Request $request)
+    public static function  get_client_sales_tracker_summary(Request $request)
     {
         $p_year = $request->query('year');
         $p_product = $request->query('product');
@@ -74,6 +74,8 @@ class SalesDailyOutReportClientsSummaryController extends Controller
         $p_subsection = $request->query('w');
         $limit = $request->query('tl');
         $page = $request->query('tp');
+        $dataListCollection = [];
+        $dataList = [];
 
          $dataListArray = DB::select("SET NOCOUNT ON exec dbo.ClientSalesTrackerSummary ?,?,?,?,?,?",array($p_year,$p_product,$p_group_code,$p_bdo,$p_type,$p_subsection));
         
@@ -94,6 +96,8 @@ class SalesDailyOutReportClientsSummaryController extends Controller
                 $item['november_total_out'] = number_format((float) $item['november_total_out'], 2);
                 $item['december_total_out'] = number_format((float) $item['december_total_out'], 2);
                 $item['year_sales_daily_out'] = number_format((float) $item['year_sales_daily_out'], 2);
+                $item['annual_quota_percentage'] = number_format((float) $item['annual_quota_percentage'], 2);
+                $item['annual_quota'] = number_format((float) $item['annual_quota'], 2);
                 $item['mtd_april_final_percentage'] = number_format((float) $item['mtd_april_final_percentage'], 2);
                 $item['mtd_april_total_daily_out_amount'] = number_format((float) $item['mtd_april_total_daily_out_amount'], 2);
                 $item['mtd_april_total_daily_quota_amount'] = number_format((float) $item['mtd_april_total_daily_quota_amount'], 2);
@@ -192,17 +196,20 @@ class SalesDailyOutReportClientsSummaryController extends Controller
                 return $item;
             });
         }
-        if (!empty($limit) && !empty($page)) {
-            // $dataListCollection = collect($dataListArray);
-            $currentPageItems = $dataListCollection->slice(($page - 1) * $limit, $limit)->values();
-            $dataList = new LengthAwarePaginator($currentPageItems, $dataListCollection->count(), $limit, $page, [
-                'path' => url()->current(),
-                'query' => $request->query(),
-            ]);
-        } else {
-            // No pagination, return all
-            // $dataList = $dataListArray;
-            $dataList = $dataListCollection->values();
+
+        if (!empty($dataListCollection)) {
+            if (!empty($limit) && !empty($page)) {
+                // $dataListCollection = collect($dataListArray);
+                $currentPageItems = $dataListCollection->slice(($page - 1) * $limit, $limit)->values();
+                $dataList = new LengthAwarePaginator($currentPageItems, $dataListCollection->count(), $limit, $page, [
+                    'path' => url()->current(),
+                    'query' => $request->query(),
+                ]);
+            } else {
+                // No pagination, return all
+                // $dataList = $dataListArray;
+                $dataList = $dataListCollection->values();
+            }
         }
         
         $response = [

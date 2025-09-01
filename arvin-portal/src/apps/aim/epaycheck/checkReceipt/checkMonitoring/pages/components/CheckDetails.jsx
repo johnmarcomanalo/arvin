@@ -1,7 +1,9 @@
 import {
 Grid,
 Stack,
-Typography
+Typography,
+Box,
+Divider
 } from "@mui/material";
 import * as React from "react";
 import { connect } from "react-redux";
@@ -45,11 +47,11 @@ let formName = "CheckDetails";
   };
   
   let CheckDetails = (props) => {
-    console.table(props.details);
     
     const { ...check }    = CheckMonitoringHooks(props);
     const account_details = check.account_details; 
     const details         = props.details;
+ 
     React.useEffect(() => {
       props.initialize({
         modified_by: account_details?.code,
@@ -229,7 +231,8 @@ let formName = "CheckDetails";
                         label="Remarks"
                         type="text"
                         component={InputField}
-                        multiple={true}
+                        multiline={true} 
+                        linerow={2}
                       />
                   </Grid>
                   {/* <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -250,7 +253,37 @@ let formName = "CheckDetails";
                       </Stack>
                     </Grid> */}
                 </Grid> 
-            </Grid>  
+            </Grid> 
+            <Grid  item xs={12} sm={12} md={12} lg={12}>
+              <Typography fontWeight={'bold'} my={2} style={{ fontSize: '13px' }}>Status History</Typography>
+              <Grid container spacing={3} alignItems="center" justifyContent="left">
+              {details.history.map((val, i) => {
+                  return (
+                   <>
+                     <Grid item key={i}>
+                      <Box
+                        border={0.1}
+                        borderColor="black"
+                        borderRadius={2}
+                        p={1}
+                        textAlign="center"
+                        width={150}
+                      >
+                        <Typography fontWeight={'bold'} style={{ fontSize: '13px' }}>{val.check_status}</Typography>
+                        <Typography style={{ fontSize: '10px' }}>{val.created_at} </Typography>
+                      </Box>
+                    </Grid>
+                    {i !== details.history.length - 1 && (
+                      <Grid item>
+                        <Divider orientation="horizontal" sx={{ width: 50, borderBottomWidth: 3 }} />
+                      </Grid>
+                    )}
+                   </>
+                  );
+                })} 
+          
+              </Grid>
+            </Grid>
         </Grid> 
         </form>
       </React.Fragment>

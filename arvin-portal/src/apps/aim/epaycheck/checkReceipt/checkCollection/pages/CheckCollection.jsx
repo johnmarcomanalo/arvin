@@ -3,6 +3,7 @@ import {
   ButtonGroup,
   Card,
   CardContent,
+  Checkbox,
   Grid,
   Stack,
   Table,
@@ -12,12 +13,9 @@ import {
   TableHead,
   TableRow,
   Typography,
-  useMediaQuery,
-  Checkbox,
-  Box,
-  Chip
+  useMediaQuery
 } from "@mui/material";
-import React, { useState } from 'react';
+import React from 'react';
 import { connect } from "react-redux";
 import { change, Field, formValueSelector, reduxForm } from "redux-form";
 //component
@@ -25,6 +23,7 @@ import ComboBox from "components/autoComplete/AutoComplete";
 import ButtonComponent from "components/button/Button";
 import CheckBoxComponent from "components/checkbox/CheckBox";
 import InputField from "components/inputFIeld/InputField";
+import InputNumberField from "components/inputFIeld/InputNumberField";
 import Modal from "components/modal/Modal";
 
 //hoooks and other  configuration
@@ -33,7 +32,7 @@ import configure from "apps/configure/configure.json";
 import CheckCollectionHooks from "../hooks/CheckCollectionHooks";
 import CheckCustomer from "./components/CheckCustomer";
 import InvoiceList from "./components/InvoiceList";
-import ReceiptDetails from "./components/ReceiptDetails"; 
+import ReceiptDetails from "./components/ReceiptDetails";
 let formName = "CheckCollection";
 let CheckCollection = (props) => {
   const { ...check }    = CheckCollectionHooks(props);
@@ -189,9 +188,10 @@ let CheckCollection = (props) => {
                         name="check_amount"
                         label="Check Amount"
                         type="number"
-                        component={InputField}
+                        component={InputNumberField}
                         required={true}
                         borderColor={borderColor}
+                        decimalplace={2}
                       />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={6}>
@@ -206,9 +206,9 @@ let CheckCollection = (props) => {
                             }
                             required={true}
                             component={ComboBox}
-                            onChangeHandle={(e, newValue) => {
-                              if (newValue?.name) {
-                                props.change("bank_description", newValue.name);
+                            onChangeHandle={(e, newValue) => { 
+                              if (newValue?.shortname) {
+                                props.change("bank_description", newValue.shortname);
                               }
                             }}
                             disabled={true}

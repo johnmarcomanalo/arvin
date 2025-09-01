@@ -1,36 +1,22 @@
 import {
-  ButtonGroup,
+  Checkbox,
   Grid,
   Stack,
-  useMediaQuery,
-  Table,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableContainer,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Checkbox,
+  useMediaQuery
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 import * as React from "react";
-import { change, Field, formValueSelector, reduxForm } from "redux-form";
 import { connect } from "react-redux";
+import { Field, formValueSelector, reduxForm } from "redux-form";
 //component
-import ButtonComponent from "components/button/Button";
-import TableComponent from "components/table/Table";
-import SearchField from "components/inputFIeld/SearchField";
-import InputField from "components/inputFIeld/InputField";
+import configure from "apps/configure/configure.json";
 import ComboBox from "components/autoComplete/AutoComplete";
+import ButtonComponent from "components/button/Button";
+import InputField from "components/inputFIeld/InputField";
+import SearchField from "components/inputFIeld/SearchField";
 import Modal from "components/modal/Modal";
 import Page from "components/pagination/Pagination";
+import TableComponent from "components/table/Table";
 import CheckReceiveHooks from "../hooks/CheckReceiveHooks";
-import moment from "moment";
-import configure from "apps/configure/configure.json";
-import CheckDetails from "./components/Receive";
 import Receive from "./components/Receive";
 let formName = "CheckReceive";
 const CheckReceive = (props) => {
@@ -214,7 +200,7 @@ const CheckReceive = (props) => {
             )}
           </Stack>
         </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={12}>
+        {/* <Grid item xs={12} sm={12} md={12} lg={12}>
           <TableComponent
             columns={check.columns}
             dataList={check.dataList}
@@ -269,7 +255,7 @@ const CheckReceive = (props) => {
               />
             </ButtonGroup>
           </Stack>
-        </Grid>
+        </Grid> */}
       </Grid>
     </React.Fragment>
   );

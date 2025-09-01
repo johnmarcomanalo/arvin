@@ -44,12 +44,16 @@ const styles = StyleSheet.create({
   row: { flexDirection: "row", 
     // borderBottom: "0.5px solid black",
     fontWeight: "bold" },
-  cell: { padding: 1.8, 
+  cell: { 
+    adding: 1.8, 
     // borderRight: "0.5px solid black", 
-    flex: 1, textAlign: "left", fontSize: 7.5 },
-  smallCell: { flex: 0.3, padding: 1, 
+    flex: 0.7, 
+    textAlign: "left", 
+    fontSize: 8 },
+  smallCell: { 
+    flex: 0.2, padding: 1.5, 
     // borderRight: "0.5px solid black", 
-    textAlign: "left", fontSize: 7.5 },
+    textAlign: "left", fontSize: 8 },
   footer: {
     marginTop: 15,
     paddingBottom:15,
@@ -82,12 +86,15 @@ const styles = StyleSheet.create({
     borderBottom: "1px solid black",
     borderTop: "1px solid black",
     marginVertical: 5,
-    padding:1
+    padding:2
   },
   footerHighlightTop: { 
     borderTop: "1px solid black",
     marginVertical: 5,
-    padding:1
+    padding:2
+  }, 
+  trwBG:{
+    backgroundColor: "#f4f2f2",
   },
 });
 
@@ -97,32 +104,35 @@ const headers = [
   {id:"check_date",description:"CHECK DATE"},
   {id:"check_status_date",description:"DATE DEP/TRANS"},
   {id:"check_number",description:"CHECK NO."}, 
-  {id:"bank_description",description:"BANK NAME"},
   {id:"card_name",description:"CUSTOMER"}, 
+  {id:"bank_description",description:"BANK NAME"},
   {id:"prefix_crpr",description:"OR/PR"}, 
   {id:"check_amount",description:"CHECK AMOUNT"}, 
   {id:"sum_doc_total",description:"SI AMOUNT"}, 
   {id:"count_sales_invoice",description:"SI COUNT"}, 
   {id:"stale_check",description:"STALE CHECK"}, 
+  {id:"check_status",description:"STATUS"}, 
+  {id:"payment_terms",description:"TERMS"}, 
+  {id:"remarks",description:"REMARKS"}, 
 ];
 
 
 
-const Table = ({ title, data }) => {
+const Table = ({ title, data, grandTotal,grandCount,grandSumTotal }) => {
   if (!data || typeof data !== "object") {
     return null; // Prevent rendering if data is undefined or not an object
   }
 
   // Compute grand totals from all rows
-  const allRows = Object.values(data).flat();
-  const grandCheckAmount = allRows.reduce(
-    (total, row) => total + (parseFloat(row.check_amount) || 0),
-    0
-  );
-  const grandDocTotal = allRows.reduce(
-    (total, row) => total + (parseFloat(row.sum_doc_total) || 0),
-    0
-  );
+  // const allRows = Object.values(data).flat();
+  // const grandCheckAmount = allRows.reduce(
+  //   (total, row) => total + (parseFloat(row.check_amount) || 0),
+  //   0
+  // );
+  // const grandDocTotal = allRows.reduce(
+  //   (total, row) => total + (parseFloat(row.sum_doc_total) || 0),
+  //   0
+  // );
 
   return (
     <View style={styles.section}>
@@ -130,6 +140,8 @@ const Table = ({ title, data }) => {
         <>
           <Text style={styles.title}>{title}</Text>
           {Object.entries(data).map(([date, rows]) => (
+            console.log(rows),
+            
             <View key={date} style={styles.dateSection}>
               <Text style={styles.subtitle}>
                 {moment(date).format("MMMM DD, YYYY")} (Count: {rows.length})
@@ -138,7 +150,7 @@ const Table = ({ title, data }) => {
               {/* Table Header */}
               <View style={[styles.row, { backgroundColor: "#ddd" }]}>
                 {headers.map((header, index) => (
-                  <Text key={index} style={index < 4 || index > 5 ? styles.smallCell : styles.cell}>
+                  <Text key={index} style={index < 4 || index > 4 ? styles.smallCell : styles.cell}>
                     {header.description}
                   </Text>
                 ))}
@@ -147,35 +159,45 @@ const Table = ({ title, data }) => {
               {/* Table Rows */}
               {Array.isArray(rows) &&
                 rows.map((row, rowIndex) => (
-                  <View key={rowIndex} style={styles.row}>
+                  <View key={rowIndex} style={[styles.row ]}>
                     {headers.map((header, cellIndex) => (
-                      <Text key={cellIndex}  style={cellIndex < 4 ||  cellIndex>5 ? styles.smallCell : styles.cell}>
-                        {row[header.id] || ""}
+                      // <Text key={cellIndex}  style={cellIndex < 4 ||  cellIndex>4 ? rowIndex % 2 === 1 ? [styles.smallCell,style.trwBG]  : {rowIndex % 2 === 1 ? [styles.cell,style.trwoBG]} }>
+                      <Text
+                        key={cellIndex}
+                        style={[
+                          cellIndex < 4 || cellIndex > 4
+                            ? rowIndex % 2 === 1
+                              ? [styles.smallCell, styles.trwBG]
+                              : styles.smallCell
+                            : rowIndex % 2 === 1
+                              ? [styles.cell, styles.trwBG]
+                              : styles.cell
+                        ]}
+                      >  
+                      {row[header.id] || ""}
                       </Text>
                     ))}
                   </View>
                 ))}
+                
               <View style={styles.row}> 
                 <Text style={[styles.smallCell,styles.footerHighlightTop]}>NO OF CHECKS</Text>
-                <Text style={[styles.smallCell,styles.footerHighlightTop]}>{rows.length}</Text>
-                {[1, 2 ].map((_, index) => (
-                  <Text key={index} style={[styles.smallCell]}> </Text>
-                ))}
-                {[1, 2].map((_, index) => (
+                <Text style={[styles.smallCell,styles.footerHighlightTop]}>{rows.length}</Text> 
+                {[1 ,2].map((_, index) => (
                   <Text key={index} style={[styles.cell]}>.</Text>
                 ))} 
                 <Text style={[styles.smallCell,styles.footerHighlightTop]}>TOTAL</Text> 
                 <Text style={[styles.smallCell,styles.footerHighlightTop]}>
                   {ViewAmountFormatingDecimals(
                     rows.reduce((total, row) => total + (parseFloat(row.check_amount) || 0), 0)
-                  ,4)}
+                  ,2)}
                 </Text> 
                 <Text style={[styles.smallCell,styles.footerHighlightTop]}>
                   {ViewAmountFormatingDecimals(
                     rows.reduce((total, row) => total + (parseFloat(row.sum_doc_total) || 0), 0)
-                  ,4)}
+                  ,2)}
                 </Text>
-                {[1, 2].map((_, index) => (
+                {[1, 2,3,4,5].map((_, index) => (
                   <Text key={index} style={[styles.smallCell]}> </Text>
                 ))}
               </View>
@@ -186,21 +208,22 @@ const Table = ({ title, data }) => {
           {/* Grand Total Row */}
           <View style={[styles.row]}>
           <Text style={[styles.smallCell,styles.footerHighlight]}>NO OF CHECKS</Text>
-          <Text style={[styles.smallCell,styles.footerHighlight]}>{allRows.length}</Text>
-            {[1, 2,].map((_, index) => (
-              <Text key={`g1-${index}`} style={styles.smallCell}></Text>
-            ))}
+          {/* <Text style={[styles.smallCell,styles.footerHighlight]}>{allRows.length}</Text> */}
+          <Text style={[styles.smallCell,styles.footerHighlight]}>{grandCount}</Text>
+            
             {[1, 2].map((_, index) => (
               <Text key={`g2-${index}`} style={styles.cell}></Text>
             ))}
              <Text style={[styles.smallCell,styles.footerHighlight]}>GRAND TOTAL</Text>
             <Text style={[styles.smallCell,styles.footerHighlight]}>
-              {ViewAmountFormatingDecimals(grandCheckAmount, 4)}
+              {/* {ViewAmountFormatingDecimals(grandCheckAmount, 2)} */}
+              {ViewAmountFormatingDecimals(grandTotal, 2)}
             </Text>
             <Text style={[styles.smallCell,styles.footerHighlight]}>
-              {ViewAmountFormatingDecimals(grandDocTotal, 4)}
+              {/* {ViewAmountFormatingDecimals(grandDocTotal, 2)} */}
+              {ViewAmountFormatingDecimals(grandSumTotal, 2)}
             </Text>
-            {[1, 2].map((_, index) => (
+            {[1, 2,3,4,5].map((_, index) => (
               <Text key={`g3-${index}`} style={styles.smallCell}></Text>
             ))}
           </View>
@@ -211,7 +234,7 @@ const Table = ({ title, data }) => {
 };
 // Table Component (keep your existing Table component)
 
-const Summary = ({data})=>{
+const Summary = ({data,onhand})=>{
     const beginning_on_hand = data?.beginning_on_hand ? data?.beginning_on_hand : "-"
     const ending_on_hand    = data?.ending_on_hand ? data?.ending_on_hand :"-"
     const deposited         = data?.deposited ? data?.deposited :"-"
@@ -255,8 +278,8 @@ const Summary = ({data})=>{
     </View>)
 }
 
-const pageWidth = 13 * 72;   // 936 pt
-const pageHeight = 8.5 * 72; // 612 pt
+// const pageWidth = 13 * 72;   // 936 pt
+// const pageHeight = 8.5 * 72; // 612 pt
 
 const ViewPrintWeeklyCheckReport = (props) => {
   const [loading, setLoading] = useState(true);
@@ -269,13 +292,32 @@ const ViewPrintWeeklyCheckReport = (props) => {
     }, 500); // Simulating API delay
   }, [props.data]);
 
-  const footer_summary     = props.data?.footer
-  const body_data          = props.data?.body
-  const onhand_data        = body_data?.onhand
-  const deposited_data     = body_data?.deposited
-  const transmitted_data   = body_data?.transmitted
+  const footer_summary          = props.data?.footer
+  const body_data               = props.data?.body
+  const onhand_data             = body_data?.onhand
+  const onhand_grand_total   = body_data?.onhand_grand_total
+  const onhand_grand_count   = body_data?.onhand_grand_count
+  const onhand_grand_sum_doc_total   = body_data?.onhand_grand_sum_doc_total
+  
+  const deposited_data          = body_data?.deposited
+  const deposited_grand_total   = body_data?.deposited_grand_total
+  const deposited_grand_count   = body_data?.deposited_grand_count
+  const deposited_grand_sum_doc_total   = body_data?.deposited_grand_sum_doc_total
+
+  const transmitted_data        = body_data?.transmitted
+  const transmitted_grand_total = body_data?.transmitted_grand_total
+  const transmitted_grand_count = body_data?.transmitted_grand_count
+  const transmitted_grand_sum_doc_total = body_data?.transmitted_grand_sum_doc_total
+
   const rejected_data      = body_data?.rejected
+  const rejected_grand_total = body_data?.rejected_grand_total
+  const rejected_grand_count = body_data?.rejected_grand_count
+  const rejected_grand_sum_doc_total = body_data?.rejected_grand_sum_doc_total
+
   const open_rejected_data = body_data?.open_rejected
+  const open_rejected_grand_total = body_data?.open_rejected_grand_total
+  const open_rejected_grand_count = body_data?.open_rejected_grand_count
+  const open_rejected_grand_sum_doc_total = body_data?.open_rejected_grand_sum_doc_total
 
   // FOOTER DATA
  
@@ -314,20 +356,45 @@ const ViewPrintWeeklyCheckReport = (props) => {
           </View>
   
           {/* Tables */}
-          <Table title="DEPOSITED" data={deposited_data}/>
-          <Table title="TRANSMITTED" data={transmitted_data}/>
-          <Table title="ON-HAND" data={onhand_data} />
-          <Table title="REJECTED" data={rejected_data} />
+          <Table title="DEPOSITED" 
+                 data={deposited_data} 
+                 grandTotal={deposited_grand_total} 
+                 grandCount={deposited_grand_count} 
+                 grandSumTotal={deposited_grand_sum_doc_total}
+          />
+          <Table title="TRANSMITTED" 
+                 data={transmitted_data}
+                 grandTotal={transmitted_grand_total} 
+                 grandCount={transmitted_grand_count} 
+                 grandSumTotal={transmitted_grand_sum_doc_total}
+          />
+          <Table title="ON-HAND" 
+                 data={onhand_data} 
+                 grandTotal={onhand_grand_total} 
+                 grandCount={onhand_grand_count} 
+                 grandSumTotal={onhand_grand_sum_doc_total}
+          />
+          <Table title="REJECTED" 
+                 data={rejected_data} 
+                 grandTotal={rejected_grand_total} 
+                 grandCount={rejected_grand_count} 
+                 grandSumTotal={rejected_grand_sum_doc_total} 
+          />
   
           {/* Footer */}
-          <Summary data={footer_summary} />
+          <Summary data={footer_summary} onhand={onhand_grand_count}/>
         </Page>
 
         {/* OPEN REJECTED */}
         <>
         {open_rejected_data && open_rejected_data.length!==0 && (
-          <Page size={[pageWidth, pageHeight]} style={styles.page} orientation="landscape" wrap>
-            <Table title="OPEN REJECTED" data={open_rejected_data} />
+          <Page size="FOLIO" style={styles.page} orientation="landscape" wrap>
+            <Table title="OPEN REJECTED" 
+                   data={open_rejected_data} 
+                   grandTotal={open_rejected_grand_total} 
+                   grandCount={open_rejected_grand_count} 
+                   grandSumTotal={open_rejected_grand_sum_doc_total} 
+            />
           </Page>
         )}
         </>

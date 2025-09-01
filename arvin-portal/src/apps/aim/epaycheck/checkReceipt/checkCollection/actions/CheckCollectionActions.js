@@ -122,7 +122,7 @@ export const getReceiptDetails = (formValues) => async (dispatch) => {
         loading: true,
       },
     });
-    const results = GetSpecificDefaultServices(
+    const results = await GetSpecificDefaultServices(
       "api/epaycheck/get_receipt_details?receipt_code=" +
         formValues.receipt_code +
         "&receipt_number=" +
@@ -131,30 +131,38 @@ export const getReceiptDetails = (formValues) => async (dispatch) => {
         formValues.subsection_code
     );
 
-    results.then((res) => {
-      let decrypted = decryptaes(res?.data);
-      let data = decrypted?.data; 
-      dispatch({
-        type: Constants.ACTION_EPAY_CHECK,
-        payload: {
-          printData: data,
-        },
-      });
-    });
+    let decrypted = decryptaes(results?.data) 
+    let data = decrypted?.data; 
+    dispatch({
+      type: Constants.ACTION_EPAY_CHECK,
+      payload: {
+        printData: data,
+      },
+    }); 
+    
   } catch (error) {
     let title = configure.error_message.default;
-    let message = ""; 
-    let status = "error"; 
-    if (typeof error.response.data.message !== "undefined")
-      title = error.response.data.message; 
-      status = error.response.data.status; 
-    if (typeof error.response.data.errors !== "undefined") {
-      const formattedErrors = Object.entries(error.response.data.errors)
-        .map(([key, value]) => `${value.join(", ")}`)
-        .join("\n");
-      message = formattedErrors;
+    let message = "";
+    let status  ="error"
+
+    if (error.response?.data?.message) {
+      title = error.response.data.message;
     }
-    await swal(title, message,status);
+
+    if (error.response?.data?.status) {
+      status = error.response.data.status;
+    }
+
+    if (error.response?.data?.errors) {
+      message = Object.values(error.response.data.errors).flat().join("\n");
+    }
+    
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: { loading: false },
+    });
+    
+    await swal(title, message, status);
   } finally {
     await dispatch({
       type: Constants.ACTION_LOADING,
@@ -162,7 +170,7 @@ export const getReceiptDetails = (formValues) => async (dispatch) => {
         loading: false,
       },
     });
-  }
+  } 
 };
 
 

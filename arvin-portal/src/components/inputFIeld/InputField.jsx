@@ -54,6 +54,7 @@ const InputField = (props) => {
         rows={props.multiline ? props.linerow : undefined}
         disabled={props.disabled}
         placeholder={props.placeholder} 
+        defaultValue={props.defaultValue}
         sx={{
           "& input": {
             backgroundColor: props.disabled ? "#e8e8e8" : "transparent",

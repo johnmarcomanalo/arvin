@@ -31,6 +31,7 @@ const Tables = (props) => {
     subAction2Show = true,
     heightLimit = true,
     extraLayer,
+    highlightRules = []
   } = props;
   const [screenHeight, setScreenHeight] = React.useState(window.innerHeight);
 
@@ -125,14 +126,25 @@ const Tables = (props) => {
 
                     {columns.map((column) => {
                       const value = row[column.id];
+                        // default styles
+                        let cellStyle = { ...column.style };
+
+                        // apply highlight rules only if column matches
+                        highlightRules.forEach((rule) => {
+                          if (rule.columnId === column.id && rule.condition(value, row)) {
+                            cellStyle = { ...cellStyle, ...rule.style };
+                          }
+                        });
+
+                        // add your negative value rule too
+                        if (!isNaN(value) && parseFloat(value) < 0) {
+                          cellStyle = { ...cellStyle, color: parseFloat(value) < 0 ? "#C83232" : "inherit" };
+                        } 
                       return (
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          style={{
-                            color:
-                              parseFloat(value) < 0 ? "#C83232" : "inherit",
-                          }}
+                          style={cellStyle} 
                         >
                           {column?.format != undefined
                             ? column.format(value)

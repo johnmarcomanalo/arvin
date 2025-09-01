@@ -142,7 +142,7 @@ class AuthController extends Controller
         join('ref_sub_sections', 'user_access_organization_rights.subsection_code', '=', 'ref_sub_sections.code')
         ->where('user_id',$user_id)
         ->where('access_rights',1)
-        ->get(['ref_sub_sections.type','ref_sub_sections.code','ref_sub_sections.description','ref_sub_sections.section_code']);
+        ->get(['ref_sub_sections.type','ref_sub_sections.code','ref_sub_sections.description','ref_sub_sections.section_code','department_description']);
 
          $user_access_product_group_rights = UserAccessProductGroupRights::
         join('ref_product_groups', 'user_access_product_group_rights.ref_product_groups_code', '=', 'ref_product_groups.code')

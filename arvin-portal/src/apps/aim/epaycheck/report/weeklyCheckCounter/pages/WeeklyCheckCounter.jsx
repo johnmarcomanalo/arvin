@@ -71,7 +71,7 @@ const WeeklyCheckCounter = (props) => {
                     id="filter_user_access_organization_rights"
                     name="filter_user_access_organization_rights"
                     label="Warehouse"
-                    options={check?.access.user_access_organization_rights}
+                    options={check?.access.user_access_organization_rights?.sort((a, b) => a.description.localeCompare(b.description))}
                     getOptionLabel={(option) =>
                       option?.description ? option?.description : ""
                     }

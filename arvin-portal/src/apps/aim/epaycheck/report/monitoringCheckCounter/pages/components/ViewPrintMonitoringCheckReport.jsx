@@ -1,20 +1,16 @@
-import React, { useState, useEffect } from "react";
 import {
   Document,
+  Font,
   Page,
+  PDFViewer,
+  StyleSheet,
   Text,
   View,
-  StyleSheet,
-  PDFViewer,
-  Font,
 } from "@react-pdf/renderer";
-import PoppinsRegular from "../../../../../../../utils/font/Poppins-Regular.ttf";
+import { useEffect, useState } from "react";
 import PoppinsBold from "../../../../../../../utils/font/Poppins-Bold.ttf";
-import { ViewAmountFormatingDecimals } from 'utils/AccountingUtils'
-import PoppinsBoldItalic from "../../../../../../../utils/font/Poppins-BoldItalic.ttf";
+import PoppinsRegular from "../../../../../../../utils/font/Poppins-Regular.ttf";
 import PoppinsSemiBoldItalic from "../../../../../../../utils/font/Poppins-SemiBoldItalic.ttf";
-import { CircularProgress } from "@mui/material";
-import moment from "moment";
 // Register fonts
 Font.register({
   family: "PoppinsRegular",
@@ -33,25 +29,29 @@ Font.register({
 const styles = StyleSheet.create({
   page: { 
     padding: 15, 
-    fontSize: 10, 
+    fontSize: 15, 
   },
   section: { marginBottom: 10 },
   title: { fontSize: 11, fontWeight: "bold", marginBottom: 0, fontFamily: "PoppinsBold" },
+  warehouseTitle: { fontSize: 11, fontWeight: "bold", marginBottom: 0, fontFamily: "PoppinsBold" },
   subtitle: { fontSize: 9, fontWeight: "bold", marginBottom: 1,marginTop:7, fontFamily: "PoppinsBold" },
   headerGroup: { marginBottom: 2, textAlign: "left" },
   headerText: { fontSize: 10, margin:1, fontFamily: "PoppinsRegular" },
   table: { display: "flex", flexDirection: "column", 
     // border: "0.5px solid black", 
-    fontSize: 9 },
+    fontSize: 10 },
   row: { flexDirection: "row", 
     // borderBottom: "0.5px solid black",
     fontWeight: "bold" },
-  cell: { padding: 1.8, 
-    // borderRight: "0.5px solid black", 
-    flex: 1, textAlign: "left", fontSize: 7.5 },
-  smallCell: { flex: 0.3, padding: 1, 
-    // borderRight: "0.5px solid black", 
-    textAlign: "left", fontSize: 7.5 },
+  cell: { padding: 3, 
+    // borderBottom: "0.5px solid black", 
+    flex: 1.5, textAlign: "left", fontSize: 9, },
+    tinyCell: { padding: 2, 
+      // borderBottom: "0.5px solid black", 
+      flex:.3, textAlign: "left", fontSize: 9, },
+  smallCell: { flex: 1, padding: 3, 
+    // borderBottom: "0.5px solid black", 
+    textAlign: "left", fontSize:9,  },
   footer: {
     marginTop: 15,
     paddingBottom:15,
@@ -96,167 +96,140 @@ const styles = StyleSheet.create({
 // Table headers
 const headers = [
   {id:"created_at",description:"POSTING DATE"},
-  {id:"check_date",description:"CHECK DATE"},
-  {id:"check_status_date",description:"DATE DEP/TRANS"},
-  {id:"check_number",description:"CHECK NO."}, 
-  {id:"bank_description",description:"BANK NAME"},
-  {id:"card_name",description:"CUSTOMER"}, 
-  {id:"prefix_crpr",description:"OR/PR"}, 
-  {id:"check_amount",description:"CHECK AMOUNT"}, 
-  {id:"sum_doc_total",description:"SI AMOUNT"}, 
-  {id:"count_sales_invoice",description:"SI COUNT"}, 
-  {id:"stale_check",description:"STALE CHECK"}, 
+  {id:"account_number",description:"ACCOUNT NO"},
+  {id:"check_number",description:"CHECK NO."},
+  {id:"check_date",description:"CHECK DATE"}, 
+  {id:"check_amount",description:"CHECK AMOUNT"},
+  {id:"card_name",description:"CUSTOMER"},
+  {id:"prefix_crpr",description:"CRPR"},
+  {id:"bank_description",description:"CHECK BANK"}, 
+  {id:"deposited_date",description:"DATE DEPOSITED"}, //8
+  {id:"deposited_bank",description:"BANK DEPOSITED"}, //9
+  {id:"received_date",description:"DATE RECEIVED"}, // 10
+  {id:"check_status_date",description:"STATUS DATE"}, //11
 ];
 
-
-
-const Table = ({ title, data }) => {
-  if (!data || typeof data !== "object") {
-    return null; // Prevent rendering if data is undefined or not an object
-  }
-
-  // Compute grand totals from all rows
-  const allRows = Object.values(data).flat();
-  const grandCheckAmount = allRows.reduce(
-    (total, row) => total + (parseFloat(row.check_amount) || 0),
-    0
-  );
-  const grandDocTotal = allRows.reduce(
-    (total, row) => total + (parseFloat(row.sum_doc_total) || 0),
-    0
-  );
-
-  return (
-    <View style={styles.section}>
-      {Object.keys(data).length > 0 && (
-        <>
-          <Text style={styles.title}>{title}</Text>
-          {Object.entries(data).map(([date, rows]) => (
-            <View key={date} style={styles.dateSection}>
-              <Text style={styles.subtitle}>
-                {moment(date).format("MMMM DD, YYYY")} (Count: {rows.length})
-              </Text>
-
-              {/* Table Header */}
-              <View style={[styles.row, { backgroundColor: "#ddd" }]}>
-                {headers.map((header, index) => (
-                  <Text key={index} style={index < 4 || index > 5 ? styles.smallCell : styles.cell}>
-                    {header.description}
-                  </Text>
-                ))}
+ 
+  const Table = ({ data, group, status }) => {
+    return (
+      <View style={styles.section}>
+        {group ? (
+          data && typeof data === 'object' ? (
+            Object.entries(data).map(([warehouse, rows], index) => (
+              <View key={index}>
+                {/* Warehouse Header */}
+                <Text style={styles.warehouseTitle}>{warehouse}</Text>
+  
+                {/* Table Header */}
+                <View style={[styles.row, { backgroundColor: "#ddd" }]}>
+                  <Text style={styles.tinyCell}>#</Text>
+                  <Text style={styles.smallCell}>{headers[0]?.description}</Text>
+                  <Text style={styles.smallCell}>{headers[1]?.description}</Text>
+                  <Text style={styles.smallCell}>{headers[2]?.description}</Text>
+                  <Text style={styles.smallCell}>{headers[3]?.description}</Text>
+                  <Text style={styles.smallCell}>{headers[4]?.description}</Text>
+                  <Text style={styles.cell}>{headers[5]?.description}</Text>
+                  <Text style={styles.smallCell}>{headers[6]?.description}</Text>
+                  <Text style={styles.smallCell}>{headers[7]?.description}</Text>
+                  {status === 'DEPOSITED' && (
+                    <>
+                      <Text style={styles.smallCell}>{headers[8]?.description}</Text>
+                      <Text style={styles.cell}>{headers[9]?.description}</Text>
+                    </>
+                  )}
+                  {status === 'TRANSMITTED' && (
+                    <Text style={styles.smallCell}>{headers[10]?.description}</Text>
+                  )}
+                  <Text style={styles.smallCell}>{headers[11]?.description}</Text>
+                </View>
+  
+                {/* Table Rows */}
+                {Array.isArray(rows) &&
+                  rows.map((row, rowIndex) => (
+                    <View key={rowIndex} style={styles.row}>
+                      <Text style={styles.tinyCell}>{rowIndex + 1}</Text>
+                      <Text style={styles.smallCell}>{row.created_at}</Text>
+                      <Text style={styles.smallCell}>{row.account_number}</Text>
+                      <Text style={styles.smallCell}>{row.check_number}</Text>
+                      <Text style={styles.smallCell}>{row.check_date}</Text>
+                      <Text style={styles.smallCell}>{row.check_amount}</Text>
+                      <Text style={styles.cell}>{row.card_name}</Text>
+                      <Text style={styles.smallCell}>{row.prefix_crpr}</Text>
+                      <Text style={styles.smallCell}>{row.bank_description}</Text>
+                      {status === 'DEPOSITED' && (
+                        <>
+                          <Text style={styles.smallCell}>{row.deposited_date}</Text>
+                          <Text style={styles.cell}>{row.deposited_bank}</Text>
+                        </>
+                      )}
+                      {status === 'TRANSMITTED' && (
+                        <Text style={styles.smallCell}>{row.received_date}</Text>
+                      )}
+                      <Text style={styles.smallCell}>{row.check_status_date}</Text>
+                    </View>
+                  ))}
               </View>
-
-              {/* Table Rows */}
-              {Array.isArray(rows) &&
-                rows.map((row, rowIndex) => (
-                  <View key={rowIndex} style={styles.row}>
-                    {headers.map((header, cellIndex) => (
-                      <Text key={cellIndex}  style={cellIndex < 4 ||  cellIndex>5 ? styles.smallCell : styles.cell}>
-                        {row[header.id] || ""}
-                      </Text>
-                    ))}
-                  </View>
-                ))}
-              <View style={styles.row}> 
-                <Text style={[styles.smallCell,styles.footerHighlightTop]}>NO OF CHECKS</Text>
-                <Text style={[styles.smallCell,styles.footerHighlightTop]}>{rows.length}</Text>
-                {[1, 2 ].map((_, index) => (
-                  <Text key={index} style={[styles.smallCell]}> </Text>
-                ))}
-                {[1, 2].map((_, index) => (
-                  <Text key={index} style={[styles.cell]}>.</Text>
-                ))} 
-                <Text style={[styles.smallCell,styles.footerHighlightTop]}>TOTAL</Text> 
-                <Text style={[styles.smallCell,styles.footerHighlightTop]}>
-                  {ViewAmountFormatingDecimals(
-                    rows.reduce((total, row) => total + (parseFloat(row.check_amount) || 0), 0)
-                  ,4)}
-                </Text> 
-                <Text style={[styles.smallCell,styles.footerHighlightTop]}>
-                  {ViewAmountFormatingDecimals(
-                    rows.reduce((total, row) => total + (parseFloat(row.sum_doc_total) || 0), 0)
-                  ,4)}
-                </Text>
-                {[1, 2].map((_, index) => (
-                  <Text key={index} style={[styles.smallCell]}> </Text>
-                ))}
-              </View>
+            ))
+          ) : (
+            <Text>No data available</Text>
+          )
+        ) : (
+          <>
+            {/* Table Header */}
+            <View style={[styles.row, { backgroundColor: "#ddd" }]}>
+              <Text style={styles.tinyCell}>#</Text>
+              <Text style={styles.smallCell}>{headers[0]?.description}</Text>
+              <Text style={styles.smallCell}>{headers[1]?.description}</Text>
+              <Text style={styles.smallCell}>{headers[2]?.description}</Text>
+              <Text style={styles.smallCell}>{headers[3]?.description}</Text>
+              <Text style={styles.smallCell}>{headers[4]?.description}</Text>
+              <Text style={styles.cell}>{headers[5]?.description}</Text>
+              <Text style={styles.smallCell}>{headers[6]?.description}</Text>
+              <Text style={styles.smallCell}>{headers[7]?.description}</Text>
+              {status === 'DEPOSITED' && (
+                <>
+                  <Text style={styles.smallCell}>{headers[8]?.description}</Text>
+                  <Text style={styles.cell}>{headers[9]?.description}</Text>
+                </>
+              )}
+              {status === 'TRANSMITTED' && (
+                <Text style={styles.smallCell}>{headers[10]?.description}</Text>
+              )}
+              <Text style={styles.smallCell}>{headers[11]?.description}</Text>
             </View>
-          ))}
-
-
-          {/* Grand Total Row */}
-          <View style={[styles.row]}>
-          <Text style={[styles.smallCell,styles.footerHighlight]}>NO OF CHECKS</Text>
-          <Text style={[styles.smallCell,styles.footerHighlight]}>{allRows.length}</Text>
-            {[1, 2,].map((_, index) => (
-              <Text key={`g1-${index}`} style={styles.smallCell}></Text>
-            ))}
-            {[1, 2].map((_, index) => (
-              <Text key={`g2-${index}`} style={styles.cell}></Text>
-            ))}
-             <Text style={[styles.smallCell,styles.footerHighlight]}>GRAND TOTAL</Text>
-            <Text style={[styles.smallCell,styles.footerHighlight]}>
-              {ViewAmountFormatingDecimals(grandCheckAmount, 4)}
-            </Text>
-            <Text style={[styles.smallCell,styles.footerHighlight]}>
-              {ViewAmountFormatingDecimals(grandDocTotal, 4)}
-            </Text>
-            {[1, 2].map((_, index) => (
-              <Text key={`g3-${index}`} style={styles.smallCell}></Text>
-            ))}
-          </View>
-        </>
-      )}
-    </View>
-  );
-};
-// Table Component (keep your existing Table component)
-
-const Summary = ({data})=>{
-    const beginning_on_hand = data?.beginning_on_hand ? data?.beginning_on_hand : "-"
-    const ending_on_hand    = data?.ending_on_hand ? data?.ending_on_hand :"-"
-    const deposited         = data?.deposited ? data?.deposited :"-"
-    const collected         = data?.collected ? data?.collected :"-"
-    const transmitted       = data?.transmitted ? data?.transmitted :"-"
-    const rejected          = data?.rejected ? data?.rejected :"-"
-    const open_rejected     = data?.open_rejected ? data?.open_rejected :"-"
-    return (  <View style={styles.footer}>
-      <View style={styles.footerRow}>
-        <Text style={styles.footerLabel}>Beginning ON-HAND:</Text>
-        <Text style={styles.footerValue}>{beginning_on_hand}</Text>
+  
+            {/* Table Rows */}
+            {Array.isArray(data) &&
+              data.map((row, rowIndex) => (
+                <View key={rowIndex} style={styles.row}>
+                  <Text style={styles.tinyCell}>{rowIndex + 1}</Text>
+                  <Text style={styles.smallCell}>{row.created_at}</Text>
+                  <Text style={styles.smallCell}>{row.account_number}</Text>
+                  <Text style={styles.smallCell}>{row.check_number}</Text>
+                  <Text style={styles.smallCell}>{row.check_date}</Text>
+                  <Text style={styles.smallCell}>{row.check_amount}</Text>
+                  <Text style={styles.cell}>{row.card_name}</Text>
+                  <Text style={styles.smallCell}>{row.prefix_crpr}</Text>
+                  <Text style={styles.smallCell}>{row.bank_description}</Text>
+                  {status === 'DEPOSITED' && (
+                    <>
+                      <Text style={styles.smallCell}>{row.deposited_date}</Text>
+                      <Text style={styles.cell}>{row.deposited_bank}</Text>
+                    </>
+                  )}
+                  {status === 'TRANSMITTED' && (
+                    <Text style={styles.smallCell}>{row.received_date}</Text>
+                  )}
+                  <Text style={styles.smallCell}>{row.check_status_date}</Text>
+                </View>
+              ))}
+          </>
+        )}
       </View>
-      <View style={styles.footerDivider} />
-      <View style={styles.footerRow}>
-        <Text style={styles.footerLabel}>Collected:</Text>
-        <Text style={styles.footerValue}>{collected}</Text>
-      </View>
-      <View style={styles.footerDivider} />
-      <View style={styles.footerRow}>
-        <Text style={styles.footerLabel}>Deposited:</Text>
-        <Text style={styles.footerValue}>{deposited}</Text>
-      </View>
-      <View style={styles.footerRow}>
-        <Text style={styles.footerLabel}>Transmitted:</Text>
-        <Text style={styles.footerValue}>{transmitted}</Text>
-      </View>
-      <View style={styles.footerRow}>
-        <Text style={styles.footerLabel}>Rejected:</Text>
-        <Text style={styles.footerValue}>{rejected}</Text>
-      </View>
-      <View style={styles.footerDivider} />
-      <View style={styles.footerRow}>
-        <Text style={styles.footerLabel}>Ending ON-HAND:</Text>
-        <Text style={styles.footerValue}>{ending_on_hand}</Text>
-      </View>
-      <View style={styles.footerDivider} />
-      <View style={styles.footerRow}>
-        <Text style={styles.footerLabel}>Open Rejected:</Text>
-        <Text style={styles.footerValue}>{open_rejected}</Text>
-      </View>
-    </View>)
-}
-
+    );
+  }; 
+ 
+ 
 const pageWidth = 13 * 72;   // 936 pt
 const pageHeight = 8.5 * 72; // 612 pt
 
@@ -273,11 +246,7 @@ const ViewPrintWeeklyCheckReport = (props) => {
 
   const footer_summary     = props.data?.footer
   const body_data          = props.data?.body
-  const onhand_data        = body_data?.onhand
-  const deposited_data     = body_data?.deposited
-  const transmitted_data   = body_data?.transmitted
-  const rejected_data      = body_data?.rejected
-  const open_rejected_data = body_data?.open_rejected
+  const body               = body_data 
 
   // FOOTER DATA
  
@@ -287,7 +256,9 @@ const ViewPrintWeeklyCheckReport = (props) => {
   const header_date_from   = header_data?.date_from
   const header_date_to     = header_data?.date_to
   const header_subsection  = header_data?.sub_section
-  const header_title       = "WEEKLY CHECK COUNTER RECEIPT"
+  const header_title       = header_data?.title 
+  const header_status      = header_data?.status 
+  const header_group       = header_data?.group 
 
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
@@ -312,27 +283,15 @@ const ViewPrintWeeklyCheckReport = (props) => {
           <View style={styles.headerGroup}>
             <Text style={styles.title}>{header_title}</Text>
             <Text style={styles.headerText}>From {header_date_from} - {header_date_to}</Text>
-            <Text style={styles.headerText}>{header_subsection}</Text>
+            <Text style={styles.headerText}>{header_subsection} | {header_status}</Text> 
           </View>
   
           {/* Tables */}
-          <Table title="ON-HAND" data={onhand_data} />
-          <Table title="DEPOSITED" data={deposited_data}/>
-          <Table title="TRANSMITTED" data={transmitted_data}/>
-          <Table title="REJECTED" data={rejected_data} />
-  
-          {/* Footer */}
-          <Summary data={footer_summary} />
+          <Table data={body} group={header_group} status={header_status}/>
+   
         </Page>
 
-        {/* OPEN REJECTED */}
-        <>
-        {open_rejected_data && open_rejected_data.length!==0 && (
-          <Page size={[pageWidth, pageHeight]} style={styles.page} orientation="landscape" wrap>
-            <Table title="OPEN REJECTED" data={open_rejected_data} />
-          </Page>
-        )}
-        </>
+       
       </Document>
     </PDFViewer>
     </div>

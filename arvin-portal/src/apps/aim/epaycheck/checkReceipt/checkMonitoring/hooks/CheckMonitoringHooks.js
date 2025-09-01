@@ -30,6 +30,8 @@ const CheckMonitoringHooks = (props) => {
     const filterEndQuery   = searchParams.get("dt") != null ? String(searchParams.get("dt")): moment(new Date()).format("YYYY-MM-DD");
     const filterStatus     = searchParams.get("s")  != null ? String(searchParams.get("s")) : "ON-HAND";
     const filterSubSection = searchParams.get("sc") != null ? String(searchParams.get("sc")) : account_details.subsection_code;
+    const filter_order     = searchParams.get("order") != null ? String(searchParams.get("order")) : "asc";
+    const filter_sort_by   = searchParams.get("sort_by") != null ? String(searchParams.get("sort_by")) : "code";
     const debounceSearch   = useDebounce(searchParams, 100);
     const access           = useSelector((state) => state.AuthenticationReducer.access); 
     const selectedItem     = useSelector((state) => state.EpayCheckReducer.selectedItem); 
@@ -46,33 +48,83 @@ const CheckMonitoringHooks = (props) => {
     const [state, setState]= React.useState({
         debounceTimer: null,
         debounceDelay: 1000,
-        selectedCheck:[]
+        selectedCheck:[],
+        sort_by: "check_status", // Default sorting order
+        order: "asc", // Default sorting field
     });
-    const subsection_allowed_to_reject = [12,8];
+    const subsection_allowed_to_reject = [12,7,8];
+    const subsection_allowed_to_undo = [12];
     const columns = [
-        { id:"code", label:"Reference", align:"left"},
-        { id:"status", label:"Status", align:"left"},
-        { id:"stale_check_view", label:"Stale Check", align:"left"},
-        { id:"card_code", label:"Customer Code", align:"left"},
-        { id:"card_name", label:"Customer", align:"left"},
-        { id:"account_number", label:"Account No.", align:"left"},
-        { id:"check_number", label:"Check No.", align:"left"},
-        { id:"check_date", label:"Check Date", align:"left"},
-        { id:"check_amount_display", label:"Check Amount", align:"left"},
-        { id:"bank_description", label:"Bank", align:"left"},
-        { id:"bank_branch", label:"Bank Branch", align:"left"},
-        { id:"advance_payment", label:"Adv Payment", align:"left"},
-        { id:"prefix_crpr", label:"CR/PR", align:"left"},
-        { id:"sales_invoice", label:"Sales Invoice", align:"left"},
-        { id:"dr_number", label:"DR Number", align:"left"},
+        { id:"code", label:"Reference", align:"left", sortable: false},
+        { id:"created_at", label:"Created At", align:"left", sortable: true},
+        { id:"status", label:"Status", align:"left", sortable: false},
+        { id:"stale_check_view", label:"Stale Check", align:"left", sortable: false},
+        { id:"card_code", label:"Customer Code", align:"left", sortable: false},
+        { id:"card_name", label:"Customer", align:"left", sortable: true},
+        { id:"account_number", label:"Account No.", align:"left", sortable: true},
+        { id:"check_number", label:"Check No.", align:"left", sortable: true},
+        { id:"check_date", label:"Check Date", align:"left", sortable: true},
+        { id:"check_amount_display", label:"Check Amount", align:"left", sortable: true},
+        { id:"bank_description", label:"Bank", align:"left", sortable: true},
+        { id:"bank_branch", label:"Bank Branch", align:"left", sortable: true},
+        { id:"advance_payment", label:"Adv Payment", align:"left", sortable: false},
+        { id:"deposited_bank", label:"Bank Deposited", align:"left", sortable: true},
+        { id:"prefix_crpr", label:"CR/PR", align:"left", sortable: true},
+        { id:"sales_invoice", label:"Sales Invoice", align:"left", sortable: false},
+        { id:"dr_number", label:"DR Number", align:"left", sortable: false},
+        { id:"received_date", label:"Received Date", align:"left", sortable: false},
     ];
      
-    const status = [ 
+    const status = [
         { status:true , description: 'ON-HAND'},
         { status:true  , description: 'DEPOSITED'},
         { status:true  , description: 'TRANSMITTED'},
         { status:false  , description: 'REJECTED'},
+        { status:false  , description: 'ALL'},
     ]
+
+    const groupedSorted = (data) => {
+      if (data.length === 0) return [];
+    
+      const sortByDescription = (arr) =>
+        arr.sort((a, b) => a.description.localeCompare(b.description));
+    
+      const manila = sortByDescription(
+        data.filter((item) => item.department_description === "Manila Branch")
+      );
+    
+      const provincial = sortByDescription(
+        data.filter((item) => item.department_description === "Provincial")
+      );
+    
+      const others = sortByDescription(
+        data.filter(
+          (item) =>
+            item.department_description !== "Manila Branch" &&
+            item.department_description !== "Provincial"
+        )
+      );
+    
+      const result = [];
+    
+      if (provincial.length > 0) {
+        result.push({ code: "Provincial", description: "- ALL PROVINCE" }, ...provincial);
+      }
+    
+      if (manila.length > 0) {
+        result.push({ code: "Manila Branch", description: "- ALL MANILA" }, ...manila);
+      }
+    
+      if (others.length > 0) {
+        result.push({ code: "Manila Branch", description: "- ALL OTHERS" }, ...others);
+      }
+    
+      return result;
+    };
+        
+    
+    const warehouseList = groupedSorted(access.user_access_organization_rights); 
+ 
 
     const epay_selection = [
       {  description:'NO'},
@@ -86,7 +138,9 @@ const CheckMonitoringHooks = (props) => {
         df : filterStartQuery,
         dt : filterEndQuery,
         s  : filterStatus,
-        sc : filterSubSection
+        sc : filterSubSection,
+        sort_by: filter_sort_by,
+        order: filter_order,
       };
       return data;
     };
@@ -126,11 +180,13 @@ const CheckMonitoringHooks = (props) => {
         const search = event.target.value;
         setSearchParams({ 
           q  : search,
-          p  : page,
+          p  : 1,
           df : filterStartQuery,
           dt : filterEndQuery,
           s  : filterStatus,
-          sc : filterSubSection
+          sc : filterSubSection,
+          sort_by: filter_sort_by,
+          order: filter_order,
         });
       };
 
@@ -161,8 +217,15 @@ const CheckMonitoringHooks = (props) => {
           df : filterStartQuery,
           dt : filterEndQuery,
           s  : filterStatus,
-          sc : filterSubSection
+          sc : filterSubSection,
+          sort_by: filter_sort_by,
+          order: filter_order,
         });
+        setState((prevState) => ({
+          ...prevState,
+          sort_by: "check_status",
+          order: "asc",
+        }));
       };
 
       const onChangeFilterStart = (date) => {
@@ -173,7 +236,9 @@ const CheckMonitoringHooks = (props) => {
             df : newdate,
             dt : filterEndQuery,
             s  : filterStatus, 
-            sc : filterSubSection
+            sc : filterSubSection,
+            sort_by: filter_sort_by,
+            order: filter_order,
           });
       };
     
@@ -185,7 +250,9 @@ const CheckMonitoringHooks = (props) => {
           df : filterStartQuery,
           dt : newdate,
           s  : filterStatus, 
-          sc : filterSubSection
+          sc : filterSubSection,
+          sort_by: filter_sort_by,
+          order: filter_order,
         });
       };
     
@@ -196,7 +263,9 @@ const CheckMonitoringHooks = (props) => {
           df : filterStartQuery,
           dt : filterEndQuery,
           s  : status, 
-          sc : filterSubSection
+          sc : filterSubSection,
+          sort_by: filter_sort_by,
+          order: filter_order,
         });
         
         dispatch({
@@ -214,7 +283,9 @@ const CheckMonitoringHooks = (props) => {
           df : filterStartQuery,
           dt : filterEndQuery,
           s  : filterStatus, 
-          sc : subsection
+          sc : subsection,
+          sort_by: filter_sort_by,
+          order: filter_order,
         });
         dispatch({
           type: Constants.ACTION_EPAY_CHECK,
@@ -313,7 +384,9 @@ const CheckMonitoringHooks = (props) => {
                 df : filterStartQuery,
                 dt : filterEndQuery,
                 s  : filterStatus, 
-                sc : filterSubSection
+                sc : filterSubSection,
+                sort_by: filter_sort_by,
+                order: filter_order,
               });
             }
           } else {
@@ -454,6 +527,35 @@ const CheckMonitoringHooks = (props) => {
 
 
       }
+
+      
+  const onChangeSorting = (field, direction) => { 
+    setState((prevState) => ({
+      ...prevState,
+      sort_by: field,
+      order: direction,
+    }));
+  
+    setSearchParams({
+      q  : search, 
+      p  : 1, // Reset to page 1 when sorting changes
+      df : filterStartQuery,
+      dt : filterEndQuery,
+      s  : filterStatus, 
+      sc : filterSubSection,
+      sort_by: field,
+      order: direction,
+    });
+
+    dispatch({
+      type: Constants.ACTION_EPAY_CHECK,
+      payload: {
+        selectedDataList: [], 
+      },
+    })
+   
+  };
+  
        
    
     return {
@@ -477,7 +579,9 @@ const CheckMonitoringHooks = (props) => {
         selectedDataList,
         editModal,
         subsection_allowed_to_reject,
+        subsection_allowed_to_undo,
         rejectCloseModal,
+        warehouseList,
         onChangeSearch,
         onClickOpenViewModalDeposit,
         onClickCloseViewModalDeposit,
@@ -497,7 +601,8 @@ const CheckMonitoringHooks = (props) => {
         onClickCloseRejectModal,
         onClickRejectToClose,
         onClickOpenCloseRejectedModal,
-        onClickCloseCloseRejectedModal
+        onClickCloseCloseRejectedModal,
+        onChangeSorting
     };
 };
 

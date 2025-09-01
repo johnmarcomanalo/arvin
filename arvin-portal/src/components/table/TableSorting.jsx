@@ -32,11 +32,25 @@ const TableSorting = (props) => {
     subAction2Show = true,
     heightLimit = true,
     extraLayer,
+    action,
+    getRowStyle= null,
+    initialSortBy = null, // Accept initial sort field from props
+    initialSortDirection = "asc", // Accept initial sort direction from props
   } = props;
 
   const [screenHeight, setScreenHeight] = React.useState(window.innerHeight);
-  const [sortBy, setSortBy] = React.useState(null); // Sorting column
-  const [sortDirection, setSortDirection] = React.useState("asc"); // Sorting order
+  const [sortBy, setSortBy] = React.useState(initialSortBy); // Use prop values
+  const [sortDirection, setSortDirection] = React.useState(initialSortDirection); // Use prop values
+
+  // Sync local state with props when they change
+  React.useEffect(() => {
+    if (initialSortBy !== sortBy) {
+      setSortBy(initialSortBy);
+    }
+    if (initialSortDirection !== sortDirection) {
+      setSortDirection(initialSortDirection);
+    }
+  }, [initialSortBy, initialSortDirection]);
 
   React.useEffect(() => {
     const handleResize = () => setScreenHeight(window.innerHeight);
@@ -110,7 +124,7 @@ const TableSorting = (props) => {
           </TableHead>
           <TableBody>
             {dataList.map((row) => (
-              <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+              <TableRow hover role="checkbox" tabIndex={-1} key={row.code} style={getRowStyle ? getRowStyle(row) : {}}>
                 {actionshow && (
                   <TableCell>
                     <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-start", alignItems: "center" }}>
@@ -119,6 +133,7 @@ const TableSorting = (props) => {
                           <LaunchIcon onClick={() => onSelectItem(row)} style={{ color: "#009197", cursor: "pointer" }} />
                         </Tooltip>
                       )}
+                      {subAction2Show ? action(row) : null}
                     </Stack>
                   </TableCell>
                 )}

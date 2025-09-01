@@ -19,7 +19,7 @@ import SearchField from "components/inputFIeld/SearchField";
 import Loading from "components/loading/Loading";
 import Modal from "components/modal/Modal";
 import Page from "components/pagination/Pagination";
-import TableComponent from "components/table/Table";
+import TableComponent from "components/table/TableSorting";
 import CheckMonitoringHooks from "../hooks/CheckMonitoringHooks";
 const Deposit = React.lazy(() => import("./components/Deposit"));
 const CheckDetails = React.lazy(() => import("./components/CheckDetails"));
@@ -150,7 +150,7 @@ const CheckMonitoring = (props) => {
                         id="filter_user_access_organization_rights"
                         name="filter_user_access_organization_rights"
                         label="Warehouse"
-                        options={check?.access.user_access_organization_rights?.sort((a, b) => a.description.localeCompare(b.description))}
+                        options={check?.warehouseList}
                         getOptionLabel={(option) =>
                           option?.description ? option?.description : ""
                         }
@@ -210,32 +210,46 @@ const CheckMonitoring = (props) => {
                     paginationShow={false}
                     subAction1Show={true}
                     subAction2Show={true}
-                    action={(row, index) => {
-                      if (row.check_status!=="REJECTED") {
-                        return ( 
-                          <Checkbox 
-                            checked={check.selectedDataList.includes(row.code)}
-                            onChange={async (e) => { 
-                                check.handleCheckboxChange(row,e.target.checked); 
-                            }}
-                            size="medium"
-                            sx={{ height: "23px", margin: "-10px" }}
-                            disabled={row.status === "CLOSED"}
-                          />
-                        )
-                      }else{
-                        return (
-                          <Tooltip title="Close Reject">
-                            <CancelIcon
-                              onClick={() => check.onClickOpenCloseRejectedModal(row)}
-                              style={{
-                                color: "#009197",
-                                cursor: "pointer",
-                              }}
-                            />
-                          </Tooltip>
-                        )
+                    onSortChange={check.onChangeSorting}
+                    initialSortBy={check.filter_sort_by}
+                    initialSortDirection={check.filter_order}
+                    getRowStyle={(row) => {
+                      if (row.check_status === "ON-HAND" && row.current_date_is_less_than_check_date) {
+                        return { backgroundColor: "#FFEAEA" };
                       }
+                      return {}; // default style
+                    }}
+                    action={(row, index) => {
+                      if(check.filterStatus!="ALL"){
+                          if (row.check_status!=="REJECTED") {
+                            return ( 
+                              <Checkbox 
+                                checked={check.selectedDataList.includes(row.code)}
+                                onChange={async (e) => { 
+                                    check.handleCheckboxChange(row,e.target.checked); 
+                                }}
+                                size="medium"
+                                sx={{ height: "23px", margin: "-10px" }}
+                                disabled={row.status === "CLOSED"}
+                              />
+                            )
+                          }else{
+                            return (
+                              <Tooltip title="Close Reject">
+                                <CancelIcon
+                                  onClick={() => check.onClickOpenCloseRejectedModal(row)}
+                                  style={{
+                                    color: "#009197",
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              </Tooltip>
+                            )
+                          }
+                      }else{
+                        <></>
+                      }
+                     
                      
                     }}
                 /> 
@@ -259,8 +273,8 @@ const CheckMonitoring = (props) => {
                         fullWidth={true}
                         children={"Transmit"}
                         click={check.onClickTransmit}
-                      />
-                     {Array.isArray(check.subsection_allowed_to_reject) &&
+                      /> 
+                       {Array.isArray(check.subsection_allowed_to_reject) &&
                         check.subsection_allowed_to_reject.includes(Number(account?.subsection_code)) && (
                         <ButtonComponent
                           stx={configure.default_button}
@@ -285,16 +299,34 @@ const CheckMonitoring = (props) => {
                     // </ButtonGroup>
                     <></>
                   ) : (
-                    <ButtonGroup disableElevation aria-label="Disabled button group">
-                        <ButtonComponent
-                          stx={configure.default_button}
-                          iconType="delete"
-                          type="button"
-                          fullWidth={true}
-                          children={"Undo " + check.filterStatus}
-                          click={check.onClickUndo}
-                        />
-                    </ButtonGroup>
+                   check.filterStatus!="ALL" && (
+                    <>
+                      <ButtonGroup disableElevation aria-label="Disabled button group">
+                      {Array.isArray(check.subsection_allowed_to_reject) &&
+                      check.subsection_allowed_to_undo.includes(Number(account?.subsection_code)) && (
+                          <ButtonComponent
+                            stx={configure.default_button}
+                            iconType="delete"
+                            type="button"
+                            fullWidth={true}
+                            children={"Undo " + check.filterStatus}
+                            click={check.onClickUndo}
+                          />
+                        )}
+                        {Array.isArray(check.subsection_allowed_to_reject) &&
+                            check.subsection_allowed_to_reject.includes(Number(account?.subsection_code)) && (
+                            <ButtonComponent
+                              stx={configure.default_button}
+                              iconType="add"
+                              type="button"
+                              fullWidth={true}
+                              children={"Reject"}
+                              click={check.onClickOpenRejectModal}
+                          />
+                        )}
+                      </ButtonGroup>
+                    </>
+                   )
                   )}
                 </Stack>
               </Grid>

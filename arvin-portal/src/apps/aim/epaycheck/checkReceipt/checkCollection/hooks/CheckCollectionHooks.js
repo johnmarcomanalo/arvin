@@ -109,9 +109,14 @@ const CheckCollectionHooks = (props) => {
 
       // if there is a selected item, reset the state
       if (selectedItem) {
-        setState({
+        // setState({
+        //   invoice_list: [],
+        // });
+        setState((prev) => ({
+          ...prev,
           invoice_list: [],
-        });
+          advancePayment: prev.advancePayment
+        })); 
       }
       props.change("card_code", selectedItem?.cardcode);
       props.change("card_name", selectedItem?.cardname); 
@@ -278,8 +283,12 @@ const CheckCollectionHooks = (props) => {
         closeOnClickOutside: false,
       });
       if (isConfirm){
+        const cleanedValues = {
+          ...values,
+          check_amount: values.check_amount?.replace(/,/g, ''),
+        }; 
          // Submit normally
-        let res = await dispatch(postCheckCollection(values));
+        let res = await dispatch(postCheckCollection(cleanedValues));
         let decrypted = await decryptaes(res?.data);
         console.log(decrypted,"dasda");
         

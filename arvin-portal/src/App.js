@@ -63,6 +63,9 @@ const IndexWarehouseSales = lazy(() =>
 const IndexClientSummary = lazy(() =>
   import("./apps/aim/sales/report/clientSummary/pages/IndexClientSummary")
 );
+const IndexClientSalesSummary = lazy(() =>
+  import("./apps/aim/sales/report/clientSalesSummary/pages/IndexClientSalesSummary")
+);
 // SALES END
 
 // QUOTATION START
@@ -204,6 +207,16 @@ const IndexBankCheckCounter = lazy(() =>
 const IndexMonitoringCheckCounter = lazy(() =>
   import(
     "./apps/aim/epaycheck/report/monitoringCheckCounter/pages/IndexMonitoringCheckCounter"
+  )
+);
+const IndexReceivedCheckCounter = lazy(() =>
+  import(
+    "./apps/aim/epaycheck/report/ReceivedCheckCounter/pages/IndexReceivedCheckCounter"
+  )
+);
+const IndexCheckARReceive = lazy(() =>
+  import(
+    "./apps/aim/epaycheck/checkReceipt/checkARReceive/pages/IndexCheckARReceive"
   )
 );
 //EPAYCHECK END
@@ -453,6 +466,20 @@ function App() {
                         })}
                       >
                         <IndexClientSummary />
+                      </PrivateRoute>
+                    }
+                  />
+                   <Route
+                    path="/Modules/Sales/Reports/ClientSalesSummary"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Sales",
+                          component: "Reports",
+                          subComponent: "Client Sales Summary",
+                        })}
+                      >
+                        <IndexClientSalesSummary />
                       </PrivateRoute>
                     }
                   />
@@ -878,6 +905,21 @@ function App() {
                     />
 
                     <Route
+                      path="/Modules/E-PayCheck/CheckReceipt/ARReceive"
+                      element={
+                        <PrivateRoute
+                            accessChecker={getAccessChecker({
+                              module: "E-Pay Check",
+                              component: "Check Receipt",
+                              subComponent:"AR Receive", 
+                            })}
+                        >
+                          <IndexCheckARReceive />
+                        </PrivateRoute>
+                      }
+                    />
+
+                    <Route
                       path="/Modules/E-PayCheck/Reports/WeeklyCheckCounter"
                       element={
                         <PrivateRoute
@@ -918,6 +960,20 @@ function App() {
                           })}
                         >
                           <IndexMonitoringCheckCounter/>
+                        </PrivateRoute>
+                      }
+                    />
+                     <Route
+                      path="/Modules/E-PayCheck/Reports/ReceivedCheck"
+                      element={
+                        <PrivateRoute
+                          accessChecker={getAccessChecker({
+                            module: "E-Pay Check",
+                            component: "Reports",
+                            subComponent: "Received Check",
+                          })}
+                        >
+                          <IndexReceivedCheckCounter/>
                         </PrivateRoute>
                       }
                     />

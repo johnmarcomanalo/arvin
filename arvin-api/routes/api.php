@@ -225,10 +225,11 @@ use Illuminate\Support\Facades\Route;
         Route::get('salesdailyout/sales_tracker/client/client_sales_tracker',[SalesDailyOutClientSalesTrackersController::class, 'client_sales_tracker']);
         Route::get('salesdailyout/sales_tracker/client/insert_sap_client_sales_tracker',[SalesDailyOutClientSalesTrackersController::class, 'insert_sap_client_sales_tracker']);
         Route::get('salesdailyout/sales_tracker/client/getFiveDaysClientSalesTrackerbyCurrentDate',[SalesDailyOutClientSalesTrackersController::class, 'getFiveDaysClientSalesTrackerbyCurrentDate']);
-        
-        
-        
         // Client Sales Tracker END 
+
+        // Client Sales Report Client Summary START
+        Route::get('salesdailyout/sales_tracker/client/client_sales_summary',[SalesDailyOutClientSalesTrackersController::class, 'client_sales_summary']);
+        // Client Sales Report Client Summary END
        
 
         // Sales Daily Out Report Client Summary START
@@ -264,9 +265,12 @@ use Illuminate\Support\Facades\Route;
         Route::apiResource('epaycheck/check_approval',EpayCheckForApprovalController::class)->middleware(['light_decryption']); 
         Route::post('epaycheck/check_approval/update_request_status',[EpayCheckForApprovalController::class,'update_request_status'])->middleware(['light_decryption']); 
         
+       
+
         Route::get('epaycheck/get_sales_invoice_list',[EPayCheckCheckSalesInvoiceDetailsController::class,'get_sales_invoice_list']);
         Route::get('epaycheck/get_check_details',[EPayCheckCheckDetailsController::class,'get_check_details']);
         Route::get('epaycheck/get_check_receive',[EPayCheckCheckDetailsController::class,'get_check_receive']);
+        Route::get('epaycheck/get_check_received_by',[EPayCheckCheckDetailsController::class,'get_check_received_by']);
         Route::get('epaycheck/get_receipt_details',[EPayCheckCheckDetailsController::class,'get_receipt_details']);
         Route::get('epaycheck/get_check_customer',[EPayCheckCheckDetailsController::class,'get_check_customer']);
         Route::get('epaycheck/get_receipt_format',[EPayCheckCheckDetailsController::class,'get_receipt_format']);
@@ -274,9 +278,12 @@ use Illuminate\Support\Facades\Route;
         Route::post('epaycheck/check_details/update_check_status',[EPayCheckCheckDetailsController::class,'update_check_status'])->middleware(['light_decryption']);
         Route::post('epaycheck/check_details/update_check_receive',[EPayCheckCheckDetailsController::class,'update_check_receive'])->middleware(['light_decryption']);
         Route::post('epaycheck/check_details/update_reject_for_close',[EPayCheckCheckDetailsController::class,'update_reject_for_close'])->middleware(['light_decryption']);
+        Route::post('epaycheck/check_details/update_received_check_by_ar_at',[EPayCheckCheckDetailsController::class,'update_received_check_by_ar_at'])->middleware(['light_decryption']);
+        Route::post('epaycheck/check_details/update_applied_at',[EPayCheckCheckDetailsController::class,'update_applied_at'])->middleware(['light_decryption']);
 
         //REPORT
         Route::get('epaycheck/report/get_monitoring_check_counter',[EPayCheckReport::class,'get_monitoring_check_counter']);
+        Route::get('epaycheck/report/get_received_check_counter',[EPayCheckReport::class,'get_received_check_counter']);
         Route::get('epaycheck/check_detail_logs/get_weekly_check_counter_data',[EPayCheckCheckDetailLogsController::class,'get_weekly_check_counter_data']);
         Route::apiResource('epaycheck/report',EPayCheckReport::class)->middleware(['light_decryption']);
 

@@ -387,6 +387,8 @@ class SalesDailyOutClientSalesTrackersController extends Controller
         $warehouse = $request->query('w'); 
         $limit = $request->query('tl'); 
         $page = $request->query('tp'); 
+        $dataListCollection = [];
+        $dataList = [];
 
         // Execute stored procedure
         $dataListArray = DB::select(
@@ -402,6 +404,11 @@ class SalesDailyOutClientSalesTrackersController extends Controller
                 $item['8-14'] = number_format((float) $item['8-14'], 2);
                 $item['15-21'] = number_format((float) $item['15-21'], 2);
                 $item['22-30/31'] = number_format((float) $item['22-30/31'], 2);
+                $item['week_one_percentage'] = number_format((float) $item['week_one_percentage'], 2);
+                $item['week_two_percentage'] = number_format((float) $item['week_two_percentage'], 2);
+                $item['week_three_percentage'] = number_format((float) $item['week_three_percentage'], 2);
+                $item['week_three_percentage'] = number_format((float) $item['week_three_percentage'], 2);
+                $item['week_four_percentage'] = number_format((float) $item['week_four_percentage'], 2);
                 $item['month_sales_daily_out'] = number_format((float) $item['month_sales_daily_out'], 2);
                 $item['month_sales_daily_qouta'] = number_format((float) $item['month_sales_daily_qouta'], 2);
                 $item['mtd_final_percentage'] = number_format((float) $item['mtd_final_percentage'], 2);
@@ -417,6 +424,7 @@ class SalesDailyOutClientSalesTrackersController extends Controller
             });
         }
         
+        if (!empty($dataListCollection)) {
         // Check if pagination parameters exist
         if (!empty($limit) && !empty($page)) {
             // return $dataListCollection = collect($dataListArray);
@@ -431,6 +439,7 @@ class SalesDailyOutClientSalesTrackersController extends Controller
             // $dataList = $dataListArray;
             $dataList = $dataListCollection->values();
         }
+        }
 
          $response = [
             "dataList" => $dataList,
@@ -441,6 +450,35 @@ class SalesDailyOutClientSalesTrackersController extends Controller
         ];
 
         return Crypt::encryptString(json_encode($response));
+    }
+
+    public function client_sales_summary(Request $request){
+        $data = [];
+        $dataWeekly  = $this->client_sales_tracker($request);
+      
+        $mappings = [
+            'y'  => 'year',
+            'pr' => 'product',
+            'c'  => 'group_code',
+            'b'  => 'bdo', 
+        ]; 
+        foreach ($mappings as $old => $new) {
+            if ($request->has($old)) {
+                $request->merge([
+                    $new => $request->input($old),
+                ]); 
+
+                $request->request->remove($old);
+            }
+        }
+        $dataMonthly = SalesDailyOutReportClientsSummaryController::get_client_sales_tracker_summary($request);
+        $data = [
+            'week'  => $dataWeekly,
+            'month' =>$dataMonthly
+        ];
+
+        return $data;
+
     }
 
 }

@@ -77,12 +77,22 @@ class EPayCheckCheckDetailLogsController extends Controller
             ->reject(function ($item) use ($exclude) {
                 return !empty($exclude) && in_array($item->code, (array) $exclude);
             })
-            ->when($group_by_date, function ($filteredData) {
-                return $filteredData->groupBy(function ($item) {
-                    return \Carbon\Carbon::parse($item->created_at)->format('Y-m-d'); // Group by date
-                })->map(function ($items) {
+            ->when($group_by_date, function ($filteredData)  use ($type) {
+                return $filteredData
+                ->sortByDesc(function ($item) {
+                    return \Carbon\Carbon::parse($item->check_status_date);
+                })
+                ->groupBy(function ($item) {
+                    return \Carbon\Carbon::parse($item->check_status_date)->format('Y-m-d'); // Group by date
+                })->map(function ($items) use ($type) {
+                    if ($type == 'ON-HAND') {
+                        // Set check_status_date to null for each item in the group
+                        $items->each(function ($item) {
+                            $item->check_status_date = null;
+                        });
+                    }
                     return $items->values(); // Reset array indexes
-                });
+                }); 
             }, function ($filteredData) {
                 return $filteredData->values(); // If no grouping, just return as a collection
             });
@@ -148,7 +158,7 @@ class EPayCheckCheckDetailLogsController extends Controller
         $data_beg         = $this->check_summary($beginning_on_hand);
         $datax            = $transactions->where('check_status', 'ON-HAND');
         $merge_data       = $datax->merge($data_beg)->map(function ($item) {
-            $item->check_status_date = null;
+            $item->check_status_date = $item->created_at;
             return $item;
         })
         ->unique('code') // Replace 'your_unique_column' with the column that should be unique
@@ -160,13 +170,38 @@ class EPayCheckCheckDetailLogsController extends Controller
         $data_deposited        = $this->get_group_data($transactions,"DEPOSITED",null,true);
         $data_rejected         = $this->get_group_data($transactions,"REJECTED",null,true);
         $data_open_rejected    = $this->get_group_data($open_rejected,"REJECTED",null,true);
+  
+        $allOnhand             =  collect($data_onhand)->flatten(1);
+        $allTransmitted        =  collect($data_transmitted)->flatten(1);
+        $allDeposited          =  collect($data_deposited)->flatten(1);
+        $allRejected           =  collect($data_rejected)->flatten(1);
+        $allOpenRejected           =  collect($data_open_rejected)->flatten(1);
  
         $body = [
-            'deposited'     => $data_deposited,
-            'onhand'        => $data_onhand,
-            'transmitted'   => $data_transmitted,
-            'rejected'      => $data_rejected,
-            'open_rejected' => $data_open_rejected,
+            'deposited'                        => $data_deposited,
+            'deposited_grand_total'            => $allDeposited->sum('check_amount'),
+            'deposited_grand_sum_doc_total'    => $allDeposited->sum('sum_doc_total'),
+            'deposited_grand_count'            => $allDeposited->count(),
+
+            'onhand'                           => $data_onhand,
+            'onhand_grand_total'               => $allOnhand->sum('check_amount'),
+            'onhand_grand_sum_doc_total'       => $allOnhand->sum('sum_doc_total'),
+            'onhand_grand_count'               => $allOnhand->count(),
+
+            'transmitted'                      => $data_transmitted,
+            'transmitted_grand_total'          => $allTransmitted->sum('check_amount'),
+            'transmitted_grand_sum_doc_total'  => $allTransmitted->sum('sum_doc_total'),
+            'transmitted_grand_count'          => $allTransmitted->count(),
+
+            'rejected'                         => $data_rejected,
+            'rejected_grand_total'             => $allRejected->sum('check_amount'),
+            'rejected_grand_sum_doc_total'     => $allRejected->sum('sum_doc_total'),
+            'rejected_grand_count'             => $allRejected->count(),
+
+            'open_rejected'                    => $data_open_rejected,
+            'open_rejected_grand_total'        => $allOpenRejected->sum('check_amount'),
+            'open_rejected_grand_sum_doc_total'=> $allOpenRejected->sum('sum_doc_total'),
+            'open_rejected_grand_count'        => $allOpenRejected->count(),
         ];
 
         $minus_status =  $transactions->where('check_status', 'DEPOSITED')->count()

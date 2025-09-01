@@ -48,6 +48,7 @@ const InputMonthYearPicker = ({
   showText = true,
   disableFuture,
   disablePast,
+  value
 }) => {
   // Convert input value to a valid Date object using moment.js
   const dateValue = input.value ? moment(input.value).toDate() : null;
@@ -58,6 +59,8 @@ const InputMonthYearPicker = ({
     input.onChange(dateString);
   };
 
+  console.log(input);
+  
   return (
     <div>
       {showText ? (
@@ -85,6 +88,7 @@ const InputMonthYearPicker = ({
           }
           views={["year", "month"]}
           openTo="year"
+          value={value}
           disabledKeyboardNavigation
           placeholderText={placeholder}
           slotProps={{ field: { size: "small" } }}
