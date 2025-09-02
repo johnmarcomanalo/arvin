@@ -8,7 +8,7 @@ import BreadCrumbs from "components/breadCrumb/BreadCrumbs";
 import PageTitle from "components/pageTItle/PageTitle";
 import * as React from "react";
 import ClientSalesSummary from "./ClientSalesSummary";
-const title_page = "Client Sales";
+const title_page = "Weekly & Monthly Sales Summary Report";
 const breadCrumbArray = [
   {
     name: "Home",

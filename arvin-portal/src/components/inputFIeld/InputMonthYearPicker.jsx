@@ -53,8 +53,11 @@ const InputMonthYearPicker = ({
 }) => {
   // Convert input value to a valid Date object using moment.js
   // const dateValue = input.value ? moment(input.value).toDate() : null;
-  const dateValue = defaultValue ? moment(defaultValue, "YYYY-MM", true)
-  : null
+  const dateValue = input.value
+  ? moment(input.value, "YYYY-MM")
+  : defaultValue!=""
+  ? moment(defaultValue, "YYYY-MM")
+  : null;
   
   // Handle change event to convert the selected date to a string before passing it to Redux Form
   const handleChange = (date) => {
@@ -91,7 +94,7 @@ const InputMonthYearPicker = ({
           }
           views={["year", "month"]}
           openTo="year"
-          value={dateValue}
+          value={dateValue}  
           disabledKeyboardNavigation
           placeholderText={placeholder}
           slotProps={{ field: { size: "small" } }}

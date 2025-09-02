@@ -38,7 +38,8 @@ let ClientSalesSummary = (props) => {
     { description: "Manila Branch" },
     { description: "Provincial" },
     { description: "Peanut" },
-  ];
+  ]; 
+
   return (
     <React.Fragment>
         <Modal
@@ -78,7 +79,7 @@ let ClientSalesSummary = (props) => {
                   disableFuture={true}
                   disableSunday={true}
                   showText={true}
-                  defaultValue={new Date()}
+                  defaultValue={moment(salesTracker.year + " " + salesTracker.month+" 01", "YYYY MM DD").format("YYYY-MM-DD")}
                   onChange={(date) => {
                     salesTracker.filterMonthAndYear(
                       moment(date).format("YYYY"),
@@ -194,7 +195,7 @@ let ClientSalesSummary = (props) => {
                   >
                     <ComponentTitle
                       title="Weekly Sales Summary"
-                      subtitle={moment(new Date()).format("MMMM YYYY")}
+                      subtitle={moment(salesTracker.year+" "+salesTracker.month).format("MMMM YYYY")}
                     />
                   </Stack>
                 </Grid> 
@@ -724,6 +725,10 @@ let ClientSalesSummary = (props) => {
 const ReduxFormComponent = reduxForm({
   form: formName,
   onSubmit: submit,
+  initialValues: {
+    //sales_date: moment(new Date()), // or moment().format("YYYY-MM")
+    product_group: "INDUSTRIAL SALT",
+  },
 })(ClientSalesSummary);
 const selector = formValueSelector(formName);
 export default connect((state) => {
