@@ -11,6 +11,8 @@ import {
   geClientSalesSummaryReport,
   } from "../actions/ClientSalesSummaryActions";
 import { change } from "redux-form";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 
 const ClientSalesSummaryHooks = (props) => {
@@ -157,7 +159,7 @@ const ClientSalesSummaryHooks = (props) => {
     { id: "december_total_out", label: "December", align: "left" },
     { id: "annual_quota", label: "Quota", align: "left" },
     { id: "year_sales_daily_out", label: "Total", align: "left" },
-    { id: "annual_quota_percentage", label: "Percentage(%)", align: "left" },
+    { id: "annual_quota_percentage", label: "YTD", align: "left" },
   ];
 
   const active_page = JSON.parse(json_active_page);
@@ -425,7 +427,59 @@ const ClientSalesSummaryHooks = (props) => {
     swal("Success", "BDO filtered successfully", "success");
   };
 
-  
+  const exportToExcel = (dataList, fileName = "data.xlsx") => {
+    if (!dataList || dataList.length === 0) {
+      console.warn("No data to export.");
+      return;
+    }
+
+    // Define column mappings based on the `columns` array
+    const columnMappings = {
+      create_date: "Create Date",
+      delivery_date: "Delivery Date",
+      dr_number: "DR Number",
+      si_number: "SI Number",
+      card_name: "BP Name",
+      client_name: "Client Name",
+      terms: "BP Terms",
+      payment_mode: "BP Payment Terms",
+      description: "Item Name",
+      quantity: "Quantity",
+      price_after_vat: "Unit Price",
+      line_amount: "Total",
+      doc_total: "Amount Due",
+      applied_amount: "Payment",
+      actual_mode_payment: "Actual Payment Terms",
+    };
+
+    // Convert data to new format with renamed keys
+    const formattedData = dataList.map((item) => {
+      let newItem = {};
+      Object.keys(columnMappings).forEach((key) => {
+        newItem[columnMappings[key]] = item[key]; // Use mapped column name
+      });
+      return newItem;
+    });
+
+    // Convert JSON to worksheet with renamed headers
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+
+    // Create a workbook and append the worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+    // Write the workbook and convert to Blob
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    // Save the file
+    saveAs(blob, fileName);
+  };
    
 
   /*
@@ -604,6 +658,7 @@ const ClientSalesSummaryHooks = (props) => {
     month_handleChangePage,
     month_filterProductGroups,
     month_filterClientGroups,
+    exportToExcel,
   };
 };
 

@@ -72,6 +72,7 @@ let formName = "CheckDetails";
         sales_invoice:(details?.advance_payment==1)?'ADVANCE PAYMENT':details?.sales_invoice,
         dr_number: details?.dr_number,
         check_status: details?.check_status,
+        rejected_reference: details?.rejected_reference,
       }); 
     }, []);
     
@@ -233,6 +234,16 @@ let formName = "CheckDetails";
                         component={InputField}
                         multiline={true} 
                         linerow={2}
+                      />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12} lg={12}>
+                      <Field
+                        disabled={true}
+                        id="rejected_reference"
+                        name="rejected_reference"
+                        label="Rejected Reference"
+                        type="text"
+                        component={InputField}
                       />
                   </Grid>
                   {/* <Grid item xs={12} sm={12} md={12} lg={12}>

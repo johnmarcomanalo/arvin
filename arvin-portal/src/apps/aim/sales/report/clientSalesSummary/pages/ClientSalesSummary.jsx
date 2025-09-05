@@ -20,6 +20,8 @@ import { Field, formValueSelector, reduxForm } from "redux-form";
 import ClientSalesWeekHooks from "../hooks/ClientSalesSummaryHooks";
 import FilterClientSalesTracker from "./components/FilterClientSalesTracker";
 import ComponentTitle from "components/componentTitle/componentTitle";
+import PageTitle from "components/pageTItle/PageTitle";
+import { Padding, Visibility } from "@mui/icons-material";
 const formName = "ClientSalesSummary";
 const submit = async (values, dispatch, props) => {
   try {
@@ -39,6 +41,10 @@ let ClientSalesSummary = (props) => {
     { description: "Provincial" },
     { description: "Peanut" },
   ]; 
+  const trend = [
+    { description: "Up Trend" },
+    { description: "Down Trend" }, 
+  ]; 
 
   return (
     <React.Fragment>
@@ -53,22 +59,43 @@ let ClientSalesSummary = (props) => {
           <AccountList onClickSelect={salesTracker.onChangeFilterBDO} />
         </Modal>
         <Grid container spacing={2}> 
-         <Grid  item xs={12} sm={12} md={12} lg={12}>
+        <Grid item xs={12} sm={12} md={12} lg={12}>
+          <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              spacing={1}
+            > 
+           
+              <PageTitle title={"Weekly & Monthly Sales Summary Report"} subtitle={null} /> 
+                <ButtonComponent 
+                  stx={configure.default_button}
+                  iconType="export"
+                  type="export"
+                  fullwidth={false}
+                  children={"Export"}
+                  click={() => {
+                    salesTracker.exportToExcel(salesTracker.dataList, "Davao-TKS");
+                  }}
+                />  
+            </Stack>
+          </Grid>
+         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Stack
             direction="row"
             justifyContent={matches ? "flex-start" : "end"}
             alignItems={matches ? "space-between" : "flex-end"}
             flexDirection={matches ? "row" : "column"} 
           > 
-         <Grid container item xs={12} sm={12} md={12} lg={6}>
-          <SearchField
-              value={salesTracker.search}
-              onChange={salesTracker.onChangeSearch}
-              textHidden={false}
-            /> 
-         </Grid>
-            <Grid container spacing={1}  item xs={12} sm={12} md={12} lg={6}>
-              <Grid item xs={12} sm={12} md={3} lg={3}>
+            <Grid container item xs={12} sm={12} md={12} lg={5}>
+              <SearchField
+                  value={salesTracker.search}
+                  onChange={salesTracker.onChangeSearch}
+                  textHidden={false}
+                /> 
+            </Grid>
+            <Grid container spacing={1}  item xs={12} sm={12} md={12} lg={7}>
+              <Grid item xs={12} sm={12} md={2} lg={2}>
                 <Field
                   name="sales_date"
                   label="Date"
@@ -89,7 +116,7 @@ let ClientSalesSummary = (props) => {
                 />
                 
               </Grid>
-              <Grid item xs={12} sm={12} md={3} lg={3}>
+              <Grid item xs={12} sm={12} md={3} lg={2}>
                 <Field
                   key={props.refresh}
                   id="product_group"
@@ -175,6 +202,26 @@ let ClientSalesSummary = (props) => {
                   inputIcon={<CloseIcon />}
                 />
               </Grid> 
+              <Grid item xs={12} sm={12} md={2} lg={2}>
+                <Field
+                  id="trend"
+                  name="trend"
+                  label="Trend"
+                  options={trend}
+                  getOptionLabel={(option) =>
+                    option?.description ? option?.description : ""
+                  }
+                  required={true}
+                  component={ComboBox}
+                  onChangeHandle={(e, newValue) => {
+                    // if (newValue?.description) {
+                    //   salesTracker.onClickSelectType(newValue?.description);
+                    // } else {
+                    //   salesTracker.onClickSelectType("");
+                    // }
+                  }}
+                />
+              </Grid>
             </Grid>
           </Stack>
          </Grid>
@@ -231,14 +278,53 @@ let ClientSalesSummary = (props) => {
                             rowSpan={2}
                           >
                            Client
+                        </TableCell> 
+                        <TableCell 
+                            style={{
+                              backgroundColor: configure.primary_table_color,
+                              color: configure.primary_table_text_color,
+                              // borderLeft: "1px solid white", 
+                              textAlign:"center",
+                            }}
+                          >
+                           Week 1 (1-7)
                         </TableCell>
                         <TableCell 
                             style={{
                               backgroundColor: configure.primary_table_color,
                               color: configure.primary_table_text_color,
-                              
-                            }}  
-                            rowSpan={2}
+                              // borderLeft: "1px solid white", 
+                              textAlign:"center",
+                            }}
+                          >
+                           Week 2 (8-14)
+                        </TableCell> 
+                        <TableCell 
+                            style={{
+                              backgroundColor: configure.primary_table_color,
+                              color: configure.primary_table_text_color,
+                              // borderLeft: "1px solid white", 
+                              textAlign:"center",
+                            }}
+                          >
+                           Week 3 (15-21)
+                        </TableCell>
+                        <TableCell 
+                            style={{
+                              backgroundColor: configure.primary_table_color,
+                              color: configure.primary_table_text_color,
+                              // borderLeft: "1px solid white", 
+                              textAlign:"center",
+                            }}
+                          >
+                           Week 4 (22-30/31)
+                        </TableCell>   
+                        <TableCell 
+                            style={{
+                              backgroundColor: configure.primary_table_color,
+                              color: configure.primary_table_text_color,
+                              textAlign:"center",
+                            }}
                           >
                            Monthly Quota
                         </TableCell> 
@@ -246,128 +332,22 @@ let ClientSalesSummary = (props) => {
                             style={{
                               backgroundColor: configure.primary_table_color,
                               color: configure.primary_table_text_color,
-                              borderLeft: "1px solid white", 
+                              // borderLeft: "1px solid white", 
                               textAlign:"center",
-                            }} 
-                            colSpan={2}
+                            }}
                           >
-                           Week 1
-                        </TableCell>
-                        <TableCell 
-                            style={{
-                              backgroundColor: configure.primary_table_color,
-                              color: configure.primary_table_text_color,
-                              borderLeft: "1px solid white", 
-                              textAlign:"center",
-                            }} 
-                            colSpan={2}
-                          >
-                           Week 2
-                        </TableCell> 
-                        <TableCell 
-                            style={{
-                              backgroundColor: configure.primary_table_color,
-                              color: configure.primary_table_text_color,
-                              borderLeft: "1px solid white", 
-                              textAlign:"center",
-                            }} 
-                            colSpan={2}
-                          >
-                           Week 3
-                        </TableCell>
-                        <TableCell 
-                            style={{
-                              backgroundColor: configure.primary_table_color,
-                              color: configure.primary_table_text_color,
-                              borderLeft: "1px solid white", 
-                              textAlign:"center",
-                            }} 
-                            colSpan={2}
-                          >
-                           Week 4
+                            Balance to Sell (BTS)
                         </TableCell>   
-                    </TableRow>
-                    <TableRow>  
                         <TableCell 
                             style={{
                               backgroundColor: configure.primary_table_color,
                               color: configure.primary_table_text_color,
-                              borderLeft: "1px solid white", 
+                              // borderLeft: "1px solid white", 
                               textAlign:"center",
-                            }} 
+                            }}
                           >
-                           Sales Out
-                        </TableCell>
-                        <TableCell 
-                            style={{
-                              backgroundColor: configure.primary_table_color,
-                              color: configure.primary_table_text_color,
-                              borderLeft: "1px solid white", 
-                              textAlign:"center",
-                            }} 
-                          >
-                           Percentage
-                        </TableCell>
-                        <TableCell 
-                            style={{
-                              backgroundColor: configure.primary_table_color,
-                              color: configure.primary_table_text_color, 
-                              borderLeft: "1px solid white", 
-                              textAlign:"center",
-                            }} 
-                          >
-                           Sales Out
-                        </TableCell>
-                        <TableCell 
-                            style={{
-                              backgroundColor: configure.primary_table_color,
-                              color: configure.primary_table_text_color,
-                              borderLeft: "1px solid white", 
-                              textAlign:"center",
-                            }} 
-                          >
-                           Percentage
-                        </TableCell> 
-                        <TableCell 
-                            style={{
-                              backgroundColor: configure.primary_table_color,
-                              color: configure.primary_table_text_color,
-                              borderLeft: "1px solid white", 
-                              textAlign:"center",
-                            }} 
-                          >
-                           Sales Out
-                        </TableCell>
-                        <TableCell 
-                            style={{
-                              backgroundColor: configure.primary_table_color,
-                              color: configure.primary_table_text_color,
-                              borderLeft: "1px solid white", 
-                              textAlign:"center",
-                            }} 
-                          >
-                           Percentage
-                        </TableCell> 
-                        <TableCell 
-                            style={{
-                              backgroundColor: configure.primary_table_color,
-                              color: configure.primary_table_text_color,
-                              borderLeft: "1px solid white", 
-                              textAlign:"center",
-                            }} 
-                          >
-                           Sales Out
-                        </TableCell>
-                        <TableCell 
-                            style={{
-                              backgroundColor: configure.primary_table_color,
-                              color: configure.primary_table_text_color,
-                              borderLeft: "1px solid white", 
-                              textAlign:"center",
-                            }} 
-                          >
-                           Percentage
-                        </TableCell>  
+                            MTD 
+                        </TableCell>   
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -380,63 +360,41 @@ let ClientSalesSummary = (props) => {
                               <TableCell style={{ textAlign: "left" }}>
                                 {value.sales_daily_out_settings_client_groups_description}
                               </TableCell>
-
-                              {/* Monthly Quota */}
-                              <TableCell style={{ textAlign: "left" }}>
-                                {value.month_sales_daily_qouta}
-                              </TableCell>
-
+                             
                               {/* Week 1 */}
                               <TableCell style={{ textAlign: "center" }}>
                                 {value["1-7"]}
-                              </TableCell>
-                              <TableCell
-                                style={{
-                                  textAlign: "center",
-                                  color: value.week_one_percentage < 25 ? "#C83232" : "#009933",
-                                }}
-                              >
-                                {value.week_one_percentage}
-                              </TableCell>
+                              </TableCell> 
 
                               {/* Week 2 */}
                               <TableCell style={{ textAlign: "center" }}>
                                 {value["8-14"]}
-                              </TableCell>
-                              <TableCell
-                                style={{
-                                  textAlign: "center",
-                                  color: value.week_two_percentage < 50 ? "#C83232" : "#009933",
-                                }}
-                              >
-                                {value.week_two_percentage}
-                              </TableCell>
+                              </TableCell> 
 
                               {/* Week 3 */}
                               <TableCell style={{ textAlign: "center" }}>
                                 {value["15-21"]}
-                              </TableCell>
-                              <TableCell
-                                style={{
-                                  textAlign: "center",
-                                  color: value.week_three_percentage < 75 ? "#C83232" : "#009933",
-                                }}
-                              >
-                                {value.week_three_percentage}
-                              </TableCell>
+                              </TableCell> 
 
                               {/* Week 4 */}
                               <TableCell style={{ textAlign: "center" }}>
                                 {value["22-30/31"]}
+                              </TableCell> 
+                              
+                              {/* Monthly Quota */}
+                              <TableCell style={{ textAlign: "center" }}>
+                                {value.month_sales_daily_qouta}
                               </TableCell>
-                              <TableCell
-                                style={{
-                                  textAlign: "center",
-                                  color: value.week_four_percentage < 100 ? "#C83232" : "#009933",
-                                }}
-                              >
-                                {value.week_four_percentage}
-                              </TableCell>
+
+                               {/* BTS */}
+                               <TableCell style={{ textAlign: "center", color: parseFloat(value.mtd_total_status_daily_target) < 0 ?  "#C83232" : "#009933" }}>
+                                { value.mtd_total_status_daily_target }
+                              </TableCell> 
+
+                               {/* BTS */}
+                               <TableCell style={{ textAlign: "right", color: value.mtd_percentage < 100?  "#C83232" : "#009933" }}>
+                                { value.mtd_percentage } %
+                              </TableCell> 
                             </TableRow>
                           );
                         } catch (error) {
@@ -445,7 +403,7 @@ let ClientSalesSummary = (props) => {
                       })
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={10} align="center">
+                        <TableCell colSpan={8} align="center">
                           No data available
                         </TableCell>
                       </TableRow>
@@ -485,7 +443,6 @@ let ClientSalesSummary = (props) => {
                 >
                   <Tbl size="small" stickyHeader aria-label="sticky table">
                     <TableHead>
-                    
                       <TableRow>
                         {salesTracker.columns_month.map(
                           (header, index) => (
@@ -695,7 +652,7 @@ let ClientSalesSummary = (props) => {
                                     color: value.annual_quota_percentage < 100 ? "#C83232" : "#009933",
                                   }}
                                 >
-                                  {value.annual_quota_percentage}%
+                                  {value.annual_quota_percentage} %
                                 </TableCell>
                               </TableRow>
                             );

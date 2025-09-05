@@ -512,6 +512,7 @@ class EPayCheckCheckDetailsController extends Controller
                 'stale_check'          => $value->stale_check,
                 'sales_invoice'        => $value->sales_invoice,
                 'dr_number'            => $value->dr_number,
+                'rejected_reference'   => $value->rejected_reference,
                 'history'              => json_decode($value->history),
                 'deposited_bank'       => explode(" ",$value->deposited_bank)[0] ?? '',
                 'current_date_is_less_than_check_date' => Carbon::now()->gt(Carbon::parse($value->check_date)),

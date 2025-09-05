@@ -119,6 +119,8 @@ const ButtonComponent = (props) => {
       icon = <HelpIcon />;
       break;
   }
+  console.log(props.stx);
+  
   return (
     <Button
       sx={props.stx}

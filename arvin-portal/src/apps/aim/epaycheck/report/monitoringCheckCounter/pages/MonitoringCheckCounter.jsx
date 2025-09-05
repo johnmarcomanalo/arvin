@@ -6,6 +6,7 @@ import {
 import * as React from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
+import moment from "moment";
 //component
 import ComboBox from "components/autoComplete/AutoComplete";
 import InputField from "components/inputFIeld/InputField";
@@ -115,6 +116,10 @@ const MonitoringCheckCounter = (props) => {
 
 const ReduxFormComponent = reduxForm({
   form: formName,
+  initialValues: { 
+    filter_date_start: moment(new Date()).format("YYYY-MM-DD"),
+    filter_date_end: moment(new Date()).format("YYYY-MM-DD"),
+  },
 })(MonitoringCheckCounter);
 const selector = formValueSelector(formName);
 export default connect((state) => {

@@ -60,10 +60,10 @@ const MonitoringCheckCounterHooks = (props) => {
      };
  
     React.useEffect(() => { 
-      props.initialize({ 
-        filter_date_start: filterStartQuery,
-        filter_date_end: filterEndQuery,
-      });
+      // props.initialize({ 
+      //   filter_date_start: filterStartQuery,
+      //   filter_date_end: filterEndQuery,
+      // });
       GetChequeList();
         return () => cancelRequest();
     }, [refresh, debounceSearch]);

@@ -404,6 +404,7 @@ class SalesDailyOutClientSalesTrackersController extends Controller
                 $item['8-14'] = number_format((float) $item['8-14'], 2);
                 $item['15-21'] = number_format((float) $item['15-21'], 2);
                 $item['22-30/31'] = number_format((float) $item['22-30/31'], 2);
+                $item['mtd_percentage'] = number_format((float) $item['mtd_percentage'], 2);
                 $item['week_one_percentage'] = number_format((float) $item['week_one_percentage'], 2);
                 $item['week_two_percentage'] = number_format((float) $item['week_two_percentage'], 2);
                 $item['week_three_percentage'] = number_format((float) $item['week_three_percentage'], 2);
