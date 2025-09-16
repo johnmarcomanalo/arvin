@@ -9,6 +9,7 @@ import { getEmployeeOrganizationAccessList } from "../../../../settings/accessri
 import {
   getClientSalesTracker,
   geClientSalesSummaryReport,
+  getClientSalesTrackerDataReport,
   } from "../actions/ClientSalesSummaryActions";
 import { change } from "redux-form";
 import * as XLSX from "xlsx";
@@ -39,6 +40,7 @@ const ClientSalesSummaryHooks = (props) => {
   const page                               = searchParams.get("tp") != null ? searchParams.get("tp") : 1;
   const rowsPerPage                        = searchParams.get("tl") != null ? searchParams.get("tl") : 10;
   const group_code                         = searchParams.get("group_code") != null ? String(searchParams.get("group_code")): "";
+  const trend                              = searchParams.get("tr") != null ? searchParams.get("tr") : "";
 
   //month
   const _year                              = searchParams.get("year") != undefined ? searchParams.get("year") : moment(new Date()).format("YYYY");
@@ -50,7 +52,7 @@ const ClientSalesSummaryHooks = (props) => {
   const _page                              = searchParams.get("tp") != null ? searchParams.get("tp") : 1;
   const _rowsPerPage                       = searchParams.get("tl") != null ? searchParams.get("tl") : 10;
   const dataList2                          = useSelector((state) => state.SalesDailyOutReducer.dataList2);
-  const dataListCount2                     = useSelector((state) => state.SalesDailyOutReducer.dataListCount2);
+  const dataListCount2                     = useSelector((state) => state.SalesDailyOutReducer.dataListCount2); 
 
   //filtering,search,page,limit end
   const dispatch                           = useDispatch();
@@ -193,6 +195,7 @@ const ClientSalesSummaryHooks = (props) => {
       w: subsection,
       tl: String(rowsPerPage),
       tp: page,
+      tr: trend
     });
   };
 
@@ -222,6 +225,7 @@ const ClientSalesSummaryHooks = (props) => {
       w: subsection,
       tl: String(rowsPerPage),
       tp: page,
+      tr: trend
     };
     return data;
   };
@@ -248,6 +252,7 @@ const ClientSalesSummaryHooks = (props) => {
     try {
       const data = await getListParam();
       await dispatch(getClientSalesTracker(data));
+      await dispatch(getClientSalesTrackerDataReport(data))
     } catch (error) {
       console.error(error);
     }
@@ -255,8 +260,6 @@ const ClientSalesSummaryHooks = (props) => {
 
   React.useEffect(() => {
     onFetchOrganizationAccess();
-  
-
   }, []); 
   
   React.useEffect(() => {
@@ -273,6 +276,7 @@ const ClientSalesSummaryHooks = (props) => {
     type,
     subsection,
     page,
+    trend,
   ]);
 
   const onClickOpenFilterModal = () => {
@@ -303,6 +307,7 @@ const ClientSalesSummaryHooks = (props) => {
       w: subsection,
       tl: String(rowsPerPage),
       tp: page,
+      tr: trend
     });
   };
 
@@ -317,6 +322,7 @@ const ClientSalesSummaryHooks = (props) => {
       w: subsection,
       tl: String(rowsPerPage),
       tp: page,
+      tr: trend
     });
   };
 
@@ -348,6 +354,7 @@ const ClientSalesSummaryHooks = (props) => {
       w: subsection,
       tl: String(rowsPerPage),
       tp: page,
+      tr: trend
     });
     props.dispatch(change("ClientSales", "bdo_name", bdo.full_name));
     swal("Success", "BDO filtered successfully", "success");
@@ -363,6 +370,7 @@ const ClientSalesSummaryHooks = (props) => {
       w: subsection,
       tl: String(rowsPerPage),
       tp: page,
+      tr: trend
     });
     props.dispatch(change("ClientSales", "bdo_name", ""));
   };
@@ -378,11 +386,24 @@ const ClientSalesSummaryHooks = (props) => {
       w: subsection,
       tl: String(rowsPerPage),
       tp: page,
+      tr: trend
     });
   };
 
-
-  console.log(type)
+  const onClickSelectTrend = (trend) => {
+    setSearchParams({
+      y: year,
+      m: month,
+      pr: product,
+      c: group_description,
+      b: bdo,
+      t: type,
+      w: subsection,
+      tl: String(rowsPerPage),
+      tp: page,
+      tr: trend
+    });
+  } 
 
   const onClickSelectWarehouse = (subsection) => {
     setSearchParams({
@@ -422,63 +443,112 @@ const ClientSalesSummaryHooks = (props) => {
       w: subsection,
       tl: String(rowsPerPage),
       tp: page,
+      tr: trend,
     });
     props.dispatch(change("ClientSalesSummary", "bdo_name", bdo.full_name));
     swal("Success", "BDO filtered successfully", "success");
   };
 
-  const exportToExcel = (dataList, fileName = "data.xlsx") => {
-    if (!dataList || dataList.length === 0) {
+  // Helper to calculate column widths
+  const setColumnWidths = (data, map) => {
+    const keys = Object.keys(map);
+    return keys.map((key) => {
+      const header = map[key];
+      let maxLength = header.length;
+
+      data.forEach((row) => {
+        const cellValue = row[header] ? String(row[header]) : "";
+        maxLength = Math.max(maxLength, cellValue.length);
+      });
+
+      return { wch: maxLength + 2 }; // +2 for padding
+    });
+  };
+
+  const exportToExcel = async () => {
+    let fileName = "Weekly & Monthly.xlsx"  
+    if (!report_data || (!report_data?.week.length && !report_data?.month.length)) {
       console.warn("No data to export.");
       return;
     }
 
     // Define column mappings based on the `columns` array
-    const columnMappings = {
-      create_date: "Create Date",
-      delivery_date: "Delivery Date",
-      dr_number: "DR Number",
-      si_number: "SI Number",
-      card_name: "BP Name",
-      client_name: "Client Name",
-      terms: "BP Terms",
-      payment_mode: "BP Payment Terms",
-      description: "Item Name",
-      quantity: "Quantity",
-      price_after_vat: "Unit Price",
-      line_amount: "Total",
-      doc_total: "Amount Due",
-      applied_amount: "Payment",
-      actual_mode_payment: "Actual Payment Terms",
+    const mappings = {
+      week: {
+          sales_daily_out_settings_client_groups_description: "Client",
+          "1-7": "Week 1", 
+          "8-14": "Week 2",
+          "15-21": "Week 3",
+          "22-30/31": "Week 4",
+          month_sales_daily_qouta: "Monthly Quota",
+          mtd_total_status_daily_target: "Balance",
+          month_sales_daily_out: "MTD",      
+        },
+      month: {
+        sales_daily_out_settings_client_groups_description: "Client",
+        january_total_out: "January",
+        february_total_out: "February",
+        march_total_out: "March",
+        april_total_out: "April",
+        may_total_out: "May",
+        june_total_out: "June",
+        july_total_out: "July",
+        august_total_out: "August",
+        september_total_out: "September",
+        october_total_out: "October",
+        november_total_out: "November",
+        december_total_out: "December",
+        annual_quota: "Quota",
+        year_sales_daily_out: "Total",
+        annual_quota_percentage: "YTD",
+      },
     };
 
-    // Convert data to new format with renamed keys
-    const formattedData = dataList.map((item) => {
-      let newItem = {};
-      Object.keys(columnMappings).forEach((key) => {
-        newItem[columnMappings[key]] = item[key]; // Use mapped column name
+     // Helper to format data with custom mapping
+      const formatData = (list, map) =>
+        list.map((item) => {
+          let newItem = {};
+          Object.keys(map).forEach((key) => {
+            newItem[map[key]] = item[key] ?? "";
+          });
+          return newItem;
+        });
+
+      // Create workbook
+      const workbook = XLSX.utils.book_new();
+
+     // Week sheet
+    if (report_data.week && report_data.week.length > 0) {
+      const weekData = formatData(report_data.week, mappings.week);
+      const weekSheet = XLSX.utils.json_to_sheet(weekData);
+
+      // Auto-size columns
+      weekSheet["!cols"] = setColumnWidths(weekData, mappings.week);
+
+      XLSX.utils.book_append_sheet(workbook, weekSheet, "Weekly Report");
+    }
+
+    // Month sheet
+    if (report_data.month && report_data.month.length > 0) {
+      const monthData = formatData(report_data.month, mappings.month);
+      const monthSheet = XLSX.utils.json_to_sheet(monthData);
+
+      // Auto-size columns
+      monthSheet["!cols"] = setColumnWidths(monthData, mappings.month);
+
+      XLSX.utils.book_append_sheet(workbook, monthSheet, "Monthly Report");
+    }
+
+      // Write file
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
       });
-      return newItem;
-    });
+      const blob = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
 
-    // Convert JSON to worksheet with renamed headers
-    const worksheet = XLSX.utils.json_to_sheet(formattedData);
-
-    // Create a workbook and append the worksheet
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-    // Write the workbook and convert to Blob
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
-    const blob = new Blob([excelBuffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-
-    // Save the file
-    saveAs(blob, fileName);
+      saveAs(blob, fileName);
   };
    
 
@@ -650,6 +720,7 @@ const ClientSalesSummaryHooks = (props) => {
     onClickSelectResetEmployee,
     onClickSelectType,
     onClickSelectWarehouse,
+    onClickSelectTrend,
     onChangeFilterBDO,
     month_onChangeFilterYear,
     month_onChangeSearch,

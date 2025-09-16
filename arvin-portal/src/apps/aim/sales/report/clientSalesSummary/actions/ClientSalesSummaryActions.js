@@ -15,7 +15,17 @@ export const getClientSalesTracker = (values) => async (dispatch) => {
       payload: { loading: true },
     });
 
-    const url = `api/salesdailyout/sales_tracker/client/client_sales_summary/?y=${values.y}&m=${values.m}&pr=${values.pr}&c=${values.c}&b=${values.b}&t=${values.t}&w=${values.w}&tl=${values.tl}&tp=${values.tp}&x=${values.x}`;
+    const url = `api/salesdailyout/sales_tracker/client/client_sales_summary/?
+    y=${values.y}
+    &m=${values.m}
+    &pr=${values.pr}
+    &c=${values.c}
+    &b=${values.b}
+    &t=${values.t}
+    &w=${values.w}
+    &tl=${values.tl}
+    &tp=${values.tp}
+    &tr=${values.tr}`;
 
     const response = await GetSpecificDefaultServices(url); 
     
@@ -63,6 +73,67 @@ export const getClientSalesTracker = (values) => async (dispatch) => {
     });
   }
 };
+
+
+export const getClientSalesTrackerDataReport = (values) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: { loading: true },
+    });
+
+    const url = `api/salesdailyout/sales_tracker/client/client_sales_summary_report_data/?
+    y=${values.y}
+    &m=${values.m}
+    &pr=${values.pr}
+    &c=${values.c}
+    &b=${values.b}
+    &t=${values.t}
+    &w=${values.w}
+    &tr=${values.tr}`;
+
+    const response = await GetSpecificDefaultServices(url); 
+    
+    const decrypted= decryptaes(response.data);
+
+      await dispatch({
+        type: Constants.ACTION_SALES_DAILY_OUT,
+        payload: {
+          report_data:decrypted
+        },
+      });
+  } catch (error) {
+    var title = configure.error_message.default;
+    var message = "";
+    if (typeof error.response.data.message !== "undefined")
+      title = error.response.data.message;
+    if (typeof error.response.data.errors !== "undefined") {
+      const formattedErrors = Object.entries(error.response.data.errors)
+        .map(([key, value]) => `${value.join(", ")}`)
+        .join("\n");
+      message = formattedErrors;
+    }
+    await swal(title, message, "error");
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  } finally {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+  }
+};
+
+
+
+
+
 
 
 // export const geClientSalesSummaryReport = (formValues) => async (dispatch) => {

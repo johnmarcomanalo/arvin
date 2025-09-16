@@ -229,6 +229,7 @@ use Illuminate\Support\Facades\Route;
 
         // Client Sales Report Client Summary START
         Route::get('salesdailyout/sales_tracker/client/client_sales_summary',[SalesDailyOutClientSalesTrackersController::class, 'client_sales_summary']);
+        Route::get('salesdailyout/sales_tracker/client/client_sales_summary_report_data',[SalesDailyOutClientSalesTrackersController::class, 'client_sales_summary_report_data']);
         // Client Sales Report Client Summary END
        
 

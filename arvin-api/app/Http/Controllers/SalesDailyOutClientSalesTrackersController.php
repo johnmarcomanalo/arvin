@@ -378,22 +378,28 @@ class SalesDailyOutClientSalesTrackersController extends Controller
     }
     public function client_sales_tracker(Request $request)
     {
-        $selected_year = $request->query('y');
-        $selected_month = $request->query('m');
+        $selected_year    = $request->query('y');
+        $selected_month   = $request->query('m');
         $selected_product = $request->query('pr');
         $selected_group_code = $request->query('c');
-        $bdo = $request->query('b'); 
-        $type = $request->query('t'); 
-        $warehouse = $request->query('w'); 
-        $limit = $request->query('tl'); 
-        $page = $request->query('tp'); 
+        $bdo              = $request->query('b'); 
+        $type             = $request->query('t'); 
+        $warehouse        = $request->query('w'); 
+        $limit            = $request->query('tl'); 
+        $page             = $request->query('tp'); 
+        $trend            = $request->query('tr');
+        $order            = match ($trend) {
+                            'Up Trend' => 'DESC',
+                            'Down Trend' => 'ASC',
+                            default => '', // fallback
+                        };
         $dataListCollection = [];
         $dataList = [];
 
         // Execute stored procedure
         $dataListArray = DB::select(
-            "SET NOCOUNT ON; EXEC dbo.GetSalesDailyOutClientSalesTrackers ?,?,?,?,?,?,?",
-            [$selected_year, $selected_month, $selected_product, $selected_group_code, $bdo, $type, $warehouse]
+            "SET NOCOUNT ON; EXEC dbo.GetSalesDailyOutClientSalesTrackers ?,?,?,?,?,?,?,?",
+            [$selected_year, $selected_month, $selected_product, $selected_group_code, $bdo, $type, $warehouse, $order]
         );
 
         if(!empty($dataListArray)){
@@ -481,5 +487,75 @@ class SalesDailyOutClientSalesTrackersController extends Controller
         return $data;
 
     }
+
+
+    public function client_sales_summary_report_data(Request $request)
+    {
+        // Map short query params to descriptive names
+        $mappings = [
+            'y'  => 'year',
+            'm'  => 'month',
+            'pr' => 'product',
+            'c'  => 'group_code',
+            'b'  => 'bdo',
+            't'  => 'type',
+            'w'  => 'warehouse',
+            'tr' => 'trend',
+            'tl' => 'limit',
+            'tp' => 'page',
+        ];
+    
+        // Normalize request params
+        foreach ($mappings as $short => $long) {
+            if ($request->has($short)) {
+                $request->merge([$long => $request->input($short)]);
+                $request->request->remove($short);
+            }
+        }
+    
+        // Resolve trend order
+        $order = match ($request->input('trend')) {
+            'Up Trend'   => 'DESC',
+            'Down Trend' => 'ASC',
+            default      => '',
+        };
+    
+        // Call weekly stored procedure
+        $dataWeekly = DB::select(
+            "SET NOCOUNT ON; EXEC dbo.GetSalesDailyOutClientSalesTrackers ?,?,?,?,?,?,?,?",
+            [
+                $request->input('year'),
+                $request->input('month'),
+                $request->input('product'),
+                $request->input('group_code'),
+                $request->input('bdo'),
+                $request->input('type'),
+                $request->input('warehouse'),
+                $order,
+            ]
+        );
+    
+        // Call monthly stored procedure
+        $dataMonthly = DB::select(
+            "SET NOCOUNT ON; EXEC dbo.ClientSalesTrackerSummary ?,?,?,?,?,?,?",
+            [
+                $request->input('year'),
+                $request->input('product'),
+                $request->input('group_code'),
+                $request->input('bdo'),
+                $request->input('type'),
+                $request->input('warehouse'),
+                $order,
+            ]
+        );
+
+        $data =  [
+            'week'  => $dataWeekly,
+            'month' => $dataMonthly,
+        ];
+    
+        return Crypt::encryptString(json_encode($data));
+    }
+    
 
 }

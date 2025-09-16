@@ -75,7 +75,7 @@ let ClientSalesSummary = (props) => {
                   fullwidth={false}
                   children={"Export"}
                   click={() => {
-                    salesTracker.exportToExcel(salesTracker.dataList, "Davao-TKS");
+                    salesTracker.exportToExcel( "Davao-TKS");
                   }}
                 />  
             </Stack>
@@ -214,11 +214,11 @@ let ClientSalesSummary = (props) => {
                   required={true}
                   component={ComboBox}
                   onChangeHandle={(e, newValue) => {
-                    // if (newValue?.description) {
-                    //   salesTracker.onClickSelectType(newValue?.description);
-                    // } else {
-                    //   salesTracker.onClickSelectType("");
-                    // }
+                    if (newValue?.description) {
+                      salesTracker.onClickSelectTrend(newValue?.description);
+                    } else {
+                      salesTracker.onClickSelectTrend("");
+                    }
                   }}
                 />
               </Grid>
@@ -393,7 +393,7 @@ let ClientSalesSummary = (props) => {
 
                                {/* BTS */}
                                <TableCell style={{ textAlign: "right", color: value.mtd_percentage < 100?  "#C83232" : "#009933" }}>
-                                { value.mtd_percentage } %
+                                { value.mtd_percentage }%
                               </TableCell> 
                             </TableRow>
                           );
@@ -652,7 +652,7 @@ let ClientSalesSummary = (props) => {
                                     color: value.annual_quota_percentage < 100 ? "#C83232" : "#009933",
                                   }}
                                 >
-                                  {value.annual_quota_percentage} %
+                                  {value.annual_quota_percentage}%
                                 </TableCell>
                               </TableRow>
                             );

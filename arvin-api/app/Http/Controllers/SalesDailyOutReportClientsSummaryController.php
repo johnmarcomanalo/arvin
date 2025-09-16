@@ -66,18 +66,24 @@ class SalesDailyOutReportClientsSummaryController extends Controller
 
     public static function  get_client_sales_tracker_summary(Request $request)
     {
-        $p_year = $request->query('year');
-        $p_product = $request->query('product');
+        $p_year       = $request->query('year');
+        $p_product    = $request->query('product');
         $p_group_code = $request->query('group_code');
-        $p_bdo = $request->query('bdo');
-        $p_type = $request->query('t');
+        $p_bdo        = $request->query('bdo');
+        $p_type       = $request->query('t');
         $p_subsection = $request->query('w');
-        $limit = $request->query('tl');
-        $page = $request->query('tp');
+        $limit        = $request->query('tl');
+        $page         = $request->query('tp');
+        $trend        = $request->query('tr');
+        $order        = match ($trend) {
+                            'Up Trend' => 'DESC',
+                            'Down Trend' => 'ASC',
+                            default => '', // fallback
+                        };
         $dataListCollection = [];
         $dataList = [];
 
-         $dataListArray = DB::select("SET NOCOUNT ON exec dbo.ClientSalesTrackerSummary ?,?,?,?,?,?",array($p_year,$p_product,$p_group_code,$p_bdo,$p_type,$p_subsection));
+         $dataListArray = DB::select("SET NOCOUNT ON exec dbo.ClientSalesTrackerSummary ?,?,?,?,?,?,?",array($p_year,$p_product,$p_group_code,$p_bdo,$p_type,$p_subsection,$order));
         
         if(!empty($dataListArray)){
             $dataListCollection = collect($dataListArray)->map(function ($item) {
