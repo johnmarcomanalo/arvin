@@ -321,7 +321,7 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
             });
         } 
  
-        $data_list = $queryBuilder->paginate($limit, ['*'], 'page', $page);
+         $data_list = $queryBuilder->paginate($limit, ['*'], 'page', $page);
 
         $response = [   
             'dataList' => $data_list,
@@ -375,6 +375,7 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
     }
 
     public function refresh_annual_group_client_out(Request $request){
+        set_time_limit(0);
         $fields = $request->validate([
             'code' => 'required',
         ]);
@@ -406,7 +407,6 @@ class SalesDailyOutSettingsAnnualQuotaClientGroupsController extends Controller
                     $quota_data->subsection
                 ]);
             }
-
             if(!empty($records)){
                 DB::statement("EXEC dbo.ResetSalesDailyOutClientSalesTrackers ?", [$fields['code']]);
 

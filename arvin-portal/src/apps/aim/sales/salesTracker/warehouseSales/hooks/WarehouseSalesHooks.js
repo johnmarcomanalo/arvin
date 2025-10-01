@@ -282,7 +282,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       if (typeof filterSubComponent !== null || filterSubComponent !== "") {
         id = filterSubComponent;
       }
-      dispatch(getSpecificRefSubSection(account_details?.subsection_code));
+      dispatch(getSpecificRefSubSection(id));
     } catch (error) {
       console.error(error);
     }
