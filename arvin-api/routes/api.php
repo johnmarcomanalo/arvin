@@ -57,6 +57,7 @@ use App\Http\Controllers\SalesDailyOutReportClientsSummaryController;
 use App\Http\Controllers\SalesQuotationRequestController;
 use App\Http\Controllers\SalesQuotationRequestForApprovalsController;
 use App\Http\Controllers\SalesQuotationReportQuotedProducts;
+use App\Http\Controllers\SprPrinting;
 use App\Models\RefBankAccounts;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -215,6 +216,7 @@ use Illuminate\Support\Facades\Route;
 
 
         // Sales Daily Out Settings Annual Quota Client Groups START
+        Route::get('test',[SalesDailyOutClientSalesTrackersController::class, 'test']);
         Route::post('salesdailyout/settings_quota_groups/refresh_annual_group_client_out',[SalesDailyOutSettingsAnnualQuotaClientGroupsController::class,'refresh_annual_group_client_out'])->middleware(['light_decryption']);//for pagination
         Route::get('salesdailyout/settings_quota_groups/annual_quota_client_groups',[SalesDailyOutSettingsAnnualQuotaClientGroupsController::class,'annual_quota_client_groups']);//for pagination
         Route::apiResource('salesdailyout/settings_quota_groups',SalesDailyOutSettingsAnnualQuotaClientGroupsController::class)->middleware(['light_decryption']);
@@ -287,6 +289,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('epaycheck/check_detail_logs/get_weekly_check_counter_data',[EPayCheckCheckDetailLogsController::class,'get_weekly_check_counter_data']);
         Route::apiResource('epaycheck/report',EPayCheckReport::class)->middleware(['light_decryption']);
 
+        Route::get('spr/spr/{date_start}/{date_end}/{warehouse}',[SprPrinting::class,'spr']);
        
         // EPAYCHECK END
 
