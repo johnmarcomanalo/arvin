@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 
 class SprPrinting extends Controller
@@ -63,14 +64,18 @@ class SprPrinting extends Controller
         //
     }
 
-    public function spr($data_start,$date_end,$warehouse){
-        
+    public function spr(Request $request){
+        $fields = $request->validate([
+            'date_start' => 'required',
+            'date_end' => 'required',
+            'warehouse' => 'required',
+        ]);
         $results_industrial = DB::connection('sqlsrv2')->select(
             'SET NOCOUNT ON; EXEC sp_StockPositionReport_Province_industrial_salt_V3 ?, ?, ?',
-            [$data_start,$date_end,$warehouse]
+            [$fields['date_start'],$fields['date_end'],$fields['warehouse']]
         );
 
-        $collection = collect($results_industrial);
+        $collection = collect($results_industrial)->whereNotIn('ItemCode', [''])->values();
 
         // Calculate beginning balance (first row's BegInvBalance)
         $beginning_balance = $collection->first()->BegInvBalance ?? 0;
@@ -100,19 +105,19 @@ class SprPrinting extends Controller
         
         $results_rice_others = DB::connection('sqlsrv2')->select(
             'SET NOCOUNT ON; EXEC sp_StockPositionReport_Province_v3 ?, ?, ?',
-            [$data_start,$date_end,$warehouse] 
+            [$fields['date_start'],$fields['date_end'],$fields['warehouse']]
         );
 
         $collection_rice_others = collect($results_rice_others)->whereNotIn('itemcategory', ['ITEM - DUMMY', 'INDUSTRIAL SALT',''])->values();          // ✅ Reindex keys (so result is a clean array)
 
         $collection_rice_others_by_warehouse = $collection_rice_others
-            ->groupBy('WhsCode') // ✅ first group by warehouse
+            ->groupBy('WhsCode')
             ->map(function ($itemsByWarehouse) {
                 return $itemsByWarehouse
-                    ->groupBy('itemcategory') // ✅ then group by category
+                    ->groupBy('itemcategory')
                     ->map(function ($itemsByCategory) {
                         return $itemsByCategory
-                            ->groupBy('ItemCode') // ✅ group by ItemCode
+                            ->groupBy('ItemCode')
                             ->map(function ($items) {
                                 return [
                                     'ItemCode'  => $items->first()->ItemCode,
@@ -120,11 +125,14 @@ class SprPrinting extends Controller
                                     'BegInvBalance'  => $items->first()->BegInvBalance,
                                     'InQty'     => $items->sum(fn($row) => (float) $row->InQty),
                                     'OutQty'    => $items->sum(fn($row) => (float) $row->OutQty),
-                                    'EndBalance' => $items->first()->BegInvBalance + ($items->sum(fn($row) => (float) $row->InQty) - $items->sum(fn($row) => (float) $row->OutQty)),
+                                    'EndBalance' => $items->first()->BegInvBalance
+                                        + ($items->sum(fn($row) => (float) $row->InQty)
+                                        - $items->sum(fn($row) => (float) $row->OutQty)),
                                 ];
-                            });
+                            })
+                            ->values(); // ✅ reset keys, remove ItemCode index
                     });
-        });
+            });
         $collection_industrial_by_warehouse = [
             'product_group'     => 'INDUSTRIAL SALT',
             'beginning_balance' => round($beginning_balance, 2),
@@ -134,13 +142,14 @@ class SprPrinting extends Controller
             'ending_balance'    => round($ending_balance, 2),
         ];
 
-        return $data = [
-            'warehouse' =>    'CAGAYAN',
-            'date_start' =>    '2025-09-18',
-            'date_end' =>   '2025-09-25',
+        $data = [
+            'warehouse' =>   $fields['warehouse'],
+            'date_start' =>    $fields['date_start'],
+            'date_end' =>   $fields['date_end'],
             'industrial' =>    $collection_industrial_by_warehouse,
             'rice_and_others' =>    $collection_rice_others_by_warehouse,
         ];
+        return Crypt::encryptString(json_encode($data));
 
        
     }

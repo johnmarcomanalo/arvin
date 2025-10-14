@@ -9,18 +9,15 @@ const styleSheet = {
 };
 
 export default function ComboBox(props) {
-  const { showLabel = true, disable = false,input, ...param  } = props;
+  const { showLabel = true, disable = false, input, ...param } = props;
   const handleInputChange = (event, newInputValue) => {
-    console.log("newInputValue",newInputValue);
-    
     if (!newInputValue) {
       if (input?.onChange) {
         input.onChange(""); // safe update redux-form state
       }
     }
-    
-  }; 
-  
+  };
+
   return (
     <div style={{ width: "100%" }}>
       {showLabel ? (
@@ -49,7 +46,7 @@ export default function ComboBox(props) {
         onChange={(e, newValue) => {
           input?.onChange(newValue?.description || ""); // update redux-form
           param.onChangeHandle?.(e, newValue); // trigger your custom handler
-        }}        // value={param.value}
+        }} // value={param.value}
         value={
           param.options.find((opt) => opt.description === input.value) || null
         } // ensures value is matched
@@ -76,7 +73,6 @@ export default function ComboBox(props) {
               borderColor: props.borderColor, // focused border color
             },
           },
-        
         }}
       />{" "}
     </div>
