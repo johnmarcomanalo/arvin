@@ -321,14 +321,14 @@ const CheckMonitoring = (props) => {
                             
                         )} */}
 
-                            <ButtonComponent
+                            {/* <ButtonComponent
                               stx={configure.default_button}
                               iconType="generate"
                               type="button"
                               fullWidth={true}
                               children={"Reject"}
                               click={check.onClickOpenRejectModal}
-                            />
+                            /> */}
                       </ButtonGroup>
                     </>
                    )

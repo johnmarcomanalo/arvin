@@ -226,6 +226,14 @@ const IndexCheckARReceive = lazy(() =>
 );
 //EPAYCHECK END
 
+// LOGISTIC
+const IndexVeselContainerMonitoring = lazy(() =>
+  import(
+    "./apps/aim/logistic/VeselAndContainerMonitoring/pages/IndexVeselContainerMonitoring"
+  )
+);
+// END LOGISTIC
+
 const theme = createTheme({
   typography: {
     fontFamily: "Poppins, sans-serif",
@@ -992,6 +1000,24 @@ function App() {
                     }
                   />
                   {/* EPAYCHECK END */}
+
+                  {/* LOGISTIC START */}
+                    <Route
+                        path="/Modules/Logistic/VeselAndContainerMonitoring"
+                        element={
+                          <PrivateRoute
+                            accessChecker={getAccessChecker({
+                              module: "Logistic",
+                              component: "Vessel / Container Monitoring",
+                              subComponent: null,
+                            })}
+                          >
+                            <IndexVeselContainerMonitoring/>
+                          </PrivateRoute>
+                        }
+                      />
+                  {/* LOGISTIC END */}
+
                   {/* SYSTEM SETTINGS END */}
                 </Route>
               )}
