@@ -57,6 +57,7 @@ use App\Http\Controllers\SalesDailyOutReportClientsSummaryController;
 use App\Http\Controllers\SalesQuotationRequestController;
 use App\Http\Controllers\SalesQuotationRequestForApprovalsController;
 use App\Http\Controllers\SalesQuotationReportQuotedProducts;
+use App\Http\Controllers\VesselAndControllerMonitoringController;
 use App\Models\RefBankAccounts;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -290,6 +291,12 @@ use Illuminate\Support\Facades\Route;
 
        
         // EPAYCHECK END
+
+        // LOGISTIC
+        Route::get('logistic/monitoring/get_po_details',[VesselAndControllerMonitoringController::class,'get_po_details']);
+        Route::get('logistic/monitoring/get_specific_invoice_details',[VesselAndControllerMonitoringController::class,'get_specific_invoice_details']);
+        // LOGISTIC END
+
 
     });
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

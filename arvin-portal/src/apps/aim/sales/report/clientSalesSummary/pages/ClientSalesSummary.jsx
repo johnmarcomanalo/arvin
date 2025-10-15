@@ -75,7 +75,7 @@ let ClientSalesSummary = (props) => {
                   fullwidth={false}
                   children={"Export"}
                   click={() => {
-                    salesTracker.exportToExcel( "Davao-TKS");
+                    salesTracker.exportToExcel(" ");
                   }}
                 />  
             </Stack>

@@ -9,6 +9,7 @@ import AuthenticationReducer from "./AuthenticationReducer";
 import SalesDailyOutReducer from "./SalesDailyOutReducer";
 import HumanResourceReducer from "./HumanResourceReducer";
 import EpayCheckReducer from "./EpayCheckReducer";
+import LogisticReducer from "./LogisticReducer"
 
 export default combineReducers({
   HumanResourceReducer: HumanResourceReducer,
@@ -20,5 +21,6 @@ export default combineReducers({
   AuthenticationReducer: AuthenticationReducer,
   SalesDailyOutReducer: SalesDailyOutReducer,
   EpayCheckReducer: EpayCheckReducer,
+  LogisticReducer: LogisticReducer,
   form: formReducer,
 });
