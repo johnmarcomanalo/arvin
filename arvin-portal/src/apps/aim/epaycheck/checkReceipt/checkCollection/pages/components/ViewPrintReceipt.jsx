@@ -60,7 +60,7 @@ const ViewPrintReceipt = (props) => {
           <Text style={styles?.numberToWords}>{numtoword}</Text>
           <Text style={styles?.amount}>{check_amount}</Text>
           <Text style={styles?.sales_invoice}>{data?.sales_invoice}</Text>
-          <Text style={styles?.username}>{data?.username}</Text>
+          {/* <Text style={styles?.username}>{data?.username}</Text> */}
         </Page>
       </Document>
     </PDFViewer> 
