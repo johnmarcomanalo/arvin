@@ -16,7 +16,7 @@ class VesselAndControllerMonitoringController extends Controller
     public function get_po_details(Request $request)
     {
         $search        = $request->query('q');
-        $page          = (int) $request->query('p', 1);   // ✅ don't reset to 1 when searching
+        $page          = (int) $request->query('p', 1);
         $sap           = $request->query('sap');
         $monitoring    = $request->query('m') ==="VESSEL"? "MIP" : "MV VESSEL";
         // $df            = $request->query('df');
@@ -45,11 +45,12 @@ class VesselAndControllerMonitoringController extends Controller
                     stripos($item->CardName ?? '', $search) !== false ||
                     stripos($item->CardCode ?? '', $search) !== false ||
                     stripos($item->BLNo ?? '', $search) !== false ||
+                    stripos($item->Vessel ?? '', $search) !== false ||
                     stripos($item->suppliername ?? '', $search) !== false;
             });
         }
 
-        // Sorting (safe: handles missing keys)
+        
         $collection = $collection->sortBy(
             fn($item) => $item->{$sortColumn} ?? null,
             SORT_NATURAL,
@@ -72,8 +73,6 @@ class VesselAndControllerMonitoringController extends Controller
             'message'      => 'Fetched successfully.',
         ];
 
-        // 🔑 Return JSON (recommended) OR encrypted string (if required)
-        // return response()->json($response);
         return Crypt::encryptString(json_encode($response));
     }
     
@@ -84,6 +83,7 @@ class VesselAndControllerMonitoringController extends Controller
         $monitoring  = $request->query('monitoring') === "VESSEL"? "MIP" : "V-WHSE";
         $queryResult = [];
         $chartGroupCustomerAndWarehouse = [];
+        $chart = [];
  
         if (!is_null($invoice)) {
             $procedures = [
@@ -118,7 +118,7 @@ class VesselAndControllerMonitoringController extends Controller
                     ];
                 }
 
-                if ($combineData[0]['DirectToCustomer']!==0) {
+                if (!empty($combineData[0]['DirectToCustomer'])) {
                     $chartGroupCustomerAndWarehouse[] = [
                         'name'  => 'Direct Delivery',
                         'value' => (float)$combineData[0]['DirectToCustomer']

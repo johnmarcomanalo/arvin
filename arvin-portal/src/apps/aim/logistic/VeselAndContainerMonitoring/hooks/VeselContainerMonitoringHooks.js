@@ -50,12 +50,13 @@ const VeselContainerMonitoringHooks = (props) => {
    ]
 
    const columns = [
+      { id:"PODate", label:"PO Date", align:"left", sortable: false},
       { id:"PONumber", label:"PO Number", align:"left", sortable: false},
       { id:"FCL", label:"FCL", align:"left", sortable: false},
       { id:"InvoiceNo", label:"Invoice No.", align:"left", sortable: false}, 
       { id:"BLNo", label:"BL No.", align:"left", sortable: true},
       { id:"Broker", label:"Broker", align:"left", sortable: true},
-      // { id:"SupplierName", label:"Supplier", align:"left", sortable: true},
+      { id:"Vessel", label:"Vessel", align:"left", sortable: true},
       { id:"Quantity", label:"Quantity", align:"left", sortable: true}, 
   ];
    

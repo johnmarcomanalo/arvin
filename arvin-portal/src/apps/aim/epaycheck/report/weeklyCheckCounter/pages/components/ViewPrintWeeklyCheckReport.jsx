@@ -354,7 +354,7 @@ const ViewPrintWeeklyCheckReport = (props) => {
             <Text style={styles.headerText}>From {header_date_from} - {header_date_to}</Text>
             <Text style={styles.headerText}>{header_subsection}</Text>
           </View>
-  
+          <View style={{ flexGrow: 1 }}>
           {/* Tables */}
           <Table title="DEPOSITED" 
                  data={deposited_data} 
@@ -383,6 +383,7 @@ const ViewPrintWeeklyCheckReport = (props) => {
   
           {/* Footer */}
           <Summary data={footer_summary} onhand={onhand_grand_count}/>
+          </View>
         </Page>
 
         {/* OPEN REJECTED */}
