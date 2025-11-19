@@ -18,6 +18,8 @@ const submit = async (values, dispatch, props) => {
   try {
     const response = await dispatch(postSPRPrint(values));
     let decrypted = decryptaes(response?.data);
+    console.log(decrypted);
+    
     await dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {

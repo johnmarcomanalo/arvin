@@ -67,15 +67,16 @@ const formatAmountAndBreak = (value) => {
 // Define styles
 const styles = StyleSheet.create({
   page: {
-    paddingTop: 20,
-    paddingLeft: 20,
-    paddingRight: 20,
-    paddingBottom: 40,
+    // padding:40,
+    // paddingTop: 20,
+    paddingLeft: 10,
+    paddingRight: 10,
+    // paddingBottom: 20,
     fontSize: 10,
-    marginTop: 50,
-    marginBottom: 50,
-  },
-  section: { marginBottom: 10 },
+    // marginTop: 50,
+    // margin: 50,
+  }, 
+  section: { marginTop: 50 },
   title: {
     fontSize: 11,
     fontWeight: "bold",
@@ -98,12 +99,12 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    minHeight: 18, // Ensures a minimum height for all data rows
+    // minHeight: 18, // Ensures a minimum height for all data rows
   },
   row_no_border: {
     flexDirection: "row",
-    paddingVertical: 2,
-    minHeight: 18,
+    // paddingVertical: 2,
+    // minHeight: 18,
   },
   cell: {
     padding: 2,
@@ -112,7 +113,7 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontFamily: "PoppinsBold",
     border: "0.5px solid black",
-    hyphens: "none",
+    // hyphens: "none",
   },
   cell_data: {
     padding: 2,
@@ -121,7 +122,7 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontFamily: "PoppinsRegular",
     border: "0.5px solid black",
-    hyphens: "none",
+    // hyphens: "none",
   },
   cell_no_border: {
     padding: 2,
@@ -139,7 +140,7 @@ const styles = StyleSheet.create({
     border: "0.5px solid black",
     fontSize: 9,
     lineHeight: 1.2, // ✅ keeps spacing clean
-    hyphens: "none",
+    // hyphens: "none",
   },
   // FIX 2: Ensure Number cells are right-aligned and keep flex 1
   numberCell: {
@@ -149,7 +150,7 @@ const styles = StyleSheet.create({
     padding: 2,
     border: "0.5px solid black",
     fontSize: 9,
-    hyphens: "none",
+    // hyphens: "none",
   },
   // Custom style for Ending Balance cell - using text-align: right for consistency
   endingBalanceCell: {
@@ -159,7 +160,7 @@ const styles = StyleSheet.create({
     padding: 2,
     border: "0.5px solid black",
     fontSize: 9,
-    hyphens: "none",
+    // hyphens: "none",
   },
 });
 
@@ -326,24 +327,26 @@ const RiceOthersTable = ({ warehouseName, categories }) => {
   // The total flex of the TableHeader is 1.2 + 5.0 + 1 + 1 + 1 + 1 = 10.2
   return (
     // minPresenceAhead ensures the header/first row doesn't break alone
-    <View wrap={false} minPresenceAhead={100} style={{ marginBottom: 50 }}>
+    <View wrap>
+ 
       {/* 🔹 Warehouse Row (Spans all columns) */}
       <View style={styles.row}>
         {/* Combine Item Code (1.2) and Item Description (5.0) for the category label (6.2) 
         plus the 4 number columns (4.0) = 10.2 */}
-        <Text style={[styles.cell, { flex: 10.2 }]}>{warehouseName}</Text>
+        <Text style={[ { flex: 10.2,fontFamily: "PoppinsBold",fontWeight: "bold" }]}>{warehouseName}</Text>
       </View>
 
       {/* 🔹 Loop categories */}
       {Object.entries(categories).map(([categoryName, items], catIndex) => (
-        <View key={catIndex} style={{ marginBottom: 6 }}>
+        // <View key={catIndex} style={{ marginBottom: 6 }}>
+        <View key={catIndex}   >
           {/* 🔹 Category Row - This should be a full-width row for the category name */}
           <View style={[styles.row_no_border]}>
             {/* Combine Item Code (1.2) and Item Description (5.0) for the category label (6.2) */}
             <Text
               style={[
                 styles.cell_no_border,
-                { flex: 6.2, textIndent: 5, fontFamily: "PoppinsBold" },
+                { flex: 6.2, textIndent: 2, fontFamily: "PoppinsBold" },
               ]}
             >
               {categoryName}
@@ -363,20 +366,16 @@ const RiceOthersTable = ({ warehouseName, categories }) => {
                   </Text>
                   {/* Item Description (5.0) - Use the multi-line friendly style */}
                   <Text style={styles.itemDescCell}>{item.ItemName}</Text>
-
-                  {/* Beginning Balance (1.0) - Use styles.numberCell */}
+ 
                   <Text style={styles.numberCell}>
                     {formatAmountAndBreak(item.BegInvBalance)}
-                  </Text>
-                  {/* Total In (1.0) - Use styles.numberCell */}
+                  </Text> 
                   <Text style={styles.numberCell}>
                     {formatAmountAndBreak(item.InQty)}
-                  </Text>
-                  {/* Total Out (1.0) - Use styles.numberCell */}
+                  </Text> 
                   <Text style={styles.numberCell}>
                     {formatAmountAndBreak(item.OutQty)}
-                  </Text>
-                  {/* Ending Balance (1.0) - Use styles.endingBalanceCell */}
+                  </Text> 
                   <Text style={styles.endingBalanceCell}>
                     {formatAmountAndBreak(item.EndBalance)}
                   </Text>
@@ -384,8 +383,8 @@ const RiceOthersTable = ({ warehouseName, categories }) => {
               ))}
           </View>
         </View>
-      ))}
-    </View>
+      ))} 
+    </View> 
   );
 };
 
@@ -401,131 +400,19 @@ const ViewPrintWeeklySPRReport = ({
   const start = date_start || moment().subtract(7, "days").format("MM/DD/YYYY"); // Dummy date start
   const end = date_end || moment().format("MM/DD/YYYY"); // Dummy date end
 
-  const industrial_data = data?.industrial || {
-    product_group: "INDUSTRIAL PRODUCTS",
-    beginning_balance: formatAmountAndBreak("123456.78"),
-    total_in: formatAmountAndBreak("1000.00"),
-    total_out: formatAmountAndBreak("500.00"),
-    ending_balance: formatAmountAndBreak("123956.78"),
-    items: [],
-  }; // Dummy data for compilation
+  const industrial_data = data?.industrial || {}; // Dummy data for compilation
 
   // Using the remembered data as rice_and_others
-  const rice_others_data = data?.rice_and_others || {
-    RICE: [
-      {
-        ItemCode: "FG-20-0346",
-        ItemName: "THAI LONG GRAIN WHITE RICE 25 KG - 5% BROKEN",
-        BegInvBalance: "2056.0000",
-        InQty: 0,
-        OutQty: 0,
-        EndBalance: 2056,
-      },
-      {
-        ItemCode: "FG-20-0266",
-        ItemName: "RICE 50 KLS - SWEEPING",
-        BegInvBalance: ".0000",
-        InQty: 0,
-        OutQty: 0,
-        EndBalance: 0,
-      },
-      {
-        ItemCode: "FG-20-0283",
-        ItemName: "MYANMAR WHITE RICE 25 KLS - 25% BROKEN -O",
-        BegInvBalance: ".0000",
-        InQty: 0,
-        OutQty: 0,
-        EndBalance: 0,
-      },
-      {
-        ItemCode: "FG-20-0135",
-        ItemName: "VIETNAMESE GLUTINOUS RICE 50 KLS",
-        BegInvBalance: ".0000",
-        InQty: 0,
-        OutQty: 0,
-        EndBalance: 0,
-      },
-      {
-        ItemCode: "FG-20-0236",
-        ItemName: "MYANMAR WHITE RICE 25 KLS - 25% BROKEN",
-        BegInvBalance: ".0000",
-        InQty: 0,
-        OutQty: 0,
-        EndBalance: 0,
-      },
-      {
-        ItemCode: "FG-20-0332",
-        ItemName:
-          "VIETNAMESE RICE 25 KLS IN RED COLOR BAGS (DT8) - 5% BROKEN -O",
-        BegInvBalance: ".0000",
-        InQty: 0,
-        OutQty: 0,
-        EndBalance: 0,
-      },
-      {
-        ItemCode: "FG-20-0483",
-        ItemName: "MYANMAR WHITE RICE 50 KLS - 25% BROKEN -O",
-        BegInvBalance: ".0000",
-        InQty: 0,
-        OutQty: 0,
-        EndBalance: 0,
-      },
-      {
-        ItemCode: "FG-20-0460",
-        ItemName:
-          "VIETNAMESE RICE 25 KLS IN PINK COLOR BAGS (DT8) - 100% HASMIN BROKEN",
-        BegInvBalance: ".0000",
-        InQty: 0,
-        OutQty: 0,
-        EndBalance: 0,
-      },
-      {
-        ItemCode: "FG-20-0356",
-        ItemName: "MYANMAR WHITE RICE 50 KLS - 25% BROKEN",
-        BegInvBalance: ".0000",
-        InQty: 0,
-        OutQty: 0,
-        EndBalance: 0,
-      },
-      {
-        ItemCode: "FG-20-0328",
-        ItemName: "VIETNAMESE RICE 25 KLS IN RED COLOR BAGS (DT8) - 5% BROKEN",
-        BegInvBalance: "3716.0000",
-        InQty: 0,
-        OutQty: 1000,
-        EndBalance: 2716,
-      },
-    ],
-    LOCAL: [
-      {
-        ItemCode: "10-100-600-06",
-        ItemName: "LOC (R) 40",
-        BegInvBalance: "3076.0000",
-        InQty: 0,
-        OutQty: 0,
-        EndBalance: 3076,
-      },
-      {
-        ItemCode: "10-100-600-02",
-        ItemName: "LOC (G) 40",
-        BegInvBalance: "136.0000",
-        InQty: 0,
-        OutQty: 0,
-        EndBalance: 136,
-      },
-    ],
-  };
-
-  return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
-      <div style={{ position: "relative", width: "100%", height: "900px" }}>
+  const rice_others_data = data?.rice_and_others  || {}
+  
+  return ( 
         <PDFViewer style={{ width: "100%", height: 900 }}>
-          <Document>
+          <Document >
             <Page
               size="LEGAL"
               orientation="portrait"
               style={[styles.page]}
-              wrap
+              // wrap
             >
               {/* Header Group */}
               <View style={styles.headerGroup} wrap={false}>
@@ -536,23 +423,24 @@ const ViewPrintWeeklySPRReport = ({
 
                 <Text style={styles.headerText}>{wh}</Text>
               </View>
+              <View style={{ padding: 10 }}>
+                {/* Industrial Table (4-Column) */}
+                <IndustrialTable wh={wh} data={industrial_data} />
 
-              {/* Industrial Table (4-Column) */}
-              <IndustrialTable wh={wh} data={industrial_data} />
-
-              {/* Rice & Others Table (6-Column) - Using the fixed component */}
-              <RiceOthersTable
-                warehouseName={wh}
-                categories={rice_others_data}
-              />
+                {/* Rice & Others Table (6-Column) - Using the fixed component */}
+                {Object.entries(rice_others_data).map(([categoryName, items], catIndex) => (
+                  <RiceOthersTable
+                    warehouseName={categoryName}
+                    categories={items}
+                  />
+                ))}
+              </View>
 
               {/* Force bottom spacing */}
-              <View style={{ height: 40 }} />
+              {/* <View style={{ height: 40 }} /> */}
             </Page>
           </Document>
-        </PDFViewer>
-      </div>
-    </div>
+        </PDFViewer> 
   );
 };
 
