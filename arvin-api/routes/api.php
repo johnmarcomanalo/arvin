@@ -58,7 +58,7 @@ use App\Http\Controllers\SalesQuotationRequestController;
 use App\Http\Controllers\SalesQuotationRequestForApprovalsController;
 use App\Http\Controllers\SalesQuotationReportQuotedProducts;
 use App\Http\Controllers\VesselAndControllerMonitoringController;
-use App\Http\Controllers\SprPrinting;
+use App\Http\Controllers\SprPrintingController;
 use App\Models\RefBankAccounts;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -291,7 +291,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('epaycheck/check_detail_logs/get_weekly_check_counter_data',[EPayCheckCheckDetailLogsController::class,'get_weekly_check_counter_data']);
         Route::apiResource('epaycheck/report',EPayCheckReport::class)->middleware(['light_decryption']);
 
-        Route::post('spr/spr',[SprPrinting::class,'spr'])->middleware(['light_decryption']);
+        Route::get('spr/spr',[SprPrintingController::class,'spr']);
        
         // EPAYCHECK END
 
