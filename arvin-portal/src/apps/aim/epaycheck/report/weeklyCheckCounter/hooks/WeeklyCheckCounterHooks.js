@@ -60,6 +60,7 @@ const WeeklyCheckCounterHooks = (props) => {
  
     React.useEffect(() => { 
       props.initialize({ 
+        filter_user_access_organization_rights: "",
         filter_date_start: filterStartQuery,
         filter_date_end: filterEndQuery,
       });
