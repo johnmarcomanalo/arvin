@@ -65,21 +65,73 @@ class SprPrintingController extends Controller
     }
 
     public function spr(Request $request){
+    // public function spr($date_start,$date_end,$warehouse){
         $fields = $request->validate([
             'date_start' => 'required',
             'date_end' => 'required',
             'warehouse' => 'required',
         ]);
-         
+        // $fields['date_start'] = $date_start;
+        // $fields['date_end'] = $date_end;
+        // $fields['warehouse'] = $warehouse;
         $results_industrial = DB::connection('sqlsrv2')->select(
             'SET NOCOUNT ON; EXEC sp_StockPositionReport_Province_industrial_salt_V3 ?, ?, ?',
             [$fields['date_start'], $fields['date_end'], $fields['warehouse']]
         );
         
-        $collection = collect($results_industrial)->whereNotIn('ItemCode', [''])->values();
-          
-       $collection_industrial_by_warehouse = $collection
+        $collection_industrial_salt = collect($results_industrial)->where('itemcategory','INDUSTRIAL SALT')->whereNotIn('ItemCode', [''])->values();
+        // return $collection_industrial_by_warehouse = $collection_industrial_salt
+        // ->groupBy('WhsCode')
+        // ->sortKeys()
+        // ->map(function ($itemsByWarehouse) {
+        //     return $itemsByWarehouse
+        //         ->groupBy('itemcategory')
+        //         ->map(function ($itemsByCategory) {
+        //             return $itemsByCategory
+        //                 ->groupBy('ItemCode')
+        //                 ->map(function ($items) {
+        //                     $sumIn  = $items->sum(fn($row) => (float) $row->InQty);
+        //                     $sumOut = $items->sum(fn($row) => (float) $row->OutQty);
+        //                     return [
+        //                         'ItemCode'  => $items->first()->ItemCode,
+        //                         'ItemName'  => $items->first()->Dscription,
+        //                         'BegInvBalance'  => $items->first()->BegInvBalance,
+        //                         'InQty'    => $sumIn > 0 ? number_format($sumIn, 2) : '-',
+        //                         'OutQty'   => $sumOut > 0 ? number_format($sumOut, 2) : '-',
+        //                         '_InQtyRaw'  => $sumIn,
+        //                         '_OutQtyRaw' => $sumOut,
+        //                     ];
+        //                 })
+        //                 ->filter(function ($item) {
+        //                     return !(
+        //                         $item['InQty'] == 0 &&
+        //                         $item['OutQty'] == 0
+        //                     );
+        //                 })
+        //                 ->values();
+        //         });
+
+        //     $total_in = $grouped_items->sum(fn($i) => isset($i['_InQtyRaw']) ? $i['_InQtyRaw'] : 0);
+        //     $total_out = $grouped_items->sum(fn($i) => isset($i['_OutQtyRaw']) ? $i['_OutQtyRaw'] : 0);
+    
+        //     $beg_balance = (float) ($warehouseItems->first()->BegInvBalance ?? 0);
+        //     $ending_balance = $beg_balance + $total_in - $total_out;
+    
+        //     return [
+        //         'Warehouse'        => $warehouseItems->first()->WhsCode,
+        //         'Items'            => $grouped_items,
+        //         'TotalIn'          => $total_in > 0 ? number_format($total_in, 2) : '-',
+        //         'TotalOut'         => $total_out > 0 ? number_format($total_out, 2) : '-',
+        //         'BeginningBalance' => number_format($beg_balance, 2),
+        //         'EndingBalance'    => number_format($ending_balance, 2),
+        //     ];
+        // })
+        // ->values();
+
+
+        $collection_industrial_by_warehouse = $collection_industrial_salt
         ->groupBy('WhsCode')
+        ->sortKeys()
         ->map(function ($warehouseItems) { 
             $grouped_items = $warehouseItems
                 ->groupBy('ItemCode')
@@ -107,6 +159,7 @@ class SprPrintingController extends Controller
     
             return [
                 'Warehouse'        => $warehouseItems->first()->WhsCode,
+                'Product'          => 'INDUSTRIAL SALT',
                 'Items'            => $grouped_items,
                 'TotalIn'          => $total_in > 0 ? number_format($total_in, 2) : '-',
                 'TotalOut'         => $total_out > 0 ? number_format($total_out, 2) : '-',

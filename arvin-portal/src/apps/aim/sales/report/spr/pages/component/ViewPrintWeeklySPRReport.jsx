@@ -45,13 +45,13 @@ const formatAmountAndBreak = (value) => {
 
   try {
     // Assuming ViewAmountFormatingDecimals is available and returns a string
-    formattedValue = ViewAmountFormatingDecimals(stringValue);
+    formattedValue = ViewAmountFormatingDecimals(value);
   } catch (e) {
     // Fallback/Demo: Standard number formatting
 
     // Check if the cleaned value is a valid number, otherwise default to the string value
-    const numericValue = parseFloat(stringValue);
-    let tempValue = isNaN(numericValue) ? stringValue : numericValue;
+    const numericValue = parseFloat(value);
+    let tempValue = isNaN(numericValue) ? value : numericValue;
 
     formattedValue = (
       typeof tempValue === "number" ? tempValue.toFixed(4) : tempValue
@@ -68,14 +68,14 @@ const formatAmountAndBreak = (value) => {
 const styles = StyleSheet.create({
   page: {
     // padding:40,
-    // paddingTop: 20,
+    paddingTop: 50,
     paddingLeft: 10,
     paddingRight: 10,
     // paddingBottom: 20,
     fontSize: 10,
     // marginTop: 50,
     // margin: 50,
-  }, 
+  },
   section: { marginTop: 50 },
   title: {
     fontSize: 11,
@@ -131,7 +131,24 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontFamily: "PoppinsBold",
   },
-
+  cell_bottomborder: {
+    padding: 2,
+    flex: 1,
+    textAlign: "left",
+    fontSize: 9,
+    fontFamily: "PoppinsBold",
+    borderBottom: "0.5px solid black",
+    // hyphens: "none",
+  },
+  cell_double_bottomborder: {
+    padding: 2,
+    flex: 1,
+    textAlign: "left",
+    fontSize: 9,
+    fontFamily: "PoppinsBold",
+    borderBottom: "0.5px double black",
+    // hyphens: "none",
+  },
   // FIX 1: Increase flex for Item Description to give long text more space
   itemDescCell: {
     flex: 5,
@@ -166,181 +183,359 @@ const styles = StyleSheet.create({
 
 // FIX 3: Update TableHeader flex ratios to match data rows (1.2, 5.0, 1.0, 1.0, 1.0, 1.0)
 const TableHeader = () => (
-  <View style={[styles.row]} fixed>
-    <Text style={[styles.cell, { flex: 1.2 }]}>ITEM CODE</Text>
-    <Text style={[styles.cell, { flex: 5.0 }]}>ITEM DESCRIPTION</Text>
-    <Text style={[styles.cell, { textAlign: "center", flex: 1.0 }]}>
+  <View style={[styles.row]}>
+    <Text style={[styles.cell_bottomborder, { flex: 1.2 }]}>ITEM CODE</Text>
+    <Text style={[styles.cell_bottomborder, { flex: 5.0 }]}>
+      ITEM DESCRIPTION
+    </Text>
+    <Text
+      style={[styles.cell_bottomborder, { textAlign: "center", flex: 1.0 }]}
+    >
       BEGINNING BALANCE
     </Text>
-    <Text style={[styles.cell, { flex: 1.0 }]}>TOTAL IN</Text>
-    <Text style={[styles.cell, { flex: 1.0 }]}>TOTAL OUT</Text>
-    <Text style={[styles.cell, { textAlign: "center", flex: 1.0 }]}>
+    <Text style={[styles.cell_bottomborder, { flex: 1.0 }]}>TOTAL IN</Text>
+    <Text style={[styles.cell_bottomborder, { flex: 1.0 }]}>TOTAL OUT</Text>
+    <Text
+      style={[styles.cell_bottomborder, { textAlign: "center", flex: 1.0 }]}
+    >
       ENDING BALANCE
     </Text>
   </View>
 );
 
 // FIX 4: Refactor IndustrialTable layout to correctly use the 4-column space
-const IndustrialTable = ({ wh, data }) => {
+const IndustrialTable = ({ wh, data = [] }) => {
   return (
     <View style={styles.table}>
-      {/* 4-Column Header: 0.6, 2.2, 1, 1 (Total: 4.8) */}
-      <View style={[styles.row]}>
-        <Text style={[styles.cell, { flex: 0.6 }]}>ITEM CODE</Text>
-        <Text style={[styles.cell, { flex: 2.2 }]}>ITEM DESCRIPTION</Text>
-        <Text style={[styles.cell]}>IN</Text>
-        <Text style={[styles.cell]}>OUT</Text>
-      </View>
-
-      {/* Warehouse Row (0.6 + 2.2 + 1.0 + 1.0 = 4.8) */}
-      <View style={styles.row_no_border}>
-        <Text
-          style={[
-            styles.cell_no_border,
-            { flex: 4.8, fontFamily: "PoppinsRegular" },
-          ]}
-        >
-          {wh}
-        </Text>
-      </View>
-
-      {/* Beginning Balance Row (Product Group is in Col 1 & 2 space, BB Label in Col 3, BB Value in Col 4) */}
-      <View wrap={false} minPresenceAhead={10}>
-        <View style={styles.row_no_border}>
-          {/* Col 1 & 2 space for Product Group (0.6 + 2.2 = 2.8) */}
-          <Text style={[styles.cell_no_border, { flex: 2.8, textIndent: 5 }]}>
-            {data.product_group}
+      {Array.isArray(data) && data.length > 0 && (
+        <View style={[styles.row]}>
+          <Text style={[styles.cell_bottomborder, { flex: 0.6 }]}>
+            ITEM CODE
           </Text>
-          {/* Col 3: BEGINNING BALANCE Label (1.0) */}
-          <Text
-            style={[styles.cell_no_border, { flex: 1, textAlign: "right" }]}
-          >
-            BEGINNING BALANCE
+          <Text style={[styles.cell_bottomborder, { flex: 2.2 }]}>
+            ITEM DESCRIPTION
           </Text>
-          {/* Col 4: BB Value (1.0) */}
-          <Text
-            style={[
-              styles.cell_no_border,
-              {
-                flex: 1,
-                textAlign: "right",
-                backgroundColor: "yellow",
-                fontFamily: "PoppinsRegular",
-              },
-            ]}
-          >
-            {data.beginning_balance}
-          </Text>
+          <Text style={[styles.cell_bottomborder]}>IN</Text>
+          <Text style={[styles.cell_bottomborder]}>OUT</Text>
         </View>
-      </View>
+      )}
 
-      {/* Example Transaction Rows - Use 0.6, 2.2, 1.0, 1.0 */}
-      {data.items?.map((value, index) => {
+      {data?.map((value, index) => {
         return (
-          <View style={styles.row} key={index}>
-            <Text
-              style={[
-                styles.cell_data,
-                { flex: 0.6, fontFamily: "PoppinsRegular" },
-              ]}
-            >
-              {value.ItemCode}
-            </Text>
-            <Text
-              style={[
-                styles.cell_data,
-                { flex: 2.2, fontFamily: "PoppinsRegular" },
-              ]}
-            >
-              {value.ItemName}
-            </Text>
-            <Text style={[styles.cell_data, { textAlign: "right", flex: 1 }]}>
-              {formatAmountAndBreak(value.InQty)}
-            </Text>
-            <Text style={[styles.cell_data, { textAlign: "right", flex: 1 }]}>
-              {formatAmountAndBreak(value.OutQty)}
-            </Text>
+          <View>
+            <View style={styles.row_no_border}>
+              <Text
+                style={[
+                  styles.cell_no_border,
+                  { flex: 4.8, fontFamily: "PoppinsRegular" },
+                ]}
+              >
+                {value.Warehouse}
+              </Text>
+            </View>
+            <View wrap={true} minPresenceAhead={10}>
+              <View style={styles.row_no_border}>
+                <Text
+                  style={[styles.cell_no_border, { flex: 2.8, textIndent: 5 }]}
+                >
+                  {value.Product}
+                </Text>
+                <Text
+                  style={[
+                    styles.cell_no_border,
+                    { flex: 1, textAlign: "right" },
+                  ]}
+                >
+                  BEGINNING BALANCE
+                </Text>
+                <Text
+                  style={[
+                    styles.cell_bottomborder,
+                    {
+                      flex: 1,
+                      textAlign: "right",
+                      backgroundColor: "yellow",
+                      fontFamily: "PoppinsRegular",
+                    },
+                  ]}
+                >
+                  {value.BeginningBalance}
+                </Text>
+              </View>
+            </View>
+            {value.Items?.map((value, index) => {
+              return (
+                <View style={[styles.row, { marginTop: 2 }]} key={index}>
+                  <Text
+                    style={[
+                      styles.cell_data,
+                      { flex: 0.6, fontFamily: "PoppinsRegular" },
+                    ]}
+                  >
+                    {value.ItemCode}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.cell_data,
+                      { flex: 2.2, fontFamily: "PoppinsRegular" },
+                    ]}
+                  >
+                    {value.ItemName}
+                  </Text>
+                  <Text
+                    style={[styles.cell_data, { textAlign: "right", flex: 1 }]}
+                  >
+                    {value.InQty}
+                  </Text>
+                  <Text
+                    style={[styles.cell_data, { textAlign: "right", flex: 1 }]}
+                  >
+                    {value.OutQty}
+                  </Text>
+                </View>
+              );
+            })}
+            // {/* Summary Block: Total In and Out Row */}
+            <View wrap={true} minPresenceAhead={50}>
+              <View
+                style={[
+                  styles.row_no_border,
+                  { borderTop: "0.5px solid black" },
+                ]}
+              >
+                {/* Col 1 (0.6) is empty */}
+                <Text style={[styles.cell_no_border, { flex: 0.6 }]}></Text>
+                {/* Col 2 (2.2) is the label */}
+                <Text
+                  style={[
+                    styles.cell_no_border,
+                    { flex: 2.2, textAlign: "right" },
+                  ]}
+                >
+                  TOTAL IN AND OUT
+                </Text>
+                {/* Col 3 (1.0) for Total In */}
+                <Text
+                  style={[
+                    styles.cell_double_bottomborder,
+                    { textAlign: "right", flex: 1, margin: 1 },
+                  ]}
+                >
+                  {value.TotalIn}
+                </Text>
+                {/* Col 4 (1.0) for Total Out */}
+                <Text
+                  style={[
+                    styles.cell_double_bottomborder,
+                    { textAlign: "right", flex: 1, margin: 1 },
+                  ]}
+                >
+                  {value.TotalOut}
+                </Text>
+              </View>
+
+              {/* Ending Balance Row */}
+              <View style={styles.row_no_border}>
+                {/* Col 1 & 2 combined space is empty (2.8) */}
+                <Text style={[styles.cell_no_border, { flex: 2.8 }]}></Text>
+                {/* Col 3: ENDING BALANCE Label (1.0) */}
+                <Text
+                  style={[
+                    styles.cell_no_border,
+                    { textAlign: "right", flex: 1 },
+                  ]}
+                >
+                  ENDING BALANCE
+                </Text>
+                {/* Col 4: EB Value (1.0) */}
+                <Text
+                  style={[
+                    styles.cell_bottomborder,
+                    {
+                      flex: 1,
+                      textAlign: "right",
+                      backgroundColor: "yellow",
+                      fontFamily: "PoppinsRegular",
+                    },
+                  ]}
+                >
+                  {value.EndingBalance}
+                </Text>
+              </View>
+            </View>
           </View>
         );
       })}
-
-      {/* Summary Block: Total In and Out Row */}
-      <View wrap={false} minPresenceAhead={50}>
-        <View
-          style={[styles.row_no_border, { borderTop: "0.5px solid black" }]}
-        >
-          {/* Col 1 (0.6) is empty */}
-          <Text style={[styles.cell_no_border, { flex: 0.6 }]}></Text>
-          {/* Col 2 (2.2) is the label */}
-          <Text
-            style={[styles.cell_no_border, { flex: 2.2, textAlign: "right" }]}
-          >
-            TOTAL IN AND OUT
-          </Text>
-          {/* Col 3 (1.0) for Total In */}
-          <Text
-            style={[styles.cell_no_border, { textAlign: "right", flex: 1 }]}
-          >
-            {data.total_in}
-          </Text>
-          {/* Col 4 (1.0) for Total Out */}
-          <Text
-            style={[styles.cell_no_border, { textAlign: "right", flex: 1 }]}
-          >
-            {data.total_out}
-          </Text>
-        </View>
-
-        {/* Ending Balance Row */}
-        <View style={styles.row_no_border}>
-          {/* Col 1 & 2 combined space is empty (2.8) */}
-          <Text style={[styles.cell_no_border, { flex: 2.8 }]}></Text>
-          {/* Col 3: ENDING BALANCE Label (1.0) */}
-          <Text
-            style={[styles.cell_no_border, { textAlign: "right", flex: 1 }]}
-          >
-            ENDING BALANCE
-          </Text>
-          {/* Col 4: EB Value (1.0) */}
-          <Text
-            style={[
-              styles.cell_no_border,
-              {
-                flex: 1,
-                textAlign: "right",
-                backgroundColor: "yellow",
-                fontFamily: "PoppinsRegular",
-              },
-            ]}
-          >
-            {data.ending_balance}
-          </Text>
-        </View>
-      </View>
     </View>
   );
+  // <View style={styles.table}>
+  //   {/* 4-Column Header: 0.6, 2.2, 1, 1 (Total: 4.8) */}
+  //   <View style={[styles.row]}>
+  //     <Text style={[styles.cell, { flex: 0.6 }]}>ITEM CODE</Text>
+  //     <Text style={[styles.cell, { flex: 2.2 }]}>ITEM DESCRIPTION</Text>
+  //     <Text style={[styles.cell]}>IN</Text>
+  //     <Text style={[styles.cell]}>OUT</Text>
+  //   </View>
+
+  //   {/* Warehouse Row (0.6 + 2.2 + 1.0 + 1.0 = 4.8) */}
+  //   <View style={styles.row_no_border}>
+  //     <Text
+  //       style={[
+  //         styles.cell_no_border,
+  //         { flex: 4.8, fontFamily: "PoppinsRegular" },
+  //       ]}
+  //     >
+  //       {wh}
+  //     </Text>
+  //   </View>
+
+  //   {/* Beginning Balance Row (Product Group is in Col 1 & 2 space, BB Label in Col 3, BB Value in Col 4) */}
+  //   <View wrap={false} minPresenceAhead={10}>
+  //     <View style={styles.row_no_border}>
+  //       {/* Col 1 & 2 space for Product Group (0.6 + 2.2 = 2.8) */}
+  //       <Text style={[styles.cell_no_border, { flex: 2.8, textIndent: 5 }]}>
+  //         {data.product_group}
+  //       </Text>
+  //       {/* Col 3: BEGINNING BALANCE Label (1.0) */}
+  //       <Text
+  //         style={[styles.cell_no_border, { flex: 1, textAlign: "right" }]}
+  //       >
+  //         BEGINNING BALANCE
+  //       </Text>
+  //       {/* Col 4: BB Value (1.0) */}
+  //       <Text
+  //         style={[
+  //           styles.cell_no_border,
+  //           {
+  //             flex: 1,
+  //             textAlign: "right",
+  //             backgroundColor: "yellow",
+  //             fontFamily: "PoppinsRegular",
+  //           },
+  //         ]}
+  //       >
+  //         {data.beginning_balance}
+  //       </Text>
+  //     </View>
+  //   </View>
+
+  //   {/* Example Transaction Rows - Use 0.6, 2.2, 1.0, 1.0 */}
+  //   {data.items?.map((value, index) => {
+  //     return (
+  //       <View style={styles.row} key={index}>
+  //         <Text
+  //           style={[
+  //             styles.cell_data,
+  //             { flex: 0.6, fontFamily: "PoppinsRegular" },
+  //           ]}
+  //         >
+  //           {value.ItemCode}
+  //         </Text>
+  //         <Text
+  //           style={[
+  //             styles.cell_data,
+  //             { flex: 2.2, fontFamily: "PoppinsRegular" },
+  //           ]}
+  //         >
+  //           {value.ItemName}
+  //         </Text>
+  //         <Text style={[styles.cell_data, { textAlign: "right", flex: 1 }]}>
+  //           {formatAmountAndBreak(value.InQty)}
+  //         </Text>
+  //         <Text style={[styles.cell_data, { textAlign: "right", flex: 1 }]}>
+  //           {formatAmountAndBreak(value.OutQty)}
+  //         </Text>
+  //       </View>
+  //     );
+  //   })}
+
+  //   {/* Summary Block: Total In and Out Row */}
+  //   <View wrap={false} minPresenceAhead={50}>
+  //     <View
+  //       style={[styles.row_no_border, { borderTop: "0.5px solid black" }]}
+  //     >
+  //       {/* Col 1 (0.6) is empty */}
+  //       <Text style={[styles.cell_no_border, { flex: 0.6 }]}></Text>
+  //       {/* Col 2 (2.2) is the label */}
+  //       <Text
+  //         style={[styles.cell_no_border, { flex: 2.2, textAlign: "right" }]}
+  //       >
+  //         TOTAL IN AND OUT
+  //       </Text>
+  //       {/* Col 3 (1.0) for Total In */}
+  //       <Text
+  //         style={[styles.cell_no_border, { textAlign: "right", flex: 1 }]}
+  //       >
+  //         {data.total_in}
+  //       </Text>
+  //       {/* Col 4 (1.0) for Total Out */}
+  //       <Text
+  //         style={[styles.cell_no_border, { textAlign: "right", flex: 1 }]}
+  //       >
+  //         {data.total_out}
+  //       </Text>
+  //     </View>
+
+  //     {/* Ending Balance Row */}
+  //     <View style={styles.row_no_border}>
+  //       {/* Col 1 & 2 combined space is empty (2.8) */}
+  //       <Text style={[styles.cell_no_border, { flex: 2.8 }]}></Text>
+  //       {/* Col 3: ENDING BALANCE Label (1.0) */}
+  //       <Text
+  //         style={[styles.cell_no_border, { textAlign: "right", flex: 1 }]}
+  //       >
+  //         ENDING BALANCE
+  //       </Text>
+  //       {/* Col 4: EB Value (1.0) */}
+  //       <Text
+  //         style={[
+  //           styles.cell_no_border,
+  //           {
+  //             flex: 1,
+  //             textAlign: "right",
+  //             backgroundColor: "yellow",
+  //             fontFamily: "PoppinsRegular",
+  //           },
+  //         ]}
+  //       >
+  //         {data.ending_balance}
+  //       </Text>
+  //     </View>
+  //   </View>
+  // </View>
 };
 
 // FIX 5: Refactor RiceOthersGroup to use correct flex ratios and simplify group rows
 // Renamed to RiceOthersTable to replace the faulty one in the main component.
 const RiceOthersTable = ({ warehouseName, categories }) => {
   // The total flex of the TableHeader is 1.2 + 5.0 + 1 + 1 + 1 + 1 = 10.2
+  console.log(categories);
   return (
     // minPresenceAhead ensures the header/first row doesn't break alone
+
     <View wrap>
- 
       {/* 🔹 Warehouse Row (Spans all columns) */}
-      <View style={styles.row}>
+      <View style={{ marginTop: 10 }}>
         {/* Combine Item Code (1.2) and Item Description (5.0) for the category label (6.2) 
         plus the 4 number columns (4.0) = 10.2 */}
-        <Text style={[ { flex: 10.2,fontFamily: "PoppinsBold",fontWeight: "bold" }]}>{warehouseName}</Text>
+        <TableHeader />
+        <View style={[styles.row, { marginTop: 10 }]}>
+          <Text
+            style={[
+              { flex: 10.2, fontFamily: "PoppinsBold", fontWeight: "bold" },
+            ]}
+          >
+            {warehouseName}
+          </Text>
+        </View>
       </View>
 
       {/* 🔹 Loop categories */}
       {Object.entries(categories).map(([categoryName, items], catIndex) => (
         // <View key={catIndex} style={{ marginBottom: 6 }}>
-        <View key={catIndex}   >
+        <View key={catIndex} wrap={true}>
           {/* 🔹 Category Row - This should be a full-width row for the category name */}
+
           <View style={[styles.row_no_border]}>
             {/* Combine Item Code (1.2) and Item Description (5.0) for the category label (6.2) */}
             <Text
@@ -356,7 +551,7 @@ const RiceOthersTable = ({ warehouseName, categories }) => {
           </View>
 
           {/* 🔹 Items - Must use the 6-column structure (1.2, 5.0, 1.0, 1.0, 1.0, 1.0) */}
-          <View>
+          <View wrap={false}>
             {Array.isArray(items) &&
               items.map((item) => (
                 <View key={item.ItemCode} style={styles.row}>
@@ -366,16 +561,16 @@ const RiceOthersTable = ({ warehouseName, categories }) => {
                   </Text>
                   {/* Item Description (5.0) - Use the multi-line friendly style */}
                   <Text style={styles.itemDescCell}>{item.ItemName}</Text>
- 
+
                   <Text style={styles.numberCell}>
                     {formatAmountAndBreak(item.BegInvBalance)}
-                  </Text> 
+                  </Text>
                   <Text style={styles.numberCell}>
                     {formatAmountAndBreak(item.InQty)}
-                  </Text> 
+                  </Text>
                   <Text style={styles.numberCell}>
                     {formatAmountAndBreak(item.OutQty)}
-                  </Text> 
+                  </Text>
                   <Text style={styles.endingBalanceCell}>
                     {formatAmountAndBreak(item.EndBalance)}
                   </Text>
@@ -383,8 +578,8 @@ const RiceOthersTable = ({ warehouseName, categories }) => {
               ))}
           </View>
         </View>
-      ))} 
-    </View> 
+      ))}
+    </View>
   );
 };
 
@@ -400,47 +595,50 @@ const ViewPrintWeeklySPRReport = ({
   const start = date_start || moment().subtract(7, "days").format("MM/DD/YYYY"); // Dummy date start
   const end = date_end || moment().format("MM/DD/YYYY"); // Dummy date end
 
-  const industrial_data = data?.industrial || {}; // Dummy data for compilation
+  const industrial_data = data?.industrial || []; // Dummy data for compilation
 
   // Using the remembered data as rice_and_others
-  const rice_others_data = data?.rice_and_others  || {}
-  
-  return ( 
-        <PDFViewer style={{ width: "100%", height: 900 }}>
-          <Document >
-            <Page
-              size="LEGAL"
-              orientation="portrait"
-              style={[styles.page]}
-              // wrap
-            >
-              {/* Header Group */}
-              <View style={styles.headerGroup} wrap={false}>
-                <Text style={styles.title}>{header_title} </Text>
-                <Text style={styles.headerText}>
-                  From {start} - TO {end}
-                </Text>
+  const rice_others_data = data?.rice_and_others || {};
+  return (
+    <PDFViewer style={{ width: "100%", height: 900 }}>
+      <Document>
+        <Page
+          size="LEGAL"
+          orientation="portrait"
+          style={[styles.page]}
+          // wrap
+        >
+          {/* Header Group */}
+          <View style={styles.headerGroup} wrap={true}>
+            <Text style={styles.title}>{header_title} </Text>
+            <Text style={styles.headerText}>
+              From {start} - TO {end}
+            </Text>
 
-                <Text style={styles.headerText}>{wh}</Text>
-              </View>
-              <View style={{ padding: 10 }}>
-                {/* Industrial Table (4-Column) */}
-                <IndustrialTable wh={wh} data={industrial_data} />
+            <Text style={styles.headerText}>{wh}</Text>
+          </View>
+          <View style={{ padding: 10 }}>
+            {/* Industrial Table (4-Column) */}
+            <IndustrialTable wh={wh} data={industrial_data} />
 
-                {/* Rice & Others Table (6-Column) - Using the fixed component */}
-                {Object.entries(rice_others_data).map(([categoryName, items], catIndex) => (
+            {/* Rice & Others Table (6-Column) - Using the fixed component */}
+            {Object.entries(rice_others_data).map(
+              ([categoryName, items], catIndex) => (
+                <>
                   <RiceOthersTable
                     warehouseName={categoryName}
                     categories={items}
                   />
-                ))}
-              </View>
+                </>
+              )
+            )}
+          </View>
 
-              {/* Force bottom spacing */}
-              {/* <View style={{ height: 40 }} /> */}
-            </Page>
-          </Document>
-        </PDFViewer> 
+          {/* Force bottom spacing */}
+          {/* <View style={{ height: 40 }} /> */}
+        </Page>
+      </Document>
+    </PDFViewer>
   );
 };
 

@@ -12,7 +12,7 @@ const SPRHooks = (props) => {
     { description: "TABACO" },
     { description: "DAVAO" },
     { description: "GENSAN" },
-    { description: "ZAMBO" },
+    { description: "ZAMBOANGA" },
     { description: "CAGAYAN" },
     { description: "ILIGAN" },
     { description: "MINDORO" },
