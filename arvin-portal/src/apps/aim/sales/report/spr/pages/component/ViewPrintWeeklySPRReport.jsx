@@ -10,18 +10,18 @@ import {
 import moment from "moment";
 // Assuming these utilities and fonts are correctly configured at their paths
 import { ViewAmountFormatingDecimals } from "utils/AccountingUtils";
-import PoppinsBold from "../../../../../../../utils/font/Poppins-Bold.ttf";
-import PoppinsRegular from "../../../../../../../utils/font/Poppins-Regular.ttf";
+import CenturyGothicBold from "../../../../../../../utils/font/century_gothic/centurygothic_bold.ttf";
+import CenturyGothic from "../../../../../../../utils/font/century_gothic/centurygothic.ttf";
 import PoppinsSemiBoldItalic from "../../../../../../../utils/font/Poppins-SemiBoldItalic.ttf";
 
 // Register fonts
 Font.register({
-  family: "PoppinsRegular",
-  src: PoppinsRegular,
+  family: "CenturyGothic",
+  src: CenturyGothic,
 });
 Font.register({
-  family: "PoppinsBold",
-  src: PoppinsBold,
+  family: "CenturyGothicBold",
+  src: CenturyGothicBold,
 });
 Font.register({
   family: "PoppinsSemiBoldItalic",
@@ -81,17 +81,17 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "bold",
     marginBottom: 0,
-    fontFamily: "PoppinsBold",
+    fontFamily: "CenturyGothicBold",
   },
   subtitle: {
     fontSize: 9,
     fontWeight: "bold",
     marginBottom: 1,
     marginTop: 7,
-    fontFamily: "PoppinsBold",
+    fontFamily: "CenturyGothicBold",
   },
   headerGroup: { marginBottom: 2, textAlign: "left" },
-  headerText: { fontSize: 10, margin: 1, fontFamily: "PoppinsRegular" },
+  headerText: { fontSize: 10, margin: 1, fontFamily: "CenturyGothic" },
   table: {
     display: "flex",
     flexDirection: "column",
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "left",
     fontSize: 9,
-    fontFamily: "PoppinsBold",
+    fontFamily: "CenturyGothicBold",
     border: "0.5px solid black",
     // hyphens: "none",
   },
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "left",
     fontSize: 9,
-    fontFamily: "PoppinsRegular",
+    fontFamily: "CenturyGothic",
     border: "0.5px solid black",
     // hyphens: "none",
   },
@@ -129,14 +129,14 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "left",
     fontSize: 9,
-    fontFamily: "PoppinsBold",
+    fontFamily: "CenturyGothicBold",
   },
   cell_bottomborder: {
     padding: 2,
     flex: 1,
     textAlign: "left",
     fontSize: 9,
-    fontFamily: "PoppinsBold",
+    fontFamily: "CenturyGothicBold",
     borderBottom: "0.5px solid black",
     // hyphens: "none",
   },
@@ -145,14 +145,14 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "left",
     fontSize: 9,
-    fontFamily: "PoppinsBold",
+    fontFamily: "CenturyGothicBold",
     borderBottom: "0.5px double black",
     // hyphens: "none",
   },
   // FIX 1: Increase flex for Item Description to give long text more space
   itemDescCell: {
     flex: 5,
-    fontFamily: "PoppinsRegular",
+    fontFamily: "CenturyGothic",
     padding: 2,
     border: "0.5px solid black",
     fontSize: 9,
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   numberCell: {
     flex: 1,
     textAlign: "right", // Changed from default left/center
-    fontFamily: "PoppinsRegular",
+    fontFamily: "CenturyGothic",
     padding: 2,
     border: "0.5px solid black",
     fontSize: 9,
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
   endingBalanceCell: {
     flex: 1,
     textAlign: "right", // WAS 'center' - Changed to 'right' for number consistency
-    fontFamily: "PoppinsRegular",
+    fontFamily: "CenturyGothic",
     padding: 2,
     border: "0.5px solid black",
     fontSize: 9,
@@ -205,6 +205,13 @@ const TableHeader = () => (
 
 // FIX 4: Refactor IndustrialTable layout to correctly use the 4-column space
 const IndustrialTable = ({ wh, data = [] }) => {
+  const filteredData = data.filter(
+    (value) => parseFloat(value.BeginningBalance) > 0
+  );
+
+  if (filteredData.length === 0) {
+    return null; // Don't render anything if no data has a beginning balance
+  }
   return (
     <View style={styles.table}>
       {Array.isArray(data) && data.length > 0 && (
@@ -220,14 +227,14 @@ const IndustrialTable = ({ wh, data = [] }) => {
         </View>
       )}
 
-      {data?.map((value, index) => {
+      {filteredData?.map((value, index) => {
         return (
           <View>
             <View style={styles.row_no_border}>
               <Text
                 style={[
                   styles.cell_no_border,
-                  { flex: 4.8, fontFamily: "PoppinsRegular" },
+                  { flex: 4.8, fontFamily: "CenturyGothic" },
                 ]}
               >
                 {value.Warehouse}
@@ -255,7 +262,7 @@ const IndustrialTable = ({ wh, data = [] }) => {
                       flex: 1,
                       textAlign: "right",
                       backgroundColor: "yellow",
-                      fontFamily: "PoppinsRegular",
+                      fontFamily: "CenturyGothic",
                     },
                   ]}
                 >
@@ -269,7 +276,7 @@ const IndustrialTable = ({ wh, data = [] }) => {
                   <Text
                     style={[
                       styles.cell_data,
-                      { flex: 0.6, fontFamily: "PoppinsRegular" },
+                      { flex: 0.6, fontFamily: "CenturyGothic" },
                     ]}
                   >
                     {value.ItemCode}
@@ -277,7 +284,7 @@ const IndustrialTable = ({ wh, data = [] }) => {
                   <Text
                     style={[
                       styles.cell_data,
-                      { flex: 2.2, fontFamily: "PoppinsRegular" },
+                      { flex: 2.2, fontFamily: "CenturyGothic" },
                     ]}
                   >
                     {value.ItemName}
@@ -355,7 +362,7 @@ const IndustrialTable = ({ wh, data = [] }) => {
                       flex: 1,
                       textAlign: "right",
                       backgroundColor: "yellow",
-                      fontFamily: "PoppinsRegular",
+                      fontFamily: "CenturyGothic",
                     },
                   ]}
                 >
@@ -382,7 +389,7 @@ const IndustrialTable = ({ wh, data = [] }) => {
   //     <Text
   //       style={[
   //         styles.cell_no_border,
-  //         { flex: 4.8, fontFamily: "PoppinsRegular" },
+  //         { flex: 4.8, fontFamily: "CenturyGothic" },
   //       ]}
   //     >
   //       {wh}
@@ -410,7 +417,7 @@ const IndustrialTable = ({ wh, data = [] }) => {
   //             flex: 1,
   //             textAlign: "right",
   //             backgroundColor: "yellow",
-  //             fontFamily: "PoppinsRegular",
+  //             fontFamily: "CenturyGothic",
   //           },
   //         ]}
   //       >
@@ -426,7 +433,7 @@ const IndustrialTable = ({ wh, data = [] }) => {
   //         <Text
   //           style={[
   //             styles.cell_data,
-  //             { flex: 0.6, fontFamily: "PoppinsRegular" },
+  //             { flex: 0.6, fontFamily: "CenturyGothic" },
   //           ]}
   //         >
   //           {value.ItemCode}
@@ -434,7 +441,7 @@ const IndustrialTable = ({ wh, data = [] }) => {
   //         <Text
   //           style={[
   //             styles.cell_data,
-  //             { flex: 2.2, fontFamily: "PoppinsRegular" },
+  //             { flex: 2.2, fontFamily: "CenturyGothic" },
   //           ]}
   //         >
   //           {value.ItemName}
@@ -494,7 +501,7 @@ const IndustrialTable = ({ wh, data = [] }) => {
   //             flex: 1,
   //             textAlign: "right",
   //             backgroundColor: "yellow",
-  //             fontFamily: "PoppinsRegular",
+  //             fontFamily: "CenturyGothic",
   //           },
   //         ]}
   //       >
@@ -509,7 +516,6 @@ const IndustrialTable = ({ wh, data = [] }) => {
 // Renamed to RiceOthersTable to replace the faulty one in the main component.
 const RiceOthersTable = ({ warehouseName, categories }) => {
   // The total flex of the TableHeader is 1.2 + 5.0 + 1 + 1 + 1 + 1 = 10.2
-  console.log(categories);
   return (
     // minPresenceAhead ensures the header/first row doesn't break alone
 
@@ -522,7 +528,7 @@ const RiceOthersTable = ({ warehouseName, categories }) => {
         <View style={[styles.row, { marginTop: 10 }]}>
           <Text
             style={[
-              { flex: 10.2, fontFamily: "PoppinsBold", fontWeight: "bold" },
+              { flex: 10.2, fontFamily: "CenturyGothicBold", fontWeight: "bold" },
             ]}
           >
             {warehouseName}
@@ -531,54 +537,62 @@ const RiceOthersTable = ({ warehouseName, categories }) => {
       </View>
 
       {/* 🔹 Loop categories */}
-      {Object.entries(categories).map(([categoryName, items], catIndex) => (
-        // <View key={catIndex} style={{ marginBottom: 6 }}>
-        <View key={catIndex} wrap={true}>
-          {/* 🔹 Category Row - This should be a full-width row for the category name */}
+      {Object.entries(categories)
+        .sort(([a], [b]) => b.localeCompare(a))
+        .map(([categoryName, items], catIndex) => (
+          // <View key={catIndex} style={{ marginBottom: 6 }}>
+          <View key={catIndex} wrap={true}>
+            {/* 🔹 Category Row - This should be a full-width row for the category name */}
 
-          <View style={[styles.row_no_border]}>
-            {/* Combine Item Code (1.2) and Item Description (5.0) for the category label (6.2) */}
-            <Text
-              style={[
-                styles.cell_no_border,
-                { flex: 6.2, textIndent: 2, fontFamily: "PoppinsBold" },
-              ]}
-            >
-              {categoryName}
-            </Text>
-            {/* The remaining four columns (4.0) are empty for the category row */}
-            <Text style={[styles.cell_no_border, { flex: 4.0 }]} />
+            <View style={[styles.row_no_border]}>
+              {/* Combine Item Code (1.2) and Item Description (5.0) for the category label (6.2) */}
+              <Text
+                style={[
+                  styles.cell_no_border,
+                  { flex: 6.2, textIndent: 2, fontFamily: "CenturyGothicBold" },
+                ]}
+              >
+                {categoryName}
+              </Text>
+              {/* The remaining four columns (4.0) are empty for the category row */}
+              <Text style={[styles.cell_no_border, { flex: 4.0 }]} />
+            </View>
+
+            {/* 🔹 Items - Must use the 6-column structure (1.2, 5.0, 1.0, 1.0, 1.0, 1.0) */}
+            <View wrap={false}>
+              {Array.isArray(items) &&
+                items
+                  .sort((a, b) => a.ItemName.localeCompare(b.ItemName))
+                  .map((item) => (
+                    <View key={item.ItemCode} style={styles.row}>
+                      {/* Item Code (1.2) */}
+                      <Text style={[styles.cell_data, { flex: 1.2 }]}>
+                        {item.ItemCode}
+                      </Text>
+                      {/* Item Description (5.0) - Use the multi-line friendly style */}
+                      <Text style={styles.itemDescCell}>{item.ItemName}</Text>
+
+                      <Text style={styles.numberCell}>
+                        {/* {formatAmountAndBreak(item.BegInvBalance)} */}
+                        {item.BegInvBalance}
+                      </Text>
+                      <Text style={styles.numberCell}>
+                        {/* {formatAmountAndBreak(item.InQty)} */}
+                        {item.InQty}
+                      </Text>
+                      <Text style={styles.numberCell}>
+                        {/* {formatAmountAndBreak(item.OutQty)} */}
+                        {item.OutQty}
+                      </Text>
+                      <Text style={styles.endingBalanceCell}>
+                        {/* {formatAmountAndBreak(item.EndBalance)} */}
+                        {item.EndBalance}
+                      </Text>
+                    </View>
+                  ))}
+            </View>
           </View>
-
-          {/* 🔹 Items - Must use the 6-column structure (1.2, 5.0, 1.0, 1.0, 1.0, 1.0) */}
-          <View wrap={false}>
-            {Array.isArray(items) &&
-              items.map((item) => (
-                <View key={item.ItemCode} style={styles.row}>
-                  {/* Item Code (1.2) */}
-                  <Text style={[styles.cell_data, { flex: 1.2 }]}>
-                    {item.ItemCode}
-                  </Text>
-                  {/* Item Description (5.0) - Use the multi-line friendly style */}
-                  <Text style={styles.itemDescCell}>{item.ItemName}</Text>
-
-                  <Text style={styles.numberCell}>
-                    {formatAmountAndBreak(item.BegInvBalance)}
-                  </Text>
-                  <Text style={styles.numberCell}>
-                    {formatAmountAndBreak(item.InQty)}
-                  </Text>
-                  <Text style={styles.numberCell}>
-                    {formatAmountAndBreak(item.OutQty)}
-                  </Text>
-                  <Text style={styles.endingBalanceCell}>
-                    {formatAmountAndBreak(item.EndBalance)}
-                  </Text>
-                </View>
-              ))}
-          </View>
-        </View>
-      ))}
+        ))}
     </View>
   );
 };
@@ -594,7 +608,7 @@ const ViewPrintWeeklySPRReport = ({
   const wh = warehouse || "DEFAULT WAREHOUSE";
   const start = date_start || moment().subtract(7, "days").format("MM/DD/YYYY"); // Dummy date start
   const end = date_end || moment().format("MM/DD/YYYY"); // Dummy date end
-
+  console.log(data);
   const industrial_data = data?.industrial || []; // Dummy data for compilation
 
   // Using the remembered data as rice_and_others
@@ -622,16 +636,16 @@ const ViewPrintWeeklySPRReport = ({
             <IndustrialTable wh={wh} data={industrial_data} />
 
             {/* Rice & Others Table (6-Column) - Using the fixed component */}
-            {Object.entries(rice_others_data).map(
-              ([categoryName, items], catIndex) => (
+            {Object.entries(rice_others_data)
+              .sort(([a], [b]) => a.localeCompare(b))
+              .map(([categoryName, items], catIndex) => (
                 <>
                   <RiceOthersTable
                     warehouseName={categoryName}
                     categories={items}
                   />
                 </>
-              )
-            )}
+              ))}
           </View>
 
           {/* Force bottom spacing */}

@@ -74,12 +74,12 @@ class SprPrintingController extends Controller
         // $fields['date_start'] = $date_start;
         // $fields['date_end'] = $date_end;
         // $fields['warehouse'] = $warehouse;
-        $results_industrial = DB::connection('sqlsrv2')->select(
+         $results_industrial = DB::connection('sqlsrv2')->select(
             'SET NOCOUNT ON; EXEC sp_StockPositionReport_Province_industrial_salt_V3 ?, ?, ?',
             [$fields['date_start'], $fields['date_end'], $fields['warehouse']]
         );
         
-        $collection_industrial_salt = collect($results_industrial)->where('itemcategory','INDUSTRIAL SALT')->whereNotIn('ItemCode', [''])->values();
+        $collection_industrial_salt = collect($results_industrial)->where('itemcategory','INDUSTRIAL SALT')->values();
         // return $collection_industrial_by_warehouse = $collection_industrial_salt
         // ->groupBy('WhsCode')
         // ->sortKeys()
@@ -128,13 +128,13 @@ class SprPrintingController extends Controller
         // })
         // ->values();
 
-
         $collection_industrial_by_warehouse = $collection_industrial_salt
         ->groupBy('WhsCode')
         ->sortKeys()
         ->map(function ($warehouseItems) { 
             $grouped_items = $warehouseItems
                 ->groupBy('ItemCode')
+                ->sortKeys() 
                 ->map(function ($items) { 
                     $sumIn  = $items->sum(fn($row) => (float) $row->InQty);
                     $sumOut = $items->sum(fn($row) => (float) $row->OutQty);
@@ -180,10 +180,10 @@ class SprPrintingController extends Controller
 
         $collection_rice_others_by_warehouse = $collection_rice_others
         ->groupBy('WhsCode')
-        ->sortKeys()
         ->map(function ($itemsByWarehouse) {
             return $itemsByWarehouse
                 ->groupBy('itemcategory')
+                // ->sortKeysDesc() 
                 ->map(function ($itemsByCategory) {
                     return $itemsByCategory
                         ->groupBy('ItemCode')
