@@ -230,4 +230,77 @@ class EPayCheckCheckDetailLogsController extends Controller
 
     }
 
+    public function get_collector_report_data(Request $request){ 
+
+        $customMessages = [
+            'df.required'         => 'The start date is required.',
+            'df.date'             => 'The start date must be a valid date.',
+            'df.date_format'      => 'The start date must be in MM/DD/YYYY format.', 
+            'dt.required'         => 'The End date is required.',
+            'dt.date'             => 'The End date must be a valid date.',
+            'dt.after_or_equal'   => 'The selected end date must be the same as or later than the start date.',
+            'dt.date_format'      => 'The end date must be in MM/DD/YYYY format.',
+            ];
+            
+            $validator = Validator::make($request->all(), [
+                'df'              => ['required', 'date', 'date_format:Y-m-d'],
+                'dt'              => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:df'],  
+                'sap'             => ['required', 'string'],
+            ], $customMessages); // Pass custom messages here
+            
+            if ($validator->fails()) {
+                return response()->json([
+                    'result'      => false,
+                    'status'      => 'warning',
+                    'title'       => 'Error',
+                    'message'     => $validator->errors()->first(),
+                ], 422);
+            }
+
+        $validated            = $validator->validated();
+        $query = DB::table('vw_epay_check_get_check_details')
+        ->select(
+            'subsection_code','check_number','check_amount','check_date','check_status','check_status_check_details_log',
+            'check_status_date','bank_description','bank_branch','payment_type','card_code','card_name','account_number',
+            'prefix_crpr','received_check_by_ar_at','applied_at','remarks','advance_payment','stale_check','created_at',
+            'sales_invoice','dr_number','username','sap'
+        )
+        
+        ->whereBetween('created_at', [$validated['df'], $validated['dt']])
+        ->when($validated['sap'] == 'MANILA', function ($query) use ($validated) {
+            $query->whereIn('username', ['j.guillermo','l.postrado','a.mahusay','r.briones','e.vecida','p.bucad','sb.collector'])->where('sap', $validated['sap']);
+        })
+        ->when($validated['sap'] == 'PROVINCE', function ($query) use ($validated) {
+            $query->whereIn('username', ['j.guillermo_prov','l.postrado_prov','a.mahusay_prov','r.briones_prov','e.vecida_prov','p.bucad_prov'])->where('sap', $validated['sap']); 
+        })
+        ->when($validated['sap'] == 'PEANUT', function ($query) use ($validated) {
+            $query->whereIn('username', ['j.guillermo_peanut','l.postrado_peanut','a.mahusay_peanut','r.briones_peanut','e.vecida_peanut','p.bucad_peanut'])->where('sap', $validated['sap']); 
+        })
+        ->get()
+        ->groupBy('username') // group the collection by 'username'
+        ->map(function($items) {
+            return [
+                'count' => $items->count(),
+                'data'  => $items
+            ];
+        })
+        ->sortKeysDesc()
+        ->toArray();
+    
+      
+ 
+        $response = [
+            'header'=> [
+                     'date_from'      => Carbon::parse($validated['df'])->format('M d, Y'),
+                     'date_to'        => Carbon::parse($validated['dt'])->format('M d, Y'),
+                     'date_generated' => Carbon::now()->format('M d, Y'),
+                     'title'          => 'COLLECTOR CHECK REPORT',
+                ],
+            'body'  => $query,
+            'footer'=> []
+        ];
+        
+        return Crypt::encryptString(json_encode($response)); 
+    }
+
 }

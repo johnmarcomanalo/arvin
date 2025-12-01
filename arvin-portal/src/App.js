@@ -224,6 +224,11 @@ const IndexCheckARReceive = lazy(() =>
     "./apps/aim/epaycheck/checkReceipt/checkARReceive/pages/IndexCheckARReceive"
   )
 );
+const IndexCollectorReport = lazy(() =>
+  import(
+    "./apps/aim/epaycheck/report/CollectorReport/pages/IndexCollectorReport"
+  )
+);
 //EPAYCHECK END
 
 // LOGISTIC
@@ -996,6 +1001,20 @@ function App() {
                         })}
                       >
                         <IndexReceivedCheckCounter />
+                      </PrivateRoute>
+                    }
+                  />
+                   <Route
+                    path="/Modules/E-PayCheck/Reports/CollectorReport"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "E-Pay Check",
+                          component: "Reports",
+                          subComponent: "Collector Report",
+                        })}
+                      >
+                        <IndexCollectorReport />
                       </PrivateRoute>
                     }
                   />
