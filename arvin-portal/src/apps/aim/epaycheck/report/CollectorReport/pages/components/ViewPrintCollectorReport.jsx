@@ -142,6 +142,7 @@ const ViewPrintCollectorReport = (props) => {
   const header_date_to          = header?.date_to
   const header_date_generated   = header?.date_generated
   const header_title            = header?.title
+  const header_sap              = header?.sap
 
   //FOOTER DATA
   const footer_total_check     = footer?.total_check
@@ -170,9 +171,9 @@ const ViewPrintCollectorReport = (props) => {
 
             {/* Date Range */}
             <View style={styles.headerGroup}>
-              <Text style={styles.headerText}>Date From: {moment(header_date_from).format("MMM DD, YYYY")}</Text>
-              <Text style={styles.headerText}>Date To: {moment(header_date_to).format("MMM DD, YYYY")}</Text>
+              <Text style={styles.headerText}>Date From: {moment(header_date_from).format("MMM DD, YYYY")} - {moment(header_date_to).format("MMM DD, YYYY")}</Text>
               <Text style={styles.headerText}>Generated: {moment().format("MMM DD, YYYY hh:mm A")}</Text>
+              <Text style={styles.headerText}>SAP: {header_sap}</Text>
             </View>
             {/* Loop: Group by username */}
             {body && Object.entries(body).map(([username, records], userIndex) => (

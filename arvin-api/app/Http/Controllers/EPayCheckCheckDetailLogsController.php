@@ -301,6 +301,7 @@ class EPayCheckCheckDetailLogsController extends Controller
                     'date_to'        => Carbon::parse($validated['dt'])->format('M d, Y'),
                     'date_generated' => Carbon::now()->format('M d, Y'),
                     'title'          => 'COLLECTOR CHECK REPORT',  
+                    'sap'            => $validated['sap'],  
                 ],
             'body'  => $groupedData,
             'footer'=> [
