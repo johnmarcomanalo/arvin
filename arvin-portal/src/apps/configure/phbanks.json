@@ -87,6 +87,7 @@
     { "description": "AllBank (A Thrift Bank), Inc.", "shortname": "ALLBANK" },
     { "description": "Banco Makiling(Makiling Development Bank Corporation)", "shortname": "BANCO MAKILING" },
     { "description": "Producers Savings Bank Corporation", "shortname": "Producers Savings Bank" },
-    { "description": "Queen City Development Bank", "shortname": "QUEENBANK" }
+    { "description": "Queen City Development Bank", "shortname": "QUEENBANK" },
+    { "description": "WEATHBANK", "shortname": "WEATHBANK" }
   ]
 }

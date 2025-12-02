@@ -144,6 +144,7 @@ class EPayCheckCheckDetailLogsController extends Controller
         $header = [
             'date_from'        => Carbon::parse($validated['df'])->format('M d, Y'), // Feb 10, 2023
             'date_to'          => Carbon::parse($validated['dt'])->format('M d, Y'), // Feb 10, 2023 
+            'date_generate'    => Carbon::now()->format('M d, Y'), // Feb 10, 2023 
             'sub_section'      => $warehouse->description,
         ];
         // HEADER END
@@ -257,47 +258,54 @@ class EPayCheckCheckDetailLogsController extends Controller
                 ], 422);
             }
 
-        $validated            = $validator->validated();
-        $query = DB::table('vw_epay_check_get_check_details')
-        ->select(
-            'subsection_code','check_number','check_amount','check_date','check_status','check_status_check_details_log',
-            'check_status_date','bank_description','bank_branch','payment_type','card_code','card_name','account_number',
-            'prefix_crpr','received_check_by_ar_at','applied_at','remarks','advance_payment','stale_check','created_at',
-            'sales_invoice','dr_number','username','sap'
-        )
-        
-        ->whereBetween('created_at', [$validated['df'], $validated['dt']])
-        ->when($validated['sap'] == 'MANILA', function ($query) use ($validated) {
-            $query->whereIn('username', ['j.guillermo','l.postrado','a.mahusay','r.briones','e.vecida','p.bucad','sb.collector'])->where('sap', $validated['sap']);
-        })
-        ->when($validated['sap'] == 'PROVINCE', function ($query) use ($validated) {
-            $query->whereIn('username', ['j.guillermo_prov','l.postrado_prov','a.mahusay_prov','r.briones_prov','e.vecida_prov','p.bucad_prov'])->where('sap', $validated['sap']); 
-        })
-        ->when($validated['sap'] == 'PEANUT', function ($query) use ($validated) {
-            $query->whereIn('username', ['j.guillermo_peanut','l.postrado_peanut','a.mahusay_peanut','r.briones_peanut','e.vecida_peanut','p.bucad_peanut'])->where('sap', $validated['sap']); 
-        })
-        ->get()
-        ->groupBy('username') // group the collection by 'username'
-        ->map(function($items) {
-            return [
-                'count' => $items->count(),
-                'data'  => $items
-            ];
-        })
-        ->sortKeysDesc()
-        ->toArray();
+            $validated            = $validator->validated();
+            $query = DB::table('vw_epay_check_get_check_details')
+            ->select(
+                'subsection_code','check_number','check_amount','check_date','check_status','check_status_check_details_log',
+                'check_status_date','bank_description','bank_branch','payment_type','card_code','card_name','account_number',
+                'prefix_crpr','received_check_by_ar_at','applied_at','remarks','advance_payment','stale_check','created_at',
+                'sales_invoice','dr_number','username','sap'
+            )
+            
+            ->whereDate('created_at','>=',$validated['df'])
+            ->whereDate('created_at','<=',$validated['dt'])
+            ->when($validated['sap'] == 'MANILA', function ($query) use ($validated) {
+                $query->whereIn('username', ['j.guillermo','l.postrado','a.mahusay','r.briones','e.vecida','p.bucad','sb.collector'])->where('sap', $validated['sap']);
+            })
+            ->when($validated['sap'] == 'PROVINCE', function ($query) use ($validated) {
+                $query->whereIn('username', ['j.guillermo_prov','l.postrado_prov','a.mahusay_prov','r.briones_prov','e.vecida_prov','p.bucad_prov'])->where('sap', $validated['sap']); 
+            })
+            ->when($validated['sap'] == 'PEANUT', function ($query) use ($validated) {
+                $query->whereIn('username', ['j.guillermo_peanut','l.postrado_peanut','a.mahusay_peanut','r.briones_peanut','e.vecida_peanut','p.bucad_peanut'])->where('sap', $validated['sap']); 
+            });
+       
     
+            $totalCount = $query->count();
+    
+            $groupedData = $query->get()
+            ->groupBy('username')
+            ->map(function($items) {
+                return [
+                    'count' => $items->count(),
+                    'data'  => $items
+                ];
+            })
+            ->sortKeysDesc()
+            ->toArray();
+
       
  
         $response = [
             'header'=> [
-                     'date_from'      => Carbon::parse($validated['df'])->format('M d, Y'),
-                     'date_to'        => Carbon::parse($validated['dt'])->format('M d, Y'),
-                     'date_generated' => Carbon::now()->format('M d, Y'),
-                     'title'          => 'COLLECTOR CHECK REPORT',
+                    'date_from'      => Carbon::parse($validated['df'])->format('M d, Y'),
+                    'date_to'        => Carbon::parse($validated['dt'])->format('M d, Y'),
+                    'date_generated' => Carbon::now()->format('M d, Y'),
+                    'title'          => 'COLLECTOR CHECK REPORT',  
                 ],
-            'body'  => $query,
-            'footer'=> []
+            'body'  => $groupedData,
+            'footer'=> [
+                    'total_check'     => $totalCount,
+                ]
         ];
         
         return Crypt::encryptString(json_encode($response)); 

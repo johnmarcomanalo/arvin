@@ -323,11 +323,12 @@ const ViewPrintWeeklyCheckReport = (props) => {
  
 
   //HEADER DATA
-  const header_data        = props.data?.header;
-  const header_date_from   = header_data?.date_from
-  const header_date_to     = header_data?.date_to
-  const header_subsection  = header_data?.sub_section
-  const header_title       = "WEEKLY CHECK COUNTER RECEIPT"
+  const header_data           = props.data?.header;
+  const header_date_from      = header_data?.date_from
+  const header_date_to        = header_data?.date_to
+  const header_subsection     = header_data?.sub_section
+  const header_date_generate  = header_data?.date_generate
+  const header_title          = "WEEKLY CHECK COUNTER RECEIPT"
 
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
@@ -351,7 +352,8 @@ const ViewPrintWeeklyCheckReport = (props) => {
           {/* Header Group */}
           <View style={styles.headerGroup}>
             <Text style={styles.title}>{header_title}</Text>
-            <Text style={styles.headerText}>From {header_date_from} - {header_date_to}</Text>
+            <Text style={styles.headerText}>From: {header_date_from} - {header_date_to}</Text>
+            <Text style={styles.headerText}>Date Generate: {header_date_generate}</Text>
             <Text style={styles.headerText}>{header_subsection}</Text>
           </View>
           <View style={{ flexGrow: 1 }}>

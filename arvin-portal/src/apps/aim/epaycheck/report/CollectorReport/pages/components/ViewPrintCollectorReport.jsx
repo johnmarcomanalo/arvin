@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     padding: 15, 
     fontSize: 10, 
   },
-  section: { marginBottom: 10 },
+  section: { marginBottom: 8 },
   title: { fontSize: 11, fontWeight: "bold", marginBottom: 0, fontFamily: "PoppinsBold" },
   subtitle: { fontSize: 9, fontWeight: "bold", marginBottom: 1,marginTop:7, fontFamily: "PoppinsBold" },
   headerGroup: { marginBottom: 2, textAlign: "left" },
@@ -76,12 +76,12 @@ const styles = StyleSheet.create({
     marginBottom: 1,
   },
   footerLabel: {
-    fontSize: 10,
+    fontSize: 9,
     fontFamily: "PoppinsBold",
     color: "black",
   },
   footerValue: {
-    fontSize: 10,
+    fontSize: 9,
     fontFamily: "PoppinsBold",
     color: "black",
   },
@@ -143,6 +143,9 @@ const ViewPrintCollectorReport = (props) => {
   const header_date_generated   = header?.date_generated
   const header_title            = header?.title
 
+  //FOOTER DATA
+  const footer_total_check     = footer?.total_check
+
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
       <div style={{ position: "relative", width: "100%", height: "900px" }}> {/* PDF size */}
@@ -198,6 +201,14 @@ const ViewPrintCollectorReport = (props) => {
                 ))}
               </View>
             ))}
+            <View style={{ height: 5 }} />
+            {/* Footer Section */}
+              <View style={styles.footer}>
+                <View style={styles.footerRow}>
+                  <Text style={styles.footerLabel}>TOTAL CHECKS:</Text>
+                  <Text style={styles.footerValue}>{footer_total_check || 0}</Text>
+                </View>
+              </View>
         </Page> 
       </Document>
     </PDFViewer>
