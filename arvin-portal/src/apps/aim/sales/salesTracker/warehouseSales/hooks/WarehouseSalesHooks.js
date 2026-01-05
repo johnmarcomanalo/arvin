@@ -47,6 +47,9 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     (state) => state.AuthenticationReducer.active_page
   );
   const addModal = useSelector((state) => state.SalesDailyOutReducer.addModal);
+  const updateModal = useSelector(
+    (state) => state.SalesDailyOutReducer.updateModal
+  );
   const dataList = useSelector((state) => state.SalesDailyOutReducer.dataList);
   const present_mtd_data = useSelector(
     (state) => state.SalesDailyOutReducer.present_mtd_data
@@ -182,6 +185,13 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
   };
   const onSelectItem = (data) => {
     console.log(data);
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        updateModal: true,
+        selectedDataList: data,
+      },
+    });
   };
   const onDeleteDeduction = (data) => {
     console.log(data);
@@ -343,6 +353,22 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
       pg: filterProductGroup,
     });
   };
+  const onClickOpenUpdateModal = () => {
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        updateModal: true,
+      },
+    });
+  };
+  const onClickCloseUpdateModal = () => {
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        updateModal: false,
+      },
+    });
+  };
   return {
     search,
     page,
@@ -378,6 +404,7 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     borrow_data,
     borrower_columns,
     borrower_from_columns,
+    updateModal,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,
@@ -393,6 +420,8 @@ const SalesDailyOutComponentSalesDailyOutHooks = (props) => {
     onClickCloseFilterModal,
     filterSubComponents,
     filterProductGroups,
+    onClickOpenUpdateModal,
+    onClickCloseUpdateModal,
   };
 };
 

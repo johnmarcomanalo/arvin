@@ -1,14 +1,14 @@
+import configure from "apps/configure/configure.json";
+import swal from "sweetalert";
 import { Constants } from "../../../../../../reducer/Contants";
 import {
   GetDefaultServices,
   GetMultiSpecificDefaultServices,
   GetSpecificDefaultServices,
   PostDefaultServices,
+  PutDefaultServices,
 } from "../../../../../../services/apiService";
-import swal from "sweetalert";
-import configure from "apps/configure/configure.json";
 import { decryptaes } from "../../../../../../utils/LightSecurity";
-import { AuthGetReferencesChild } from "../../../../settings/reference/services/referenceServices";
 export const getSalesDailyOut = (values) => async (dispatch) => {
   try {
     await dispatch({
@@ -49,7 +49,7 @@ export const getSalesDailyOut = (values) => async (dispatch) => {
             ytdTotalDailyOutAmount: decrypted.ytdTotalDailyOutAmount,
             ytdTotalDailyQoutaAmount: decrypted.ytdTotalDailyQoutaAmount,
             today_data: decrypted.today_data,
-            borrow_data: decrypted.borrow_data
+            borrow_data: decrypted.borrow_data,
           },
         });
       } catch (error) {
@@ -386,5 +386,51 @@ export const postMoveSalePerDay = (formValues) => async (dispatch) => {
         loading: false,
       },
     });
+  }
+};
+
+export const putWarehouseSalesTracker = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PutDefaultServices(
+      "api/salesdailyout/sales_tracker/",
+      formValues.code,
+      formValues
+    );
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+    return res;
+  } catch (error) {
+    let title = configure.error_message.default;
+    let message = "";
+    let status = "error";
+
+    if (error.response?.data?.message) {
+      title = error.response.data.message;
+    }
+
+    if (error.response?.data?.status) {
+      status = error.response.data.status;
+    }
+
+    if (error.response?.data?.errors) {
+      message = Object.values(error.response.data.errors).flat().join("\n");
+    }
+
+    dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: { loading: false },
+    });
+
+    await swal(title, message, status);
   }
 };

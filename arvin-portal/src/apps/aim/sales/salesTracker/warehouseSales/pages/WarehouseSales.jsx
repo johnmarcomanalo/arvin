@@ -36,6 +36,7 @@ import { ViewAmountFormatingDecimals } from "../../../../../../utils/AccountingU
 import WarehouseSalesHooks from "../hooks/WarehouseSalesHooks";
 import AddSales from "./components/AddSales";
 import FilterSales from "./components/FilterSales";
+import UpdateSales from "./components/UpdateSales";
 const formName = "WarehouseSales";
 const submit = async (values, dispatch, props) => {
   try {
@@ -115,6 +116,16 @@ let WarehouseSales = (props) => {
           onChangeFilter={salesTracker.filterSubComponents}
           onClose={salesTracker.onClickCloseFilterModal}
         />
+      </Modal>
+      <Modal
+        open={salesTracker?.updateModal}
+        fullScreen={matches ? false : true}
+        title={"Update Sales Tracker"}
+        size={"xs"}
+        action={undefined}
+        handleClose={salesTracker.onClickCloseUpdateModal}
+      >
+        <UpdateSales />
       </Modal>
       <Dialog
         fullScreen
@@ -197,17 +208,7 @@ let WarehouseSales = (props) => {
                   paginationShow={false}
                   heightLimit={false}
                   action={(row) => {
-                    return (
-                      <Tooltip title="Delete">
-                        <DeleteOutlineIcon
-                          onClick={() => salesTracker.onDeleteDeduction(row)}
-                          style={{
-                            color: "#009197",
-                            cursor: "pointer",
-                          }}
-                        />
-                      </Tooltip>
-                    );
+                    return null;
                   }}
                   extraLayer={() => {
                     return (
@@ -885,18 +886,11 @@ let WarehouseSales = (props) => {
             localStorage={""}
             rowCount={salesTracker.dataListCount}
             paginationShow={false}
+            subAction1Show={true}
+            subAction2Show={false}
+            actionshow={active_page.update === "1" ? true : false}
             action={(row) => {
-              return (
-                <Tooltip title="Delete">
-                  <DeleteOutlineIcon
-                    onClick={() => salesTracker.onDeleteDeduction(row)}
-                    style={{
-                      color: "#009197",
-                      cursor: "pointer",
-                    }}
-                  />
-                </Tooltip>
-              );
+              return null;
             }}
           />
         </Grid>

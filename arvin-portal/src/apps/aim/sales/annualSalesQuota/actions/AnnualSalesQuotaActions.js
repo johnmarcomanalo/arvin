@@ -3,6 +3,7 @@ import {
   GetMultiSpecificDefaultServices,
   GetSpecificDefaultServices,
   PostDefaultServices,
+  PutDefaultServices,
 } from "../../../../../services/apiService";
 import { decryptaes } from "../../../../../utils/LightSecurity";
 import swal from "sweetalert";
@@ -312,5 +313,52 @@ export const postUpdateQuotaPerMonth = (formValues) => async (dispatch) => {
         loading: false,
       },
     });
+  }
+};
+
+
+export const putAnnualSalesQuota = (formValues) => async (dispatch) => {
+  try {
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: true,
+      },
+    });
+    const res = await PutDefaultServices(
+      "api/salesdailyout/settings_annual_quota/",
+      formValues.code,
+      formValues
+    );
+    await dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: {
+        loading: false,
+      },
+    });
+    return res;
+  } catch (error) {
+    let title = configure.error_message.default;
+    let message = "";
+    let status = "error";
+
+    if (error.response?.data?.message) {
+      title = error.response.data.message;
+    }
+
+    if (error.response?.data?.status) {
+      status = error.response.data.status;
+    }
+
+    if (error.response?.data?.errors) {
+      message = Object.values(error.response.data.errors).flat().join("\n");
+    }
+
+    dispatch({
+      type: Constants.ACTION_LOADING,
+      payload: { loading: false },
+    });
+
+    await swal(title, message, status);
   }
 };
