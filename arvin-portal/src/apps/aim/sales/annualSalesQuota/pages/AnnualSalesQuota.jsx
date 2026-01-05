@@ -1,22 +1,20 @@
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import EditIcon from "@mui/icons-material/Edit";
 import { Grid, IconButton, Stack, Tooltip, useMediaQuery } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import * as React from "react";
+import configure from "apps/configure/configure.json";
 import ButtonComponent from "components/button/Button";
+import InputYearPicker from "components/inputFIeld/InputYearPicker";
 import SearchField from "components/inputFIeld/SearchField";
 import Modal from "components/modal/Modal";
 import Page from "components/pagination/Pagination";
 import Table from "components/table/Table";
-import swal from "sweetalert";
-import configure from "apps/configure/configure.json";
+import moment from "moment";
+import * as React from "react";
+import { connect } from "react-redux";
+import { Field, formValueSelector, reduxForm } from "redux-form";
 import SalesQoutaHooks from "../hooks/AnnualSalesQoutaHooks";
 import AddAnnualSaleQuota from "./components/AddAnnualSaleQuota";
 import EditMonthlySaleQuota from "./components/EditMonthlySaleQuota";
-import InputYearPicker from "components/inputFIeld/InputYearPicker";
-import { Field, formValueSelector, reduxForm } from "redux-form";
-import { connect } from "react-redux";
-import moment from "moment";
-import EditIcon from "@mui/icons-material/Edit";
+import UpdateAnnualSaleQuota from "./components/UpdateAnnualSaleQuota";
 const formName = "AnnualSalesQuota";
 let AnnualSalesQuota = (props) => {
   const { ...annualSalesQuota } = SalesQoutaHooks(props);
@@ -44,6 +42,16 @@ let AnnualSalesQuota = (props) => {
         handleClose={annualSalesQuota.onClickCloseEditModal}
       >
         <EditMonthlySaleQuota />
+      </Modal>
+      <Modal
+        open={annualSalesQuota?.updateModal}
+        fullScreen={matches ? false : true}
+        title={"Update Monthly Sale Quota"}
+        size={"sm"}
+        action={undefined}
+        handleClose={annualSalesQuota.onClickCloseUpdateModal}
+      >
+        <UpdateAnnualSaleQuota />
       </Modal>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -126,7 +134,7 @@ let AnnualSalesQuota = (props) => {
             rowCount={annualSalesQuota.dataListCount}
             actionshow={active_page.update === "1" ? true : false}
             paginationShow={false}
-            subAction1Show={false}
+            subAction1Show={active_page.update === "1" ? true : false}
             subAction2Show={active_page.update === "1" ? true : false}
             action={(row) => {
               return (

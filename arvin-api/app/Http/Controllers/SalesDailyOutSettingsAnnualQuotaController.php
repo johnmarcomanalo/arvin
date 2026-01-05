@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Crypt;
 use App\Models\RefProductGroups;
 use App\Models\SalesDailyOutSettingsAnnualQuotaLogs;
 use App\Models\RefHolidays;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use App\Models\RefSubSections;
 
 class SalesDailyOutSettingsAnnualQuotaController extends Controller
 {
@@ -157,7 +160,7 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
         $records = DB::select("SET NOCOUNT ON exec dbo.sp_sales_daily_out_delivery_return_cm_v3 ?,?,?",array($fields["ref_product_groups_description"],$fields["year_sales_target"],$fields["sub_section_type"]));
 
         if(!empty($records)){
-            $salesDailyOutTrackersController->insert_sap_sales_daily_out($fields["ref_product_groups_description"],$fields["year_sales_target"],$fields["sub_section_type"],$data->code,$records);
+            $salesDailyOutTrackersController->insert_sap_sales_daily_out($fields["ref_product_groups_description"],$fields["year_sales_target"],$fields["sub_section_type"],$data->code,$records,$fields["modified_by"]);
         }
 
         return response([
@@ -187,9 +190,218 @@ class SalesDailyOutSettingsAnnualQuotaController extends Controller
      * @param  \App\Models\SalesDailyOutSettingsAnnualQuota  $salesDailyOutSettingsAnnualQuota
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, SalesDailyOutSettingsAnnualQuota $salesDailyOutSettingsAnnualQuota)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $sales_daily_out_settings_annual_quota_data = SalesDailyOutSettingsAnnualQuota::where('code',$id)->first();
+            $salesDailyOutTrackersController = new SalesDailyOutTrackersController();
+            
+            if (!$sales_daily_out_settings_annual_quota_data) {
+                return response()->json([
+                    'result'  => false,
+                    'status'  => 'error',
+                    'title'   => 'Error',
+                    'message' => 'Record not found.'
+                ], 404);
+            }
+
+            $rules = [
+                'code'=> 'required',
+                'subsection_code'=> 'required',
+                'year_sales_target'=> 'required',
+                'annual_sales_target'=> 'required',
+                'january_sales_target'=> 'required',
+                'february_sales_target'=> 'required',
+                'march_sales_target'=> 'required',
+                'april_sales_target'=> 'required',
+                'may_sales_target'=> 'required',
+                'june_sales_target'=> 'required',
+                'july_sales_target'=> 'required',
+                'august_sales_target'=> 'required',
+                'september_sales_target'=> 'required',
+                'october_sales_target'=> 'required',
+                'november_sales_target'=> 'required',
+                'december_sales_target'=> 'required',
+                'ref_product_groups_code'=> 'required',
+                
+                'update_type'=> 'required',
+                'account_code'=> 'required',
+            ];
+            if ($request->input('update_type') == 'QUOTA') {
+                $rules['new_annual_sales_target'] = 'required';
+                $rules['new_january_sales_target'] = 'required';
+                $rules['new_february_sales_target'] = 'required';
+                $rules['new_march_sales_target'] = 'required';
+                $rules['new_april_sales_target'] = 'required';
+                $rules['new_may_sales_target'] = 'required';
+                $rules['new_june_sales_target'] = 'required';
+                $rules['new_july_sales_target'] = 'required';
+                $rules['new_august_sales_target'] = 'required';
+                $rules['new_september_sales_target'] = 'required';
+                $rules['new_october_sales_target'] = 'required';
+                $rules['new_november_sales_target'] = 'required';
+                $rules['new_december_sales_target'] = 'required';
+            }
+            if ($request->input('update_type') == 'RESET MONTH WITHOUT TRANSFER') {
+                $rules['reset_type'] = 'required';
+                if ($request->input('reset_type') !== 'ALL') {
+                    $rules['reset_type_code'] = 'required|integer';
+                }
+            }
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'result'  => false,
+                    'status'  => 'error',
+                    'title'   => 'Validation Error',
+                    'message' => $validator->errors()->first()
+                ], 422);
+            }
+
+            $data = $validator->validated();
+
+            $months_target_index = [
+                1  => 'january_sales_target',
+                2  => 'february_sales_target',
+                3  => 'march_sales_target',
+                4  => 'april_sales_target',
+                5  => 'may_sales_target',
+                6  => 'june_sales_target',
+                7  => 'july_sales_target',
+                8  => 'august_sales_target',
+                9  => 'september_sales_target',
+                10 => 'october_sales_target',
+                11 => 'november_sales_target',
+                12 => 'december_sales_target',
+            ];
+            if($data['update_type'] == 'QUOTA'){
+                // Update the record correctly
+                $sales_daily_out_settings_annual_quota_data->update([
+                    'year_sales_target' => $data['new_annual_sales_target'],
+                    'january_sales_target' => $data['new_january_sales_target'],
+                    'february_sales_target' => $data['new_february_sales_target'],
+                    'march_sales_target' => $data['new_march_sales_target'],
+                    'april_sales_target' => $data['new_april_sales_target'],
+                    'may_sales_target' => $data['new_may_sales_target'],
+                    'june_sales_target' => $data['new_june_sales_target'],
+                    'july_sales_target' => $data['new_july_sales_target'],
+                    'august_sales_target' => $data['new_august_sales_target'],
+                    'september_sales_target' => $data['new_september_sales_target'],
+                    'october_sales_target' => $data['new_october_sales_target'],
+                    'november_sales_target' => $data['new_november_sales_target'],
+                    'december_sales_target' => $data['new_december_sales_target'],
+                    'updated_at' => now(),
+                    'modified_by' => $data['account_code'],
+                ]);
+
+                foreach ($months_target_index as $monthNumber => $monthField) {
+
+                    // NEW monthly sales target from form
+                    $monthlyTarget = $data["new_" . $monthField];
+
+                    // Fetch all daily trackers for that month
+                    $trackers = SalesDailyOutTrackers::where('sales_daily_out_annual_settings_sales_code', $id)
+                        ->whereRaw('MONTH(sales_date) = ?', [$monthNumber])
+                        ->whereNull('deleted_at')
+                        ->get();
+
+                    $countTrackers = $trackers->count();
+
+                    if ($countTrackers > 0) {
+
+                        // Compute per-day quota
+                        $newDailyQuota = $monthlyTarget / $countTrackers;
+
+                        foreach ($trackers as $row) {
+                            $computed = $salesDailyOutTrackersController
+                                        ->get_status_daily_target_and_percentage_daily_target_by_daily_out(
+                                            $row->sales_daily_out,
+                                            $newDailyQuota
+                                        );
+
+                            SalesDailyOutTrackers::where('code', $row->code)->update([
+                                'sales_daily_qouta'               => $newDailyQuota,
+                                'sales_daily_target'              => $computed['status_daily_target'],
+                                'daily_sales_target_percentage'   => $computed['percentage_daily_target'],
+                                'updated_at'                      => now(),
+                                'modified_by'                     => $data['account_code'],
+                            ]);
+                        }
+                    }
+                }
+            }
+            if($data['update_type'] == 'RESET MONTH WITHOUT TRANSFER'){
+                $subsection = RefSubSections::where('code', $sales_daily_out_settings_annual_quota_data['subsection_code'])->first();
+                $product_group = RefProductGroups::where('code',$sales_daily_out_settings_annual_quota_data['ref_product_groups_code'])->first();
+                $records = [];
+                $records = DB::select('SET NOCOUNT ON exec dbo.sp_sales_daily_out_delivery_return_cm_v3 ?,?,?',
+                [$product_group->description, $sales_daily_out_settings_annual_quota_data['year_sales_target'],$subsection->type]);
+                if(!empty($records)){
+                    if($data['reset_type'] == 'ALL'){
+                            SalesDailyOutTrackers::where('sales_daily_out_annual_settings_sales_code', $id)
+                                ->update([
+                                    'sales_daily_out'               => 0,
+                                    'sales_daily_target'            => DB::raw('-sales_daily_qouta'),
+                                    'daily_sales_target_percentage' => -100,
+                                    'updated_at'                    => now(),
+                                    'modified_by'                   => $data['account_code'],
+                                ]);
+                    }else{
+                        $month = $data['reset_type_code'];
+                        SalesDailyOutTrackers::where('sales_daily_out_annual_settings_sales_code', $id)
+                            ->whereMonth('sales_date', $month)
+                            ->update([
+                                    'sales_daily_out'               => 0,
+                                    'sales_daily_target'            => DB::raw('-sales_daily_qouta'),
+                                    'daily_sales_target_percentage' => -100,
+                                    'updated_at'                    => now(),
+                                    'modified_by'                   => $data['account_code'],
+                                ]);
+                        $records = array_reduce($records, function ($carry, $item) use ($month) {
+                            if (!empty($item->createdate)) {
+                                if (Carbon::parse($item->createdate)->month == $month) {
+                                    $carry[] = $item;
+                                }
+                                return $carry;
+                            }
+                        }, []);
+                    }
+                    $salesDailyOutTrackersController->insert_sap_sales_daily_out(
+                        $product_group->description,
+                        $sales_daily_out_settings_annual_quota_data['year_sales_target'],
+                        $subsection->type,
+                        $id,
+                        $records,
+                        $data['account_code']
+                    );
+                }
+                    
+            };
+           
+            
+
+            DB::commit();
+            $response = [
+                    'result'=>True,
+                    'title'=>'Success',
+                    'status'=>'success',
+                    'message'=> 'Updated succesfully',
+            ];
+            return Crypt::encryptString(json_encode($response));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error in update method: ' . $e->getMessage());
+    
+            return response()->json([
+                'result'  => false,
+                'status'  => 'warning',
+                'title'   => 'Warning',
+                'message' => 'An error occurred while updating the data.'
+            ], 500);
+        }
+        
     }
 
     /**

@@ -80,54 +80,7 @@ class SprPrintingController extends Controller
         );
         
         $collection_industrial_salt = collect($results_industrial)->where('itemcategory','INDUSTRIAL SALT')->values();
-        // return $collection_industrial_by_warehouse = $collection_industrial_salt
-        // ->groupBy('WhsCode')
-        // ->sortKeys()
-        // ->map(function ($itemsByWarehouse) {
-        //     return $itemsByWarehouse
-        //         ->groupBy('itemcategory')
-        //         ->map(function ($itemsByCategory) {
-        //             return $itemsByCategory
-        //                 ->groupBy('ItemCode')
-        //                 ->map(function ($items) {
-        //                     $sumIn  = $items->sum(fn($row) => (float) $row->InQty);
-        //                     $sumOut = $items->sum(fn($row) => (float) $row->OutQty);
-        //                     return [
-        //                         'ItemCode'  => $items->first()->ItemCode,
-        //                         'ItemName'  => $items->first()->Dscription,
-        //                         'BegInvBalance'  => $items->first()->BegInvBalance,
-        //                         'InQty'    => $sumIn > 0 ? number_format($sumIn, 2) : '-',
-        //                         'OutQty'   => $sumOut > 0 ? number_format($sumOut, 2) : '-',
-        //                         '_InQtyRaw'  => $sumIn,
-        //                         '_OutQtyRaw' => $sumOut,
-        //                     ];
-        //                 })
-        //                 ->filter(function ($item) {
-        //                     return !(
-        //                         $item['InQty'] == 0 &&
-        //                         $item['OutQty'] == 0
-        //                     );
-        //                 })
-        //                 ->values();
-        //         });
-
-        //     $total_in = $grouped_items->sum(fn($i) => isset($i['_InQtyRaw']) ? $i['_InQtyRaw'] : 0);
-        //     $total_out = $grouped_items->sum(fn($i) => isset($i['_OutQtyRaw']) ? $i['_OutQtyRaw'] : 0);
-    
-        //     $beg_balance = (float) ($warehouseItems->first()->BegInvBalance ?? 0);
-        //     $ending_balance = $beg_balance + $total_in - $total_out;
-    
-        //     return [
-        //         'Warehouse'        => $warehouseItems->first()->WhsCode,
-        //         'Items'            => $grouped_items,
-        //         'TotalIn'          => $total_in > 0 ? number_format($total_in, 2) : '-',
-        //         'TotalOut'         => $total_out > 0 ? number_format($total_out, 2) : '-',
-        //         'BeginningBalance' => number_format($beg_balance, 2),
-        //         'EndingBalance'    => number_format($ending_balance, 2),
-        //     ];
-        // })
-        // ->values();
-
+       
         $collection_industrial_by_warehouse = $collection_industrial_salt
         ->groupBy('WhsCode')
         ->sortKeys()
@@ -169,6 +122,34 @@ class SprPrintingController extends Controller
         })->sortBy('WhsCode')
         ->values();
 
+        // $collection_industrial_by_warehouse = $collection_industrial_salt
+        //     ->groupBy('WhsCode')
+        //     ->map(function ($warehouseItems) {
+        //             return $warehouseItems
+        //                 ->groupBy('ItemCode')
+        //                  ->sortKeys() 
+        //                 ->map(function ($items) { 
+        //             $sumIn  = $items->sum(fn($row) => (float) $row->InQty);
+        //             $sumOut = $items->sum(fn($row) => (float) $row->OutQty);
+    
+        //             return [
+        //                 'ItemCode' => $items->first()->ItemCode,
+        //                 'ItemName' => $items->first()->Dscription, 
+        //                 'InQty'    => $sumIn > 0 ? number_format($sumIn, 2) : '-',
+        //                 'OutQty'   => $sumOut > 0 ? number_format($sumOut, 2) : '-', 
+        //                 '_InQtyRaw'  => $sumIn,
+        //                 '_OutQtyRaw' => $sumOut,
+        //             ];
+        //         })
+        //         ->sortBy('ItemName')
+        //         ->values();
+
+        //         // ---- ITEMS GROUPING ---- //
+            
+        //     })
+        // ->sortBy('Warehouse')
+        // ->values();
+
         // =======================
         
         $results_rice_others = DB::connection('sqlsrv2')->select(
@@ -188,16 +169,30 @@ class SprPrintingController extends Controller
                     return $itemsByCategory
                         ->groupBy('ItemCode')
                         ->map(function ($items) {
+
+                            $BegInvBalance = (float) $items->first()->BegInvBalance;
+                            $InQty  = (float) $items->sum(fn($row) => (float) $row->InQty);
+                            $OutQty = (float) $items->sum(fn($row) => (float) $row->OutQty);
+                            $EndBalance = $BegInvBalance + ($InQty - $OutQty);
+
                             return [
-                                'ItemCode'  => $items->first()->ItemCode,
-                                'ItemName'  => $items->first()->Dscription,
-                                'BegInvBalance'  => $items->first()->BegInvBalance,
-                                'InQty'     => $items->sum(fn($row) => (float) $row->InQty),
-                                'OutQty'    => $items->sum(fn($row) => (float) $row->OutQty),
-                                'EndBalance' => $items->first()->BegInvBalance
-                                    + ($items->sum(fn($row) => (float) $row->InQty)
-                                    - $items->sum(fn($row) => (float) $row->OutQty)),
+                                'ItemCode'      => $items->first()->ItemCode,
+                                'ItemName'      => $items->first()->Dscription,
+                                'BegInvBalance' => number_format($BegInvBalance, 2),
+                                'InQty'         => number_format($InQty, 2),
+                                'OutQty'        => number_format($OutQty, 2),
+                                'EndBalance'    => number_format($EndBalance, 2),
                             ];
+                            // return [
+                            //     'ItemCode'  => $items->first()->ItemCode,
+                            //     'ItemName'  => $items->first()->Dscription,
+                            //     'BegInvBalance'  => $items->first()->BegInvBalance,
+                            //     'InQty'     => $items->sum(fn($row) => (float) $row->InQty),
+                            //     'OutQty'    => $items->sum(fn($row) => (float) $row->OutQty),
+                            //     'EndBalance' => $items->first()->BegInvBalance
+                            //         + ($items->sum(fn($row) => (float) $row->InQty)
+                            //         - $items->sum(fn($row) => (float) $row->OutQty)),
+                            // ];
                         })
                         ->filter(function ($item) {
                             return !(
@@ -212,7 +207,7 @@ class SprPrintingController extends Controller
         });
     
         
-         $data = [
+        return $data = [
             'warehouse'         =>   $fields['warehouse'],
             'date_start'        =>   $fields['date_start'],
             'date_end'          =>   $fields['date_end'],

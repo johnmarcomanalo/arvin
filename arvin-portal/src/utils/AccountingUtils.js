@@ -349,3 +349,9 @@ export const NumberToWords = (num) => {
 
   return num === 0 ? "ZERO" : result.toUpperCase();
 };
+
+export const toNumber = (value) => {
+  if (value === null || value === undefined) return 0;
+  const str = String(value);
+  return parseFloat(str.replace(/,/g, ""));
+};

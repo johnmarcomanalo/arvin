@@ -12,6 +12,9 @@ use Illuminate\Pagination\Paginator;
 use App\Models\RefSubSections;
 use App\Models\SalesDailyOutSettingsAnnualQuota;
 use App\Models\SalesDailyOutHolidayExclusionLogs;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use App\Models\SalesDailyOutTrackersLogs;
 
 
 
@@ -61,8 +64,234 @@ class SalesDailyOutTrackersController extends Controller
      * @param  \App\Models\SalesDailyOutTrackers  $salesDailyOutTrackers
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, SalesDailyOutTrackers $salesDailyOutTrackers){
-        //
+    public function update(Request $request, $id){
+        try {
+            DB::beginTransaction();
+
+            $sales_daily_out_tracker_data = SalesDailyOutTrackers::where('code',$id)->first();
+
+            if (!$sales_daily_out_tracker_data) {
+                return response()->json([
+                    'result'  => false,
+                    'status'  => 'error',
+                    'title'   => 'Error',
+                    'message' => 'Record not found.'
+                ], 404);
+            }
+
+            // Validation Rules
+            $rules = [
+                'code'                                   => 'required',
+                'daily_sales_target_percentage'          => 'required',
+                'ref_product_groups_description'         => 'required',
+                'sales_daily_out'                        => 'required',
+                'sales_daily_out_annual_settings_sales_code' => 'required',
+                'sales_daily_qouta'                      => 'required',
+                'sales_daily_target'                     => 'required',
+                'sales_date'                             => 'required|date',
+                'subsection_code'                        => 'required',
+                'transfer_type'                          => 'required',
+                'year_sales_target'                      => 'required',
+                'account_code'                           => 'required',
+                'monthly_sales_target'                   => 'required',
+                'remarks'                                => 'required',
+            ];
+
+            if ($request->input('transfer_type') != 'HOLIDAY') {
+               $rules['new_daily_sales_target_percentage'] = 'required';
+               $rules['new_sales_daily_out'] = 'required';
+               $rules['new_sales_daily_target'] = 'required';
+            }
+
+            if ($request->input('transfer_type') == 'TRANSFER') {
+                $rules['transfer'] = 'required';
+                $rules['selected_subsection_code'] = 'required';
+            }
+
+            if ($request->input('transfer_type') == 'ADDITIONAL/SUBTRACT') {
+                $rules['transfer'] = 'required';
+            }
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'result'  => false,
+                    'status'  => 'error',
+                    'title'   => 'Validation Error',
+                    'message' => $validator->errors()->first()
+                ], 422);
+            }
+
+            $data = $validator->validated();
+            $month = date('m', strtotime($data['sales_date']));
+
+            if($data['transfer_type'] != 'HOLIDAY'){
+                // Update the record correctly
+                $sales_daily_out_tracker_data->update([
+                    'sales_daily_out' => $data['new_sales_daily_out'],
+                    'sales_daily_target' => $data['new_sales_daily_target'],
+                    'daily_sales_target_percentage' => $data['new_daily_sales_target_percentage'],
+                    'updated_at' => now(),
+                    'modified_by' => $data['account_code'],
+                ]);
+            }
+           
+
+            if($data['transfer_type'] == 'TRANSFER'){
+                
+                //kunin yung record ng ibang warehouse based on date,product, subsection at year
+                $selected_tracker_transfer_data = SalesDailyOutTrackers::where('ref_product_groups_description',$data['ref_product_groups_description'])
+                    ->where('subsection_code',$data['selected_subsection_code'])
+                    ->where('year_sales_target',$data['year_sales_target'])
+                    ->where('sales_date',$data['sales_date'])
+                    ->first();
+
+                //compute the transfer +- in the selected_tracker_transfer_data daily out
+                $computed_new_daily_out_transfer = $selected_tracker_transfer_data->sales_daily_out - $data['transfer'];
+
+                //compute status target and percentage daily target
+                $computation = $this->get_status_daily_target_and_percentage_daily_target_by_daily_out($computed_new_daily_out_transfer, $selected_tracker_transfer_data->sales_daily_qouta);
+
+                //update
+                $selected_tracker_transfer_data->update([
+                    'sales_daily_out' => $computed_new_daily_out_transfer,
+                    'sales_daily_target' => $computation['status_daily_target'],
+                    'daily_sales_target_percentage' => $computation['percentage_daily_target'],
+                    'modified_by' => $data['account_code'],
+                    'updated_at' => now(),
+                ]);
+            }
+
+            if($data['transfer_type'] == 'HOLIDAY'){
+                if($sales_daily_out_tracker_data->sales_daily_out == 0){
+                    $sales_daily_out_tracker_data->update([
+                        'updated_at' => now(),
+                        'deleted_at' => now(),
+                        'modified_by' => $data['account_code'],
+                    ]);
+
+                    // Fetching data based on conditions
+                    $datalist_non_holiday = SalesDailyOutTrackers::where('sales_daily_out_annual_settings_sales_code', $data['sales_daily_out_annual_settings_sales_code'])
+                                ->whereRaw('MONTH(sales_date) = ?', $month)
+                                ->whereNull('deleted_at')
+                                ->get();
+
+                    // Ensure we have data to avoid division by zero
+                    $count_datalist = $datalist_non_holiday->count();
+
+                    //compute new daily quota
+                    $new_daily_quota = $data["monthly_sales_target"] / $count_datalist;
+                
+                    if($count_datalist > 0){
+                        foreach ($datalist_non_holiday as  $value) {
+                            //compute each not null date status daily target and percentage daily target
+                            $quota_computation = $this->get_status_daily_target_and_percentage_daily_target_by_daily_out(
+                                $value['sales_daily_out'],
+                                $new_daily_quota
+                            );
+                            //update
+                            SalesDailyOutTrackers::where('code', $value['code'])->update(
+                            [
+                                'sales_daily_qouta' => $new_daily_quota,
+                                'sales_daily_target' => $quota_computation['status_daily_target'],
+                                'daily_sales_target_percentage' => $quota_computation['percentage_daily_target'],
+                                'updated_at' => now(),
+                                'modified_by' => $data['account_code'],
+                            ]
+                            );
+                        }
+                    }
+                }else{
+                    $response = [
+                        'result' => false,
+                        'title' => 'Oppss!',
+                        'status' => 'warning',
+                        'message' => "The selected date contains existing sales. Kindly move the sales to another date before proceeding." ,
+                    ];
+                    return Crypt::encryptString(json_encode($response));
+                }
+            }
+             $log_code = MainController::generate_code('App\Models\SalesDailyOutTrackersLogs',"code");
+
+            $logs_data = SalesDailyOutTrackersLogs::create([
+                'code' => (int) $log_code,
+                'sales_daily_out_tracker_code' => (int) $data["code"],
+                'sales_daily_out_annual_settings_sales_code' => (int) $data["sales_daily_out_annual_settings_sales_code"],
+
+                'subsection_code' => $data["subsection_code"],
+                'ref_product_groups_description' => $data["ref_product_groups_description"],
+                'year_sales_target' => $data["year_sales_target"],
+
+                'sales_date' => $data["sales_date"],
+
+                // Clean commas and convert to float
+                'sales_daily_qouta' => isset($data["sales_daily_qouta"]) 
+                    ? (float) str_replace(',', '', $data["sales_daily_qouta"]) 
+                    : 0,
+
+                'sales_daily_out' => isset($data["sales_daily_out"]) 
+                    ? (float) str_replace(',', '', $data["sales_daily_out"]) 
+                    : 0,
+
+                'sales_daily_target' => isset($data["sales_daily_target"]) 
+                    ? (float) str_replace(',', '', $data["sales_daily_target"]) 
+                    : 0,
+
+                'daily_sales_target_percentage' => isset($data["daily_sales_target_percentage"]) 
+                    ? (float) str_replace(',', '', $data["daily_sales_target_percentage"]) 
+                    : 0,
+
+                'monthly_sales_target' => isset($data["monthly_sales_target"]) 
+                    ? (float) str_replace(',', '', $data["monthly_sales_target"]) 
+                    : null,
+
+                'transfer_type' => $data["transfer_type"],
+
+                'transfer' => isset($data["transfer"]) 
+                    ? (float) str_replace(',', '', $data["transfer"]) 
+                    : null,
+
+                'new_daily_sales_target_percentage' => isset($data["new_daily_sales_target_percentage"]) 
+                    ? (float) str_replace(',', '', $data["new_daily_sales_target_percentage"]) 
+                    : null,
+
+                'new_sales_daily_out' => isset($data["new_sales_daily_out"]) 
+                    ? (float) str_replace(',', '', $data["new_sales_daily_out"]) 
+                    : null,
+
+                'new_sales_daily_target' => isset($data["new_sales_daily_target"]) 
+                    ? (float) str_replace(',', '', $data["new_sales_daily_target"]) 
+                    : null,
+
+                'remarks' => $data["remarks"],
+
+                'selected_subsection_code' => $data["selected_subsection_code"] ?? null,
+
+                'added_by' => (int) $data["account_code"],
+                'modified_by' => (int) $data["account_code"],
+            ]);
+
+            DB::commit();
+
+            $response = [
+                    'result'=>True,
+                    'title'=>'Success',
+                    'status'=>'success',
+                    'message'=> 'Updated succesfully',
+            ];
+            return Crypt::encryptString(json_encode($response));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error in update method: ' . $e->getMessage());
+    
+            return response()->json([
+                'result'  => false,
+                'status'  => 'warning',
+                'title'   => 'Warning',
+                'message' => 'An error occurred while updating the data.'
+            ], 500);
+        }
     }
     /**
      * Remove the specified resource from storage.
@@ -73,7 +302,12 @@ class SalesDailyOutTrackersController extends Controller
     public function destroy(SalesDailyOutTrackers $salesDailyOutTrackers){
         //
     }
-    public function insert_sap_sales_daily_out($product_groups_description,$year_sales_target,$ref_sub_section_type,$settings_annual_quota_code, $record_data) { 
+    public function insert_sap_sales_daily_out(
+        $product_groups_description,
+        $year_sales_target,
+        $ref_sub_section_type,
+        $settings_annual_quota_code,
+        $record_data, $user = 'SAP') { 
         $salesDailyOutsController = new SalesDailyOutsController();
         $sub_section = RefSubSections::where('type', $ref_sub_section_type)->first();
         $sub_section_annual_settings_sales = SalesDailyOutSettingsAnnualQuota::where('code', $settings_annual_quota_code)->first();
@@ -142,7 +376,7 @@ class SalesDailyOutTrackersController extends Controller
                             'sales_date' => $result['sales_date'],
                             'sales_daily_target' => $computation['status_daily_target'],
                             'daily_sales_target_percentage' => $computation['percentage_daily_target'],
-                            'modified_by' => '1',
+                            'modified_by' => $user,
                         ]; 
                     }
                 }
@@ -746,7 +980,6 @@ class SalesDailyOutTrackersController extends Controller
             }
         });
     }
-
     public function getBorrowedStocksWarehousetoWarehouse($month,$year,$product_group,$warehouse) {
         $startDate = Carbon::create($year, $month, 1)->startOfMonth()->toDateString();
         $endDate = Carbon::create($year, $month, 1)->endOfMonth()->toDateString();
@@ -773,7 +1006,6 @@ class SalesDailyOutTrackersController extends Controller
             'borrower' => $borrower,
             'borrower_from' => $borrowed_from
         ];
-      }
-
+    }
 
 }

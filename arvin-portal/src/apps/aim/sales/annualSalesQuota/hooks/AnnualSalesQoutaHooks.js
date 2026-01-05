@@ -39,6 +39,9 @@ const AnnualSalesQoutaHooks = (props) => {
   const editModal = useSelector(
     (state) => state.SalesDailyOutReducer.editModal
   );
+  const updateModal = useSelector(
+    (state) => state.SalesDailyOutReducer.updateModal
+  );
   const dataList = useSelector((state) => state.SalesDailyOutReducer.dataList);
   const dataListCount = useSelector(
     (state) => state.SalesDailyOutReducer.dataListCount
@@ -121,7 +124,13 @@ const AnnualSalesQoutaHooks = (props) => {
     });
   };
   const onSelectItem = (data) => {
-    console.log(data);
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        updateModal: true,
+        selectedDataList: data,
+      },
+    });
   };
   const onDeleteDeduction = (data) => {
     console.log(data);
@@ -219,6 +228,15 @@ const AnnualSalesQoutaHooks = (props) => {
       },
     });
   };
+  const onClickCloseUpdateModal = () => {
+    dispatch({
+      type: Constants.ACTION_SALES_DAILY_OUT,
+      payload: {
+        selectedDataList: [],
+        updateModal: false,
+      },
+    });
+  };
   return {
     search,
     page,
@@ -235,6 +253,7 @@ const AnnualSalesQoutaHooks = (props) => {
     sections,
     editModal,
     active_page,
+    updateModal,
     handleChangeRowsPerPage,
     handleChangePage,
     onSelectItem,
@@ -246,6 +265,7 @@ const AnnualSalesQoutaHooks = (props) => {
     onChangeFilter,
     onClickOpenEditModal,
     onClickCloseEditModal,
+    onClickCloseUpdateModal,
   };
 };
 
