@@ -33,7 +33,7 @@ class RefHolidaysController extends Controller
      */
     public function store(Request $request)
     {
-         $fields = $request->validate([
+        $fields = $request->validate([
             'description' => 'required',
             'type' => 'required',
             'holiday_date' => 'required',
@@ -185,9 +185,12 @@ class RefHolidaysController extends Controller
 
         if (isset($query)) {
             $dataListQuery->where(function($q) use ($query) {
-                $q->where('description', 'like', '%' . $query . '%')
-                    ->orWhere('type', 'like', '%' . $query . '%');
+                $q->where('ref_holidays.description', 'like', '%' . $query . '%')
+                    ->orWhere('ref_holidays.type', 'like', '%' . $query . '%');
             });
+        }
+        if (isset($filter)) {
+            $dataListQuery->whereYear('holiday_date', $filter);
         }
 
         $data_list = $dataListQuery->paginate($limit, [

@@ -65,6 +65,7 @@ let WarehouseSales = (props) => {
   const [domBorrowerContent, setDomBorrowerContent] = React.useState("");
   const [domBorrowFromContent, setDomBorrowFromContent] = React.useState("");
   const today_data = salesTracker?.today_data;
+  console.log(present_mtd_data);
   const handleClickOpen = async () => {
     await setOpen(true);
     await alert("Press 'esc' to exit view mode");
@@ -234,7 +235,7 @@ let WarehouseSales = (props) => {
                         >
                           {ViewAmountFormatingDecimals(
                             salesTracker.monthly_sales_target,
-                            2
+                            2,
                           )}
                         </TableCell>
                         <TableCell
@@ -249,7 +250,7 @@ let WarehouseSales = (props) => {
                         >
                           {ViewAmountFormatingDecimals(
                             report_data?.total_daily_out_amount,
-                            2
+                            2,
                           )}
                         </TableCell>
                         <TableCell
@@ -257,7 +258,7 @@ let WarehouseSales = (props) => {
                             fontWeight: 600,
                             color:
                               parseFloat(
-                                report_data?.total_status_daily_target_amount
+                                report_data?.total_status_daily_target_amount,
                               ) < 0
                                 ? "#C83232"
                                 : "inherit",
@@ -265,7 +266,7 @@ let WarehouseSales = (props) => {
                         >
                           {ViewAmountFormatingDecimals(
                             report_data?.total_status_daily_target_amount,
-                            2
+                            2,
                           )}
                         </TableCell>
                         <TableCell
@@ -279,7 +280,7 @@ let WarehouseSales = (props) => {
                         >
                           {ViewAmountFormatingDecimals(
                             present_mtd_data?.mtdFinal,
-                            2
+                            2,
                           )}
                         </TableCell>
                       </TableRow>
@@ -463,7 +464,7 @@ let WarehouseSales = (props) => {
                         changeColorValue={true}
                         else_color={else_color(
                           parseInt(salesTracker?.ytdTotalDailyOutAmount),
-                          parseInt(salesTracker?.ytdTotalDailyQoutaAmount)
+                          parseInt(salesTracker?.ytdTotalDailyQoutaAmount),
                         )}
                       />
                     </Grid>
@@ -563,13 +564,15 @@ let WarehouseSales = (props) => {
                         icon_bg_color={"white"}
                         title={"Year"}
                         subtitle={"MTD SALES OUTPUT"}
-                        value={report_data?.total_daily_out_amount}
+                        value={present_mtd_data?.mtdTotalDailyOutAmount}
                         subvalue={"this is sub value"}
                         unit={product_group_unit_of_measure_type}
                         changeColorValue={true}
                         else_color={else_color(
                           parseInt(report_data?.total_daily_out_amount),
-                          parseInt(report_data?.total_target_daily_quota_amount)
+                          parseInt(
+                            report_data?.total_target_daily_quota_amount,
+                          ),
                         )}
                       />
                     </Grid>
@@ -652,7 +655,7 @@ let WarehouseSales = (props) => {
                     changeColorValue={true}
                     else_color={else_color(
                       parseInt(today_data?.sales_daily_out),
-                      parseInt(salesTracker?.daily_sales_target)
+                      parseInt(salesTracker?.daily_sales_target),
                     )}
                   />
                 </Grid>

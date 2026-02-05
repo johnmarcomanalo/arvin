@@ -447,7 +447,7 @@ class SalesDailyOutTrackersController extends Controller
         $salesDailyOutsController = new SalesDailyOutsController();
 
         $date_month = MainController::formatSingleDigitMonthOnly($filter); //format date to single digit month without the zero (0)
-        $date_year = MainController::formatYearOnly($filter); //format date to year
+         $date_year = MainController::formatYearOnly($filter); //format date to year
 
         $startOfMonth = Carbon::create($date_year, $date_month, 1)->startOfMonth()->toDateString();
         $current_month =  MainController::formatSingleDigitMonthOnly(date('Y-m-d'));
@@ -611,10 +611,22 @@ class SalesDailyOutTrackersController extends Controller
 
             $currentDateTime =  MainController::formatSingleDigitMonthOnly(date('Y-m-d'));
             $LastMonthDate =  MainController::formatSingleDigitMonthOnly($lastDayOfMonth);
-            $LastOrCurrentDateOfTheMonth = $lastDayOfMonth;
-            if($currentDateTime == $LastMonthDate){
-                $LastOrCurrentDateOfTheMonth = Carbon::now();
+            
+             // ✅ Proper MTD logic
+            $now = Carbon::now();
+
+            if ($now->year == $date_year && $now->month == $date_month) {
+                // Current month → up to today
+                $LastOrCurrentDateOfTheMonth = $now;
+            } else {
+                // Past month → full month
+                $LastOrCurrentDateOfTheMonth = $lastDayOfMonth;
             }
+             
+            // $LastOrCurrentDateOfTheMonth = $lastDayOfMonth;
+            // if($currentDateTime == $LastMonthDate){
+            //     $LastOrCurrentDateOfTheMonth = Carbon::now();
+            // }
             $mtd_data_list = SalesDailyOutTrackers::where('subsection_code',$user_data["subsection_code"])
                 ->where('year_sales_target',$date_year)
                 ->where('ref_product_groups_description',$product_group)

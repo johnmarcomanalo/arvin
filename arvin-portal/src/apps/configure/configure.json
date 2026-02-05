@@ -225,7 +225,6 @@
   "system": {
     "port": "8000",
     "front_end_port": "3000",
-    "apiUrl": "192.168.1.124",
     "apiDomain": "meralcoecozoneapi.ums-ph.com",
     "apiFrontDomain": "meralcoecozone.ums-ph.com",
     "testApiDomain": "test-meralco-api.ums-ph.com",
@@ -341,6 +340,9 @@
   "quotation_opening_letter": "In view of your requirements only, we are quoting here under the following details for your perusal, to wit:",
   "quotation_closing_letter": "We trust that our offer will merit your approval and we look forward to receiving your most favorable reply the soonest.",
   "holiday_type": [
+    {
+      "description": "SPECIAL (NON-WORKING)"
+    },
     {
       "description": "SPECIAL"
     },

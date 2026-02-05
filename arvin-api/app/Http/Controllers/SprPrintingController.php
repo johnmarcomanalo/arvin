@@ -207,7 +207,7 @@ class SprPrintingController extends Controller
         });
     
         
-        return $data = [
+        $data = [
             'warehouse'         =>   $fields['warehouse'],
             'date_start'        =>   $fields['date_start'],
             'date_end'          =>   $fields['date_end'],
