@@ -206,7 +206,7 @@ const TableHeader = () => (
 // FIX 4: Refactor IndustrialTable layout to correctly use the 4-column space
 const IndustrialTable = ({ wh, data = [] }) => {
   const filteredData = data.filter(
-    (value) => parseFloat(value.BeginningBalance) > 0
+    (value) => parseFloat(value.BeginningBalance) > 0,
   );
 
   if (filteredData.length === 0) {
@@ -519,7 +519,7 @@ const RiceOthersTable = ({ warehouseName, categories }) => {
   return (
     // minPresenceAhead ensures the header/first row doesn't break alone
 
-    <View wrap>
+    <View wrap={true}>
       {/* 🔹 Warehouse Row (Spans all columns) */}
       <View style={{ marginTop: 10 }}>
         {/* Combine Item Code (1.2) and Item Description (5.0) for the category label (6.2) 
@@ -528,7 +528,11 @@ const RiceOthersTable = ({ warehouseName, categories }) => {
         <View style={[styles.row, { marginTop: 10 }]}>
           <Text
             style={[
-              { flex: 10.2, fontFamily: "CenturyGothicBold", fontWeight: "bold" },
+              {
+                flex: 10.2,
+                fontFamily: "CenturyGothicBold",
+                fontWeight: "bold",
+              },
             ]}
           >
             {warehouseName}
@@ -541,22 +545,27 @@ const RiceOthersTable = ({ warehouseName, categories }) => {
         .sort(([a], [b]) => b.localeCompare(a))
         .map(([categoryName, items], catIndex) => (
           // <View key={catIndex} style={{ marginBottom: 6 }}>
-          <View key={catIndex} wrap={true}>
+          <View key={catIndex} wrap={false}>
             {/* 🔹 Category Row - This should be a full-width row for the category name */}
-
-            <View style={[styles.row_no_border]}>
-              {/* Combine Item Code (1.2) and Item Description (5.0) for the category label (6.2) */}
-              <Text
-                style={[
-                  styles.cell_no_border,
-                  { flex: 6.2, textIndent: 2, fontFamily: "CenturyGothicBold" },
-                ]}
-              >
-                {categoryName}
-              </Text>
-              {/* The remaining four columns (4.0) are empty for the category row */}
-              <Text style={[styles.cell_no_border, { flex: 4.0 }]} />
-            </View>
+            {Array.isArray(items) && (
+              <View style={[styles.row_no_border]}>
+                {/* Combine Item Code (1.2) and Item Description (5.0) for the category label (6.2) */}
+                <Text
+                  style={[
+                    styles.cell_no_border,
+                    {
+                      flex: 6.2,
+                      textIndent: 2,
+                      fontFamily: "CenturyGothicBold",
+                    },
+                  ]}
+                >
+                  {categoryName}
+                </Text>
+                {/* The remaining four columns (4.0) are empty for the category row */}
+                <Text style={[styles.cell_no_border, { flex: 4.0 }]} />
+              </View>
+            )}
 
             {/* 🔹 Items - Must use the 6-column structure (1.2, 5.0, 1.0, 1.0, 1.0, 1.0) */}
             <View wrap={false}>

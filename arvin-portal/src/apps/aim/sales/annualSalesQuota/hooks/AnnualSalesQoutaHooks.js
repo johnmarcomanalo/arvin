@@ -224,6 +224,7 @@ const AnnualSalesQoutaHooks = (props) => {
     dispatch({
       type: Constants.ACTION_SALES_DAILY_OUT,
       payload: {
+        selectedDataList: [],
         editModal: false,
       },
     });
