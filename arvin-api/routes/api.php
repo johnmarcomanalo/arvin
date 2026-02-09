@@ -53,6 +53,7 @@ use App\Http\Controllers\SalesDailyOutReportDavaotksController;
 use App\Http\Controllers\SalesDailyOutClientSalesTrackersController;
 use App\Http\Controllers\SalesDailyOutSettingsClientSubGroupsController;
 use App\Http\Controllers\SalesDailyOutReportClientsSummaryController;
+use App\Http\Controllers\PriceTrackersController;
 
 use App\Http\Controllers\SalesQuotationRequestController;
 use App\Http\Controllers\SalesQuotationRequestForApprovalsController;
@@ -239,6 +240,14 @@ use Illuminate\Support\Facades\Route;
         // Sales Daily Out Report Client Summary START
         Route::get('salesdailyout/report/get_client_sales_tracker_summary',[SalesDailyOutReportClientsSummaryController::class,'get_client_sales_tracker_summary']);
         // Sales Daily Out Report Client Summary End
+
+
+
+        //Price Tracker Start
+        Route::get('salesdailyout/pricetracker/display_prices',[PriceTrackersController::class,'display_prices']);
+        Route::get('salesdailyout/pricetracker/price_history',[PriceTrackersController::class,'price_history']);
+        
+        //Price Tracker End
 
         //MODULE SALES DAILY OUT END 
 
