@@ -20,217 +20,211 @@ const IndexHome = lazy(() => import("./apps/aim/home/pages/Home"));
 // LANDING PAGE END
 
 // SALES START
-const SalesLeaderboard = lazy(() =>
-  import("./apps/aim/sales/leaderboard/pages/IndexSalesLeaderboard")
+const SalesLeaderboard = lazy(
+  () => import("./apps/aim/sales/leaderboard/pages/IndexSalesLeaderboard"),
 );
-const IndexSalesRankingPoints = lazy(() =>
-  import("./apps/aim/sales/rankingPoints/pages/IndexSalesRankingPoints")
+const IndexSalesRankingPoints = lazy(
+  () => import("./apps/aim/sales/rankingPoints/pages/IndexSalesRankingPoints"),
 );
-const IndexSalesSummary = lazy(() =>
-  import("./apps/aim/sales/report/salesTrackerSummary/pages/IndexSalesSummary")
+const IndexSalesSummary = lazy(
+  () =>
+    import("./apps/aim/sales/report/salesTrackerSummary/pages/IndexSalesSummary"),
 );
-const IndexSelectedSalesSummary = lazy(() =>
-  import("./apps/aim/sales/salesSummary/pages/IndexSelectedSalesSummary")
+const IndexSelectedSalesSummary = lazy(
+  () => import("./apps/aim/sales/salesSummary/pages/IndexSelectedSalesSummary"),
 );
-const IndexSalesQouta = lazy(() =>
-  import("./apps/aim/sales/salesQuota/pages/IndexSalesQuota")
+const IndexSalesQouta = lazy(
+  () => import("./apps/aim/sales/salesQuota/pages/IndexSalesQuota"),
 );
-const IndexAnnualSalesQuota = lazy(() =>
-  import("./apps/aim/sales/annualSalesQuota/pages/IndexAnnualSalesQuota")
+const IndexAnnualSalesQuota = lazy(
+  () => import("./apps/aim/sales/annualSalesQuota/pages/IndexAnnualSalesQuota"),
 );
-const IndexHolidayExclusion = lazy(() =>
-  import("./apps/aim/sales/holidayExclusion/pages/IndexHolidayExclusion")
+const IndexHolidayExclusion = lazy(
+  () => import("./apps/aim/sales/holidayExclusion/pages/IndexHolidayExclusion"),
 );
-const IndexClientGroups = lazy(() =>
-  import("./apps/aim/sales/clientGroups/pages/IndexClientGroups")
+const IndexClientGroups = lazy(
+  () => import("./apps/aim/sales/clientGroups/pages/IndexClientGroups"),
 );
-const IndexAnnualSalesQoutaClientGroups = lazy(() =>
-  import(
-    "./apps/aim/sales/annualSalesQuotaClientGroups/pages/IndexAnnualSalesQoutaClientGroups"
-  )
+const IndexAnnualSalesQoutaClientGroups = lazy(
+  () =>
+    import("./apps/aim/sales/annualSalesQuotaClientGroups/pages/IndexAnnualSalesQoutaClientGroups"),
 );
-const IndexDavaoTKS = lazy(() =>
-  import("./apps/aim/sales/report/davaoTSK/pages/IndexDavaoTKS")
+const IndexDavaoTKS = lazy(
+  () => import("./apps/aim/sales/report/davaoTSK/pages/IndexDavaoTKS"),
 );
-const IndexClientSales = lazy(() =>
-  import("./apps/aim/sales/salesTracker/clientSales/pages/IndexClientSales")
+const IndexClientSales = lazy(
+  () =>
+    import("./apps/aim/sales/salesTracker/clientSales/pages/IndexClientSales"),
 );
-const IndexWarehouseSales = lazy(() =>
-  import(
-    "./apps/aim/sales/salesTracker/warehouseSales/pages/IndexWarehouseSales"
-  )
+const IndexWarehouseSales = lazy(
+  () =>
+    import("./apps/aim/sales/salesTracker/warehouseSales/pages/IndexWarehouseSales"),
 );
-const IndexClientSummary = lazy(() =>
-  import("./apps/aim/sales/report/clientSummary/pages/IndexClientSummary")
+const IndexClientSummary = lazy(
+  () =>
+    import("./apps/aim/sales/report/clientSummary/pages/IndexClientSummary"),
 );
-const IndexClientSalesSummary = lazy(() =>
-  import(
-    "./apps/aim/sales/report/clientSalesSummary/pages/IndexClientSalesSummary"
-  )
+const IndexClientSalesSummary = lazy(
+  () =>
+    import("./apps/aim/sales/report/clientSalesSummary/pages/IndexClientSalesSummary"),
 );
-const IndexSPR = lazy(() =>
-  import("./apps/aim/sales/report/spr/pages/IndexSPR")
+const IndexSPR = lazy(
+  () => import("./apps/aim/sales/report/spr/pages/IndexSPR"),
+);
+const IndexPriceTracker = lazy(
+  () => import("./apps/aim/sales/priceTracker/pages/IndexPriceTracker"),
 );
 // SALES END
 
 // QUOTATION START
-const IndexQuotationList = lazy(() =>
-  import("./apps/aim/quotation/quotationlist/pages/IndexQuotationList")
+const IndexQuotationList = lazy(
+  () => import("./apps/aim/quotation/quotationlist/pages/IndexQuotationList"),
 );
-const IndexRequestQuotation = lazy(() =>
-  import("./apps/aim/quotation/requestquotation/pages/IndexRequestQuotation")
+const IndexRequestQuotation = lazy(
+  () =>
+    import("./apps/aim/quotation/requestquotation/pages/IndexRequestQuotation"),
 );
-const IndexForApprovalQuotation = lazy(() =>
-  import(
-    "./apps/aim/quotation/forapprovalquotation/pages/IndexForApprovalQuotation"
-  )
+const IndexForApprovalQuotation = lazy(
+  () =>
+    import("./apps/aim/quotation/forapprovalquotation/pages/IndexForApprovalQuotation"),
 );
-const IndexMyQuotationList = lazy(() =>
-  import("./apps/aim/quotation/myquotationList/pages/IndexMyQuotationList")
+const IndexMyQuotationList = lazy(
+  () =>
+    import("./apps/aim/quotation/myquotationList/pages/IndexMyQuotationList"),
 );
-const IndexQuotedProducts = lazy(() =>
-  import("./apps/aim/quotation/report/quotedproducts/pages/IndexQuotedProducts")
+const IndexQuotedProducts = lazy(
+  () =>
+    import("./apps/aim/quotation/report/quotedproducts/pages/IndexQuotedProducts"),
 );
 // QUOTATION END
 
 // HUMAN RESOURCE START
-const IndexEmployeeMasterList = lazy(() =>
-  import("./apps/aim/humanresource/employeeList/pages/IndexEmployeeMasterList")
+const IndexEmployeeMasterList = lazy(
+  () =>
+    import("./apps/aim/humanresource/employeeList/pages/IndexEmployeeMasterList"),
 );
-const IndexEmployeeDetails = lazy(() =>
-  import("./apps/aim/humanresource/employeeDetails/pages/IndexEmployeeDetails")
+const IndexEmployeeDetails = lazy(
+  () =>
+    import("./apps/aim/humanresource/employeeDetails/pages/IndexEmployeeDetails"),
 );
 // HUMAN RESOURCE END
 
 //ACCESS RIGHTS START
-const IndexOrganizationRights = lazy(() =>
-  import(
-    "./apps/aim/settings/accessrights/organizationrights/pages/IndexOrganizationRights"
-  )
+const IndexOrganizationRights = lazy(
+  () =>
+    import("./apps/aim/settings/accessrights/organizationrights/pages/IndexOrganizationRights"),
 );
-const IndexPageRights = lazy(() =>
-  import("./apps/aim/settings/accessrights/pagerights/pages/IndexPageRights")
+const IndexPageRights = lazy(
+  () =>
+    import("./apps/aim/settings/accessrights/pagerights/pages/IndexPageRights"),
 );
-const IndexCustomerRights = lazy(() =>
-  import(
-    "./apps/aim/settings/accessrights/customerrights/pages/IndexCustomerRights"
-  )
+const IndexCustomerRights = lazy(
+  () =>
+    import("./apps/aim/settings/accessrights/customerrights/pages/IndexCustomerRights"),
 );
-const IndexRequestRights = lazy(() =>
-  import(
-    "./apps/aim/settings/accessrights/requestrights/pages/IndexRequestRights"
-  )
+const IndexRequestRights = lazy(
+  () =>
+    import("./apps/aim/settings/accessrights/requestrights/pages/IndexRequestRights"),
 );
-const IndexProductGroupRights = lazy(() =>
-  import(
-    "./apps/aim/settings/accessrights/productgrouprights/pages/IndexProductGroupRights"
-  )
+const IndexProductGroupRights = lazy(
+  () =>
+    import("./apps/aim/settings/accessrights/productgrouprights/pages/IndexProductGroupRights"),
 );
 //ACCESS RIGHTS END
 
 // ACCOUNT SETTINGS START
-const IndexChangePassword = lazy(() =>
-  import(
-    "./apps/aim/settings/accountsettings/changepassword/pages/IndexChangePassword"
-  )
+const IndexChangePassword = lazy(
+  () =>
+    import("./apps/aim/settings/accountsettings/changepassword/pages/IndexChangePassword"),
 );
 // ACCOUNT SETTINGS END
 
 // REFERENCE START
-const IndexRefModules = lazy(() =>
-  import("./apps/aim/settings/reference/pages/IndexRefModules")
+const IndexRefModules = lazy(
+  () => import("./apps/aim/settings/reference/pages/IndexRefModules"),
 );
-const IndexRefComponents = lazy(() =>
-  import("./apps/aim/settings/reference/pages/IndexRefComponents")
+const IndexRefComponents = lazy(
+  () => import("./apps/aim/settings/reference/pages/IndexRefComponents"),
 );
-const IndexRefSubcomponents = lazy(() =>
-  import("./apps/aim/settings/reference/pages/IndexRefSubcomponents")
+const IndexRefSubcomponents = lazy(
+  () => import("./apps/aim/settings/reference/pages/IndexRefSubcomponents"),
 );
-const IndexRefRequestTypes = lazy(() =>
-  import("./apps/aim/settings/reference/pages/IndexRefRequestTypes")
+const IndexRefRequestTypes = lazy(
+  () => import("./apps/aim/settings/reference/pages/IndexRefRequestTypes"),
 );
-const IndexRefUnitOfMeasurements = lazy(() =>
-  import("./apps/aim/settings/reference/pages/IndexRefUnitOfMeasurements")
+const IndexRefUnitOfMeasurements = lazy(
+  () =>
+    import("./apps/aim/settings/reference/pages/IndexRefUnitOfMeasurements"),
 );
-const IndexRefCurrencies = lazy(() =>
-  import("./apps/aim/settings/reference/pages/IndexRefCurrencies")
+const IndexRefCurrencies = lazy(
+  () => import("./apps/aim/settings/reference/pages/IndexRefCurrencies"),
 );
-const IndexRefValueAddedTax = lazy(() =>
-  import("./apps/aim/settings/reference/pages/IndexRefValueAddedTax")
+const IndexRefValueAddedTax = lazy(
+  () => import("./apps/aim/settings/reference/pages/IndexRefValueAddedTax"),
 );
-const IndexRefRequestHierarchy = lazy(() =>
-  import("./apps/aim/settings/reference/pages/IndexRefRequestHierarchy")
+const IndexRefRequestHierarchy = lazy(
+  () => import("./apps/aim/settings/reference/pages/IndexRefRequestHierarchy"),
 );
-const IndexRefSalutations = lazy(() =>
-  import("./apps/aim/settings/reference/pages/IndexRefSalutations")
+const IndexRefSalutations = lazy(
+  () => import("./apps/aim/settings/reference/pages/IndexRefSalutations"),
 );
-const IndexRefTruckTypes = lazy(() =>
-  import("./apps/aim/settings/reference/pages/IndexRefTruckTypes")
+const IndexRefTruckTypes = lazy(
+  () => import("./apps/aim/settings/reference/pages/IndexRefTruckTypes"),
 );
-const IndexRefProductGroups = lazy(() =>
-  import("./apps/aim/settings/reference/pages/IndexRefProductGroups")
+const IndexRefProductGroups = lazy(
+  () => import("./apps/aim/settings/reference/pages/IndexRefProductGroups"),
 );
-const IndexRefHolidays = lazy(() =>
-  import("./apps/aim/settings/reference/pages/IndexRefHolidays")
+const IndexRefHolidays = lazy(
+  () => import("./apps/aim/settings/reference/pages/IndexRefHolidays"),
 );
-const IndexRefSubSections = lazy(() =>
-  import("./apps/aim/settings/reference/pages/IndexRefSubSections")
+const IndexRefSubSections = lazy(
+  () => import("./apps/aim/settings/reference/pages/IndexRefSubSections"),
 );
 // REFERENCE END
 
 //EPAYCHECK START
-const IndexCheckCollection = lazy(() =>
-  import(
-    "./apps/aim/epaycheck/checkReceipt/checkCollection/pages/IndexCheckCollection"
-  )
+const IndexCheckCollection = lazy(
+  () =>
+    import("./apps/aim/epaycheck/checkReceipt/checkCollection/pages/IndexCheckCollection"),
 );
-const IndexCheckMonitoring = lazy(() =>
-  import(
-    "./apps/aim/epaycheck/checkReceipt/checkMonitoring/pages/IndexCheckMonitoring"
-  )
+const IndexCheckMonitoring = lazy(
+  () =>
+    import("./apps/aim/epaycheck/checkReceipt/checkMonitoring/pages/IndexCheckMonitoring"),
 );
-const IndexCheckReceive = lazy(() =>
-  import(
-    "./apps/aim/epaycheck/checkReceipt/checkReceive/pages/IndexCheckReceive"
-  )
+const IndexCheckReceive = lazy(
+  () =>
+    import("./apps/aim/epaycheck/checkReceipt/checkReceive/pages/IndexCheckReceive"),
 );
-const IndexWeeklyCheckCounter = lazy(() =>
-  import(
-    "./apps/aim/epaycheck/report/weeklyCheckCounter/pages/IndexWeeklyCheckCounter"
-  )
+const IndexWeeklyCheckCounter = lazy(
+  () =>
+    import("./apps/aim/epaycheck/report/weeklyCheckCounter/pages/IndexWeeklyCheckCounter"),
 );
-const IndexCheckForApproval = lazy(() =>
-  import(
-    "./apps/aim/epaycheck/checkReceipt/checkForApproval/pages/IndexCheckForApproval"
-  )
+const IndexCheckForApproval = lazy(
+  () =>
+    import("./apps/aim/epaycheck/checkReceipt/checkForApproval/pages/IndexCheckForApproval"),
 );
-const IndexBankCheckCounter = lazy(() =>
-  import(
-    "./apps/aim/epaycheck/report/bankCheckCounter/pages/IndexBankCheckCounter"
-  )
+const IndexBankCheckCounter = lazy(
+  () =>
+    import("./apps/aim/epaycheck/report/bankCheckCounter/pages/IndexBankCheckCounter"),
 );
-const IndexMonitoringCheckCounter = lazy(() =>
-  import(
-    "./apps/aim/epaycheck/report/monitoringCheckCounter/pages/IndexMonitoringCheckCounter"
-  )
+const IndexMonitoringCheckCounter = lazy(
+  () =>
+    import("./apps/aim/epaycheck/report/monitoringCheckCounter/pages/IndexMonitoringCheckCounter"),
 );
-const IndexReceivedCheckCounter = lazy(() =>
-  import(
-    "./apps/aim/epaycheck/report/ReceivedCheckCounter/pages/IndexReceivedCheckCounter"
-  )
+const IndexReceivedCheckCounter = lazy(
+  () =>
+    import("./apps/aim/epaycheck/report/ReceivedCheckCounter/pages/IndexReceivedCheckCounter"),
 );
-const IndexCheckARReceive = lazy(() =>
-  import(
-    "./apps/aim/epaycheck/checkReceipt/checkARReceive/pages/IndexCheckARReceive"
-  )
+const IndexCheckARReceive = lazy(
+  () =>
+    import("./apps/aim/epaycheck/checkReceipt/checkARReceive/pages/IndexCheckARReceive"),
 );
 //EPAYCHECK END
 
 // LOGISTIC
-const IndexVeselContainerMonitoring = lazy(() =>
-  import(
-    "./apps/aim/logistic/VeselAndContainerMonitoring/pages/IndexVeselContainerMonitoring"
-  )
+const IndexVeselContainerMonitoring = lazy(
+  () =>
+    import("./apps/aim/logistic/VeselAndContainerMonitoring/pages/IndexVeselContainerMonitoring"),
 );
 // END LOGISTIC
 
@@ -261,17 +255,17 @@ function App() {
   const access = useSelector((state) => state.AuthenticationReducer.access);
   const hasAccess = (module, component, subComponent, subOnly) => {
     const moduleAccess = access.user_access_module_rights.some(
-      (item) => item.description === module
+      (item) => item.description === module,
     );
     const componentAccess = subOnly
       ? true
       : access.user_access_component_rights.some(
-          (item) => item.description === component
+          (item) => item.description === component,
         );
     let subComponentAccess = true; // Default to true if no subcomponent is provided
     if (subComponent) {
       subComponentAccess = access.user_access_sub_component_rights.some(
-        (item) => item.description === subComponent
+        (item) => item.description === subComponent,
       );
     }
     return moduleAccess && componentAccess && subComponentAccess;
@@ -507,6 +501,20 @@ function App() {
                         })}
                       >
                         <IndexSPR />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/Modules/Sales/PriceTracker"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Sales",
+                          component: "Price Tracker",
+                          subComponent: "",
+                        })}
+                      >
+                        <IndexPriceTracker />
                       </PrivateRoute>
                     }
                   />
@@ -1000,24 +1008,22 @@ function App() {
                     }
                   />
                   {/* EPAYCHECK END */}
-
                   {/* LOGISTIC START */}
-                    <Route
-                        path="/Modules/Logistic/VeselAndContainerMonitoring"
-                        element={
-                          <PrivateRoute
-                            accessChecker={getAccessChecker({
-                              module: "Logistic",
-                              component: "Vessel / Container Monitoring",
-                              subComponent: null,
-                            })}
-                          >
-                            <IndexVeselContainerMonitoring/>
-                          </PrivateRoute>
-                        }
-                      />
+                  <Route
+                    path="/Modules/Logistic/VeselAndContainerMonitoring"
+                    element={
+                      <PrivateRoute
+                        accessChecker={getAccessChecker({
+                          module: "Logistic",
+                          component: "Vessel / Container Monitoring",
+                          subComponent: null,
+                        })}
+                      >
+                        <IndexVeselContainerMonitoring />
+                      </PrivateRoute>
+                    }
+                  />
                   {/* LOGISTIC END */}
-
                   {/* SYSTEM SETTINGS END */}
                 </Route>
               )}

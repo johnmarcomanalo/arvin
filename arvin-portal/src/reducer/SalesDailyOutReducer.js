@@ -55,6 +55,7 @@ const initialState = {
   updateModal: false,
   borrow_data: [],
   spr: [],
+  viewModal: false
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {

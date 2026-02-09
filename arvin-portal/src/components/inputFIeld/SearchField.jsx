@@ -9,19 +9,25 @@ const SearchField = (props) => {
     fullwidth = false,
     ...param
   } = props;
-  const inputRef = useRef(null);  // Create a reference for the TextField input
+  const inputRef = useRef(null); // Create a reference for the TextField input
 
   // Focus the input when the component mounts or autoFocus is true
   useEffect(() => {
     if (autoFocus && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [autoFocus]);  // Only re-run if autoFocus prop changes
+  }, [autoFocus]); // Only re-run if autoFocus prop changes
 
   return (
     <div>
       {textHidden === false && (
-        <Typography sx={{ fontSize: 15, visibility: "hidden" }} align="left">
+        <Typography
+          sx={{
+            fontSize: 15,
+            visibility: textHidden === false ? "visible" : "hidden",
+          }}
+          align="left"
+        >
           Search
         </Typography>
       )}

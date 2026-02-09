@@ -290,8 +290,6 @@ const CheckCollectionHooks = (props) => {
          // Submit normally
         let res = await dispatch(postCheckCollection(cleanedValues));
         let decrypted = await decryptaes(res?.data);
-        console.log(decrypted,"dasda");
-        
         if (decrypted && decrypted.result){
             await dispatch(reset(formName));
             props.change("bank_description", "");

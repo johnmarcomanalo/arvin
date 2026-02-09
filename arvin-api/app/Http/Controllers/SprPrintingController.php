@@ -74,7 +74,7 @@ class SprPrintingController extends Controller
         // $fields['date_start'] = $date_start;
         // $fields['date_end'] = $date_end;
         // $fields['warehouse'] = $warehouse;
-         $results_industrial = DB::connection('sqlsrv2')->select(
+        $results_industrial = DB::connection('sqlsrv2')->select(
             'SET NOCOUNT ON; EXEC sp_StockPositionReport_Province_industrial_salt_V3 ?, ?, ?',
             [$fields['date_start'], $fields['date_end'], $fields['warehouse']]
         );
