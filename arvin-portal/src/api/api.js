@@ -51,7 +51,7 @@ export function loginApi(method, param2, dispatch) {
 
           { param },
 
-          { headersLogin }
+          { headersLogin },
         )
         .then((res) => {
           let decrypt = CryptoJSAesDecrypt(res.data.data);
@@ -110,7 +110,7 @@ export function fetch(method, dispatch) {
 export function get(method) {
   return new Promise((resolve, reject) => {
     axios
-      .get(serverurl + method, { headers })
+      .get(serverurl + method, {cancelToken: source.token, headers  })
       .then((response) => {
         let encryptedData = response.data;
         let decryptedData = CryptoJSAesDecrypt(encryptedData);
@@ -131,7 +131,7 @@ export function register(method, param2, dispatch) {
         {
           param,
         },
-        { cancelToken: source.token, headers: headers_no_token }
+        { cancelToken: source.token, headers: headers_no_token },
       )
       .then((res) => {
         let decrypt = CryptoJSAesDecrypt(res.data.data);
@@ -178,7 +178,7 @@ export function post(method, param2, dispatch) {
           {
             param,
           },
-          { headers }
+          { headers },
         )
         .then((res) => {
           // let decrypt = CryptoJSAesDecrypt(res.data.data);
@@ -372,7 +372,7 @@ export function postNoToken(method, param2) {
         {
           param,
         },
-        { cancelToken: source.token, headers: headers_no_token }
+        { cancelToken: source.token, headers: headers_no_token },
       )
       .then((res) => {
         // let decrypt = CryptoJSAesDecrypt(res.data.data);

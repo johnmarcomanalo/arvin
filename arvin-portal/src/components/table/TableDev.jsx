@@ -31,8 +31,12 @@ const Tables = (props) => {
     subAction2Show = true,
     heightLimit = true,
     extraLayer,
-    changeZerotoDash = false,
-    sticky = false,
+    highlightRules = [],
+
+    loading = false,
+    onLoadMore,
+    hasMore = false,
+    tableRef = null,
   } = props;
   const [screenHeight, setScreenHeight] = React.useState(window.innerHeight);
 
@@ -48,86 +52,46 @@ const Tables = (props) => {
     };
   }, []);
 
-  const actionShowStyle = [
-    {
-      backgroundColor: configure.primary_table_color,
-      color: configure.primary_table_text_color,
-      textAlign: "left",
-    },
-  ];
-  const actionShowStickyStyle = [
-    {
-      backgroundColor: configure.primary_table_color,
-      color: configure.primary_table_text_color,
-      textAlign: "left",
-      position: sticky ? "sticky" : "static",
-      left: 0,
-      zIndex: 3,
-    },
-  ];
+  const handleScroll = (e) => {
+    const target = e.target;
 
-  const headerColumnStyle = {
-    backgroundColor: configure.primary_table_color,
-    color: configure.primary_table_text_color,
-    textAlign: "left",
-    whiteSpace: "nowrap",
+    if (localStorage != "") {
+      sessionStorage.setItem(localStorage, target.scrollTop);
+    }
+
+    // 🔥 infinite scroll trigger
+    if (
+      onLoadMore &&
+      hasMore &&
+      !loading &&
+      target.scrollTop + target.clientHeight >= target.scrollHeight - 50
+    ) {
+      onLoadMore();
+    }
   };
-
-  const headerColumnStickyStyle = (index) => ({
-    ...headerColumnStyle, // Keep consistent styling
-    // position: index === 0 ? "sticky" : "static",
-    left: index === 0 ? (actionshow ? 50 : 0) : "auto",
-    zIndex: index === 0 ? 4 : 2,
-  });
-
-  const actionBodyShowStyle = [
-    {
-      backgroundColor: configure.primary_table_color,
-      color: configure.primary_table_text_color,
-      textAlign: "left",
-    },
-  ];
-  const actionBodyShowStickyStyle = [
-    {
-      backgroundColor: configure.primary_table_color,
-      color: configure.primary_table_text_color,
-      textAlign: "left",
-      position: sticky ? "sticky" : "static",
-      left: 0,
-      zIndex: 3,
-    },
-  ];
-
-  const bodyColumnStyle = (value) => ({
-    color: parseFloat(value) < 0 ? "#C83232" : "inherit",
-    textAlign: "left",
-    whiteSpace: "nowrap",
-  });
-
-  const bodyColumnStickyStyle = (value, columnIndex) => ({
-    ...bodyColumnStyle, // Keep consistent styling
-    backgroundColor: "white",
-    color: parseFloat(value) < 0 ? "#C83232" : "inherit",
-    left: columnIndex === 0 ? (actionshow ? 50 : 0) : "auto",
-    zIndex: columnIndex === 0 ? 2 : 1,
-    position: sticky ? "sticky" : "static",
-    whiteSpace: "nowrap",
-  });
-
   return (
     <Paper sx={{ boxShadow: configure.box_shadow }}>
       <TableContainer
-        onScroll={() => {
-          if (localStorage != "") {
-            var elmnt = document.getElementById(id);
-            sessionStorage.setItem(localStorage, elmnt.scrollTop);
+        // onScroll={() => {
+        //   if (localStorage != "") {
+        //     var elmnt = document.getElementById(id);
+        //     sessionStorage.setItem(localStorage, elmnt.scrollTop);
+        //   }
+        // }}
+        ref={tableRef}
+        onScroll={(e) => {
+          if (typeof onLoadMore !== "function") return;
+
+          const el = e.currentTarget;
+
+          if (el.scrollTop + el.clientHeight >= el.scrollHeight - 50) {
+            onLoadMore(); // ✅ ONLY change page
           }
         }}
         sx={{
           maxHeight: heightLimit ? screenHeight - 300 : "100%",
           whiteSpace: "nowrap",
-          // overflowX: "auto",
-          overflow: "auto",
+          overflowX: "auto",
         }}
         id={"tableScroll2"}
       >
@@ -136,19 +100,26 @@ const Tables = (props) => {
             <TableRow>
               {actionshow ? (
                 <TableCell
-                  style={sticky ? actionShowStickyStyle : actionShowStyle}
+                  style={{
+                    backgroundColor: configure.primary_table_color,
+                    color: configure.primary_table_text_color,
+                    textAlign: "left",
+                  }}
                 >
                   Action
                 </TableCell>
               ) : null}
 
-              {columns.map((column, index) => (
+              {columns.map((column) => (
                 <TableCell
                   key={column.id}
                   align={column.align}
-                  style={
-                    sticky ? headerColumnStickyStyle(index) : headerColumnStyle
-                  }
+                  style={{
+                    backgroundColor: configure.primary_table_color,
+                    color: configure.primary_table_text_color,
+                    textAlign: column.align,
+                    whiteSpace: "nowrap",
+                  }}
                 >
                   {column.label}
                 </TableCell>
@@ -159,23 +130,16 @@ const Tables = (props) => {
             {dataList?.map((row) => {
               try {
                 return (
-                  <TableRow
-                    style={{ backgroundColor: "white" }}
-                    hover
-                    role="checkbox"
-                    tabIndex={-1}
-                    key={row.code}
-                  >
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
                     {actionshow ? (
                       <TableCell>
                         <Stack
                           direction="row"
                           spacing={1}
-                          style={
-                            sticky
-                              ? actionBodyShowStickyStyle
-                              : actionBodyShowStyle
-                          }
+                          sx={{
+                            justifyContent: "flex-start",
+                            alignItems: "center",
+                          }}
                         >
                           {subAction1Show ? (
                             <Tooltip title="View">
@@ -193,28 +157,33 @@ const Tables = (props) => {
                       </TableCell>
                     ) : null}
 
-                    {columns.map((column, columnIndex) => {
-                      let value = row[column.id];
-                      if (changeZerotoDash) {
-                        if (
-                          value === 0 ||
-                          value === "0.00" ||
-                          value === 0.0 ||
-                          value === ".0000"
-                        ) {
-                          value = "--";
-                        }
-                      }
+                    {columns.map((column) => {
+                      const value = row[column.id];
+                      // default styles
+                      let cellStyle = { ...column.style };
 
+                      // apply highlight rules only if column matches
+                      highlightRules.forEach((rule) => {
+                        if (
+                          rule.columnId === column.id &&
+                          rule.condition(value, row)
+                        ) {
+                          cellStyle = { ...cellStyle, ...rule.style };
+                        }
+                      });
+
+                      // add your negative value rule too
+                      if (!isNaN(value) && parseFloat(value) < 0) {
+                        cellStyle = {
+                          ...cellStyle,
+                          color: parseFloat(value) < 0 ? "#C83232" : "inherit",
+                        };
+                      }
                       return (
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          style={
-                            sticky
-                              ? bodyColumnStickyStyle(value, columnIndex)
-                              : bodyColumnStyle(value, columnIndex)
-                          }
+                          style={cellStyle}
                         >
                           {column?.format != undefined
                             ? column.format(value)
@@ -229,10 +198,21 @@ const Tables = (props) => {
               }
             })}
             {extraLayer && extraLayer()}
+            {loading && (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length + (actionshow ? 1 : 0)}
+                  align="center"
+                  sx={{ py: 2 }}
+                >
+                  Loading...
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
-      {paginationShow ? (
+      {/* {paginationShow && !onLoadMore ? (
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
@@ -241,9 +221,8 @@ const Tables = (props) => {
           page={page}
           onPageChange={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
-          sx={{ backgroundColor: "none" }}
         />
-      ) : null}
+      ) : null} */}
     </Paper>
   );
 };

@@ -18,33 +18,19 @@ const PriceTrackerHooks = (props) => {
   const viewModal = useSelector(
     (state) => state.SalesDailyOutReducer.viewModal,
   );
-  const dataSubList = useSelector(
-    (state) => state.SalesDailyOutReducer.dataSubList,
-  );
-  const dataSubListCount = useSelector(
-    (state) => state.SalesDailyOutReducer.dataSubListCount,
-  );
-  const last_page = useSelector(
-    (state) => state.SalesDailyOutReducer.last_page,
-  );
   const [searchParams, setSearchParams] = useSearchParams();
-  const page =
-    searchParams.get("p") != null ? Number(searchParams.get("p")) : 1;
+  const page = searchParams.get("p") != null ? searchParams.get("p") : 1;
   const rowsPerPage =
-    searchParams.get("l") != null ? searchParams.get("l") : 20;
+    searchParams.get("l") != null ? searchParams.get("l") : 10;
   const search =
     searchParams.get("q") != null ? String(searchParams.get("q")) : "";
   const filterQuery =
     searchParams.get("f") != null ? String(searchParams.get("f")) : "Manila";
   const warehouseQuery =
     searchParams.get("w") != null ? String(searchParams.get("w")) : "";
-  const dateQuery =
-    searchParams.get("d") != null ? String(searchParams.get("d")) : "";
-
   const json_active_page = useSelector(
     (state) => state.AuthenticationReducer.active_page,
   );
-  const loading = useSelector((state) => state.SalesDailyOutReducer.loading);
   const active_page = JSON.parse(json_active_page);
   const columns = [
     { id: "ItemCode", label: "Code", align: "left" },
@@ -60,8 +46,6 @@ const PriceTrackerHooks = (props) => {
     { code: "manila", description: "Manila" },
     { code: "province", description: "Province" },
   ];
-
-  const tableRef = React.useRef(null);
 
   const warehouses = [
     { code: "HARBOUR", description: "HARBOUR", type: "manila" },
@@ -83,18 +67,6 @@ const PriceTrackerHooks = (props) => {
     { code: "ZAMBOANGA", description: "ZAMBOANGA", type: "province" },
   ];
 
-  const columns_history = [
-    // { id: "ItemCode", label: "Code", align: "left" },
-    // { id: "ItemName", label: "Daily Description", align: "left" },
-    { id: "PickupPrice", label: "Pick-up Price", align: "right" },
-    { id: "OldPrice", label: "Previous Price", align: "right" },
-    // { id: "SKU", label: "SKU", align: "right" },
-    // { id: "Warehouse", label: "Warehouse", align: "left" },
-    // { id: "Brand", label: "Brand", align: "left" },
-    // { id: "TaxCode", label: "TaxCode", align: "left" },
-    { id: "Time_Stamp", label: "Time_Stamp", align: "left" },
-  ];
-
   const [filteredWarehouses, setWarehouses] = React.useState(warehouses);
   const onChangeSearch = (event) => {
     // SEARCH DATA
@@ -105,17 +77,15 @@ const PriceTrackerHooks = (props) => {
       l: String(rowsPerPage),
       f: filterQuery,
       w: warehouseQuery,
-      d: dateQuery,
     });
   };
   const getListParam = () => {
     const data = {
-      p: page == null ? 0 : page,
+      p: page == null ? 1 : page,
       q: search,
       l: rowsPerPage,
       f: filterQuery,
       w: warehouseQuery,
-      d: dateQuery,
     };
     return data;
   };
@@ -131,7 +101,6 @@ const PriceTrackerHooks = (props) => {
       l: String(rowsPerPage),
       f: filter,
       w: "",
-      d: "",
     });
 
     setWarehouses(filteredWarehouses);
@@ -144,7 +113,6 @@ const PriceTrackerHooks = (props) => {
       l: String(rowsPerPage),
       f: filterQuery,
       w: warehouse,
-      d: "",
     });
   };
   const handleChangePage = (event, page) => {
@@ -154,18 +122,16 @@ const PriceTrackerHooks = (props) => {
       l: String(rowsPerPage),
       f: filterQuery,
       w: warehouseQuery,
-      d: dateQuery,
     });
   };
-  const handleChangeRowsPerPage = (value) => {
-    const lpage = value.target;
+  const handleChangeRowsPerPage = (limitpage) => {
+    const lpage = limitpage;
     setSearchParams({
       q: search,
       p: page,
-      l: String(lpage.value),
+      l: String(lpage),
       f: filterQuery,
       w: warehouseQuery,
-      d: dateQuery,
     });
   };
   const getPriceTracker = async () => {
@@ -180,25 +146,12 @@ const PriceTrackerHooks = (props) => {
   React.useEffect(() => {
     getPriceTracker();
     return () => cancelRequest();
-  }, [
-    refresh,
-    filterQuery,
-    search,
-    page,
-    warehouseQuery,
-    rowsPerPage,
-    dateQuery,
-  ]);
+  }, [refresh, filterQuery, search, page, warehouseQuery]);
 
   const onSelectItem = async (data) => {
-    let t = 'non-history'
-    if (data.t != undefined || data.t != null) {
-      t = data.t;
-    }
     let formValues = {
       id: data.ID,
       type: filterQuery,
-      table: t,
     };
     let res = await dispatch(getPriceHistory(formValues));
     console.log(res);
@@ -221,44 +174,11 @@ const PriceTrackerHooks = (props) => {
   };
 
   React.useEffect(() => {
-    setSearchParams({
-      q: search,
-      p: "1",
-      l: String(rowsPerPage),
-      f: filterQuery,
-      w: warehouseQuery,
-      d: dateQuery,
+    props.initialize({
+      type: filterQuery,
     });
-    if (tableRef.current) {
-      tableRef.current.scrollTop = 0;
-    }
     return () => cancelRequest();
-  }, [search, filterQuery, warehouseQuery, rowsPerPage, dateQuery]);
-  const loadMore = () => {
-    if (loading) return;
-    if (page >= last_page) return;
-
-    setSearchParams({
-      q: search,
-      p: String(page + 1),
-      l: String(rowsPerPage),
-      f: filterQuery,
-      w: warehouseQuery,
-      d: dateQuery,
-    });
-  };
-
-  const onChangeDateStart = (date) => {
-    setSearchParams({
-      q: search,
-      p: String(page + 1),
-      l: String(rowsPerPage),
-      f: filterQuery,
-      w: warehouseQuery,
-      d: date,
-    });
-  };
-
+  }, []);
   return {
     access,
     columns,
@@ -271,12 +191,6 @@ const PriceTrackerHooks = (props) => {
     warehouses,
     filterQuery,
     filteredWarehouses,
-    columns_history,
-    dataSubList,
-    rowsPerPage,
-    dataSubListCount,
-    last_page,
-    tableRef,
     onChangeWarehouse,
     onChangeSearch,
     onChangeFilter,
@@ -284,8 +198,6 @@ const PriceTrackerHooks = (props) => {
     handleChangeRowsPerPage,
     onSelectItem,
     onClickCloseViewModal,
-    loadMore,
-    onChangeDateStart,
   };
 };
 
