@@ -23,19 +23,27 @@ export const getPrice = (values) => async (dispatch) => {
         "&q=" +
         values.q +
         "&f=" +
-        values.f
-        +
+        values.f +
         "&w=" +
-        values.w,
+        values.w +
+        "&d=" +
+        values.d,
     );
     response.then((res) => {
       let decrypted = decryptaes(res.data);
+      // console.log(decrypted);
+      // dispatch({
+      //   type: Constants.ACTION_SALES_DAILY_OUT,
+      //   payload: {
+      //     dataList: decrypted.dataList.data,
+      //     dataListCount: decrypted.dataList.total,
+      //     last_page: decrypted.dataList.last_page,
+      //   },
+      // });
+
       dispatch({
-        type: Constants.ACTION_SALES_DAILY_OUT,
-        payload: {
-          dataList: decrypted.dataList.data,
-          dataListCount: decrypted.dataList.total,
-        },
+        type: "get_prices",
+        data: decrypted.dataList,
       });
     });
   } catch (error) {
@@ -78,10 +86,13 @@ export const getPriceHistory = (values) => async (dispatch) => {
       "api/salesdailyout/pricetracker/price_history?id=" +
         values.id +
         "&type=" +
-        values.type,
+        values.type +
+        "&t=" +
+        values.table,
     );
     response.then((res) => {
       let decrypted = decryptaes(res.data);
+      console.log(decrypted);
       dispatch({
         type: Constants.ACTION_SALES_DAILY_OUT,
         payload: {

@@ -55,7 +55,12 @@ const initialState = {
   updateModal: false,
   borrow_data: [],
   spr: [],
-  viewModal: false
+  viewModal: false,
+  dataListPagination: [],
+  hasMore: false,
+  append: 0,
+  last_page: 0,
+  loading: false,
 };
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -63,6 +68,19 @@ const dataReducer = (state = initialState, action) => {
       return {
         ...state,
         ...action.payload,
+      };
+
+    case 'get_prices':
+      console.log(action);
+      const currentPage = Number(action.data.current_page);
+      return {
+        ...state,
+        dataList:
+          currentPage > 1
+            ? [...state.dataList, ...action.data.data]
+            : action.data.data,
+        last_page: action.data.last_page,
+        loading: false,
       };
     default:
       return state;
