@@ -86,13 +86,13 @@ const PriceTrackerHooks = (props) => {
   const columns_history = [
     // { id: "ItemCode", label: "Code", align: "left" },
     // { id: "ItemName", label: "Daily Description", align: "left" },
-    { id: "PickupPrice", label: "Pick-up Price", align: "right" },
+    { id: "Time_Stamp_Formatted", label: "Time_Stamp", align: "left" },
+    // { id: "PickupPrice", label: "Pick-up Price", align: "right" },
     { id: "OldPrice", label: "Previous Price", align: "right" },
     // { id: "SKU", label: "SKU", align: "right" },
     // { id: "Warehouse", label: "Warehouse", align: "left" },
     // { id: "Brand", label: "Brand", align: "left" },
     // { id: "TaxCode", label: "TaxCode", align: "left" },
-    { id: "Time_Stamp", label: "Time_Stamp", align: "left" },
   ];
 
   const [filteredWarehouses, setWarehouses] = React.useState(warehouses);
@@ -191,7 +191,7 @@ const PriceTrackerHooks = (props) => {
   ]);
 
   const onSelectItem = async (data) => {
-    let t = 'non-history'
+    let t = "non-history";
     if (data.t != undefined || data.t != null) {
       t = data.t;
     }
