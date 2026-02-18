@@ -41,7 +41,7 @@ let PriceTracker = (props) => {
     <React.Fragment>
       <form onSubmit={props.handleSubmit}>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={12} md={12} lg={12}>
+          {/* <Grid item xs={12} sm={12} md={12} lg={12}>
             <Stack
               direction="row"
               justifyContent={"flex-end"}
@@ -78,7 +78,7 @@ let PriceTracker = (props) => {
                 />
               ) : null}
             </Stack>
-          </Grid>
+          </Grid> */}
           <Grid item xs={12} sm={12} md={12} lg={12}>
             <Stack
               direction="row"
@@ -168,7 +168,7 @@ let PriceTracker = (props) => {
               paginationShow={false}
               subAction1Show={true}
               subAction2Show={false}
-              actionshow={true}
+              actionshow={false}
               action={(row) => {
                 return null;
               }}
@@ -186,7 +186,7 @@ let PriceTracker = (props) => {
               rowsPerPage={priceTracker.rowsPerPage}
               handleChangePage={priceTracker.handleChangePage}
               // handleChangeRowsPerPage={priceTracker.handleChangeRowsPerPage}
-              onSelectItem={priceTracker.onSelectItem}
+              onSelectItem={null}
               id={"home_attendance"}
               localStorage={""}
               rowCount={priceTracker.dataSubListCount}

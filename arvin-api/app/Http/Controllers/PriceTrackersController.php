@@ -272,6 +272,10 @@ class PriceTrackersController extends Controller
                 ->where('Warehouse',$details->Warehouse)
                 ->where('TaxCode',$details->TaxCode)
                 ->where('Brand',$details->Brand)
+                ->selectRaw("
+                    *,
+                    CONVERT(VARCHAR, Time_Stamp, 100) as Time_Stamp_Formatted
+                ")
                 ->orderBy('Time_Stamp','desc')
                 ->get();
         }else {
@@ -282,6 +286,10 @@ class PriceTrackersController extends Controller
                 ->where('Warehouse',$details->Warehouse)
                 ->where('TaxCode',$details->TaxCode)
                 ->where('Brand',$details->Brand)
+                ->selectRaw("
+                    *,
+                    CONVERT(VARCHAR, Time_Stamp, 100) as Time_Stamp_Formatted
+                ")
                 ->orderBy('Time_Stamp','desc')
                 ->get();
         }

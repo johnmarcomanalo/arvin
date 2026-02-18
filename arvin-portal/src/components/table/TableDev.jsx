@@ -91,7 +91,7 @@ const Tables = (props) => {
         sx={{
           maxHeight: heightLimit ? screenHeight - 300 : "100%",
           whiteSpace: "nowrap",
-          overflowX: "auto",
+          overflowX: "hidden",
         }}
         id={"tableScroll2"}
       >
@@ -130,7 +130,19 @@ const Tables = (props) => {
             {dataList?.map((row) => {
               try {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    tabIndex={-1}
+                    key={row.code}
+                    onClick={() => onSelectItem && onSelectItem(row)}
+                    sx={{
+                      cursor: onSelectItem ? "pointer" : "default",
+                      "&:hover": {
+                        backgroundColor: "#f5f5f5",
+                      },
+                    }}
+                  >
                     {actionshow ? (
                       <TableCell>
                         <Stack
@@ -144,7 +156,10 @@ const Tables = (props) => {
                           {subAction1Show ? (
                             <Tooltip title="View">
                               <LaunchIcon
-                                onClick={() => onSelectItem(row)}
+                                onClick={(e) => {
+                                  e.stopPropagation(); // 🚀 prevents row click
+                                  onSelectItem(row);
+                                }}
                                 style={{
                                   color: "#009197",
                                   cursor: "pointer",
@@ -183,7 +198,11 @@ const Tables = (props) => {
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          style={cellStyle}
+                          style={{
+                            ...cellStyle,
+                            whiteSpace: "normal",
+                            wordBreak: "break-word",
+                          }}
                         >
                           {column?.format != undefined
                             ? column.format(value)
