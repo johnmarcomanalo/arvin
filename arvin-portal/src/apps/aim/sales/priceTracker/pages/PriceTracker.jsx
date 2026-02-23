@@ -144,10 +144,9 @@ let PriceTracker = (props) => {
                 onChange={(event) => {
                   // Get the date from the input event
                   const selectedDate = event.target.value;
-                  if (selectedDate) {
                     // Pass the selected date to your handler
-                    priceTracker.onChangeDateStart(selectedDate);
-                  }
+                    // priceTracker.onChangeDateStart(selectedDate);
+                    priceTracker.onChangeDateStart(selectedDate || "");
                 }}
               />
             </Stack>
@@ -181,7 +180,9 @@ let PriceTracker = (props) => {
           <Grid item xs={12} sm={12} md={4} lg={4}>
             <ComponentTable
               columns={priceTracker.columns_history}
-              dataList={priceTracker.dataSubList}
+              dataList={priceTracker.dataSubList.slice(
+                priceTracker.dataSubListCount >= 2 ? 1 : 0,
+              )}
               page={priceTracker.page}
               rowsPerPage={priceTracker.rowsPerPage}
               handleChangePage={priceTracker.handleChangePage}

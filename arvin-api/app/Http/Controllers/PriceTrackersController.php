@@ -68,7 +68,7 @@ class PriceTrackersController extends Controller
     }
 
 
-    public function display_prices(Request $request)
+    public function display_pricesS(Request $request)
     {
         $page = $request->query('page', 1);
         $limit = $request->query('limit', 10);
@@ -122,8 +122,8 @@ class PriceTrackersController extends Controller
                     'h1.Warehouse',
                     'h1.Brand',
                     'h1.TaxCode',
-                    DB::raw('ISNULL(h1.OldPrice, 0.00) as PreviousPrice'),
-                    DB::raw('ISNULL(h1.PickupPrice, 0.00) as PickupPrice'),
+                    DB::raw('CAST(ISNULL(h1.OldPrice, 0.00) AS FLOAT) as PreviousPrice'),
+                    DB::raw('CAST(ISNULL(h1.PickupPrice, 0.00) AS FLOAT) as PickupPrice'),
                     'h1.Time_Stamp',
                     DB::raw("'history' as t")
                 );
@@ -172,7 +172,7 @@ class PriceTrackersController extends Controller
                 })
                 ->select(
                     'p.*',
-                    DB::raw('ISNULL(h.OldPrice, 0.00) as PreviousPrice')
+                    DB::raw('CAST(ISNULL(h.OldPrice, 0.00) AS FLOAT) as PreviousPrice'),
                 );
 
             if (!empty($query)) {
@@ -201,102 +201,229 @@ class PriceTrackersController extends Controller
         ]));
     }
 
-    // public function display_prices(Request $request)
-    // {
-    //     $page = $request->query('page', 1);
-    //     $limit = $request->query('limit', 10);
-    //     $query = $request->query('q');
-    //     $filter = $request->query('f', 'manila');
-    //     $warehouse = $request->query('w');
-    //     $date = $request->query('d');
+    public function display_prices(Request $request)
+    {
+        $page = $request->query('page', 1);
+        $limit = $request->query('limit', 10);
+        $query = $request->query('q');
+        $filter = $request->query('f','all');
+        $warehouse = $request->query('w');
+        $d = $request->query('d');
+
+        if(!empty($d)){
+            Carbon::parse($d)->endOfDay()->format('Y-m-d');
+
+            $view_history = ($filter === 'province')
+            ? 'eSalesCostingProv.dbo.vw_tblPIndex_prov_history'
+            : 'eSalesCosting.dbo.vw_tblPIndex_history';
+        }
+
+        if (empty($d)) {
+            $dataListQuery = DB::connection('sqlsrv2')
+                ->table('eSalesCosting.dbo.vw_tblPIndex_all');
+                
+            if (!empty($warehouse)) {
+                $dataListQuery->where('Warehouse',$warehouse);
+            }
+
+            if ($filter !== 'all') {
+                $dataListQuery->where('SourceType', $filter);
+            }
+
+            if (!empty($query)) {
+                $dataListQuery->where('ItemName', 'like', "%{$query}%")
+                ->orWhere('ItemCode', 'like', "%{$query}%")
+                ->orWhere('PickupPrice', 'like', "%{$query}%")
+                ->orWhere('PickupPrice', 'like', "%{$query}%")
+                ->orWhere('Brand', 'like', "%{$query}%");
+            }
 
 
+            // $data_list = $dataListQuery->get();
+        $data_list = $dataListQuery ->paginate($limit, ['*'], 'page', $page);
+        }else{
+            // $dataListQuery = DB::connection('sqlsrv2')
+            //     ->table(DB::raw("
+            //         (
+            //             SELECT 
+            //                 ItemCode,
+            //                 ItemName,
+            //                 PickupPrice,
+            //                 Warehouse,
+            //                 ISNULL(Brand,'') as Brand,
+            //                 ISNULL(TaxCode,'') as TaxCode,
+            //                 SourceType,
+            //                 Time_Stamp,
+            //                 ROW_NUMBER() OVER (
+            //                     PARTITION BY 
+            //                         ItemCode, 
+            //                         Warehouse, 
+            //                         ISNULL(Brand,''), 
+            //                         ISNULL(TaxCode,'')
+            //                     ORDER BY Time_Stamp DESC
+            //                 ) as rn
+            //             FROM eSalesCosting.dbo.vw_tblPIndex_all_history
+            //             WHERE CAST(Time_Stamp AS DATE) = ?
+            //         ) as t
+            //     "))
+            //     ->setBindings([$d])
+            //     ->where('rn', 1);
+                
+                
+            // if (!empty($warehouse)) {
+            //     $dataListQuery->where('Warehouse',$warehouse);
+            // }
 
-    //     $view = ($filter === 'province')
-    //         ? 'eSalesCostingProv.dbo.vw_tblPIndex_prov'
-    //         : 'eSalesCosting.dbo.vw_tblPIndex';
+            // if ($filter !== 'all') {
+            //     $dataListQuery->where('SourceType', $filter);
+            // }
 
-    //     // $dataListQuery = DB::connection('sqlsrv2')->table($view);
-    //     $view_history = ($filter === 'province')
-    //         ? 'eSalesCostingProv.dbo.vw_tblPIndex_prov_history'
-    //         : 'eSalesCosting.dbo.vw_tblPIndex_history';
-        
+            // if (!empty($query)) {
+            //     $dataListQuery->where('ItemName', 'like', "%{$query}%")
+            //     ->orWhere('ItemCode', 'like', "%{$query}%")
+            //     ->orWhere('PickupPrice', 'like', "%{$query}%")
+            //     ->orWhere('PickupPrice', 'like', "%{$query}%")
+            //     ->orWhere('Brand', 'like', "%{$query}%");
+            // }
 
-    //     if(!empty($date)){
-    //         $latestHistory = DB::connection('sqlsrv2')
-    //             ->table($view_history . ' as h1')
-    //             ->select(
-    //                 'h1.ItemCode',
-    //                 'h1.Warehouse',
-    //                 'h1.Brand',
-    //                 'h1.OldPrice',
-    //                 'H1.TaxCode'
-    //             );
-    //     }
 
-    //     return Crypt::encryptString(json_encode([
-    //         "dataList" => $data_list,
-    //         'result' => true,
-    //         'title' => 'Success',
-    //         'status' => 'success',
-    //         'message' => '',
-    //     ]));
-    // }
+            // // $data_list = $dataListQuery->get();
+            // return $data_list = $dataListQuery ->paginate($limit, ['*'], 'page', $page);
 
+            $latestPerItem = DB::connection('sqlsrv2')
+                ->table($view_history)
+                ->select(
+                    'ItemCode',
+                    'Warehouse',
+                    DB::raw("ISNULL(Brand,'') as Brand"),
+                    DB::raw("ISNULL(TaxCode,'') as TaxCode"),
+                    DB::raw('MAX(Time_Stamp) as MaxTime')
+                )
+                ->whereDate('Time_Stamp', '=', $d)
+                ->groupBy(
+                    'ItemCode',
+                    'Warehouse',
+                    DB::raw("ISNULL(Brand,'')"),
+                    DB::raw("ISNULL(TaxCode,'')")
+                );
+
+            $historyAsOfDate = DB::connection('sqlsrv2')
+                ->table($view_history . ' as h1')
+                ->joinSub($latestPerItem, 'latest', function ($join) {
+                    $join->on('h1.ItemCode', '=', 'latest.ItemCode')
+                        ->on('h1.Warehouse', '=', 'latest.Warehouse')
+                        ->whereRaw("ISNULL(h1.Brand,'') = latest.Brand")
+                        ->whereRaw("ISNULL(h1.TaxCode,'') = latest.TaxCode")
+                        ->on('h1.Time_Stamp', '=', 'latest.MaxTime');
+                })
+                ->select(
+                    'h1.ID',
+                    'h1.ItemCode',
+                    'h1.ItemName',
+                    'h1.Warehouse',
+                    'h1.Brand',
+                    'h1.TaxCode',
+                    DB::raw('CAST(ISNULL(h1.OldPrice, 0.00) AS FLOAT) as PreviousPrice'),
+                    DB::raw('CAST(ISNULL(h1.PickupPrice, 0.00) AS FLOAT) as PickupPrice'),
+                    'h1.Time_Stamp',
+                    DB::raw("'history' as t")
+                );
+            if (!empty($query)) {
+                $historyAsOfDate->where(function ($q) use ($query) {
+                    $q->where('h1.ItemName', 'like', "%{$query}%")
+                    ->orWhere('h1.ItemCode', 'like', "%{$query}%")
+                    ->orWhere('h1.Brand', 'like', "%{$query}%")
+                    ->orWhere('h1.PickupPrice', 'like', "%{$query}%")
+                    ->orWhere('h1.OldPrice', 'like', "%{$query}%");
+                });
+            }
+
+            if (!empty($warehouse)) {
+                $historyAsOfDate->where('h1.Warehouse', $warehouse);
+            }
+
+            // ✅ Now paginate
+            $data_list = $historyAsOfDate->paginate($limit, ['*'], 'page', $page);
+        }
+
+            return Crypt::encryptString(json_encode([
+                "dataList" => $data_list,
+                'result' => true,
+                'title' => 'Success',
+                'status' => 'success',
+                'message' => '',
+            ]));
+
+    }
     
     
     public function price_history(Request $request){
         $fields = $request->validate([
-            'id' => 'required',
-            'type' => 'required',
-            't' => 'required',
+            'ItemCode' => 'required',
+            'ItemName' => 'required',
+            'SourceType' => 'required',
+            'Warehouse' => 'required',
+            'Brand' => 'nullable',
+            'TaxCode' => 'nullable',
         ]);
 
-        $view = ($fields['type'] === 'province')
-        ? 'eSalesCostingProv.dbo.vw_tblPIndex_prov'
-        : 'eSalesCosting.dbo.vw_tblPIndex';
+        // $view = ($fields['SourceType'] === 'Province')
+        // ? 'eSalesCostingProv.dbo.vw_tblPIndex_prov'
+        // : 'eSalesCosting.dbo.vw_tblPIndex';
 
-        $view_history = ($fields['type'] === 'province')
-        ? 'eSalesCostingProv.dbo.vw_tblPIndex_prov_history'
-        : 'eSalesCosting.dbo.vw_tblPIndex_history';
-        
-
-
+        // $view_history = ($fields['SourceType'] === 'Province')
+        // ? 'eSalesCostingProv.dbo.vw_tblPIndex_prov_history'
+        // : 'eSalesCosting.dbo.vw_tblPIndex_history';
+        $history = 'eSalesCosting.dbo.vw_tblPIndex_all_history';
+        $dataList = DB::connection('sqlsrv2')
+            ->table($history)
+            ->where('ItemCode', $fields['ItemCode'])
+            ->where('ItemName', $fields['ItemName'])
+            ->where('SourceType', $fields['SourceType'])
+            ->where('Warehouse', $fields['Warehouse'])
+            ->where('Brand', $fields['Brand'] ?? '')
+            ->where('TaxCode', $fields['TaxCode'] ?? '')
+            ->selectRaw("
+                PickupPrice,
+                CONVERT(VARCHAR, Time_Stamp, 100) as Time_Stamp_Formatted
+            ")
+            ->orderBy('Time_Stamp','desc') // latest first
+            ->get();
       
 
-        if($fields['id'] == 'history'){
-            $details = DB::connection('sqlsrv2')->table($view_history)->where('ID',$fields['id'])->first();
+        // if($fields['t'] == 'history'){
+        //     $details = DB::connection('sqlsrv2')->table($view_history)->where('ID',$fields['id'])->first();
 
-            $details_history = DB::connection('sqlsrv2')->table($view_history)
-                ->where('ItemCode',$details->ItemCode)
-                ->where('Warehouse',$details->Warehouse)
-                ->where('TaxCode',$details->TaxCode)
-                ->where('Brand',$details->Brand)
-                ->selectRaw("
-                    *,
-                    CONVERT(VARCHAR, Time_Stamp, 100) as Time_Stamp_Formatted
-                ")
-                ->orderBy('Time_Stamp','desc')
-                ->get();
-        }else {
-            $details = DB::connection('sqlsrv2')->table($view)->where('ID',$fields['id'])->first();
+        //     $details_history = DB::connection('sqlsrv2')->table($view_history)
+        //         ->where('ItemCode',$details->ItemCode)
+        //         ->where('Warehouse',$details->Warehouse)
+        //         ->where('TaxCode',$details->TaxCode)
+        //         ->where('Brand',$details->Brand)
+        //         ->selectRaw("
+        //             *,
+        //             CONVERT(VARCHAR, Time_Stamp, 100) as Time_Stamp_Formatted
+        //         ")
+        //         ->orderBy('Time_Stamp','desc')
+        //         ->get();
+        // }else {
+        //     $details = DB::connection('sqlsrv2')->table($view)->where('ID',$fields['id'])->first();
 
-            $details_history = DB::connection('sqlsrv2')->table($view_history)
-                ->where('ItemCode',$details->ItemCode)
-                ->where('Warehouse',$details->Warehouse)
-                ->where('TaxCode',$details->TaxCode)
-                ->where('Brand',$details->Brand)
-                ->selectRaw("
-                    *,
-                    CONVERT(VARCHAR, Time_Stamp, 100) as Time_Stamp_Formatted
-                ")
-                ->orderBy('Time_Stamp','desc')
-                ->get();
-        }
+        //     $details_history = DB::connection('sqlsrv2')->table($view_history)
+        //         ->where('ItemCode',$details->ItemCode)
+        //         ->where('Warehouse',$details->Warehouse)
+        //         ->where('TaxCode',$details->TaxCode)
+        //         ->where('Brand',$details->Brand)
+        //         ->selectRaw("
+        //             *,
+        //             CONVERT(VARCHAR, Time_Stamp, 100) as Time_Stamp_Formatted
+        //         ")
+        //         ->orderBy('Time_Stamp','desc')
+        //         ->get();
+        // }
 
         $response = [
-            "dataList" => $details_history,
-            "dataListCount" => count($details_history),
+            "dataList" => $dataList,
+            "dataListCount" => count($dataList),
             'result' => true,
             'title' => 'Success',
             'status' => 'success',

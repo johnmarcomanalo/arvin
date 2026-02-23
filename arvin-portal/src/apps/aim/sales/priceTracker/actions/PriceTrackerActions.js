@@ -31,7 +31,6 @@ export const getPrice = (values) => async (dispatch) => {
     );
     response.then((res) => {
       let decrypted = decryptaes(res.data);
-      // console.log(decrypted);
       // dispatch({
       //   type: Constants.ACTION_SALES_DAILY_OUT,
       //   payload: {
@@ -83,12 +82,18 @@ export const getPriceHistory = (values) => async (dispatch) => {
       },
     });
     const response = GetSpecificDefaultServices(
-      "api/salesdailyout/pricetracker/price_history?id=" +
-        values.id +
-        "&type=" +
-        values.type +
-        "&t=" +
-        values.table,
+      "api/salesdailyout/pricetracker/price_history?ItemCode=" +
+        values.ItemCode +
+        "&ItemName=" +
+        values.ItemName +
+        "&SourceType=" +
+        values.SourceType +
+        "&Warehouse=" +
+        values.Warehouse +
+        "&Brand=" +
+        values.Brand +
+        "&TaxCode=" +
+        values.TaxCode,
     );
     response.then((res) => {
       let decrypted = decryptaes(res.data);
