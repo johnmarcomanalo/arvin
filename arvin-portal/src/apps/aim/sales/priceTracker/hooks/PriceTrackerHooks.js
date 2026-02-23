@@ -35,7 +35,7 @@ const PriceTrackerHooks = (props) => {
   const search =
     searchParams.get("q") != null ? String(searchParams.get("q")) : "";
   const filterQuery =
-    searchParams.get("f") != null ? String(searchParams.get("f")) : "Manila";
+    searchParams.get("f") != null ? String(searchParams.get("f")) : "all";
   const warehouseQuery =
     searchParams.get("w") != null ? String(searchParams.get("w")) : "";
   const dateQuery =
@@ -47,16 +47,33 @@ const PriceTrackerHooks = (props) => {
   const loading = useSelector((state) => state.SalesDailyOutReducer.loading);
   const active_page = JSON.parse(json_active_page);
   const columns = [
-    { id: "ItemCode", label: "Code", align: "left" },
+    {
+      id: "ItemCode",
+      label: "Code",
+      align: "left",
+      // format: (value) => parseFloat(value).toFixed(4),
+    },
     { id: "ItemName", label: "Description", align: "left" },
-    { id: "PickupPrice", label: "Current Price", align: "right" },
-    { id: "PreviousPrice", label: "Previous Price", align: "right" },
+    {
+      id: "PickupPrice",
+      label: "Current Price",
+      align: "right",
+      format: (value) => parseFloat(value).toFixed(4),
+    },
+    // {
+    //   id: "PreviousPrice",
+    //   label: "Previous Price",
+    //   align: "right",
+    //   format: (value) => parseFloat(value).toFixed(4),
+    // },
     { id: "SKU", label: "SKU", align: "right" },
     { id: "Warehouse", label: "Warehouse", align: "left" },
     { id: "Brand", label: "Brand", align: "left" },
+    { id: "SourceType", label: "Type", align: "left" },
     // { id: "TaxCode", label: "TaxCode", align: "left" },
   ];
   const type = [
+    { code: "all", description: "All" },
     { code: "manila", description: "Manila" },
     { code: "province", description: "Province" },
   ];
@@ -88,7 +105,7 @@ const PriceTrackerHooks = (props) => {
     // { id: "ItemName", label: "Daily Description", align: "left" },
     { id: "Time_Stamp_Formatted", label: "Time_Stamp", align: "left" },
     // { id: "PickupPrice", label: "Pick-up Price", align: "right" },
-    { id: "OldPrice", label: "Previous Price", align: "right" },
+    { id: "PickupPrice", label: "Previous Price", align: "right" },
     // { id: "SKU", label: "SKU", align: "right" },
     // { id: "Warehouse", label: "Warehouse", align: "left" },
     // { id: "Brand", label: "Brand", align: "left" },
@@ -191,15 +208,19 @@ const PriceTrackerHooks = (props) => {
   ]);
 
   const onSelectItem = async (data) => {
-    let t = "non-history";
-    if (data.t != undefined || data.t != null) {
-      t = data.t;
-    }
+    // let t = "non-history";
+    // if (data.t != undefined || data.t != null) {
+    //   t = data.t;
+    // }
     let formValues = {
-      id: data.ID,
-      type: filterQuery,
-      table: t,
+      ItemCode: data.ItemCode,
+      ItemName: data.ItemName,
+      SourceType: data.SourceType,
+      Warehouse: data.Warehouse,
+      Brand: data.Brand,
+      TaxCode: data.TaxCode,
     };
+    console.log(formValues);
     let res = await dispatch(getPriceHistory(formValues));
     console.log(res);
     dispatch({
@@ -234,6 +255,7 @@ const PriceTrackerHooks = (props) => {
     }
     return () => cancelRequest();
   }, [search, filterQuery, warehouseQuery, rowsPerPage, dateQuery]);
+
   const loadMore = () => {
     if (loading) return;
     if (page >= last_page) return;
