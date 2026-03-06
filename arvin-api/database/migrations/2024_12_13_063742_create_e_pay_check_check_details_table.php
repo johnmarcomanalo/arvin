@@ -24,24 +24,28 @@ class CreateEPayCheckCheckDetailsTable extends Migration
             $table->timestamp('check_status_date')->nullable();
             $table->longText('bank_description');
             $table->string('bank_branch',150);
-            $table->string('bank_address',150);
-            $table->string('account_number',50);
+            $table->string('bank_address',150)->nullable();
             $table->string('payment_type',100)->nullable();
             $table->string('card_code',50);
             $table->longText('card_name');
             $table->string('crpr',15);
-            $table->string('prefix_crpr',15);
-            $table->boolean('stale_check');
+            $table->string('prefix_crpr',15)->nullable();
+            $table->string('account_number',50)->nullable();
             $table->boolean('advance_payment');
-            $table->string('sap',10);
-            $table->longText('remarks');
-            $table->string('document_type',10);
-            $table->string('request_status',15); 
+            $table->string('sap',10)->nullable();
+            $table->longText('remarks')->nullable();
+            $table->boolean('stale_check');
+            $table->string('document_type',10)->nullable();
+            $table->string('request_status',15)->nullable(); 
+            $table->timestamp('received_check_by_ar_at',15)->nullable(); 
+            $table->string('received_check_by',100)->nullable(); 
+            $table->timestamp('applied_at')->nullable();
+            $table->string('applied_by',100)->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->timestamp('deleted_at')->nullable();
-            $table->string('added_by');
-            $table->string('modified_by');
+            $table->string('added_by',100);
+            $table->string('modified_by',100);
         });
     }
 
