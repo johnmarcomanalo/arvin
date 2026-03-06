@@ -22,9 +22,11 @@ class CreateEPayCheckCheckDetailLogsTable extends Migration
             $table->dateTime('deposited_date')->nullable(); // For deposited status 
             $table->dateTime('rejected_date')->nullable(); // For transmitted status
             $table->string('rejected_remarks',100)->nullable(); // For transmitted status
+            $table->string('rejected_addtional_remarks')->nullable(); // For transmitted status
+            $table->boolean('rejected_status')->nullable(); // For transmitted status
             $table->string('rejected_reference',50)->nullable(); // For transmitted status
             $table->dateTime('received_date')->nullable(); // For transmitted status
-            $table->string('received_by')->nullable(); // For transmitted status
+            $table->string('received_by',50)->nullable(); // For transmitted status
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->timestamp('deleted_at')->nullable();
